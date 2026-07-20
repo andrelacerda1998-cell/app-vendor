@@ -1,0 +1,6 @@
+{
+  "appName": "Piquet professional",
+  "NSFaceIDUsageDescription": "Allow Piquet to access your Face ID biometric data.",
+  "NSLocationWhenInUseUsageDescription": "Piquet needs access to your location to make you available for new service requests.",
+  "NSLocationAlwaysUsageDescription": "To ensure you don't miss any service requests, Piquet needs access to your location in the background to keep you available for new services."
+}
