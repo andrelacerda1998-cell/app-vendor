@@ -252,6 +252,10 @@ export default {
       "cancel": "No",
       "you_are_about_to": "You are about to cancel a service that has already been accepted, are you sure?",
       "confirm_cancellation": "Confirm",
+      "penalty": {
+        "title": "Cancelling with less than 24 hours",
+        "body": "If you cancel less than 24 hours in advance, 10% of the service value is deducted: {{amount}}."
+      },
       "error": {
         "title": "Error",
         "subtitle": "An error occurred while trying to cancel the service. Please try again later.",

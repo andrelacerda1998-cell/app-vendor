@@ -79,17 +79,13 @@ const CancelService = () => {
     })
   }
 
-  const getCancellationFee = (amount: number | null) => {
-    // if (amount === null) {
-    //   return;
-    // }
-
-    // const moneyToRender = Math.floor(amount * 10 / 100);
-
-    const cancelationFee = 500;
-
-    return renderMoney(cancelationFee);
-  }
+  // Regra: cancelar com menos de 24h de antecedência tem penalização de 10% do
+  // valor do serviço. O modelo do serviço aberto ainda não expõe a hora
+  // agendada no cliente, por isso mostramos sempre a regra e o valor (a
+  // aplicação do desconto é decidida no backend consoante a antecedência).
+  const LATE_CANCEL_RATE = 0.1;
+  const amountForVendor = openService?.amount_for_vendor ?? openService?.amount ?? 0;
+  const penaltyCents = Math.round(amountForVendor * LATE_CANCEL_RATE);
 
   return (
     <SafeAreaView className="flex-1 bg-strongest">
@@ -116,9 +112,25 @@ const CancelService = () => {
               {t('services.cancel.you_are_about_to')}
             </CustomText>
 
-            {/* <CustomText color="secondary" boldness="medium" size="title" numberOfLines={3} classes="text-center mt-4">
-              {`${getCancellationFee(openService?.amount_for_vendor ?? openService?.amount ?? null)}`}
-            </CustomText> */}
+            {/* Penalização por cancelamento tardio (< 24h): 10% do valor. */}
+            <View
+              className="mt-5 rounded-2xl p-4"
+              style={{
+                backgroundColor: 'rgba(237, 73, 73, 0.14)',
+                borderWidth: 1,
+                borderColor: Colors.error,
+              }}
+            >
+              <View className="flex-row items-center">
+                <MaterialIcons name="warning" size={20} color={Colors.error} />
+                <CustomText color="secondary" boldness="semiBold" numberOfLines={1} classes="ml-2">
+                  {t('services.cancel.penalty.title')}
+                </CustomText>
+              </View>
+              <CustomText color="secondary" boldness="regular" numberOfLines={3} classes="mt-1">
+                {t('services.cancel.penalty.body', { amount: renderMoney(penaltyCents) })}
+              </CustomText>
+            </View>
 
           </ScrollView>
         </View>

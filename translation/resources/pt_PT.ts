@@ -252,6 +252,10 @@ export default {
             "cancel": "Não",
             "you_are_about_to": "Está prestes a cancelar um serviço que já foi aceite, tem a certeza?",
             "confirm_cancellation": "Confirmar",
+            "penalty": {
+                "title": "Cancelamento com menos de 24 horas",
+                "body": "Se cancelares com menos de 24 horas de antecedência, é retirado 10% do valor do serviço: {{amount}}."
+            },
             "error": {
                 "title": "Erro",
                 "subtitle": "Ocorreu um erro ao tentar cancelar o serviço. Por favor, tente novamente mais tarde.",
