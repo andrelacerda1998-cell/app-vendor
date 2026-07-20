@@ -425,6 +425,11 @@ export default {
     },
     "no_messages": "Start a conversation",
     "input_placeholder": "Type a message",
+    "quick_replies": {
+      "on_the_way": "On my way 🚗",
+      "arrived": "Arrived ✅",
+      "delay": "10 min late ⏱️"
+    },
     "arrived_at_destination": {
       "title": "Arrived at destination",
       "subtitle": "You have arrived at the destination"

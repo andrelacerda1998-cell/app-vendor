@@ -153,11 +153,14 @@ const Service = () => {
         return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}000Z`;
     }
 
-    const handleSendMessage = async () => {
+    // [preset] permite enviar uma resposta rápida (sem passar pelo campo de
+    // texto); sem preset, envia o que está escrito.
+    const handleSendMessage = async (preset?: string) => {
         if (!publicKey) return;
+        const messageToSend = (preset ?? message).trim();
+        if (!messageToSend || sendingMessage) return;
         setSendingMessage(true);
-        const messageToSend = message;
-        setMessage('');
+        if (preset === undefined) setMessage('');
 
         const now = new Date(Date.now());
         const formattedDate = formatDateToISO(now);
@@ -174,10 +177,10 @@ const Service = () => {
         api.post(API_ROUTES.POST_MESSAGE(`${serviceId}`), {
             "message": signedData,
         })
-            .then(() => setMessage(''))
+            .then(() => { if (preset === undefined) setMessage(''); })
             .catch((error) => {
                 console.error(error)
-                setMessage(messageToSend);
+                if (preset === undefined) setMessage(messageToSend);
             })
             .finally(() => setSendingMessage(false));
     };
@@ -510,6 +513,31 @@ const Service = () => {
                             {t('chat.no_messages')}
                         </CustomText>
                     )}
+                    {/* Respostas rápidas — na rua/a conduzir, um toque resolve. */}
+                    <ScrollView
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        className="flex-grow-0 mt-4"
+                        contentContainerStyle={{ paddingHorizontal: 2 }}
+                    >
+                        {[
+                            t('chat.quick_replies.on_the_way'),
+                            t('chat.quick_replies.arrived'),
+                            t('chat.quick_replies.delay'),
+                        ].map((reply) => (
+                            <CustomTouchableOpacity
+                                key={reply}
+                                size="small"
+                                type="transparent"
+                                classes="mr-2 px-4 py-2 rounded-full bg-strongest"
+                                textColor="secondary"
+                                textBoldness="medium"
+                                text={reply}
+                                disabled={sendingMessage || loadingArrivedAtDestination}
+                                onPress={() => handleSendMessage(reply)}
+                            />
+                        ))}
+                    </ScrollView>
                     <View className="my-6 flex-row items-center">
                         <KeyboardAwareScrollView bottomOffset={40}>
                             <View className="flex-1">

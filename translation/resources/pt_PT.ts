@@ -424,6 +424,11 @@ export default {
         },
         "no_messages": "Inicie uma conversa",
         "input_placeholder": "Escreva uma mensagem",
+        "quick_replies": {
+            "on_the_way": "Estou a caminho 🚗",
+            "arrived": "Cheguei ✅",
+            "delay": "Atraso-me 10 min ⏱️"
+        },
         "arrived_at_destination": {
             "title": "Chegou ao destino",
             "subtitle": "Você chegou ao seu destino"
