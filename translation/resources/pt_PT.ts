@@ -248,6 +248,7 @@ export default {
         "cancel": {
             "title": "Cancelar serviço",
             "subtitle": "Tem certeza que deseja cancelar o serviço?",
+            "confirm_penalty": "Se faltarem menos de 24 horas, é retirado 10% do valor: {{amount}}. Queres mesmo cancelar?",
             "confirm": "Sim",
             "cancel": "Não",
             "you_are_about_to": "Está prestes a cancelar um serviço que já foi aceite, tem a certeza?",

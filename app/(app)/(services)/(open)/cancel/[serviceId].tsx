@@ -44,9 +44,13 @@ const CancelService = () => {
   const { serviceId } = useLocalSearchParams();
 
   const handleCancelService = () => {
+    // Reforça a penalização no ponto de não-retorno.
+    const penalty = renderMoney(
+      Math.round((openService?.amount_for_vendor ?? openService?.amount ?? 0) * 0.1)
+    );
     openDialog({
       title: t('services.cancel.title'),
-      subtitle: t('services.cancel.subtitle'),
+      subtitle: t('services.cancel.confirm_penalty', { amount: penalty }),
       successButtonText: t('services.cancel.confirm'),
       cancelButtonText: t('services.cancel.cancel'),
       onSuccess() {

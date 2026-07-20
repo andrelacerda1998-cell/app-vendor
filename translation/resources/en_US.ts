@@ -248,6 +248,7 @@ export default {
     "cancel": {
       "title": "Cancel service",
       "subtitle": "Are you sure you want to cancel the service?",
+      "confirm_penalty": "If there are less than 24 hours left, 10% of the value is deducted: {{amount}}. Do you really want to cancel?",
       "confirm": "Yes",
       "cancel": "No",
       "you_are_about_to": "You are about to cancel a service that has already been accepted, are you sure?",
