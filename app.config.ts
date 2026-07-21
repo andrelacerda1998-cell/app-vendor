@@ -93,6 +93,7 @@ export default ({config}: ConfigContext):ExpoConfig => {
             pt: "./assets/locales/pt.json"
         },
         plugins: [
+            "./plugins/withXcode26BuildFixes",
             "expo-updates",
             "expo-localization",
             "expo-router",
