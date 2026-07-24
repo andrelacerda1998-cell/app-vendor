@@ -56,8 +56,13 @@ const PasswordStep = ({
 
     setPasswordErrors(errors);
 
-    if (Object.values(errors).some(error => error)) {
-      return false;
+    // NOTA: tem de devolver a mensagem em texto (não `false`), senão o
+    // react-hook-form marca o campo como inválido mas errors.password.message
+    // fica undefined -- a única pista visual passa a ser a checklist acima,
+    // sem nenhum texto de erro junto ao próprio campo.
+    const firstFailedKey = (Object.keys(errors) as (keyof typeof errors)[]).find((key) => errors[key]);
+    if (firstFailedKey) {
+      return wrongPassword[firstFailedKey];
     }
 
     return true;
@@ -221,6 +226,15 @@ const PasswordStep = ({
                   error={errors.password_confirmation && errors.password_confirmation.message}
                   success={!errors.password_confirmation && field.value}
               />
+              {errors.password_confirmation && errors.password_confirmation.message && (
+                <CustomText
+                  size="small"
+                  color="error"
+                  classes="mt-1"
+                >
+                  {errors.password_confirmation.message as string}
+                </CustomText>
+              )}
             </View>
           )}
         />

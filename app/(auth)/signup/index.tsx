@@ -3,7 +3,7 @@ import { router } from 'expo-router';
 import { KeyboardAvoidingView, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import ProgressBar from "@/components/auth/signup/ProgressBar";
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useForm } from 'react-hook-form';
+import { useForm, FieldErrors } from 'react-hook-form';
 import { API_ROUTES } from '@/constants/ApiRoutes';
 import axios, { AxiosError } from 'axios';
 import PersonalInformationStep from '@/components/auth/signup/Steps/PersonalInformationStep';
@@ -46,6 +46,23 @@ enum SignUpSteps {
     'pricePerHour' = 3,
     'password' = 4,
 }
+
+// A que passo pertence cada campo do form. Usado para saltar de volta ao
+// passo certo quando um campo de um passo já não visível falha a validação
+// (ver handleInvalidSubmit) — sem isto o utilizador fica preso no último
+// passo sem qualquer explicação.
+const FIELD_TO_STEP: Partial<Record<keyof SignUpData, SignUpSteps>> = {
+    name: SignUpSteps.personalInformation,
+    email: SignUpSteps.personalInformation,
+    phone_number: SignUpSteps.personalInformation,
+    nif: SignUpSteps.personalInformation,
+    date_birthday: SignUpSteps.personalInformation,
+    gender_id: SignUpSteps.personalInformation,
+    price_rate: SignUpSteps.pricePerHour,
+    username: SignUpSteps.password,
+    password: SignUpSteps.password,
+    password_confirmation: SignUpSteps.password,
+};
 
 const SignUp = () => {
     const { t } = useTranslation();
@@ -262,6 +279,38 @@ const SignUp = () => {
         }
     };
 
+    // O form usa um único useForm() para todos os passos, e os campos de passos
+    // já não visíveis ficam registados (shouldUnregister é false por defeito).
+    // Isto significa que handleSubmit, no último passo, valida TODOS os campos
+    // de TODOS os passos -- não só o visível. Se um campo de um passo anterior
+    // (ex: "name", que exige exatamente duas palavras) falhar, o submit é
+    // bloqueado silenciosamente, sem nenhum erro visível no ecrã atual, porque
+    // esse campo já não está desenhado. Isto fazia o botão "Finish" parecer
+    // simplesmente não fazer nada. Aqui detetamos isso, saltamos de volta ao
+    // passo do primeiro campo com erro e mostramos a mensagem.
+    const handleInvalidSubmit = (formErrors: FieldErrors<SignUpData>) => {
+        const erroredFields = Object.keys(formErrors) as (keyof SignUpData)[];
+        if (erroredFields.length === 0) return;
+
+        const stepsWithErrors = erroredFields
+            .map((field) => FIELD_TO_STEP[field])
+            .filter((s): s is SignUpSteps => s !== undefined);
+
+        if (stepsWithErrors.length === 0) return;
+
+        const earliestStep = Math.min(...stepsWithErrors);
+
+        // Se o erro já é no passo visível, o campo em causa já mostra a sua
+        // própria mensagem inline -- não duplicar com um banner extra.
+        if (earliestStep === step) return;
+
+        setStep(earliestStep);
+
+        const fieldWithError = erroredFields.find((field) => FIELD_TO_STEP[field] === earliestStep);
+        const message = fieldWithError ? formErrors[fieldWithError]?.message : undefined;
+        setSignUpError(typeof message === 'string' && message.length > 0 ? message : t('errors.occurred_an_error'));
+    };
+
     const toggleServiceType = (serviceTypeId: number) => {
         setSelectedServicesTypes((prev: number[]) => {
             if (prev.includes(serviceTypeId)) {
@@ -412,7 +461,7 @@ const SignUp = () => {
                         textColor="primary"
                         textBoldness="semiBold"
                         disabled={isLoading || isVerifyingEmail || isSigningUp}
-                        onPress={handleSubmit((data) => handleNextStep(data))}
+                        onPress={handleSubmit((data) => handleNextStep(data), handleInvalidSubmit)}
                     />
                 </View>
             </View>
