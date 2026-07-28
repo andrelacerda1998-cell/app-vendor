@@ -109,6 +109,77 @@ Tratamento por **"tu"** em toda a app (0 ocorrências formais restantes).
 
 ---
 
+## 5b. Estados dos serviços (Fase 5)
+
+`app/Enums/Services/ServiceStatus.php` tem **15 estados**. A app do técnico só reage a **4** — os restantes ou pertencem ao ciclo de pagamento do cliente, ou nunca chegam a um técnico.
+
+| Estado técnico | Significado | Ação disponível | Apresentado ao técnico |
+|---|---|---|---|
+| `Pending` | criado, à espera da resposta do técnico | Aceitar / Recusar | **Novo pedido** |
+| `Scheduled` | agendado, à espera de resposta | Aceitar / Recusar | **Novo pedido** (agendado) |
+| `Accepted` | aceite, ainda não saiu | Estou a caminho | **Aceite** |
+| `Accepted` + `on_the_way_at` | a caminho do local | Iniciar serviço | **A caminho** |
+| `Arrived` | no local, a trabalhar | Concluir serviço · extras · fotos | **Em execução** |
+| `Finished` | concluído pelo técnico, por fechar | — (aguarda fecho) | **Concluído** |
+| `Closed` | fechado e contabilizado nos ganhos | Avaliar cliente | **Concluído** |
+| `ClosedPendingPayment` | feito mas **não pago ao técnico** | — | **Por receber** |
+| `Canceled` | cancelado | — | **Cancelado** |
+| `Refused` | recusado ou expirado **pelo próprio técnico** | — | **Recusado** |
+| `Archived` | arquivado pelo backoffice | — | não aparece |
+| `Pending3DS` / `Expired3DS` | autenticação do cartão do cliente | — | nunca chega ao técnico |
+| `RefusedMbway` / `ExpiredMbway` / `CanceledMbway` | falhas de MB WAY do cliente | — | nunca chega ao técnico |
+
+**Simplificações aplicadas:**
+- `Finished` e `Closed` são estados distintos no backend (conclusão vs. fecho contabilístico) mas o técnico vê **"Concluído"** em ambos. A diferença só aparece no dinheiro, onde `Finished` conta como **"Por receber"**.
+- `Pending` e `Scheduled` são o mesmo momento para o técnico — um pedido por responder. Só muda a janela de resposta: **60 s** para imediato, **20 min** para agendado.
+- Os 5 estados de pagamento do cliente (3DS e MB WAY) **nunca são mostrados**: se o pagamento falha, o técnico nunca recebe o pedido.
+
+**Estados que o brief pede e NÃO existem no enum:** "a aguardar escolha do cliente", "interesse enviado", "selecionado", "em disputa", "a aguardar orçamento", "a aguardar material", "a aguardar aprovação", "perdido para outro técnico". Nenhum foi inventado — ver §6.1.
+
+**Terminologia de concorrência não aplicada.** O brief pede "Mostrar interesse" em vez de "Aceitar". Neste modelo o técnico **aceita mesmo** — o serviço já é dele quando chega. Trocar o verbo tornaria a app menos verdadeira, não mais clara.
+
+---
+
+## 5c. Alterações implementadas
+
+| Área | Antes | Depois | Commit |
+|---|---|---|---|
+| Ganhos | ícone de recibos → crash | lista de Movimentos sobre endpoint real | `72eb3cf` |
+| Sessão | `signOut()` em qualquer erro | só em 401/403 | `72eb3cf` |
+| Disponibilidade | autosave no carregamento → 429 | grava só com alteração do técnico | `72eb3cf` |
+| Arranque | ~10 pedidos em paralelo | em série, críticos primeiro, com retry | `72eb3cf` |
+| Pedidos | ecrã antigo, timer fixo 60 s | ecrã cheio, contagem por tipo, slide-to-accept | `01992d1` |
+| Cartão de pedido | só cidade/estado | morada, distância, duração, observações | `01992d1` |
+| Serviço | sem navegação nem chamada | Maps/Waze + `tel:` + fotos + ordem contextual | `abc7f57` |
+| Listas | falso-vazio em erro | skeleton → erro com repetir → vazio | `f45a260` |
+| Home | âmbar a servir de marca e alerta | vermelho bloqueia, verde decorre, âmbar é marca | `25d1d80` |
+| Onboarding | barra a 100% que recuava, IBAN sem explicação | ordem real, explicações, rascunho | `d972f54` |
+| Copys | 117 "você", `errors.title` 48× | 100% "tu", 25 contextos de erro | `667cfa5` |
+| Analytics | inexistente | 17 pontos, sem SDK externo | `f880118` |
+| Acessibilidade | 2 labels / 211 tocáveis | 38 labels, hitSlop, teclado nos 3 formulários críticos | `e250f0b` |
+| Testes e lint | nenhum / sem config | 90 testes, lint a correr | `5a0d6c3` |
+| Código morto | 20 componentes, 8 rotas, 406 imports | removidos | `5a0d6c3` |
+
+**Backend (não commitado — trabalho local por rever):** `phone_number`, `getFirstTemporaryUrl` nas fotos, fronteira do último dia de validade, lembretes de expiração, preferências de notificação respeitadas, endpoints de extras do cliente, tabela de analytics, transparência dos ganhos.
+
+---
+
+## 5d. Alterações NÃO implementadas
+
+| Proposta | Motivo | Dependência | Recomendação |
+|---|---|---|---|
+| Terminologia de concorrência | o código não tem esse modelo | decisão de produto | validar §6.1 primeiro |
+| Guard de elegibilidade no aceitar | toca em regras de atribuição | decisão de produto | medir impacto em produção antes |
+| Extras somarem ao valor a receber | exige 2.ª ordem de pagamento Payshop | financeiro | validar com quem trata de pagamentos |
+| Biografia, portefólio, certificações | não existe coluna | backend | criar modelo primeiro |
+| Pré-visualização do perfil público | faltam os dados acima | backend | depende do anterior |
+| Férias e blocos horários múltiplos | `schedule_days` só guarda 1 intervalo/dia | migração | requer alteração de esquema |
+| Área por raio, limite de distância | não existe | backend | — |
+| Suporte contextual dentro do serviço | tickets existem, mas sem categorias por contexto | backend | acrescentar tipo ao ticket |
+| Detalhe de serviço agendado | não existe ecrã; a rota aceita filtro, não id | app | criar ecrã |
+
+---
+
 ## 6. ⚠️ Regras de negócio por validar
 
 ### 6.1 Modelo de atribuição — CONTRADIÇÃO COM O BRIEF
