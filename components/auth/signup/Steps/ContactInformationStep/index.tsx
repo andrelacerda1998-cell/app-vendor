@@ -1,15 +1,10 @@
 import { CustomText } from '@/components/CustomText'
 import CustomTextInput from '@/components/CustomTextInput'
-import DatePicker from '@/components/DatePicker'
-import { ThemedText } from '@/components/ThemedText'
-import { Colors } from '@/constants/Colors'
 import { validateNIF } from "@/utils"
-import React, { useState } from 'react'
-import { Control, Controller, FieldErrors, FieldValues, useForm, UseFormHandleSubmit } from 'react-hook-form'
+import React from 'react';
+import { Controller, FieldErrors, FieldValues } from 'react-hook-form';
 import { useTranslation } from "react-i18next"
-import { TextInput, View } from 'react-native'
-import { ScrollView } from 'react-native'
-
+import { View } from 'react-native';
 const ContactInformationStep = ({ 
     control,
     errors,

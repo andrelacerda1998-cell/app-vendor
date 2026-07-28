@@ -1,11 +1,7 @@
-import CheckMark from "@/assets/icons/check-mark"
 import XIcon from "@/assets/icons/x"
 import { CustomText } from '@/components/CustomText'
 import CustomTextInput from '@/components/CustomTextInput'
 import CustomTouchableOpacity from "@/components/CustomTouchableOpacity"
-import DatePicker from '@/components/DatePicker'
-import { ThemedText } from '@/components/ThemedText'
-import TouchOpacity from "@/components/TouchOpacity"
 import { API_ROUTES } from "@/constants/ApiRoutes"
 import { Colors } from '@/constants/Colors'
 import { useApi } from "@/contexts/ApiContext"
@@ -13,15 +9,11 @@ import { useDialog } from "@/contexts/DialogContext"
 import { useSession } from "@/contexts/SessionContext"
 import { VendorDataInterface } from "@/types/session"
 import { validateNIF } from "@/utils"
-import { useActionSheet } from "@expo/react-native-action-sheet"
 import { Feather } from "@expo/vector-icons"
-import { Picker } from "@react-native-picker/picker"
-import { router } from "expo-router"
 import React, { useState } from 'react'
-import { Control, Controller, FieldErrors, FieldValues, useForm, UseFormHandleSubmit } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from "react-i18next"
-import { Platform, TextInput, TouchableWithoutFeedback, View } from 'react-native'
-import { ScrollView } from 'react-native'
+import { TouchableWithoutFeedback, View } from 'react-native';
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller"
 
 const AtUserStep = ({
@@ -69,14 +61,12 @@ const AtUserStep = ({
             })
             .catch(err => {
                 // Need to handle this error to tell the user what happened
-                // console.log(err, 'error here')
-                // console.log(err?.response?.data?.message);
-                setUpdateError(err?.data?.data?.message || err?.data?.message || err?.response?.data?.message || err?.message || t('errors.occurred_an_error'));
+                setUpdateError(err?.data?.data?.message || err?.data?.message || err?.response?.data?.message || err?.message || t('errors.at_user_save.subtitle'));
 
                 openDialog({
                     icon: <XIcon color={Colors.primary}/>,
-                    title: t('errors.title'),
-                    subtitle: err?.response?.data?.message || t('errors.occurred_an_error'),
+                    title: t('errors.at_user_save.title'),
+                    subtitle: err?.response?.data?.message || t('errors.at_user_save.subtitle'),
                     closeAfterMSeconds: 2000,
                     closeOnClickOutside: true,
                 })
@@ -199,6 +189,9 @@ const AtUserStep = ({
                                         <View className="w-12 h-full items-center justify-center">
                                             <TouchableWithoutFeedback
                                                 onPress={() => setShowPassword(prev => !prev)}
+                          accessibilityRole="button"
+                          accessibilityLabel={t('general.toggle_password_visibility')}
+                          accessibilityState={{ expanded: showPassword }}
                                             >
                                                 <View className="w-full h-full items-center justify-center">
                                                     <Feather name={showPassword ? 'eye' : 'eye-off'} size={24} color={Colors.secondary} />

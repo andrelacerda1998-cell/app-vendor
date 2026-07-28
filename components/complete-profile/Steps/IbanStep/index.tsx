@@ -1,31 +1,17 @@
-import BackHeader from '@/components/app/BackHeader';
 import {CustomText} from "@/components/CustomText";
 import CustomTextInput from "@/components/CustomTextInput";
 import CustomTouchableOpacity from "@/components/CustomTouchableOpacity";
-import DatePicker from '@/components/DatePicker';
-import {ThemedText} from '@/components/ThemedText';
-import TouchOpacity from '@/components/TouchOpacity';
 import {API_ROUTES} from '@/constants/ApiRoutes';
-import {Colors} from '@/constants/Colors';
 import {useApi} from '@/contexts/ApiContext';
 import {useSession} from '@/contexts/SessionContext';
-import {validateNIF} from "@/utils";
 import {Feather, MaterialIcons, Octicons} from '@expo/vector-icons';
 import BottomSheet, {BottomSheetView} from '@gorhom/bottom-sheet';
-import {router} from 'expo-router';
-import React, {useCallback, useEffect, useRef, useState} from 'react'
-import {Control, Controller, useForm} from 'react-hook-form';
+import React, { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import { View } from 'react-native';
 import {ScrollView, TextInput} from 'react-native-gesture-handler';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import * as Location from 'expo-location';
 import {useDialog} from "@/contexts/DialogContext";
-import CheckMark from "@/assets/icons/check-mark";
-import XIcon from "@/assets/icons/x";
-import {ImagePickerAsset} from "expo-image-picker/src/ImagePicker.types";
-import * as ImagePicker from 'expo-image-picker';
 import {useTranslation} from "react-i18next";
-import CurrencyInput from "react-native-currency-input";
 import IBAN from 'iban';
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { VendorDataInterface } from "@/types/session";
@@ -45,7 +31,6 @@ const IbanStep = ({
         mode: 'onChange',
         defaultValues: {
             iban: vendorData?.iban || "",
-            price_rate: vendorData?.price_rate || 0,
             company_name: vendorData?.company_name || "",
             // nif: vendorData?.nif || "",
         },
@@ -56,7 +41,10 @@ const IbanStep = ({
 
         const formData = new FormData();
         formData.append('iban', (getValues('iban').replaceAll(' ', '')));
-        formData.append('price_rate', String(getValues('price_rate')));
+        // O valor/hora já foi pedido no passo 3 do registo — não voltamos a pedi-lo aqui.
+        // O backend (UpdatePaymentRequest) continua a exigir o campo, por isso enviamos
+        // o valor já guardado sem o mostrar.
+        formData.append('price_rate', String(vendorData?.price_rate ?? 0));
         formData.append('company_name', getValues('company_name'));
         // formData.append('nif', getValues('nif'));
         // formData.append('company_name', getValues('company_name'));
@@ -125,6 +113,15 @@ const IbanStep = ({
       <KeyboardAwareScrollView bottomOffset={20}>
         <View className="space-y-8 flex-1">
             <View>
+                <CustomText size="subtitle" color="secondary" boldness="bolder" numberOfLines={2}>
+                    {t('complete_profile.iban.title')}
+                </CustomText>
+                <CustomText color="muted" numberOfLines={4} classes="mt-1">
+                    {t('complete_profile.iban.subtitle')}
+                </CustomText>
+            </View>
+
+            <View>
                 <CustomText color="secondary" boldness="semiBold" numberOfLines={1}>
                     {t('general.iban')}
                 </CustomText>
@@ -179,76 +176,10 @@ const IbanStep = ({
 
             <View>
                 <CustomText color="secondary" boldness="semiBold" numberOfLines={1}>
-                    {t('general.price_rate.title')}
-                </CustomText>
-                <Controller
-                    control={control}
-                    name="price_rate"
-                    rules={{
-                        validate: (value) => {
-                          if (!value) {
-                              return t('general.price_rate.required');
-                          } else if (isNaN(value)) {
-                              return t('general.price_rate.must_be_number');
-                          } else if (value < 1) {
-                              return t('general.price_rate.min_value');
-                          } else if (value > 999999) {
-                              return t('general.price_rate.max_value');
-                          }
-                          return true;
-                        }
-                    }}
-                    render={({ field }) => {
-                        let numericValue = 0;
-                        if (typeof field.value === 'number') {
-                            numericValue = field.value;
-                        } else if (typeof field.value === 'string') {
-                            numericValue = Number((field.value as string).replace(/[^0-9.]/g, ''));
-                            if (isNaN(numericValue)) numericValue = 0;
-                        }
-
-                        return (
-                            <View className="relative justify-center mt-2">
-                                <CurrencyInput
-                                    {...field}
-                                    value={numericValue}
-                                    onChangeValue={(value) => {
-                                        field.onChange(value);
-                                    }}
-                                    renderTextInput={textInputProps => (
-                                        <CustomTextInput
-                                            {...textInputProps}
-                                            size="large"
-                                            keyboardType="numeric"
-                                            placeholder={t('general.price_rate.placeholder')}
-                                            classes=""
-                                        />
-                                    )}
-                                    prefix="€ "
-                                    suffix=" / h"
-                                    delimiter=" "
-                                    separator=","
-                                    precision={2}
-                                />
-                            </View>
-                        )
-                    }}
-                    />
-                    {errors.price_rate && errors.price_rate.message && (
-                        <CustomText
-                            size="small"
-                            color="error"
-                            classes="mt-2"
-                            numberOfLines={3}
-                        >
-                            {errors.price_rate.message as string}
-                        </CustomText>
-                    )}
-            </View>
-
-            <View>
-                <CustomText color="secondary" boldness="semiBold" numberOfLines={1}>
                     {t('general.company_name')}
+                </CustomText>
+                <CustomText color="muted" size="small" numberOfLines={4} classes="mt-1">
+                    {t('complete_profile.iban.company_name_help')}
                 </CustomText>
 
                 <Controller

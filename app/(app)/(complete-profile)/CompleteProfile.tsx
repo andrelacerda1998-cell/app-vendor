@@ -1,4 +1,5 @@
 import {useTranslation} from "react-i18next";
+import { track, AnalyticsEvent } from '@/utils/analytics';
 import {useSession} from "@/contexts/SessionContext";
 import {useEffect, useRef, useState} from "react";
 import {Colors} from "@/constants/Colors";
@@ -14,6 +15,8 @@ import CompanyAddressStep from "@/components/complete-profile/Steps/CompanyAddre
 import IbanStep from "@/components/complete-profile/Steps/IbanStep";
 import EmailConfirmation from "@/components/EmailConfirmation";
 import CitySurveyStep from "@/components/complete-profile/Steps/CitySurveyStep";
+import DocumentsProfileStep from "@/components/complete-profile/Steps/DocumentsProfileStep";
+import PermissionsStep from "@/components/complete-profile/Steps/PermissionsStep";
 import { VendorDataInterface } from "@/types/session";
 import { useAppStateStatus } from "@/contexts/AppStateStatusContext";
 
@@ -39,19 +42,46 @@ enum VerifySteps {
     'phoneVerification' = 4,
     'citySurvey' = 5,
     'emailVerification' = 6,
+    'documents' = 7,
+    'permissions' = 8,
 }
 
+/**
+ * Ordem REAL de apresentação (os documentos são o primeiro ecrã).
+ * A barra de progresso segue esta ordem — usar o valor do enum dava
+ * 100% logo no arranque (documents = 7) e depois caía para 14%.
+ */
+const DISPLAY_ORDER: VerifySteps[] = [
+    VerifySteps.documents,
+    VerifySteps.permissions,
+    VerifySteps.atUser,
+    VerifySteps.companyAddress,
+    VerifySteps.iban,
+    VerifySteps.phoneVerification,
+    VerifySteps.citySurvey,
+    VerifySteps.emailVerification,
+];
+
 const CompleteProfile = () => {
+    // Entrada no completar-perfil: marca o início da 2.ª metade do onboarding.
+    useEffect(() => {
+        track(AnalyticsEvent.ONBOARDING_STARTED, { flow: 'complete_profile' });
+    }, []);
+
     const { t } = useTranslation();
     const { vendorData, isLoadingUserData, fetchAndSaveUserData } = useSession();
     const { appStateStatus } = useAppStateStatus();
     const [step, setStep] = useState<VerifySteps>(VerifySteps.instructions);
+    const [docsStepDone, setDocsStepDone] = useState(false);
+    const [permissionsStepDone, setPermissionsStepDone] = useState(false);
 
-    const maxStep = Object.keys(VerifySteps).length / 2 - 1;
+    const totalSteps = DISPLAY_ORDER.length;
+    const currentStepNumber = Math.max(DISPLAY_ORDER.indexOf(step), 0) + 1;
     const hasInitialized = useRef(false);
 
     useEffect(() => {
-        if (vendorData) handleNextStep(vendorData);
+        // Começa sempre pelos documentos (saltável), mesmo antes de vendorData carregar.
+        handleNextStep(vendorData as VendorDataInterface);
     }, []);
 
     useEffect(() => {
@@ -80,6 +110,7 @@ const CompleteProfile = () => {
     }
 
     const handleSurveyComplete = () => {
+        track(AnalyticsEvent.ONBOARDING_COMPLETED);
         fetchAndSaveUserData();
         if (router.canGoBack()) {
             return router.back();
@@ -87,35 +118,36 @@ const CompleteProfile = () => {
         router.replace('/(app)/(tabs)/home');
     };
 
-    const handleNextStep = (data: VendorDataInterface) => {
-        if (
-            !data?.at_user
-        ) {
+    const goToNextDataStep = (data: VendorDataInterface) => {
+        if (!data?.at_user) {
             setStep(VerifySteps.atUser);
-        } else if (
-            !data?.company_address
-        ) {
+        } else if (!data?.company_address) {
             setStep(VerifySteps.companyAddress);
-        } else if (
-            !data?.iban
-        ) {
+        } else if (!data?.iban) {
             setStep(VerifySteps.iban);
-        } else if (
-            data?.user?.phone_number_verified_at === null
-        ) {
+        } else if (data?.user?.phone_number_verified_at === null) {
             setStep(VerifySteps.phoneVerification);
-        } else if (
-            data?.user?.email_verified_at === null
-        ) {
+        } else if (data?.user?.email_verified_at === null) {
             setStep(VerifySteps.citySurvey);
         } else {
             handleSurveyComplete();
         }
     };
 
+    const handleNextStep = (data: VendorDataInterface) => {
+        // Documentos primeiro (saltável, "enviar mais tarde"); auto-salta se não faltarem documentos.
+        if (!docsStepDone) {
+            setStep(VerifySteps.documents);
+        } else if (!permissionsStepDone) {
+            setStep(VerifySteps.permissions);
+        } else {
+            goToNextDataStep(data);
+        }
+    };
+
     return (
-        <SafeAreaView className="flex-1 bg-primary">
-            <StatusBar backgroundColor={Colors.primary} barStyle="light-content" />
+        <SafeAreaView className="flex-1 bg-bg">
+            <StatusBar backgroundColor={Colors.bg} barStyle="light-content" />
 
             <BackHeader
                 backButtonColor="secondary"
@@ -137,7 +169,12 @@ const CompleteProfile = () => {
                 }}
             />
 
-            <ProgressBar percentage={(step / maxStep) * 100} />
+            <View className="px-5">
+                <CustomText color="muted" size="small" boldness="semiBold" classes="mb-2">
+                    {t('auth.sign_up.step_counter', { current: currentStepNumber, total: totalSteps })}
+                </CustomText>
+                <ProgressBar percentage={(currentStepNumber / totalSteps) * 100} />
+            </View>
 
             <View className="flex-1">
                 {step === VerifySteps.atUser && <AtUserStep onNext={(data: VendorDataInterface) => handleNextStep(data)} />}
@@ -155,6 +192,12 @@ const CompleteProfile = () => {
                     <View className="flex-1 p-5">
                         <EmailConfirmation onNext={(data: VendorDataInterface) => handleNextStep(data)} />
                     </View>
+                )}
+                {step === VerifySteps.documents && (
+                    <DocumentsProfileStep onNext={() => { setDocsStepDone(true); setStep(VerifySteps.permissions); }} />
+                )}
+                {step === VerifySteps.permissions && (
+                    <PermissionsStep onNext={() => { setPermissionsStepDone(true); goToNextDataStep(vendorData as VendorDataInterface); }} />
                 )}
             </View>
         </SafeAreaView>

@@ -1,14 +1,10 @@
 import { CustomText } from '@/components/CustomText'
-import CustomTextInput from '@/components/CustomTextInput'
-import DatePicker from '@/components/DatePicker'
-import { ThemedText } from '@/components/ThemedText'
 import { Colors } from '@/constants/Colors'
 import React, { useState } from 'react'
 import { Control, Controller, FieldErrors, FieldValues, useForm, UseFormHandleSubmit } from 'react-hook-form'
-import { TextInput, View } from 'react-native'
+import { View } from 'react-native';
 import { ScrollView } from 'react-native'
 import { useWindowDimensions } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
 import { useTranslation } from "react-i18next"
 
 const InstructionsStep = () => {

@@ -1,13 +1,9 @@
-import { ThemedText } from '@/components/ThemedText'
+import { CustomText } from "@/components/CustomText"
 import { Colors } from '@/constants/Colors'
-import { Entypo, FontAwesome6, MaterialCommunityIcons } from '@expo/vector-icons'
+import { FontAwesome6, MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router'
-import { StatusBar } from 'expo-status-bar'
-import React, { useEffect, useState } from 'react'
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Modal, Pressable, ScrollView, TouchableOpacity, View } from 'react-native'
-import TouchOpacity from '@/components/TouchOpacity'
-import BackHeader from '@/components/app/BackHeader'
+import React, { useState } from 'react';
+import { ScrollView, View } from 'react-native';
 import { useApi } from '@/contexts/ApiContext'
 import { API_ROUTES } from '@/constants/ApiRoutes'
 import { useSession } from '@/contexts/SessionContext'
@@ -89,20 +85,20 @@ const EmailConfirmation = ({
               <FontAwesome6 name="check" size={28} color={Colors.primary} />
             </View>
             <View>
-              <ThemedText type="title" color={Colors.secondary} className="text-center">
+              <CustomText size="title" boldness="bold" color="secondary" classes="text-center">
                 {t('session.confirm_email.pending.title')}
-              </ThemedText>
-              <ThemedText type="default" color={Colors.gray_medium} className="mt-2 text-center">
+              </CustomText>
+              <CustomText size="medium" boldness="regular" color="gray_medium" classes="mt-2 text-center">
                 {t('session.confirm_email.pending.subtitle')}
-              </ThemedText>
+              </CustomText>
             </View>
           </View>
           <View>
             <View className="flex items-center mb-4">
                 <MaterialCommunityIcons name="email-outline" size={32} color={Colors.secondary} />
-                <ThemedText type="default" color={Colors.gray_medium} className="text-center mt-2">
+                <CustomText size="medium" boldness="regular" color="gray_medium" classes="text-center mt-2">
                   {t('session.confirm_email.pending.received')}
-                </ThemedText>
+                </CustomText>
             </View>
             <CustomTouchableOpacity
               type="support_primary"
@@ -136,9 +132,9 @@ const EmailConfirmation = ({
               <FontAwesome6 name="check" size={28} color={Colors.primary} />
             </View>
             <View>
-              <ThemedText type="title" color={Colors.secondary} className="text-center">
+              <CustomText size="title" boldness="bold" color="secondary" classes="text-center">
                 {t('session.confirm_email.sent.title')}
-              </ThemedText>
+              </CustomText>
             </View>
           </View>
           <CustomTouchableOpacity
@@ -160,9 +156,9 @@ const EmailConfirmation = ({
               <FontAwesome6 name="check" size={28} color={Colors.primary} />
             </View>
             <View>
-              <ThemedText type="title" color={Colors.secondary} className="text-center">
+              <CustomText size="title" boldness="bold" color="secondary" classes="text-center">
                 {t('session.confirm_email.verified.title')}
-              </ThemedText>
+              </CustomText>
             </View>
           </View>
           <CustomTouchableOpacity
@@ -184,9 +180,9 @@ const EmailConfirmation = ({
               <XIcon color={Colors.primary} />
             </View>
             <View>
-              <ThemedText type="title" color={Colors.secondary} className="text-center">
+              <CustomText size="title" boldness="bold" color="secondary" classes="text-center">
                 {t('session.confirm_email.error.title')}
-              </ThemedText>
+              </CustomText>
             </View>
           </View>
           <CustomTouchableOpacity

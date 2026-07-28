@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
+import { track, AnalyticsEvent } from '@/utils/analytics';
 import { router } from 'expo-router';
-import { KeyboardAvoidingView, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Linking, View } from 'react-native';
 import ProgressBar from "@/components/auth/signup/ProgressBar";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useForm } from 'react-hook-form';
@@ -24,6 +25,33 @@ import { StatusBar } from "react-native";
 import { useDialog } from "@/contexts/DialogContext";
 import { ServiceTypeInterface } from "@/types/services";
 import XIcon from "@/assets/icons/x";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+/**
+ * Rascunho do registo. Guardamos SÓ campos não sensíveis — NUNCA a palavra-passe
+ * nem a sua confirmação — para o técnico não perder tudo se fechar a app.
+ */
+const SIGNUP_DRAFT_KEY = '@piquet_vendor_signup_draft_v1';
+
+type GenderOption = { id: number; name: string };
+
+type SignUpDocument = {
+    id: number | string;
+    file?: { uri: string; name?: string; mimeType?: string };
+};
+
+type SignUpDraft = {
+    name?: string;
+    username?: string;
+    nif?: string;
+    email?: string;
+    phone_number?: string;
+    date_birthday?: string;
+    gender_id?: number;
+    price_rate?: number;
+    services_types?: number[];
+    step?: number;
+};
 
 export type SignUpData = {
     username: string;
@@ -57,8 +85,8 @@ const SignUp = () => {
     const [signUpError, setSignUpError] = useState<string | null>(null);
     const [availableOperationAreas, setAvailableOperationAreas] = useState([]);
     const [selectedServicesTypes, setSelectedServicesTypes] = useState<ServiceTypeInterface['id'][]>([]);
-    const [documents, setDocuments] = useState<[]>([]);
-    const [availableGenders, setAvailableGenders] = useState<[]>([]);
+    const [documents, setDocuments] = useState<SignUpDocument[]>([]);
+    const [availableGenders, setAvailableGenders] = useState<GenderOption[]>([]);
     const maxStep = Object.keys(SignUpSteps).length / 2 - 1;
     const { api } = useApi();
 
@@ -66,7 +94,9 @@ const SignUp = () => {
         getAvailableOperationAreas();
     }, []);
 
-    const { control, handleSubmit, setValue, formState: { errors, isLoading, isValid }, setError } = useForm<SignUpData>({
+    const [draftRestored, setDraftRestored] = useState(false);
+
+    const { control, handleSubmit, setValue, getValues, watch, formState: { errors, isLoading, isValid }, setError } = useForm<SignUpData>({
         mode: 'onChange',
         defaultValues: {
             username: '',
@@ -82,6 +112,78 @@ const SignUp = () => {
             price_rate: 11,
         }
     });
+
+    // Restaurar rascunho ao abrir.
+    useEffect(() => {
+        let cancelled = false;
+        AsyncStorage.getItem(SIGNUP_DRAFT_KEY)
+            .then((raw) => {
+                if (cancelled || !raw) return;
+                const draft: SignUpDraft = JSON.parse(raw);
+                if (draft.name) setValue('name', draft.name);
+                if (draft.username) setValue('username', draft.username);
+                if (draft.nif) setValue('nif', draft.nif);
+                if (draft.email) setValue('email', draft.email);
+                if (draft.phone_number) setValue('phone_number', draft.phone_number);
+                if (draft.date_birthday) setValue('date_birthday', new Date(draft.date_birthday));
+                if (typeof draft.gender_id === 'number') setValue('gender_id', draft.gender_id);
+                if (typeof draft.price_rate === 'number') setValue('price_rate', draft.price_rate);
+                if (Array.isArray(draft.services_types)) setSelectedServicesTypes(draft.services_types);
+                if (typeof draft.step === 'number') {
+                    // Nunca retomar no passo da palavra-passe: esses campos não são guardados.
+                    setStep(Math.min(Math.max(draft.step, SignUpSteps.personalInformation), SignUpSteps.pricePerHour));
+                }
+            })
+            .catch(() => {})
+            .finally(() => { if (!cancelled) setDraftRestored(true); });
+        return () => { cancelled = true; };
+    }, []);
+
+    // Guardar rascunho a cada alteração (nunca password/password_confirmation).
+    useEffect(() => {
+        if (!draftRestored) return;
+        const subscription = watch((values) => {
+            const draft: SignUpDraft = {
+                name: values.name,
+                username: values.username,
+                nif: values.nif,
+                email: values.email,
+                phone_number: values.phone_number,
+                date_birthday: values.date_birthday instanceof Date
+                    ? values.date_birthday.toISOString()
+                    : undefined,
+                gender_id: values.gender_id,
+                price_rate: values.price_rate,
+                services_types: selectedServicesTypes,
+                step,
+            };
+            AsyncStorage.setItem(SIGNUP_DRAFT_KEY, JSON.stringify(draft)).catch(() => {});
+        });
+        return () => subscription.unsubscribe();
+    }, [draftRestored, watch, selectedServicesTypes, step]);
+
+    // Guardar também quando muda o passo ou as competências (sem esperar por um input).
+    useEffect(() => {
+        if (!draftRestored) return;
+        const values = getValues();
+        const draft: SignUpDraft = {
+            name: values.name,
+            username: values.username,
+            nif: values.nif,
+            email: values.email,
+            phone_number: values.phone_number,
+            date_birthday: values.date_birthday instanceof Date
+                ? values.date_birthday.toISOString()
+                : undefined,
+            gender_id: values.gender_id,
+            price_rate: values.price_rate,
+            services_types: selectedServicesTypes,
+            step,
+        };
+        AsyncStorage.setItem(SIGNUP_DRAFT_KEY, JSON.stringify(draft)).catch(() => {});
+    }, [draftRestored, step, selectedServicesTypes]);
+
+    const clearDraft = () => AsyncStorage.removeItem(SIGNUP_DRAFT_KEY).catch(() => {});
 
     const getAvailableOperationAreas = () => {
         axios.get(API_ROUTES.VENDOR_GET_OPERATION_AREAS, {
@@ -100,7 +202,6 @@ const SignUp = () => {
     }
 
     const handleFinalErrorAndGoToStep = (error: AxiosError<any, any>) => {
-        // console.log(error.response);
         if (error.response?.status === 422) {
             Object.keys(error?.response?.data?.errors ?? {}).forEach((key: any) => {
                 setError(key, {
@@ -141,7 +242,7 @@ const SignUp = () => {
         const formData = new FormData();
 
         Object.entries(data).forEach(([key, value]) => {
-            formData.append(key, value);
+            formData.append(key, value as any);
         })
         documents.forEach((document, index) => {
             if (document.file){
@@ -149,8 +250,8 @@ const SignUp = () => {
                     uri: document.file.uri,
                     name: document.file.name??'Image',
                     type: document.file.mimeType,
-                });
-                formData.append(`documents[${index}][document_id]`, document.id);
+                } as any);
+                formData.append(`documents[${index}][document_id]`, String(document.id));
             }
         })
 
@@ -178,7 +279,14 @@ const SignUp = () => {
                 const { access_token } = response?.data.data;
 
                 if (access_token) {
+                    // Registo concluído: o rascunho já não serve para nada.
+                    await clearDraft();
                     setSession(access_token);
+                    // Ao criar conta, leva já a completar o perfil começando pelos documentos.
+                    setTimeout(() => {
+                        track(AnalyticsEvent.ONBOARDING_STEP_COMPLETED, { step: 'account_created', flow: 'signup' });
+                        router.replace('/(app)/(complete-profile)/CompleteProfile');
+                    }, 0);
                 }
             }
         } catch(error) {
@@ -258,6 +366,8 @@ const SignUp = () => {
         if (step === maxStep) {
             signUpVendor(data);
         } else {
+            // Passo concluído: só o número do passo, nunca o que o técnico escreveu.
+            track(AnalyticsEvent.ONBOARDING_STEP_COMPLETED, { step, flow: 'signup' });
             setStep(nextStep);
         }
     };
@@ -272,8 +382,8 @@ const SignUp = () => {
     };
 
     return (
-        <SafeAreaView className="flex-1 bg-primary">
-            <StatusBar backgroundColor={Colors.primary} barStyle="light-content" />
+        <SafeAreaView className="flex-1 bg-bg">
+            <StatusBar backgroundColor={Colors.bg} barStyle="light-content" />
             <BackHeader
                 backButtonColor="secondary"
                 middleItem={() => (
@@ -296,7 +406,12 @@ const SignUp = () => {
             />
 
             {step !== SignUpSteps.instructions && (
-                <ProgressBar percentage={(step / maxStep) * 100} />
+                <View className="px-5">
+                    <CustomText color="muted" size="small" boldness="semiBold" classes="mb-2">
+                        {t('auth.sign_up.step_counter', { current: step, total: maxStep })}
+                    </CustomText>
+                    <ProgressBar percentage={(step / maxStep) * 100} />
+                </View>
             )}
 
             <View className="flex-1">
@@ -350,7 +465,7 @@ const SignUp = () => {
                     {signUpError && (
                         <CustomText
                             size="small"
-                            color="error"
+                            color="danger"
                             boldness="medium"
                             className="text-center mb-2"
                         >
@@ -409,8 +524,8 @@ const SignUp = () => {
                             isSigningUp ? t('auth.sign_up.signing_up') :
                             step === maxStep ? t('auth.sign_up.last_step') : t('auth.sign_up.continue_sign_up')
                         }
-                        textColor="primary"
-                        textBoldness="semiBold"
+                        textColor="on_brand"
+                        textBoldness="bold"
                         disabled={isLoading || isVerifyingEmail || isSigningUp}
                         onPress={handleSubmit((data) => handleNextStep(data))}
                     />

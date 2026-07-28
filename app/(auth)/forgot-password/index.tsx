@@ -1,8 +1,8 @@
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { View, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState } from "react";
 import { router } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import { Colors } from "@/constants/Colors";
 import { useApi } from "@/contexts/ApiContext";
 import { API_ROUTES } from "@/constants/ApiRoutes";
@@ -55,7 +55,7 @@ const ForgotPassword = () => {
       } else {
         setError('email', {
           type: 'manual',
-          message: t('errors.occurred_an_error')
+          message: t('errors.reset_password_email.subtitle')
         });
       }
     })
@@ -77,7 +77,7 @@ const ForgotPassword = () => {
         )}
       />
       {emailSent ? (
-        <ScrollView contentContainerStyle={{
+        <KeyboardAwareScrollView contentContainerStyle={{
           flexGrow: 1,
           width: "100%",
           justifyContent: "space-between",
@@ -131,7 +131,7 @@ const ForgotPassword = () => {
               </View>
             </View>
           </View>
-        </ScrollView>
+        </KeyboardAwareScrollView>
       ) : (
         <ScrollView contentContainerStyle={{
           flexGrow: 1,

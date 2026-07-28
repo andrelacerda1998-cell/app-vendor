@@ -1,19 +1,12 @@
-import Checkbox from '@/components/Checkbox'
 import { CustomText } from '@/components/CustomText'
-import DatePicker from '@/components/DatePicker'
 import OperationAreaCard from "@/components/OperationAreaCard"
-import { ThemedText } from '@/components/ThemedText'
-import { API_ROUTES } from "@/constants/ApiRoutes"
 import { Colors } from '@/constants/Colors'
-import { useApi } from "@/contexts/ApiContext"
-import i18n from "@/translation"
 import { OperationArea } from "@/types/services"
-import { Feather, FontAwesome, FontAwesome6 } from '@expo/vector-icons'
-import React, { useEffect, useState } from 'react'
-import { Controller, FieldErrors, FieldValues, set } from 'react-hook-form'
+import { Feather } from '@expo/vector-icons';
+import React from 'react';
+import { FieldErrors, FieldValues } from 'react-hook-form';
 import { useTranslation } from "react-i18next"
-import { FlatList, Pressable, Text, TextInput, TouchableOpacity, View } from 'react-native'
-
+import { FlatList, View } from 'react-native';
 interface ServiceTypeInterface {
   id: number;
   name: string;
@@ -43,7 +36,7 @@ const SkillsSelectionStep = ({
         <CustomText size="title" color="secondary" boldness="bold" numberOfLines={3}>
           {t('auth.sign_up.skills_selection.title')}
         </CustomText>
-        <CustomText color="gray_medium" numberOfLines={3} classes="mt-2">
+        <CustomText color="muted" numberOfLines={3} classes="mt-2">
           {t('auth.sign_up.skills_selection.subtitle')}
         </CustomText>
       </View>
@@ -55,7 +48,7 @@ const SkillsSelectionStep = ({
         renderItem={({ item }) => (
           <OperationAreaCard
             key={item.id}
-            Icon={() => <Feather name="tool" size={32} color={Colors.support_primary} />}
+            Icon={() => <Feather name="tool" size={18} color={Colors.brand} />}
             label={item.name}
             onServiceTypePress={toggleServiceType}
             servicesTypes={item.services_types}
@@ -63,7 +56,7 @@ const SkillsSelectionStep = ({
           />
         )}
         ListEmptyComponent={
-          <CustomText color="gray_medium" numberOfLines={3} classes="mt-2">
+          <CustomText color="muted" numberOfLines={3} classes="mt-2">
             {t('auth.sign_up.skills_selection.no_skills_found')}
           </CustomText>
         }

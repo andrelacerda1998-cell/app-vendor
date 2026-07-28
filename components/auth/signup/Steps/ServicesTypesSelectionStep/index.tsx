@@ -1,16 +1,13 @@
-import Checkbox from '@/components/Checkbox'
 import { CustomText } from '@/components/CustomText'
 import CustomTouchableOpacity from "@/components/CustomTouchableOpacity"
 import { API_ROUTES } from "@/constants/ApiRoutes"
-import { Colors } from "@/constants/Colors"
 import { useApi } from "@/contexts/ApiContext"
 import i18n from "@/translation"
 import { OperationArea } from "@/types/services"
-import { Entypo } from "@expo/vector-icons"
-import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { Controller, FieldErrors, FieldValues, set } from 'react-hook-form'
+import React, { useEffect, useMemo, useState } from 'react';
+import { FieldErrors, FieldValues } from 'react-hook-form';
 import { useTranslation } from "react-i18next"
-import { FlatList, Pressable, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { FlatList, View } from 'react-native';
 import ServiceTypeItemSelector from "@/components/services/ServiceTypeItemSelector"
 
 interface ServiceTypeInterface {
@@ -68,9 +65,7 @@ const ServicesTypesSelectionStep = ({
           'Accept-Language': i18n.language === 'pt_PT' ? 'pt-pt' : 'en',
         }
       });
-      // console.log({res}, 'res over here from services types')
       const services = res.data.data.services;
-      // console.log({services})
       setServicesTypes(res.data.data.services || []);
     } catch (error) {
       console.error('Error fetching documents:', error);
@@ -156,7 +151,6 @@ const ServicesTypesSelectionStep = ({
                 item={item}
                 isSelected={isSelected}
                 addServiceType={addServiceType}
-                t={t}
               />
             )
           }}

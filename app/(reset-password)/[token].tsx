@@ -10,13 +10,13 @@ import { useApi } from "@/contexts/ApiContext"
 import { useDialog } from "@/contexts/DialogContext"
 import { useSession } from "@/contexts/SessionContext"
 import { commonPasswords } from "@/utils"
-import { Feather, FontAwesome6 } from '@expo/vector-icons'
+import { Feather } from '@expo/vector-icons';
 import axios from "axios"
 import { router, useLocalSearchParams } from "expo-router"
 import React, { useEffect, useState } from 'react'
-import { Control, Controller, FieldErrors, FieldValues, set, useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from "react-i18next"
-import { Pressable, TextInput, TouchableWithoutFeedback, View } from 'react-native'
+import { TouchableWithoutFeedback, View } from 'react-native';
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller"
 import { SafeAreaView } from "react-native-safe-area-context"
 
@@ -187,6 +187,9 @@ const ResetPassword = () => {
                     <View className="w-12 h-full items-center justify-center">
                       <TouchableWithoutFeedback
                         onPress={() => setShowPassword(prev => !prev)}
+                          accessibilityRole="button"
+                          accessibilityLabel={t('general.toggle_password_visibility')}
+                          accessibilityState={{ expanded: showPassword }}
                       >
                         <View className="w-full h-full items-center justify-center">
                           <Feather name={showPassword ? 'eye' : 'eye-off'} size={24} color={Colors.secondary} />

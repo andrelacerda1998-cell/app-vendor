@@ -1,7 +1,6 @@
 import { Text, View } from 'react-native';
 import { Redirect, SplashScreen, Stack } from 'expo-router';
 import { useSession } from '@/contexts/SessionContext';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function AppLayout() {
     const { session, isLoading } = useSession();

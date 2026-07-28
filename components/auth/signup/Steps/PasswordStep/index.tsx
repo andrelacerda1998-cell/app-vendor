@@ -2,14 +2,11 @@ import CheckMark from '@/assets/icons/check-mark'
 import XIcon from '@/assets/icons/x'
 import { CustomText } from '@/components/CustomText'
 import CustomTextInput from '@/components/CustomTextInput'
-import DatePicker from '@/components/DatePicker'
-import { ThemedText } from '@/components/ThemedText'
 import { Colors } from '@/constants/Colors'
-import { Feather, FontAwesome6 } from '@expo/vector-icons'
+import { Feather } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react'
-import { Control, Controller, FieldErrors, FieldValues, set } from 'react-hook-form'
-import { Pressable, TextInput, TouchableWithoutFeedback, View } from 'react-native'
-import { ScrollView } from 'react-native'
+import { Controller, FieldErrors, FieldValues } from 'react-hook-form';
+import { TouchableWithoutFeedback, View } from 'react-native';
 import { commonPasswords, offensiveUsernames } from '@/utils'
 import { useTranslation } from "react-i18next"
 
@@ -72,7 +69,7 @@ const PasswordStep = ({
       <CustomText size="title" color="secondary" boldness="bold" numberOfLines={3}>
         {t('auth.sign_up.password_information.title')}
       </CustomText>
-      <CustomText color="gray_medium" numberOfLines={3} classes="mt-2">
+      <CustomText color="muted" numberOfLines={3} classes="mt-2">
         {t('auth.sign_up.password_information.subtitle')}
       </CustomText>
 
@@ -126,7 +123,7 @@ const PasswordStep = ({
         {errors.username && errors.username.message && (
             <CustomText
               size="small"
-              color="error"
+              color="danger"
               classes="mt-1"
             >
               {errors.username.message as string}
@@ -168,6 +165,9 @@ const PasswordStep = ({
                     <View className="w-12 h-full items-center justify-center">
                       <TouchableWithoutFeedback
                         onPress={() => setShowPassword(prev => !prev)}
+                          accessibilityRole="button"
+                          accessibilityLabel={t('general.toggle_password_visibility')}
+                          accessibilityState={{ expanded: showPassword }}
                       >
                         <View className="w-full h-full items-center justify-center">
                           <Feather name={showPassword ? 'eye' : 'eye-off'} size={24} color={Colors.secondary} />
@@ -179,7 +179,7 @@ const PasswordStep = ({
               {errors.password && errors.password.message && (
                 <CustomText
                   size="small"
-                  color="error"
+                  color="danger"
                   classes="mt-1"
                 >
                   {errors.password.message as string}
@@ -241,7 +241,7 @@ const PasswordStep = ({
                   </View>
                 )
               }
-              <CustomText color="gray_medium" size="small" numberOfLines={2}>
+              <CustomText color="muted" size="small" numberOfLines={2}>
                 {wrongPassword[key as keyof typeof wrongPassword]}
               </CustomText>
             </View>

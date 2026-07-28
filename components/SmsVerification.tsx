@@ -1,13 +1,8 @@
-import { ThemedText } from '@/components/ThemedText'
 import { Colors } from '@/constants/Colors'
-import { Entypo, FontAwesome6, MaterialCommunityIcons } from '@expo/vector-icons'
+import { FontAwesome6 } from '@expo/vector-icons';
 import { router } from 'expo-router'
-import { StatusBar } from 'expo-status-bar'
 import { useEffect, useState } from 'react'
-import { SafeAreaView } from "react-native-safe-area-context";
-import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native'
-import TouchOpacity from '@/components/TouchOpacity'
-import BackHeader from '@/components/app/BackHeader'
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { useApi } from '@/contexts/ApiContext'
 import { API_ROUTES } from '@/constants/ApiRoutes'
 import { useSession } from '@/contexts/SessionContext'
@@ -339,9 +334,9 @@ const SmsVerification = ({
                 <FontAwesome6 name="check" size={28} color={Colors.primary} />
               </View>
               <View>
-                <ThemedText type="title" color={Colors.secondary} className="text-center">
+                <CustomText size="title" boldness="bold" color="secondary" classes="text-center">
                   {t('session.sms.verified.title')}
-                </ThemedText>
+                </CustomText>
               </View>
             </View>
             <CustomTouchableOpacity
@@ -363,9 +358,9 @@ const SmsVerification = ({
                 <XIcon color={Colors.primary} />
               </View>
               <View>
-                <ThemedText type="title" color={Colors.secondary} className="text-center">
+                <CustomText size="title" boldness="bold" color="secondary" classes="text-center">
                   {t('session.sms.error.title')}
-                </ThemedText>
+                </CustomText>
               </View>
             </View>
             <CustomTouchableOpacity
