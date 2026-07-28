@@ -1,197 +1,246 @@
-import XIcon from "@/assets/icons/x"
-import { CustomText } from "@/components/CustomText"
-import CustomTouchableOpacity from "@/components/CustomTouchableOpacity"
-import DynamicSizingSheet from "@/components/sheets/DynamicSizingSheet"
-import { API_ROUTES } from "@/constants/ApiRoutes"
-import { Colors } from "@/constants/Colors"
-import { useApi } from "@/contexts/ApiContext"
-import { useDialog } from "@/contexts/DialogContext"
-import { PaymentHistoryInterface } from "@/types/wallet"
-import { renderMoney } from "@/utils/money"
-import { Entypo, MaterialIcons } from "@expo/vector-icons"
-import { router, useFocusEffect } from "expo-router"
-import React, { useCallback, useState } from 'react'
-import { useTranslation } from "react-i18next"
-import { FlatList, Image, TouchableOpacity, View, Platform } from 'react-native'
-import { SafeAreaView } from "react-native-safe-area-context"
+/**
+ * AGENDA — fita de semana + serviços agendados agrupados por dia.
+ * (A rota chama-se "wallet" por legado; o separador é a Agenda.)
+ */
+import React, { useMemo, useState } from 'react';
+import { View, ScrollView, RefreshControl, TouchableOpacity, Platform } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
+import { Feather } from '@expo/vector-icons';
+import { CustomText } from '@/components/CustomText';
+import { Colors } from '@/constants/Colors';
+import { useSchedule } from '@/contexts/ScheduleContext';
+import { useSession } from '@/contexts/SessionContext';
+import { renderMoney } from '@/utils/money';
+import { Card, IconTile, EmptyState, ErrorState, SkeletonList } from '@/components/ui';
+import { useIsOnline } from '@/hooks/useIsOnline';
 
-const Wallet = () => {
-  const { t } = useTranslation()
-  const { api } = useApi()
-  const { openDialog } = useDialog()
-  const [transactions, setTransactions] = useState<PaymentHistoryInterface[]>([])
-  const [loadingTransactions, setLoadingTransactions] = useState(true)
-  const [haveMoreTransactions, setHaveMoreTransactions] = useState(true)
+const DAY_MS = 24 * 60 * 60 * 1000;
+const WEEKDAY_LETTERS = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
 
-  useFocusEffect(
-    useCallback(() => {
-      getPaymentsHistory(0)
-    }, [])
-  )
+const parseDay = (value?: string) => {
+  if (!value) return null;
+  const iso = String(value).split('T')[0];
+  const [y, m, d] = iso.split('-').map(Number);
+  if (!y || !m || !d) return null;
+  return new Date(y, m - 1, d);
+};
 
-  const getPaymentsHistory = async (offset?: number) => {
+const keyOf = (d: Date) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
-    // setPayments(response.data.data)
+const hhmm = (t?: string) => (t ? String(t).slice(0, 5) : '');
 
-    // console.log({res}, 'payments history')
+const Agenda = () => {
+  const { t } = useTranslation();
+  const {
+    scheduledServicesData,
+    getScheduledServices,
+    scheduledServicesLoading,
+    scheduledServicesFailed,
+  } = useSchedule();
+  const { vendorData } = useSession();
+  const isOnline = useIsOnline();
+  const [refreshing, setRefreshing] = useState(false);
+  const [selectedDay, setSelectedDay] = useState<string | null>(null);
 
-    if (!loadingTransactions) setLoadingTransactions(true)
+  const onRefresh = async () => {
+    if (!vendorData) return;
+    setRefreshing(true);
+    try { await getScheduledServices(vendorData); } finally { setRefreshing(false); }
+  };
 
-    try {
-      const { data } = await api.post(API_ROUTES.POST_PAYMENTS_HISTORY, {
-        offset: offset ?? transactions.length
-      })
+  const retry = () => {
+    if (!vendorData) return;
+    getScheduledServices(vendorData);
+  };
 
-      setHaveMoreTransactions(!!data.data.have_more)
+  const today = useMemo(() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; }, []);
 
-      setTransactions(data.data.transactions)
+  // Próximos 7 dias para a fita de semana
+  const weekDays = useMemo(
+    () => Array.from({ length: 7 }, (_, i) => new Date(today.getTime() + i * DAY_MS)),
+    [today]
+  );
 
-    } catch(e) {
-      openDialog({
-        icon: <XIcon color={Colors.primary}/>,
-        title: t('errors.title'),
-        subtitle: t('errors.occurred_an_error'),
-        closeAfterMSeconds: 2000,
-        closeOnClickOutside: true,
-      })
-      // console.log({e}, 'error getting payments history')
-    } finally {
-      setLoadingTransactions(false)
-    }
-
-  }
-
-  const renderDate = (date: string) => {
-    const parsedDate = new Date(date)
-    const month = parsedDate.toLocaleString('default', { month: 'short' });
-    return `${parsedDate.getDate()} ${month} ${parsedDate.getFullYear()}`
-  }
-
-  const handlePress = (item: PaymentHistoryInterface) => {
-    router.navigate({
-      pathname: '/(app)/(bottom-sheets)/(wallet)/history',
-      params: { history: JSON.stringify(item) }
+  // Agrupa por dia (janela de 7 dias)
+  const groups = useMemo(() => {
+    const limit = new Date(today.getTime() + 7 * DAY_MS);
+    const map: Record<string, any[]> = {};
+    (scheduledServicesData ?? []).forEach((s: any) => {
+      const day = parseDay(s?.schedule?.scheduled_day);
+      if (!day || day < today || day >= limit) return;
+      (map[keyOf(day)] = map[keyOf(day)] || []).push(s);
     });
-  }
+    Object.values(map).forEach((items) =>
+      items.sort((a, b) =>
+        hhmm(a?.schedule?.scheduled_time?.start).localeCompare(hhmm(b?.schedule?.scheduled_time?.start))
+      )
+    );
+    return map;
+  }, [scheduledServicesData, today]);
 
-  const getMoneyColor = (type: 'deposit' | 'withdraw') => {
-    if (type === 'deposit') {
-      return 'success';
-    } else if (type === 'withdraw') {
-      return 'error';
-    }
-    return 'success'; // Default color
-  }
+  const dayTotal = (items: any[]) =>
+    items.reduce((s: number, i: any) => s + (Number(i?.amount_for_vendor) || 0), 0);
+
+  const visibleKeys = (selectedDay ? [selectedDay] : Object.keys(groups)).sort();
+
+  const dayTitle = (date: Date) => {
+    const diff = Math.round((date.getTime() - today.getTime()) / DAY_MS);
+    const label = date.toLocaleDateString('pt-PT', { day: 'numeric', month: 'short' });
+    if (diff === 0) return `${t('schedules.date_label.today')}, ${label}`;
+    if (diff === 1) return `${t('schedules.date_label.tomorrow')}, ${label}`;
+    return date.toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'short' });
+  };
+
+  const statusUi = (item: any) => {
+    const st = item?.status;
+    if (item?.on_the_way_at) return { label: t('services.service.status.steps.on_the_way'), color: Colors.destination };
+    if (st === 'Arrived') return { label: t('services.service.status.steps.in_progress'), color: Colors.destination };
+    return { label: t('agenda.scheduled'), color: Colors.destination };
+  };
 
   return (
-    <SafeAreaView className={`h-full bg-strongest ${Platform.OS === 'android' ? 'pb-[100px]' : 'pb-[50px]'}`}>
-      {loadingTransactions && transactions.length === 0
-        ? (
-          <View className="flex-1 p-5">
-            {Array.from({ length: 12 }).map((_, index) => (
-              <View key={`skeleton-item-${index}`}>
-                <View className="flex flex-row items-center space-x-4 bg-primary p-3 rounded-md">
-                  <View className="rounded-full overflow-hidden w-12 h-12">
-                    <View className="w-full h-full bg-gray_strong"></View>
-                  </View>
+    <SafeAreaView className={`flex-1 bg-bg ${Platform.OS === 'android' ? 'pb-[90px]' : 'pb-[70px]'}`}>
+      <View className="px-5 pt-4 pb-3">
+        <CustomText size="subtitle" color="secondary" boldness="bolder">
+          {t('tabs.agenda')}
+        </CustomText>
+      </View>
 
-                  <View className="flex-1 space-y-2">
-                    <View className="rounded-xl overflow-hidden">
-                      <View className="w-full h-4 bg-gray_strong"></View>
-                    </View>
-                    <View className="rounded-xl overflow-hidden">
-                      <View className="w-full h-4 bg-gray_strong"></View>
-                    </View>
-                  </View>
-
-                  <View className="items-center space-y-2">
-                    <View className="w-12 h-5 rounded-md bg-gray_strong"></View>
-                    <View className="w-10 h-4 rounded-full bg-gray_strong"></View>
-                  </View>
-
-                </View>
-                <View className="h-[1px] mx-auto w-full bg-gray_strong my-4" />
-              </View>
-            ))}
-          </View>
-        ) : (
-          <FlatList
-            data={transactions}
-            keyExtractor={(_, index) => index.toString()}
-            style={{ paddingHorizontal: 20 }}
-            showsVerticalScrollIndicator={false}
-            className={"h-full"}
-            // ItemSeparatorComponent={() => <View className="h-4 mx-auto w-full" />}
-            renderItem={({ item }) => (
-
+      {/* Fita de semana */}
+      <View className="px-5 pb-4">
+        <View className="flex-row" style={{ gap: 8 }}>
+          {weekDays.map((d) => {
+            const k = keyOf(d);
+            const hasItems = (groups[k]?.length ?? 0) > 0;
+            const isSelected = selectedDay === k;
+            return (
               <TouchableOpacity
-                className="bg-primary rounded-md flex flex-row space-x-4 px-6 py-2 items-center my-2"
-                // onPress={() => {
-                //   router.push('/(app)/(bottom-sheets)/areas');
-                // }}
-                onPress={() => handlePress(item)}
+                key={k}
+                activeOpacity={0.8}
+                onPress={() => setSelectedDay(isSelected ? null : k)}
+                className="flex-1 items-center rounded-2xl border py-2.5"
+                style={{
+                  borderColor: isSelected ? Colors.brand : Colors.line,
+                  backgroundColor: isSelected ? 'rgba(250,187,91,0.12)' : Colors.card,
+                }}
               >
-                <View className="relative bg-secondary flex items-center justify-center h-10 w-10 mx-auto rounded-full overflow-hidden">
-                  <MaterialIcons name="attach-money" size={24} color={Colors.strongest} />
-                </View>
-
-                <View className="flex-1">
-                  <CustomText color="secondary" size="medium" boldness="semiBold" numberOfLines={2}>
-                    {item.service.description}
-                  </CustomText>
-                  <CustomText color="secondary" size="medium" boldness="light">
-                    {renderDate(item.created_at)}
-                  </CustomText>
-                </View>
-
-                <View className="items-end w-fit max-w-2">
-                  <CustomText color={getMoneyColor(item.type as 'deposit' | 'withdraw')} size="medium" boldness="semiBold">
-                    {renderMoney(item.amount)}
-                  </CustomText>
-                  <CustomText color="secondary" size="medium" boldness="light">
-                    {item.type}
-                  </CustomText>
-
-                </View>
-
-              </TouchableOpacity>
-
-            )}
-            ListEmptyComponent={() => (
-              <View className="py-8">
-                <CustomText
-                  size="medium"
-                  color="secondary"
-                  boldness="semiBold"
-                  classes="text-center"
-                >
-                  {t('payments.no_payments_found')}
+                <CustomText size="extraSmall" color="muted">
+                  {WEEKDAY_LETTERS[d.getDay()]}
                 </CustomText>
-              </View>
-            )}
-            ListFooterComponent={() => {
-              if (haveMoreTransactions) {
-                return (
-                  <View className="mt-2 py-2">
-                    <CustomTouchableOpacity
-                      size="large"
-                      type="secondary"
-                      text={t('payments.load_more')}
-                      textBoldness="semiBold"
-                      textColor="primary"
-                      onPress={() => getPaymentsHistory()}
-                    />
-                  </View>
-                )
-              } else {
-                return undefined
-              }
-            }}
-          />
-        )
-      }
-    </SafeAreaView>
-  )
-}
+                <CustomText size="medium" color="secondary" boldness="bolder" classes="mt-0.5">
+                  {d.getDate()}
+                </CustomText>
+                <View
+                  className="rounded-full mt-1"
+                  style={{
+                    width: 5, height: 5,
+                    backgroundColor: hasItems ? Colors.brand : 'transparent',
+                  }}
+                />
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      </View>
 
-export default Wallet
+      <ScrollView
+        className="flex-1 px-5"
+        contentContainerStyle={{ paddingBottom: 32 }}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.brand} />}
+      >
+        {/* Ordem importa: a carregar e o erro vêm ANTES do vazio, senão uma
+            falha de rede lê-se como "não tens nada marcado". */}
+        {scheduledServicesLoading && (scheduledServicesData?.length ?? 0) === 0 ? (
+          <SkeletonList rows={3} />
+        ) : scheduledServicesFailed && (scheduledServicesData?.length ?? 0) === 0 ? (
+          <ErrorState
+            icon={isOnline ? 'alert-circle' : 'wifi-off'}
+            title={t('agenda.error_title')}
+            subtitle={isOnline ? t('agenda.error_subtitle') : t('general.offline_subtitle')}
+            onRetry={retry}
+          />
+        ) : visibleKeys.filter((k) => groups[k]?.length).length === 0 ? (
+          <EmptyState
+            icon="calendar"
+            title={selectedDay ? t('agenda.free_day_title') : t('agenda.empty_title')}
+            subtitle={selectedDay ? t('agenda.free_day') : t('agenda.empty')}
+          />
+        ) : (
+          visibleKeys.map((k) => {
+            const items = groups[k];
+            if (!items?.length) return null;
+            const date = parseDay(k)!;
+            return (
+              <View key={k} className="mb-6">
+                {/* Cabeçalho do dia + total */}
+                <View className="flex-row items-center justify-between mb-3">
+                  <CustomText size="medium" color="secondary" boldness="bold">
+                    {dayTitle(date)}
+                  </CustomText>
+                  <CustomText size="medium" color="brand" boldness="bolder">
+                    {renderMoney(dayTotal(items)) || '0,00 €'}
+                  </CustomText>
+                </View>
+
+                <View style={{ gap: 10 }}>
+                  {items.map((item: any, i: number) => {
+                    const start = hhmm(item?.schedule?.scheduled_time?.start);
+                    const price = renderMoney(item?.amount_for_vendor ?? null);
+                    const ui = statusUi(item);
+                    const meta = [
+                      `${dayTitle(date).split(',')[0]}${start ? `, ${start}` : ''}`,
+                      item?.customer?.address,
+                    ].filter(Boolean).join(' · ');
+
+                    return (
+                      <TouchableOpacity
+                        key={`${k}-${i}`}
+                        activeOpacity={0.85}
+                        onPress={() => router.push('/(app)/(bottom-sheets)/(services)/schedules/all')}
+                      >
+                        <Card className="flex-row items-center">
+                          <IconTile size={52}>
+                            <Feather name="tool" size={22} color={Colors.brand} />
+                          </IconTile>
+
+                          <View className="flex-1 ml-3">
+                            <CustomText color="secondary" boldness="bold" size="medium" numberOfLines={2}>
+                              {item?.service_type?.name ?? '—'}
+                            </CustomText>
+                            <CustomText color="muted" size="small" numberOfLines={1} classes="mt-0.5">
+                              {meta}
+                            </CustomText>
+                            <View
+                              className="self-start rounded-full px-3 py-1 mt-2"
+                              style={{ backgroundColor: `${ui.color}22` }}
+                            >
+                              <CustomText size="extraSmall" boldness="bold" color="secondary" style={{ color: ui.color }}>
+                                {ui.label}
+                              </CustomText>
+                            </View>
+                          </View>
+
+                          <View className="items-end ml-2">
+                            {price ? (
+                              <CustomText color="secondary" boldness="bolder" size="medium">{price}</CustomText>
+                            ) : null}
+                            <Feather name="chevron-right" size={18} color={Colors.muted} style={{ marginTop: 6 }} />
+                          </View>
+                        </Card>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
+              </View>
+            );
+          })
+        )}
+      </ScrollView>
+    </SafeAreaView>
+  );
+};
+
+export default Agenda;
