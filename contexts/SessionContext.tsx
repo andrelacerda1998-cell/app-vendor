@@ -82,8 +82,8 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({ children })
             .catch(error => {
                 openDialog({
                     icon: <XIcon color={Colors.primary} />,
-                    title: t('errors.title'),
-                    subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('errors.occurred_an_error'),
+                    title: t('errors.genders_load.title'),
+                    subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('errors.genders_load.subtitle'),
                     closeAfterMSeconds: 2000,
                     closeOnClickOutside: true,
                 })
@@ -150,7 +150,6 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({ children })
                 Authorization: `Bearer ${session}`
             }
         }).then((response) => {
-            // console.log(response.data.data, 'auth me response')
 
             setVendorData(response.data.data);
             // const language = response.data.data.language || response.data.data.user.language;
@@ -161,8 +160,15 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({ children })
             // }
         }).catch((error) => {
             // Log sanitizado: só status + mensagem, sem despejar o corpo da resposta.
-            console.error('fetchAndSaveUserData failed', error?.response?.status, error?.response?.data?.message ?? error?.message);
-            signOut();
+            const status = error?.response?.status;
+            console.error('fetchAndSaveUserData failed', status, error?.response?.data?.message ?? error?.message);
+
+            // Só terminamos a sessão quando o servidor a rejeita mesmo (401/403).
+            // Antes qualquer falha — timeout, 500, rede fraca — expulsava o técnico
+            // para o ecrã de login a meio do trabalho, sem explicação nenhuma.
+            if (status === 401 || status === 403) {
+                signOut();
+            }
         })
     }
 

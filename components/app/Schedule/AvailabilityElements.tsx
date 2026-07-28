@@ -5,7 +5,7 @@ import {
   Text,
   TouchableOpacity,
 } from "react-native";
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import Availability from "@/app/(app)/(modals)/schedules/Availability";
 import { WeekdayConfig } from "@/types/schedule";
 import { useSchedule } from "@/contexts/ScheduleContext";
@@ -13,8 +13,11 @@ import {API_ROUTES} from "@/constants/ApiRoutes";
 import {useApi} from "@/contexts/ApiContext";
 import { useDebouncedCallback } from "use-debounce";
 import {useSession} from "@/contexts/SessionContext";
+import { Colors } from "@/constants/Colors";
+import { useTranslation } from "react-i18next";
 
 const AvailabilityElements = () => {
+  const { t } = useTranslation();
   const styles = createStyles();
   const { weekdays, setWeekdays, getScheduleSettings } = useSchedule();
   const { vendorData } = useSession();
@@ -30,11 +33,19 @@ const AvailabilityElements = () => {
     getScheduleSettings();
   }, [vendorData]);
 
+  // Só gravar quando o TÉCNICO mexe. Antes este efeito também corria quando o
+  // getScheduleSettings preenchia os dias, ou seja: abrir o ecrã escrevia sempre
+  // no servidor. Com recargas seguidas isso chegava a apanhar 429 (Too Many
+  // Requests) e a deixar a disponibilidade por gravar.
+  const dirtyRef = useRef(false);
+
   useEffect(() => {
+    if (!dirtyRef.current) return;
     debouncedSave();
   }, [weekdays, debouncedSave]);
 
   const toggleWeekday = (weekdayKey: string) => {
+    dirtyRef.current = true;
     setWeekdays((prev: WeekdayConfig[]) => prev.map((day) => (day.key === weekdayKey ? { ...day, enabled: !day.enabled } : day)));
   };
 
@@ -56,30 +67,36 @@ const AvailabilityElements = () => {
 
   return (
     <View>
-      <View style={styles.weekdaysContainer}>
-        {weekdays.map((d) => (
-          <View key={d.key} style={styles.weekRow}>
-            <View style={styles.weekLeft}>
+      <View>
+        {weekdays.map((d, i) => (
+          <View key={d.key}>
+            {i > 0 && <View style={styles.separator} />}
+            <View style={styles.weekRow}>
+              {/* Nome do dia primeiro: é por ele que se procura na lista. */}
+              <Text style={[styles.weekLabel, !d.enabled && styles.weekLabelDisabled]} numberOfLines={1}>
+                {d.label}
+              </Text>
+
+              {d.enabled ? (
+                <TouchableOpacity
+                  style={styles.timePill}
+                  onPress={() => setWeekdayEditor(d)}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.timePillText}>{`${d.start} – ${d.end}`}</Text>
+                </TouchableOpacity>
+              ) : (
+                <Text style={styles.closedText}>{t('schedules.day_off')}</Text>
+              )}
+
               <Switch
                 value={d.enabled}
-                onValueChange={() => {
-                  toggleWeekday(d.key)
-                }}
-                thumbColor={d.enabled ? "#F8C06D" : "#404040"}
-                trackColor={{ true: "#5a4527", false: "#2a2a2a" }}
+                onValueChange={() => toggleWeekday(d.key)}
+                thumbColor={Colors.secondary}
+                trackColor={{ false: Colors.card_high, true: Colors.brand }}
+                style={styles.switch}
               />
-              <Text style={[styles.weekLabel, !d.enabled && styles.weekLabelDisabled]}>{d.label}</Text>
             </View>
-            <TouchableOpacity
-              style={[styles.timePill, !d.enabled && styles.timePillDisabled]}
-              disabled={!d.enabled}
-              onPress={() => {
-                setWeekdayEditor(d)
-              }}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.timePillText}>{`${d.start} - ${d.end}`}</Text>
-            </TouchableOpacity>
           </View>
         ))}
       </View>
@@ -90,6 +107,7 @@ const AvailabilityElements = () => {
         }}
         onSave={(data) => {
           if (!weekdayEditor) return;
+          dirtyRef.current = true;
           setWeekdays((prev) => prev.map((x) => (x.key === weekdayEditor.key ? { ...x, start: data.start, end: data.end } : x)));
           setWeekdayEditor(null);
         }}
@@ -112,44 +130,45 @@ const createStyles = () => StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
   },
-  // Weekday rows (switch + label + time pill)
-  weekdaysContainer: {
-    marginBottom: 16,
-    gap: 12,
-  },
+  // Linhas dos dias: nome · horário · interruptor
   weekRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
+    minHeight: 54,
   },
-  weekLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
+  separator: {
+    height: 1,
+    backgroundColor: Colors.line,
   },
   weekLabel: {
-    color: "#fff",
+    flex: 1,
+    color: Colors.secondary,
+    fontFamily: "Poppins_500Medium",
     fontSize: 15,
-    fontWeight: "600",
   },
   weekLabelDisabled: {
-    color: "#8a8a8a",
+    color: Colors.muted,
   },
   timePill: {
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 999,
     borderWidth: 1,
-    borderColor: "#3a3a3a",
-    backgroundColor: "#1a1a1a",
-  },
-  timePillDisabled: {
-    opacity: 0.5,
+    borderColor: "rgba(250,187,91,0.35)",
+    backgroundColor: "rgba(250,187,91,0.12)",
   },
   timePillText: {
-    color: "#cfcfcf",
-    fontSize: 13,
-    fontWeight: "600",
+    color: Colors.brand,
+    fontFamily: "Poppins_600SemiBold",
+    fontSize: 12.5,
+  },
+  closedText: {
+    color: Colors.muted,
+    fontFamily: "Poppins_500Medium",
+    fontSize: 12.5,
+  },
+  switch: {
+    marginLeft: 12,
   },
 })
 
