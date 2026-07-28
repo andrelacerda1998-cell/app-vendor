@@ -73,6 +73,15 @@ interface ScheduleContextProps {
   getScheduledServices: (vendorData: VendorDataInterface) => Promise<ServiceRequestedInterface[] | undefined>;
   getPendingScheduleService: (vendorData: VendorDataInterface) => Promise<ScheduledServiceInterface[] | undefined>;
   getFirstPendingSchedule: () => ScheduledServiceInterface | null;
+  /**
+   * Estado da última ida ao servidor. Existe para a Agenda poder distinguir
+   * "não tens serviços marcados" de "não deu para ir buscar a agenda" — sem
+   * isto, uma falha de rede aparecia como uma agenda vazia.
+   * `getScheduledServices` continua a NÃO rejeitar (há chamadores que ignoram
+   * a promise); quem quiser saber do erro lê estas flags.
+   */
+  scheduledServicesLoading: boolean;
+  scheduledServicesFailed: boolean;
 }
 
 const ScheduleContext = createContext<ScheduleContextProps>({
@@ -94,6 +103,8 @@ const ScheduleContext = createContext<ScheduleContextProps>({
   getScheduledServices: async () => { return []; },
   getPendingScheduleService: async () => { return []; },
   getFirstPendingSchedule: () => null,
+  scheduledServicesLoading: true,
+  scheduledServicesFailed: false,
 })
 
 export const ScheduleProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -105,12 +116,15 @@ export const ScheduleProvider: React.FC<{ children: ReactNode }> = ({ children }
   const [address, setAddress] = useState<AddressData | null>(null);
   const [autoAcceptEnabled, setAutoAcceptEnabled] = useState(false);
   const [pendingScheduleServices, setPendingScheduleServices] = useState<ScheduledServiceInterface[] | []>([]);
+  const [scheduledServicesLoading, setScheduledServicesLoading] = useState(true);
+  const [scheduledServicesFailed, setScheduledServicesFailed] = useState(false);
 
   const getScheduledServices = async (vendorData: VendorDataInterface) => {
     if (!vendorData) {
       return;
     }
 
+    setScheduledServicesLoading(true);
     try {
       const schedulesServices = await api.get(API_ROUTES.VENDOR_GET_SCHEDULES).then((response) => {
         const { data } = response.data;
@@ -141,7 +155,10 @@ export const ScheduleProvider: React.FC<{ children: ReactNode }> = ({ children }
             service_type: {
               id: schedule.service_type.id,
               name: schedule.service_type.name,
+              time: schedule.service_type.time ?? null,
             },
+            address_details: schedule.address_details ?? null,
+            customer_notes: schedule.customer_notes ?? null,
             service_id: schedule.service_id ?? schedule.id,
             schedule_id: schedule.schedule_id,
             created_at: schedule.created_timestamp,
@@ -151,11 +168,15 @@ export const ScheduleProvider: React.FC<{ children: ReactNode }> = ({ children }
       });
 
       setScheduledServicesData(schedulesServices);
+      setScheduledServicesFailed(false);
 
     } catch (error: any) {
       console.error(error);
+      setScheduledServicesFailed(true);
 
       return [];
+    } finally {
+      setScheduledServicesLoading(false);
     }
   };
 
@@ -269,18 +290,9 @@ export const ScheduleProvider: React.FC<{ children: ReactNode }> = ({ children }
   const fetchPendingScheduledService = useCallback((scheduleId: string) => {
     if (!vendorData) return;
 
-    console.log('[ScheduleContext] fetchPendingScheduledService called with scheduleId:', scheduleId);
-    console.log('[ScheduleContext] API URL:', API_ROUTES.VENDOR_GET_SCHEDULED_DETAILS(scheduleId));
 
     api.get(API_ROUTES.VENDOR_GET_SCHEDULED_DETAILS(scheduleId)).then(res => {
-      console.log('[ScheduleContext] API response success for scheduleId:', scheduleId);
       const data = res.data.data;
-      console.log('[ScheduleContext] fetchPendingScheduledService API response:', {
-        scheduleId,
-        service_id: data.service_id,
-        service: data.service,
-        fullData: data,
-      });
 
       // Handle service_type.name as either string or object
       const serviceTypeName = data.service_type?.name;
@@ -347,9 +359,6 @@ export const ScheduleProvider: React.FC<{ children: ReactNode }> = ({ children }
         return [pendingSchedule, ...safePrev];
       });
     }).catch((error) => {
-      console.log('[ScheduleContext] API error for scheduleId:', scheduleId);
-      console.log('[ScheduleContext] API error message:', error.message);
-      console.log('[ScheduleContext] API error response:', error.response?.data);
     });
   }, [api, vendorData]);
 
@@ -385,7 +394,10 @@ export const ScheduleProvider: React.FC<{ children: ReactNode }> = ({ children }
         service_type: {
           id: data.service_type.id,
           name: data.service_type.name,
+          time: data.service_type.time ?? null,
         },
+        address_details: data.address_details ?? null,
+        customer_notes: data.customer_notes ?? null,
         service_id: data.service_id ?? data.id,
         created_at: data.created_timestamp,
         server_time: data.server_time,
@@ -419,8 +431,8 @@ export const ScheduleProvider: React.FC<{ children: ReactNode }> = ({ children }
   useEffect(() => {
     if (!session || !vendorData) return;
 
-    getScheduledServices(vendorData).then(() => console.log('Fetched scheduled services'));
-    getPendingScheduleService(vendorData).then(() => console.log('Fetched pending scheduled service'));
+    getScheduledServices(vendorData);
+    getPendingScheduleService(vendorData);
   }, [session, vendorData]);
 
   return (
@@ -444,6 +456,8 @@ export const ScheduleProvider: React.FC<{ children: ReactNode }> = ({ children }
         getScheduledServices,
         getPendingScheduleService,
         getFirstPendingSchedule,
+        scheduledServicesLoading,
+        scheduledServicesFailed,
       }}
     >
       {children}

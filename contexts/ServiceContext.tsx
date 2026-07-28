@@ -91,6 +91,13 @@ interface ServiceContextProps {
   getOpenService: () => Promise<void>;
   getPendingService: () => Promise<void>;
   getPendingServices: () => void;
+  /**
+   * Estado da última ida buscar os pedidos pendentes. É o ecrã de receita: uma
+   * falha de rede não pode aparecer como "não tens pedidos". Continua a NÃO
+   * rejeitar (há muitos chamadores que ignoram a promise) — lê-se por aqui.
+   */
+  pendingServicesLoading: boolean;
+  pendingServicesFailed: boolean;
   pendingServices: ServiceRequestedInterface[] | [];
   setPendingServices: React.Dispatch<React.SetStateAction<ServiceRequestedInterface[] | []>>;
 
@@ -117,6 +124,8 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
   const [openService, setOpenServiceState] = useState<OpenServiceInterface | null>(null);
   const [pendingService, setPendingService] = useState<ServiceInterface | null>(null);
   const [pendingServices, setPendingServices] = useState<ServiceRequestedInterface[] | []>([]);
+  const [pendingServicesLoading, setPendingServicesLoading] = useState(true);
+  const [pendingServicesFailed, setPendingServicesFailed] = useState(false);
   const [historyServices, setHistoryServices] = useState<ServiceInterface[]>([]);
 
   const [loadingServicesHistory, setLoadingServicesHistory] = useState(true);
@@ -222,11 +231,6 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
     const response = await api.get(API_ROUTES.VENDOR_GET_PENDING_SERVICE);
     const service = response.data.data.service;
 
-    console.log('[ServiceContext] getPendingService response:', {
-      service,
-      schedule_id: service?.schedule_id,
-      schedule: service?.schedule,
-    });
 
     if (openService && service) {
       router.dismissTo('/(app)/(tabs)/home');
@@ -234,7 +238,6 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
 
     if (!pendingService && service) {
       const scheduleId = service.schedule_id ?? service.schedule?.id;
-      console.log('[ServiceContext] Navigating to schedule-proposal with scheduleId:', scheduleId, 'pendingService:', pendingService);
       setTimeout(() => {
         if (scheduleId) {
           router.navigate({
@@ -249,18 +252,15 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
         }
       }, 500);
     } else {
-      console.log('[ServiceContext] Not navigating - pendingService exists:', pendingService);
     }
 
     setPendingService(service || null);
-    console.log('[ServiceContext] setPendingService called with:', service?.id);
   }
 
   const getPendingServices = () => {
-    console.log('[ServiceContext] getPendingServices called');
-    api.get(API_ROUTES.VENDOR_GET_PENDING_ALL_SERVICES).then((response) => {
+    setPendingServicesLoading(true);
+    return api.get(API_ROUTES.VENDOR_GET_PENDING_ALL_SERVICES).then((response) => {
       const { services } = response.data.data;
-      console.log('[ServiceContext] getPendingServices fetched:', services?.length);
 
       const pendingServices: ServiceRequestedInterface[] = services.map((service: any) => {
         return {
@@ -280,17 +280,34 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
           service_type: {
             id: service.service_type.id,
             name: service.service_type.name,
+            // Duração estimada em minutos; ausente em payloads antigos.
+            time: service.service_type.time ?? null,
           },
+          // Morada completa + observações do cliente: o que o profissional
+          // precisa para decidir. Ausentes => null (o cartão omite).
+          address_details: service.address_details ?? null,
+          customer_notes: service.customer_notes ?? null,
           amount_for_vendor: service.amount_for_vendor,
           service_id: service.id,
           schedule_id: service.schedule?.id ?? service.schedule_id ?? null,
           created_at: service.created_timestamp,
+          // `is_immediate` só existe no payload de formatDataForVendor; na lista de
+          // pendentes derivamos com a mesma regra do backend (imediato == sem agendamento).
+          is_immediate: typeof service.is_immediate === 'boolean'
+            ? service.is_immediate
+            : !service.schedule,
+          // Distância em quilómetros (ServiceRequestedData::distance).
+          distance: service.distance ?? null,
         }
       });
 
       setPendingServices(pendingServices);
+      setPendingServicesFailed(false);
     }).catch((error) => {
       console.error('[ServiceContext] Failed to get pending services: ', error.message);
+      setPendingServicesFailed(true);
+    }).finally(() => {
+      setPendingServicesLoading(false);
     })
   }
 
@@ -310,8 +327,8 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
         if (error?.response?.status !== 401) {
           openDialog({
             icon: <XIcon color={Colors.primary} />,
-            title: t('errors.title'),
-            subtitle: t('errors.occurred_an_error'),
+            title: t('errors.service_history.title'),
+            subtitle: t('errors.service_history.subtitle'),
             closeAfterMSeconds: 2000,
             closeOnClickOutside: true,
           });
@@ -351,6 +368,8 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
         getOpenService,
         getPendingService,
         getPendingServices,
+        pendingServicesLoading,
+        pendingServicesFailed,
         pendingServices,
         setPendingServices,
 
