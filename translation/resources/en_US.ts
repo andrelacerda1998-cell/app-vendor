@@ -1,129 +1,136 @@
 export default {
   "auth": {
     "home": {
-      "title": "Start Earning with Your Skills",
-      "subtitle": "Discover nearby clients looking for exactly what you offer.",
+      "title": "Start earning with your skills",
+      "subtitle": "Find clients near you looking for exactly what you do.",
       "access_account": "Access account",
-      "create_account": "Create an account"
+      "create_account": "Create account"
     },
     "forgot_password": {
-      "header": "Forgot Password?",
+      "header": "Forgot your password?",
       "email_sent": {
         "title": "Check your email",
-        "subtitle": "If you have an account with that email. We have sent a password recovery link to your email.",
-        "subtitle_when_logged": "We have sent a password recovery link to your email.",
-        "check_spam": "Did not receive the email? Check your spam filter.",
+        "subtitle": "If you have an account with that email, we've sent you a link to set a new password.",
+        "subtitle_when_logged": "We've sent you a link to set a new password.",
+        "check_spam": "Didn't get the email? Check your spam folder too.",
         "resend_email": "Resend email",
-        "already_reset_password": "Already reset password"
+        "already_reset_password": "I've already set a new password"
       },
       "email_not_sent": {
         "title": "Recover your password",
-        "subtitle": "Enter your email address below and if it appears in our records you will receive an email to reset your password.",
+        "subtitle": "Enter your email. If it's registered, you'll get a link to set a new password.",
         "sending_email": "Sending email...",
         "send_email": "Send email"
       }
     },
     "reset_password": {
-      "title": "Reset Password",
+      "title": "New password",
       "subtitle": "Enter your new password",
-      "button": "Reset password",
+      "button": "Save password",
       "success": {
-        "title": "Congratulations",
-        "subtitle": "Your password has been reset successfully",
+        "title": "Password changed",
+        "subtitle": "You can now sign in with your new password.",
       },
       "errors": {
-        "password_used_before": "Password has been used before. Please choose a different password.",
-        "token_invalid": "Token is invalid. Please generate a new password reset email.",
+        "password_used_before": "You've used this password before. Choose a different one.",
+        "token_invalid": "This link has expired. Request a new email to set your password.",
       }
     },
     "sign_in": {
-      "title": "Sign In",
-      "subtitle": "Welcome back! Please enter your details.",
-      "forgot_password": "Forgot password?",
-      "sign_in": "Sign In",
-      "signing_in": "Signing in..."
+      "title": "Sign in",
+      "subtitle": "Welcome back. Enter your details to continue.",
+      "forgot_password": "Forgot your password?",
+      "sign_in": "Sign in",
+      "signing_in": "Signing in...",
+      "no_account": "Don't have an account yet?"
     },
     "sign_up": {
       "header": "Registration",
+      "step_counter": "Step {{current}} of {{total}}",
       "verifying_email": "Verifying email...",
-      "signing_up": "Signing up...",
+      "signing_up": "Creating account...",
       "last_step": "Finish",
       "continue_sign_up": "Continue",
       "instructions": {
-        "first_title": "Start Earning with Your Skills",
-        "first_description": "Discover nearby clients looking for exactly what you offer.",
-        "second_title": "Find the best deals",
-        "second_description": "Discover the best offers available for you.",
-        "third_title": "Pick between multiple clients",
-        "third_description": "Experience a seamless and enjoyable with your client."
+        "first_title": "Start earning with your skills",
+        "first_description": "Find clients near you looking for exactly what you do.",
+        "second_title": "Pick the best jobs",
+        "second_description": "You see the amount and the distance before accepting each request.",
+        "third_title": "Work your way",
+        "third_description": "You set your availability and your hourly rate."
       },
       "personal_information": {
-        "title": "Enter your personal information",
-        "subtitle": "Tell us about yourself to get started",
+        "title": "Enter your personal details",
+        "subtitle": "Personal details",
         "gender": "Gender",
-        "gender_required": "You must select your gender",
-        "gender_placeholder": "Select your gender"
+        "gender_required": "Pick your gender",
+        "gender_placeholder": "Pick your gender"
       },
       "contact_information": {
-        "title": "We want to know more about you",
-        "subtitle": "Contact information"
+        "title": "How do we reach you?",
+        "subtitle": "Contact details"
       },
       "address_information": {
-        "title": "We want to know more about your location",
-        "subtitle": "Address information"
+        "title": "Where are you based?",
+        "subtitle": "Address"
       },
       "password_information": {
-        "title": "Now, let's create a password",
-        "subtitle": "Password information"
+        "title": "Create a password",
+        "subtitle": "Security"
       },
       "skills_selection": {
-        "title": "Indicate your skills",
-        "subtitle": "Select the skills you want to offer",
-        "no_skills_found": "No skills found",
+        "title": "Tell us your skills",
+        "subtitle": "Pick what you can do. This is how we send you requests.",
+        "no_skills_found": "No skills to show yet. Check your connection and try again.",
         "error_must_select": {
-          "title": "Error",
-          "subtitle": "You must select at least one skill",
+          "title": "Pick at least one skill",
+          "subtitle": "Choose at least one skill to continue.",
         }
       },
       "services_types_selection": {
-        "title": "Select the tasks you wish to perform",
-        "subtitle": "The more options you select, the higher the number of jobs you will receive.",
-        "no_services_found": "No services found",
+        "title": "Pick the jobs you want to take",
+        "subtitle": "The more you pick, the more requests you get.",
+        "no_services_found": "No service types to show yet. Check your connection and try again.",
         "loading_services": "Loading services...",
       },
       "documents": {
-        "title": "Upload your files",
-        "subtitle": "File should be PDF, JPG, PNG",
-        "documents_permission_required": "We need your permission to access your documents",
-        "no_documents_found": "No documents found",
-        "camera_permission_required": "We need your permission to access your camera",
-        "library_permission_required": "We need your permission to access your library",
+        "title": "Upload your documents",
+        "subtitle": "PDF, JPG or PNG, up to 2 MB per file.",
+        "documents_permission_required": "To pick a file we need access to your documents. You can enable it in Settings.",
+        "no_documents_found": "No documents to upload yet. Check your connection and try again.",
+        "camera_permission_required": "To take a photo of the document we need access to your camera. You can enable it in Settings.",
+        "library_permission_required": "To pick a photo of the document we need access to your library. You can enable it in Settings.",
         "document": {
           "label": "Document",
           "upload": "Upload"
         },
-        "information": "For validation of professionalism you need to upload all documents",
+        "information": "We need all the documents to validate your account.",
         select_file: {
-          title: "Select file",
+          title: "Pick a file",
           camera: "Take a photo",
           library: "Choose from library",
           files: "Choose from files",
         },
         submit: {
           success: {
-            title: "Congratulations",
-            subtitle: "Submitted successfully for validation",
+            title: "Document sent",
+            subtitle: "We'll review it and let you know as soon as it's validated.",
           },
-          error: "Error submitting. Try again later",
-          "error_file_too_big": "File too big. Maximum size is 2MB",
+          error: "We couldn't send the document. Check your connection and try again.",
+          "error_file_too_big": "The file is too large. The limit is 2 MB — take a lower-quality photo or send a smaller PDF.",
         }
       },
       "price_rate": {
-        "subtitle": "Set your price per hour",
-        "information": "You can change the suggested value or change another time",
+        "subtitle": "You keep 100% of the technical value. Piquet's margin is applied to the client.",
+        "information": "You can change this amount later in your profile.",
+        "your_rate_label": "Your hourly rate",
+        "market_range": "Most pros charge {{min}}–{{max}}/h.",
+        "market_within": "Within the platform average.",
+        "market_below": "Below average — you may be leaving money on the table.",
+        "market_above": "Above average — you may get fewer requests.",
       },
       "advise": {
-        "agree": "By registering, you agree to our",
+        "agree": "By creating an account, you accept our",
         "terms_of_use": "Terms and Conditions",
         "and": "and",
         "privacy_policy": "Privacy Policy.",
@@ -132,80 +139,89 @@ export default {
   },
   "session": {
     "notifications": {
+        "title": "Notifications",
+        "title_with_count_one": "Notifications, {{count}} unread",
+        "title_with_count_other": "Notifications, {{count}} unread",
       "header": "Notifications",
-      "empty": "No notifications found",
+      "empty": "As soon as there's news about requests, payments or schedules, it shows up here.",
+      "empty_title": "No notifications",
+      "today": "Today",
+      "yesterday": "Yesterday",
     },
     "sms": {
-      "header": "Verify your phone number",
+      "header": "Verify phone",
       "pending": {
-        "title": "You're about to verify your phone number",
-        "subtitle": "You will receive a code via SMS",
-        "edit_phone_number": "Edit phone number",
+        "title": "Let's verify your phone",
+        "subtitle": "You'll get a code by SMS on this number.",
+        "edit_phone_number": "Change phone number",
         "send_sms": "Send code",
       },
       "sent": {
-        "title": "You received a code via SMS",
-        "subtitle": "Please enter the code to verify your phone number",
+        "title": "We've sent you a code by SMS",
+        "subtitle": "Enter the code to confirm your number.",
         "code": "Code",
         "resend_code": "Resend code",
         "verify": "Verify",
       },
       "verified": {
-        "title": "Phone number verified",
+        "title": "Phone verified",
         "close": "Close"
       },
       "error": {
-        "title": "An error occurred. Please try again later.",
+        "title": "Couldn't verify your phone",
+        "subtitle": "Check your connection and request a new code.",
         "close": "Close",
-        "code_invalid": "Invalid code",
+        "code_invalid": "Wrong code. Check the SMS or request a new code.",
       },
       "already_sent": {
-        "title": "Code already sent",
-        "subtitle": "Please check your phone number and try again.",
+        "title": "We've already sent the code",
+        "subtitle": "Check your phone messages. If it doesn't arrive, request a new code in a minute.",
       }
     },
     "confirm_email": {
-      "header": "Confirm Email",
+      "header": "Confirm email",
       "pending": {
-        "title": "Email verification",
-        "subtitle": "Please verify your email address",
-        "received": "Receive a validation email",
-        "check_later": "Check later",
+        "title": "Confirm your email",
+        "subtitle": "We'll send you a link. Open it to confirm your address.",
+        "received": "Get confirmation email",
+        "check_later": "Confirm later",
         "resend_email": "Resend email"
       },
       "sent": {
-        "title": "Email verification sent successfully. Please check your email.",
+        "title": "Email sent. Open the link we sent you to confirm your address.",
         "close": "Close"
       },
       "verified": {
-        "title": "Email already verified",
+        "title": "Email already confirmed",
         "close": "Close"
       },
       "error": {
-        "title": "An error occurred. Please try again later.",
+        "title": "Couldn't send the email",
+        "subtitle": "Check your connection and try again in a moment.",
         "close": "Close"
       }
     },
     "blocked_by_zone": {
-      "header": "Blocked by zone",
-      "title": "Blocked by zone",
-      "subtitle": "Your location is outside the vendor's operation area.",
-      "description": "We will notify you by email as soon as your location becomes available. Please pay attention to your inbox.",
+      "header": "Area unavailable",
+      "title": "We're not in your area yet",
+      "subtitle": "Your location is outside the areas where Piquet operates.",
+      "description": "We'll email you as soon as we open your area. There's nothing else for you to do.",
       "ok": "Ok"
     },
     "logout": {
       "title": "Log out",
-      "subtitle": "Are you sure you want to log out?",
+      "subtitle": "Do you really want to log out?",
       "cancel": "No",
       "confirm": "Yes",
       "success": {
         "title": "Logged out",
-        "subtitle_timeout": "You have been logged out after a long time of being away. Please log in again.",
-        "subtitle_error": "An error occurred while trying to refresh your session and you have been logged out. Please log in again.",
+        "subtitle_timeout": "We logged you out after a long time away. Sign in again to continue.",
+        "subtitle_error": "We couldn't refresh your session. Sign in again to continue.",
       }
     },
     "status": {
-      "title": "Status",
+      "title": "Account status",
+      "receive_requests": "Receive service requests",
       "online": "Online",
       "offline": "Offline",
     }
@@ -214,25 +230,26 @@ export default {
     "title": "Service",
     "title_plural": "Services",
     "view_all": "View all",
+    "empty": "No services here yet. Accept a request and it shows up on this list.",
     "select_service_type": {
-      "title": "Choose your service",
-      "subtitle": "After selecting the service, the professional will have 60 seconds to accept your request.",
+      "title": "Choose the service",
+      "subtitle": "After you choose, the technician has 60 seconds to accept the request.",
       "based_on": "Services based on",
-      "no_services_found": "No services available for this operation area."
+      "no_services_found": "No services available in this area."
     },
     "includes": "Includes",
     "excludes": "Does not include",
     "no_info": "No information",
     "select_vendor": {
-      "title": "Choose the professional",
-      "subtitle": "After selecting the service, the professional will have 60 seconds to accept your request.",
-      "no_vendors_found": "No professionals were found for this service.",
-      "request_professional": "Request professional"
+      "title": "Choose the technician",
+      "subtitle": "After you choose, the technician has 60 seconds to accept the request.",
+      "no_vendors_found": "No technicians available for this service.",
+      "request_professional": "Request technician"
     },
     "checkout": {
       "current_location": "Current location",
       "resume": {
-        "title": "Resume",
+        "title": "Summary",
         "your_request": "Your request",
         "service": "Service:",
         "price": "Price"
@@ -241,177 +258,203 @@ export default {
         "title": "Payment methods",
         "mb_way": "MB Way",
         "is_default_method_label": "Default method",
-        "add_new_credit_card": "Add new credit card"
+        "add_new_credit_card": "Add credit card"
       },
       "confirm": "Confirm and pay"
     },
     "cancel": {
       "title": "Cancel service",
-      "subtitle": "Are you sure you want to cancel the service?",
+      "subtitle": "Do you really want to cancel this service?",
       "confirm_penalty": "If there are less than 24 hours left, 10% of the value is deducted: {{amount}}. Do you really want to cancel?",
       "confirm": "Yes",
       "cancel": "No",
-      "you_are_about_to": "You are about to cancel a service that has already been accepted, are you sure?",
+      "you_are_about_to": "You've already accepted this service. Do you really want to cancel it?",
       "confirm_cancellation": "Confirm",
       "penalty": {
         "title": "Cancelling with less than 24 hours",
         "body": "If you cancel less than 24 hours in advance, 10% of the service value is deducted: {{amount}}."
       },
       "error": {
-        "title": "Error",
-        "subtitle": "An error occurred while trying to cancel the service. Please try again later.",
+        "title": "Couldn't cancel the service",
+        "subtitle": "Check your connection and try again. The service is still booked.",
       }
     },
     "close": {
-      "title": "The vendor is confirming that the service has been completed.",
+      "title": "You're confirming the service is complete.",
       "confirm": "Confirm",
       "help": "Help",
       "confirmation": {
         "title": "Service completed",
-        "subtitle": "You are about to confirm that the service has been completed. Are you sure?",
+        "subtitle": "You're confirming the service is complete. Are you sure?",
         "cancel": "Cancel",
         "confirm": "Confirm"
       }
     },
     "wait_accept": {
       "canceled": {
-        "title": "Service Canceled",
-        "subtitle": "You canceled the service request."
+        "title": "Request cancelled",
+        "subtitle": "The client cancelled this request."
       },
       "pending": {
         "cancel": "Cancel",
-        "professional_requested": "Professional requested",
+        "professional_requested": "Request sent to the technician",
         "professional_has": "You have",
         "to_accept": "to accept the service",
         "distance": "Distance",
         "estimated_value": "Estimated value"
       },
       "refused": {
-        "title": "Professional refused the job",
-        "subtitle": "Sorry, the requested professional did not accept the job. Try another one.",
-        "try_again": "Try again",
+        "title": "You declined the request",
+        "subtitle": "This request is no longer available. Stay online to get the next one.",
+        "try_again": "See requests",
         "confirmation": {
-          "title": "Refuse service",
-          "subtitle": "Are you sure you want to refuse the service?",
+          "title": "Decline request",
+          "subtitle": "Do you really want to decline this request?",
           "cancel": "Cancel",
-          "confirm": "Refuse"
+          "confirm": "Decline"
         }
       },
       "timeout": {
-        "title": "You did not accept the job in time",
-        "subtitle": "You did not accept the job in time. Your status will be set to offline.",
-        "try_again": "Try again"
+        "title": "Time to reply has run out",
+        "subtitle": "You didn't reply in time and you're now offline. Go online again to get new requests.",
+        "try_again": "Go online"
       },
       "success": {
-        "title": "The professional accepted the job",
-        "subtitle": "The professional will be at your location shortly",
+        "title": "You accepted the service",
+        "subtitle": "Head to the client's address. Let them know when you're on the way.",
         "close": "Close"
       },
       "closed": {
         "title": "Service closed",
-        "subtitle": "The service has been closed. You can check the details in your history.",
+        "subtitle": "This service has already been closed. Check the details in your history.",
         "close": "Close"
       }
     },
     "list": {
-      "header": "Service List",
+      "header": "Requests list",
       "filter_all": "All"
     },
     "history": {
-      "header": "Service History",
-      "load_more": "Load more"
+      "header": "Service history",
+      "load_more": "Show more"
     },
     "service": {
-      "no_description": "<p>Service description not available</p>",
-      "no_price": "No price provided",
-      "no_type": "No type provided",
-      "no_area": "No area provided",
+      "no_description": "No service description",
+      "no_price": "No amount set",
+      "no_type": "No service type",
+      "no_area": "No area set",
       "open": {
         "in_progress": "Service in progress",
-        "finished": "Confirm if service was finished",
-        "no_distance": "Distance not available",
+        "finished": "Confirm the service is complete",
+        "no_distance": "Distance unavailable",
         "cancel": "Cancel",
         "status": "Service status",
-        "arrived": "Arrived at destination",
+        "arrived": "You've arrived",
       },
-      "pending": "Service waiting for vendor to accept",
+      "pending": "Request waiting for your reply",
       "status": {
-        "header": "Service status",
+        "header": "Job",
+        "estimated_duration": "Estimated duration: {{value}}",
+        "steps": {
+          "accepted": "Accepted",
+          "on_the_way": "On the way",
+          "arrived": "Arrived",
+          "in_progress": "In progress",
+          "completed": "Completed"
+        },
+        "on_my_way": "I'm on my way",
+            "start_service": "Start job",
+            "finish_service": "Complete job",
+        "immediate": "Immediate service",
+        "open_map": "Open map",
+        "call": "Call",
+        "navigate_with": "Navigate with",
+        "nav_apps": {
+          "apple_maps": "Apple Maps",
+          "google_maps": "Google Maps",
+          "waze": "Waze"
+        },
+        "navigate": "Navigate",
+        "go_to_location": "Go to the client's address",
         "close": {
           "title": "Service completed",
-          "subtitle": "You are about to confirm that the service has been completed. Are you sure?",
+          "subtitle": "You're confirming the service is complete. Are you sure?",
           "cancel": "Cancel",
           "confirm": "Confirm"
         },
-        "time_accounting": "Time accounting",
+        "time_accounting": "Working time",
         "time": {
           "label": "Time",
           "value": "{{value}} minutes"
         },
         "distance": "Distance",
-        "value_to_receive": "Value to receive",
-        "confirm_it_was_finished": "Confirm it was finished",
+        "value_to_receive": "You'll get",
+        "confirm_it_was_finished": "Confirm it's complete",
         "finish": "Finish",
         "chat": "Chat"
       },
       "channel": {
         "accepted": {
           "title": "Service accepted",
-          "subtitle": "Congratulations, you have a new service"
+          "subtitle": "It's on your agenda. Check the details and the address."
         },
         "canceled": {
-          "title": "Service canceled",
-          "subtitle": "The professional canceled the job"
+          "title": "Service cancelled",
+          "subtitle": "The client cancelled this service."
         },
         "timedout": {
-          "title": "Service timed out",
-          "subtitle": "The professional did not accept the job in time"
+          "title": "The request expired",
+          "subtitle": "You didn't reply in time. Stay online to get the next one."
         },
         "refused": {
-          "title": "Service refused",
-          "subtitle": "The professional refused the job"
+          "title": "Request declined",
+          "subtitle": "You declined this request. You'll keep getting new requests in your area."
         }
       },
       "proposal": {
-        "title": "You have received a proposal of work",
-        "time_accounting": "Time accounting",
+        "title": "New request for you",
+        "time_accounting": "Working time",
         "distance": "Distance",
         "estimated_value": "Estimated value",
-        "value_to_receive": "Value to receive",
+        "value_to_receive": "You'll get",
         "location": "Location",
-        "refuse": "Refuse",
-        "accept": "Accept"
+        "refuse": "Decline",
+        "accept": "Accept",
+        "slide_to_accept": "Slide to accept"
       },
       "finish": {
-        "title": "Congratulations",
-        "subtitle": "Your service has been finished. Now, the customer must confirm the end of the service.",
+        "title": "Service completed",
+        "subtitle": "The client still has to confirm. Once they do, the amount goes into your earnings.",
         "confirmation": {
           "title": "Finish service",
-          "subtitle": "Are you sure you want to finish the service?",
+          "subtitle": "Do you really want to mark this service as complete?",
           "confirm": "Finish",
           "cancel": "Cancel"
         }
       },
       "history": {
         "header": "Service history",
-        "no_history": "No service history found",
+        "no_history": "No services in your history yet. The ones you complete show up here.",
         "labels": {
           "km": "Km",
-          "kilometers": "Kilometers",
-          "received_value": "Received value",
+          "kilometers": "Kilometres",
+          "received_value": "Amount received",
           "date": "Date",
         },
-        "download_invoice": "Download invoice",
+        "download_invoice": "Invoice",
         "rate_service": "Rate service",
       }
     },
-    "no_services_found": "No services found",
+    "no_services_found": "No services to show here yet.",
     "rate": {
-      "subtitle": "Rate your experience with this service",
+        "star_label_one": "{{count}} star",
+        "star_label_other": "{{count}} stars",
+      "subtitle": "Rate your experience with this client",
       "send": "Send"
     }
   },
   "chat": {
+    "send": "Send message",
     "title": "Chat",
     "dates": {
       "today": "Today",
@@ -424,7 +467,8 @@ export default {
       "friday": "Friday",
       "saturday": "Saturday"
     },
-    "no_messages": "Start a conversation",
+    "key_error": "Couldn't connect to this chat securely. Check your connection and try again.",
+    "no_messages": "No messages yet. Write to the client to sort out the details.",
     "input_placeholder": "Type a message",
     "quick_replies": {
       "on_the_way": "On my way 🚗",
@@ -432,71 +476,95 @@ export default {
       "delay": "10 min late ⏱️"
     },
     "arrived_at_destination": {
-      "title": "Arrived at destination",
-      "subtitle": "You have arrived at the destination"
+      "title": "Arrival recorded",
+      "subtitle": "We've let the client know you've arrived."
     },
     "actions": {
       "service_status": "Service status",
-      "arrived_at_destination": "Arrived at destination",
+      "arrived_at_destination": "I've arrived",
       "arrived": "Arrived"
     }
   },
   "profile": {
     "edit": {
-      "header": "Edit Profile",
+      "header": "Edit profile",
       "title": "Edit",
       "success": {
-        "title": "Congratulations",
-        "subtitle": "Your profile has been updated"
+        "title": "Profile updated",
+        "subtitle": "We've saved your changes."
       },
       "save": {
         "title": "Save changes",
-        "subtitle": "Are you sure you want to save the changes?",
+        "subtitle": "Do you want to save the changes you made?",
         "confirm": "Yes",
         "cancel": "No",
         "loading": "Saving..."
       },
       "change_address": "Change address",
-      "reset_password": "Reset password",
-      "sending_reset_email": "Sending e-mail...",
-      "send_reset_email": "Send email to reset password",
+      "reset_password": "Change password",
+      "sending_reset_email": "Sending email...",
+      "send_reset_email": "Send email to change password",
       "saving_changes": "Saving changes...",
       "save_changes": "Save changes",
       "updating_location": "Updating location...",
       "update_location": "Set current location",
       "update_location_success": {
-        "title": "Congratulations",
-        "subtitle": "Your location has been updated"
+        "title": "Location updated",
+        "subtitle": "You'll get requests based on this location."
       },
       "update_location_denied": {
-        "title": "Location permission denied",
-        "subtitle": "Please enable location permissions in your settings"
+        "title": "No access to location",
+        "subtitle": "Turn location on in your phone Settings to continue."
       },
       "at_user": {
         "update": {
-          "title": "Updated AT User",
-          "subtitle": "Your AT User has been updated",
+          "title": "Tax Authority details updated",
+          "subtitle": "We can now issue the invoices for your services.",
         },
-        "wrong_credentials": "Your AT credentials are incorrect. Make sure you used the AT sub-user password — not the phone access code.",
+        "wrong_credentials": "Your Tax Authority details aren't right. Make sure you used the sub-user password — not the phone access code.",
       },
       "at_invalid": {
-        "banner": "Your AT credentials are invalid. Tap to update.",
-        "go_online_blocked": "Your AT credentials are invalid. Update them before going online to receive services."
+        "banner": "Your Tax Authority details aren't working. Tap to update them.",
+        "go_online_blocked": "Without valid Tax Authority details you can't go online. Update them to receive services again."
       }
     },
     "update_address": {
-      "header": "Change Address",
+      "header": "Change address",
       "updating_address": "Updating address...",
       "update_address": "Update address",
-      "update_address_subtitle": "Are you sure you want to update your address?",
+      "update_address_subtitle": "Do you want to save this address?",
       "cancel_update": "Cancel",
       "confirm_update": "Confirm"
     },
+    "status": {
+      "approved": "Account approved",
+      "pending": "Account under review"
+    },
+    "values": {
+      "services_active_one": "{{count}} active",
+      "services_active_other": "{{count}} active",
+      "days_active_one": "{{count}} active day",
+      "days_active_other": "{{count}} active days"
+    },
+    "sections": {
+      "activity": "My activity",
+      "account": "Account"
+    },
+    "metrics": {
+      "acceptance": "Acceptance"
+    },
+    "activity": {
+      "price_rate": "Hourly rate",
+      "availability": "Availability",
+      "reviews": "Reviews",
+      "documents": "Documents",
+      "support": "Support"
+    },
     "my_profile": {
-      "title": "My Profile",
+      "title": "Profile",
       "iban": "IBAN",
       "birth_date": "Birth date",
-      "nif": "NIF",
+      "nif": "Tax number",
       "phone_number": "Phone number",
       "address": "Address",
       "password": "Password",
@@ -505,41 +573,41 @@ export default {
         "payments": "Payments",
         "settings": "Settings",
         "my_services": "My services",
-        "city_survey": "Piquet Expansion",
+        "city_survey": "Piquet expansion",
         "logout": "Log out"
       }
     },
     "payments": {
       "title": "Payments",
       "default_method": "Default method",
-      "no_payment_methods": "No Payment Methods",
+      "no_payment_methods": "No payment method yet. Add one to get your earnings.",
       "iban": "IBAN",
-      "empty_iban": "No IBAN",
-      "price_rate": "Price/hour",
-      "empty_price_rate": "No price/hour",
-      "company_name": "Company name",
-      "empty_company_name": "No company name",
-      "nif": "NIF",
-      "empty_nif": "No NIF",
-      "company_address": "Company address",
-      "empty_company_address": "No company address",
-      "at_user": "AT User",
-      "empty_at_user": "No AT User",
+      "empty_iban": "Add your IBAN to get paid",
+      "price_rate": "Hourly rate",
+      "empty_price_rate": "Set your hourly rate",
+      "company_name": "Tax name",
+      "empty_company_name": "Add your tax name",
+      "nif": "Tax number",
+      "empty_nif": "Add your tax number",
+      "company_address": "Billing address",
+      "empty_company_address": "Add your billing address",
+      "at_user": "Tax Authority sub-user",
+      "empty_at_user": "Add your Tax Authority sub-user",
       "edit_payment_method": {
-        "header": "Payment Method",
+        "header": "Payment method",
         "loading": "Loading...",
         "delete_payment_method": "Delete payment method",
         "set_as_default": "Set as default",
-        "expiration_date": "Expire date",
+        "expiration_date": "Expiry date",
         "delete_payment_method_confirmation": {
           "title": "Delete payment method",
-          "subtitle": "Are you sure you want to delete this payment method?",
+          "subtitle": "Do you really want to delete this payment method?",
           "cancel": "Cancel",
           "confirm": "Delete"
         },
         "set_as_default_confirmation": {
-          "title": "Set payment method default",
-          "subtitle": "Are you sure you want to define this payment method as default?",
+          "title": "Set as default",
+          "subtitle": "Do you want to use this payment method by default?",
           "cancel": "Cancel",
           "confirm": "Set as default"
         }
@@ -548,228 +616,306 @@ export default {
         "title": "Add payment method",
         "invalid_card_number": "Invalid card number",
         "success": {
-          "title": "Congratulations",
-          "subtitle": "Your payment method has been added"
+          "title": "Payment method added",
+          "subtitle": "You can use it now."
         },
         "saving": "Saving payment method...",
-        "save": "Save credit card"
+        "save": "Save card"
       },
       "information": {
         "name": {
           "label": "Name on card",
           "placeholder": "Name on card",
-          "required": "You must enter the name on card",
-          "min_length": "Name on card must be at least 3 characters",
-          "max_length": "Name on card must be at most 50 characters",
-          "first_and_last_name": "Name on card must contain least first and last name"
+          "required": "Enter the name on the card",
+          "min_length": "The name on the card must be at least 3 characters",
+          "max_length": "The name on the card can't be longer than 50 characters",
+          "first_and_last_name": "Enter the first and last name as they are on the card"
         },
         "card_number": {
           "label": "Card number",
           "placeholder": "1234 5678 9012 3456",
-          "required": "You must enter the card number",
+          "required": "Enter the card number",
           "invalid": "Invalid card number"
         },
         "expire_date": {
-          "label": "Expire date",
+          "label": "Expiry date",
           "placeholder": "MM/YY",
-          "required": "You must enter the expire date",
-          "invalid": "Expire date is invalid",
-          "invalid_month": "Expire date month is invalid",
-          "year_in_the_future": "Expire date year must be in the future"
+          "required": "Enter the expiry date",
+          "invalid": "Invalid expiry date",
+          "invalid_month": "Invalid month in the expiry date",
+          "year_in_the_future": "The expiry year must be in the future"
         },
         "cvc": {
           "label": "CVC",
           "placeholder": "123",
-          "required": "You must enter the CVC",
+          "required": "Enter the CVC",
           "invalid": "Invalid CVC"
         }
       }
     },
     "settings": {
       "title": "Settings",
-      "user_management_locations": "User management locations",
-      "payment_settings": "Payment Settings",
+      "user_management_locations": "My working areas",
+      "payment_settings": "Payment settings",
       "documents": "Documents",
       "delete_account": "Delete account",
       "help": "Help",
-      "about": "About",
       "privacy": "Privacy Policy",
+      "about": "About",
       "version": "Version",
       "rights": "Rights",
-      "use_terms": "Use Terms"
+      "use_terms": "Terms of Use"
     }
   },
   "errors": {
-    "title": "Error",
-    "server_error": "Server error. Please try again later",
-    "email_or_phone_in_use": "This email or phone number is already in use",
-    "network_error": "Network error. Please check your connection and try again",
-    "user_not_found": "User not found",
-    "occurred_an_error": "Occurred an error, please try again",
-    "wait_before_trying_again": "Please, wait before trying again",
-    "address_invalid": "Please check your info. This is an invalid address",
-    "account_under_verification": "Your account is under verification. Please wait for the verification to be completed.",
-    "invalid_email_or_password": "Invalid email or password",
+    "title": "Couldn't complete this",
+    "server_error": "Our server didn't respond. Try again in a moment.",
+    "email_or_phone_in_use": "There's already an account with this email or phone. Sign in or use different details.",
+    "network_error": "No internet connection. Connect to Wi-Fi or mobile data and try again.",
+    "user_not_found": "We couldn't find an account with these details. Check the email.",
+    "occurred_an_error": "We couldn't complete this. Check your connection and try again.",
+    "wait_before_trying_again": "Wait a moment before trying again.",
+    "address_invalid": "This address isn't valid. Check the street, number and postal code.",
+    "invalid_email_or_password": "Wrong email or password. Check your details and try again.",
+    "account_under_verification": "Your account is still under review. We'll let you know as soon as it's approved.",
     "need_update": {
       "title": "Update required",
-      "subtitle": "Please update the app to the latest version to continue using it.",
+      "subtitle": "This version of the app is no longer supported. Update it to keep getting requests.",
       "button": "Update now"
+    },
+    "service_accept": {
+      "title": "Couldn't accept the request",
+      "subtitle": "Check your connection and try again. If the request has expired, another one will come along."
+    },
+    "service_refuse": {
+      "title": "Couldn't decline the request",
+      "subtitle": "Check your connection and try again."
+    },
+    "service_status": {
+      "title": "Couldn't update the status",
+      "subtitle": "Check your connection and try again. The service is still active."
+    },
+    "service_finish": {
+      "title": "Couldn't finish the service",
+      "subtitle": "Check your connection and try again. The service stays open until you can."
+    },
+    "service_details": {
+      "title": "Couldn't load the details",
+      "subtitle": "Check your connection and open the service again."
+    },
+    "service_rate": {
+      "title": "Couldn't send the rating",
+      "subtitle": "Check your connection and try again."
+    },
+    "service_history": {
+      "title": "Couldn't load your history",
+      "subtitle": "Check your connection and try again. Your services are still saved."
+    },
+    "chat_load": {
+      "title": "Couldn't load the chat",
+      "subtitle": "Check your connection and open the chat again. You haven't lost any message."
+    },
+    "chat_arrived": {
+      "title": "Couldn't tell the client you arrived",
+      "subtitle": "Check your connection and tap \"Arrived\" again."
+    },
+    "status_update": {
+      "title": "Couldn't change your status",
+      "subtitle": "Check your connection and try again."
+    },
+    "status_load": {
+      "title": "Couldn't tell whether you're online",
+      "subtitle": "Check your connection and open Home again."
+    },
+    "go_online_blocked": {
+      "title": "You can't go online yet"
+    },
+    "profile_save": {
+      "title": "Couldn't save your profile",
+      "subtitle": "Check your connection and try again. Your changes are still here."
+    },
+    "reset_password_email": {
+      "title": "Couldn't send the email",
+      "subtitle": "Check your connection and try again in a moment."
+    },
+    "address_load": {
+      "title": "Couldn't load the address",
+      "subtitle": "Check your connection and open this screen again."
+    },
+    "address_save": {
+      "title": "Couldn't save the address",
+      "subtitle": "Check the street, number and postal code and try again."
+    },
+    "payment_save": {
+      "title": "Couldn't save your payment details",
+      "subtitle": "Check your IBAN and tax number, check your connection and try again."
+    },
+    "at_user_save": {
+      "title": "Couldn't save your Tax Authority details",
+      "subtitle": "Check the sub-user and the password from the tax portal and try again."
+    },
+    "documents_submit": {
+      "title": "Couldn't send the document",
+      "subtitle": "Check your connection and try again. Each file must be under 2 MB."
+    },
+    "documents_pick": {
+      "title": "Couldn't open the file",
+      "subtitle": "Pick another file or take a new photo."
+    },
+    "documents_permission": {
+      "title": "A permission is missing"
+    },
+    "hourly_rate_save": {
+      "title": "Couldn't save your hourly rate",
+      "subtitle": "Check your connection and try again. Your previous rate stays in place."
+    },
+    "support_send": {
+      "title": "Couldn't send the support request",
+      "subtitle": "Check your connection and try again. Copy your message so you don't lose it."
+    },
+    "areas_save": {
+      "title": "Couldn't save the service types",
+      "subtitle": "Check your connection and try again."
+    },
+    "genders_load": {
+      "title": "Couldn't load the options",
+      "subtitle": "Check your connection and open this step again."
     }
   },
   "general": {
+    "toggle_password_visibility": "Show or hide password",
+    "back": "Back",
+    "try_again": "Try again",
+    "loading": "Loading...",
+    "continue": "Continue",
+    "offline_title": "You're offline",
+    "offline_subtitle": "Connect to Wi-Fi or mobile data and try again.",
     "email": "Email",
     "email_placeholder": "email@example.com",
-    "email_required": "You must enter your email",
-    "email_invalid": "Invalid email address",
+    "email_required": "Enter your email",
+    "email_invalid": "This email isn't valid",
     "username": "Username",
     "username_placeholder": "Username",
-    "username_required": "You must enter your username",
+    "username_required": "Pick a username",
     "username_invalid": "Invalid username",
-    "username_min_length": "Username must be at least 2 characters",
-    "username_max_length": "Username must be at most 30 characters",
-    "username_invalid_characters": "Username contains invalid characters",
-    "username_cannot_be_only_numbers": "Username cannot be only numbers",
-    "username_cannot_be_empty_or_only_spaces": "Username cannot be empty or only spaces",
-    "username_cannot_contain_spaces": "Username cannot contain spaces",
-    "username_not_allowed": "Username is not allowed",
+    "username_min_length": "The username must be at least 2 characters",
+    "username_max_length": "The username can't be longer than 30 characters",
+    "username_invalid_characters": "The username has characters we can't accept",
+    "username_cannot_be_only_numbers": "The username can't be only numbers",
+    "username_cannot_be_empty_or_only_spaces": "The username can't be empty",
+    "username_cannot_contain_spaces": "The username can't contain spaces",
+    "username_not_allowed": "This username isn't available",
     "password": "Password",
     "password_placeholder": "Password12345@",
-    "password_required": "You must enter your password",
+    "password_required": "Enter your password",
     "password_invalid": "Invalid password",
-    "password_min_length": "Password must be at least 8 characters",
-    "password_uppercase": "Password must contain at least one uppercase letter",
-    "password_lowercase": "Password must contain at least one lowercase letter",
-    "password_number": "Password must contain at least one number",
-    "password_special_character": "Password must contain at least one special character (!@?#$%^&*_/-)",
-    "password_common": "Password must not contain common words or easily guessable sequences",
-    "password_match": "Passwords must match",
+    "password_min_length": "The password must be at least 8 characters",
+    "password_uppercase": "The password must have at least one uppercase letter",
+    "password_lowercase": "The password must have at least one lowercase letter",
+    "password_number": "The password must have at least one number",
+    "password_special_character": "The password must have at least one special character (!@?#$%^&*_/-)",
+    "password_common": "This password is easy to guess. Choose another one.",
+    "password_match": "The passwords must match",
     "confirm_password": "Confirm password",
     "confirm_password_placeholder": "Password12345@",
-    "confirm_password_required": "You must confirm your password",
+    "confirm_password_required": "Enter the password again",
     "address": "Address",
     "no_address": "No address",
     "address_name": "Address name (optional)",
     "address_name_placeholder": "Address name",
-    "address_name_min_length": "Address name must be at least 3 characters",
-    "address_name_max_length": "Address name must be at most 50 characters",
+    "address_name_min_length": "The address name must be at least 3 characters",
+    "address_name_max_length": "The address name can't be longer than 50 characters",
     "street_name": "Street name",
     "street_name_placeholder": "Street name",
-    "street_name_required": "You must enter your street name",
+    "street_name_required": "Enter the street name",
     "street_number": "Door/building number",
     "street_number_placeholder": "Door/building number",
     "locality": "District",
     "locality_placeholder": "District",
-    "locality_required": "You must enter your district",
+    "locality_required": "Enter your district",
     "city": "City",
     "city_placeholder": "City",
-    "city_required": "You must enter your city",
+    "city_required": "Enter your city",
     "postal_code": "Postal code",
     "postal_code_placeholder": "Postal code",
-    "postal_code_required": "You must enter your postal code",
-    "postal_code_invalid_format": "Postal code must be in the format 1234-567",
+    "postal_code_required": "Enter your postal code",
+    "postal_code_invalid_format": "The postal code must be in the format 1234-567",
     "country": "Country",
     "country_placeholder": "Country",
-    "avatar": "Avatar",
+    "avatar": "Photo",
     "full_name": "Full name",
     "full_name_placeholder": "First and last name",
-    "full_name_required": "You must enter your first and last name",
-    "full_name_min_length": "Full name must be at least 2 characters",
-    "full_name_max_length": "Full name must be at most 50 characters",
-    "full_name_invalid_characters": "Full name contains invalid characters",
-    "full_name_cannot_be_only_spaces": "Full name cannot be empty or only spaces",
-    "full_name_first_and_last_name": "Full name must contain first and last name",
+    "full_name_required": "Enter your first and last name",
+    "full_name_min_length": "The full name must be at least 2 characters",
+    "full_name_max_length": "The full name can't be longer than 50 characters",
+    "full_name_invalid_characters": "The full name has characters we can't accept",
+    "full_name_cannot_be_only_spaces": "The full name can't be empty",
+    "full_name_first_and_last_name": "Enter your first and last name",
     "birth_date": "Birth date",
-    "birth_date_required": "You must enter your birth date",
-    "birth_date_placeholder": "Select your birth date",
+    "birth_date_required": "Pick your birth date",
+    "birth_date_placeholder": "Pick your birth date",
     "birth_date_invalid": "Invalid birth date",
     "birth_date_min_age": "You must be at least 18 years old",
-    "birth_date_max_age": "Birth date cannot be before 1900",
-    "birth_date_not_in_future": "Birth date cannot be in the future",
-    "nif": "NIF",
-    "nif_placeholder": "NIF",
-    "nif_required": "You must enter your NIF",
-    "nif_invalid": "Invalid NIF",
-    "nif_min_length": "NIF must be 9 characters long",
+    "birth_date_max_age": "The birth date can't be before 1900",
+    "birth_date_not_in_future": "The birth date can't be in the future",
+    "nif": "Tax number",
+    "nif_placeholder": "Tax number",
+    "nif_required": "Enter your tax number",
+    "nif_invalid": "Invalid tax number",
+    "nif_min_length": "The tax number has 9 digits",
     "phone_number": "Phone number",
     "no_phone_number": "No phone registered",
     "phone_number_placeholder": "+351 919919919",
-    "phone_number_required": "You must enter your phone number",
-    "phone_number_invalid_portuguese": "Invalid Portuguese phone number",
+    "phone_number_required": "Enter your phone number",
+    "phone_number_invalid_portuguese": "This Portuguese phone number isn't valid",
     "ios_picker": {
       "cancel": "Cancel",
       "choose_an_option": "Choose an option"
     },
-    "company_name": "Company name",
-    "company_name_required": "Company name is required",
-    "company_name_placeholder": "Company name/Activity name in AT",
-    "company_address": "Company address",
-    "company_address_change": "Company address change",
-    "at_user": "AT Sub-user",
-    "at_user_change": "Change AT Sub-user",
-    "at_user_required": "AT Sub-User is required",
+    "company_name": "Tax name",
+    "company_name_required": "Enter your tax name",
+    "company_name_placeholder": "Tax name",
+    "company_address": "Billing address",
+    "company_address_change": "Change billing address",
+    "at_user": "Tax Authority sub-user",
+    "at_user_change": "Change Tax Authority sub-user",
+    "at_user_required": "Enter your Tax Authority sub-user",
     "at_user_placeholder": "e.g. 123456789/1",
-    "at_user_invalid": "Invalid AT Sub-user",
-    "at_password": "AT Password",
-    "at_password_required": "AT Password is required",
-    "at_password_placeholder": "AT Password",
-    "at_password_helper": "Use your AT sub-user password (set on the Tax Authority portal). It is not the phone access code.",
+    "at_user_invalid": "Invalid Tax Authority sub-user",
+    "at_password": "Tax Authority sub-user password",
+    "at_password_required": "Enter the Tax Authority sub-user password",
+    "at_password_placeholder": "Tax Authority sub-user password",
+    "at_password_helper": "Use the password of the sub-user you created on the tax portal. It's not the phone access code.",
     "iban": "IBAN",
-    "iban_required": "IBAN is required",
+    "iban_required": "Enter your IBAN",
     "iban_placeholder": "IBAN",
     "iban_invalid": "Invalid IBAN",
-    "iban_max_length": "IBAN must be 25 characters",
-    "iban_min_length": "IBAN must be 25 characters",
+    "iban_max_length": "The IBAN has 25 characters",
+    "iban_min_length": "The IBAN has 25 characters",
     "price_rate": {
-      "title": "Price/hour",
-      "label": "Price rate",
-      "placeholder": "Price per hour",
-      "required": "You must enter the price rate",
-      "invalid": "Invalid price rate",
-      "min_value": "Price rate must be at least 1",
-      "max_value": "Price rate must be less than or equal to 999.999",
-      "must_be_number": "Price rate must be a number"
+      "title": "Hourly rate",
+      "label": "Hourly rate",
+      "placeholder": "Hourly rate",
+      "required": "Enter your hourly rate",
+      "invalid": "Invalid hourly rate",
+      "min_value": "The hourly rate must be at least 1",
+      "max_value": "The hourly rate can't be higher than 999.999",
+      "must_be_number": "The hourly rate must be a number"
     },
-    "phone_verification_required": "Phone verification is required",
-    "email_verification_required": "Email verification is required",
-    "blocked_by_zone": "Blocked by zone",
-    "company_address_required": "Company address is required",
+    "phone_verification_required": "Your phone still needs verifying",
+    "email_verification_required": "Your email still needs confirming",
+    "blocked_by_zone": "Area unavailable",
+    "company_address_required": "Enter the billing address",
+    "yes": "Yes",
+    "no": "No",
+    "cancel": "Cancel",
   },
   "wallet": {
     "balance": {
       "name": "Balance"
     },
     "service": {
-      "no_price_provided": "No price provided",
-    }
-  },
-  "home": {
-    "my_areas": "My areas",
-    "my_areas_empty": "No areas found",
-    "my_areas_change": "Change areas",
-  },
-  "payments": {
-    "no_payments_found": "No payments found",
-    "load_more": "Load more"
-  },
-  "user_header": {
-    "welcome_back": "Welcome back,"
-  },
-  "documents_validating": {
-    "pending": "Your documents are still being validated, please wait",
-    "missing": "Missing documents"
-  },
-  "operation_areas": {
-    "header": "Operation areas",
-    "update_skills": "Update skills",
-    "update_services_types": "Update services types",
-    "services_types": {
-      "header": "Services types",
-    },
-    "update": {
-      "title": "Update operation areas",
-      "subtitle": "Are you sure you want to update your operation areas?",
-      "cancel": "Cancel",
-      "confirm": "Confirm",
+      "no_price_provided": "No amount set",
     }
   },
   "delete_account": {
@@ -777,16 +923,385 @@ export default {
     "submit": "Delete account",
     "submit_loading": "Deleting account...",
   },
+  "my_services": {
+    "duration": "Estimated duration: {{value}}",
+    "earnings_title": "What you earn",
+    "hour_rate_label": "Your hourly rate",
+    "hour_rate_value": "{{value}}/hour",
+    "change_rate": "Change",
+    "earnings_hint": "The amount per service is calculated from your hourly rate and the job duration. Travel and out-of-hours work can increase it.",
+  },
+  "home": {
+    "my_areas": "My areas",
+    "my_areas_empty": "You haven't picked any areas yet. Choose where you work to start getting requests.",
+    "my_areas_change": "Change areas",
+    "shortcuts": {
+      "title": "Shortcuts",
+      "history": "History",
+      "support": "Support"
+    }
+  },
+  "payments": {
+    "no_payments_found": "No payments yet. Complete your first service to start getting paid.",
+    "load_more": "Show more"
+  },
+  "hourly_rate": {
+    "title": "Hourly rate",
+    "your_rate_label": "Your hourly rate",
+    "earnings_title": "What you get",
+    "simulation": {
+      "one_hour": "1h service",
+      "two_hours": "2h service",
+      "two_hours_thirty": "2h30 service"
+    },
+    "margin_note": "You keep 100% of the technical value. Piquet's margin is applied to the client's price, it is not taken from you.",
+    "save": "Save",
+    "saving": "Saving...",
+    "saved_title": "Hourly rate updated",
+    "saved_subtitle": "Your new hourly rate is now active."
+  },
+  "service_extras": {
+    "title": "SERVICE EXTRAS",
+    "extra_time": "Extra time",
+    "parts": "Parts/materials",
+    "add_time_title": "Add extra time",
+    "add_time_hint": "The client gets the request in the app and must approve the extra time and cost before they count towards the service.",
+    "add_part_title": "Add part/material",
+    "add_part_hint": "The client gets the request in the app and decides whether to accept the part's cost before it's added to the service value.",
+    "part_placeholder": "e.g. Single-lever tap",
+    "value_placeholder": "Amount (€)",
+    "ask_client": "Ask the client",
+    "time_label": "+{{minutes}} min",
+    "waiting": "{{item}} awaiting client approval…",
+    "approved": "{{item}} approved by the client",
+    "rejected": "{{item}} declined by the client",
+    "rejected_reason": "Reason: {{reason}}",
+    "withdraw": "Withdraw",
+    "error_load": "We couldn't load the extras. Check your connection and try again.",
+    "error_add_time": "We couldn't send the extra time request. Please try again.",
+    "error_add_part": "We couldn't send the part request. Please try again.",
+    "error_invalid_part": "Fill in the description and a valid amount for the part.",
+    "error_withdraw": "We couldn't withdraw the request. Please try again."
+  },
+  "service_photos": {
+    "recommended": "Recommended",
+    "title": "Job photos",
+    "hint": "Photograph before and after — it protects you if the customer complains.",
+    "before": "BEFORE",
+    "after": "AFTER",
+    "add": "Add",
+    "add_before": "Before photo",
+    "add_after": "After photo",
+    "camera": "Camera",
+    "library": "Library",
+    "none": "No photos.",
+    "close_preview": "Tap to close",
+    "permission_denied_title": "A permission is missing",
+    "camera_permission_required": "To take a photo of the job we need access to your camera. You can enable it in Settings.",
+    "library_permission_required": "To pick a photo of the job we need access to your library. You can enable it in Settings.",
+    "error_title": "Couldn't add the photo",
+    "error_file_too_big": "This photo is too large (the limit is 10 MB). Take another one or pick a smaller one.",
+    "error_load_title": "We couldn't load the photos",
+    "error_load_subtitle": "Check your connection and try again. You can carry on with the job anyway."
+  },
+  "account_status": {
+    "title": "Account status",
+    "approved_label": "Account approved",
+    "approved_message": "Account approved. You can now go online and receive services.",
+    "review_label": "Account under review",
+    "review_message": "Your account is under review. We'll let you know as soon as it's approved.",
+    "onboarding_label": "Registration incomplete",
+    "onboarding_message": "You still need to send your documents and complete your profile to get started.",
+    "steps_title": "Next steps",
+    "step_create_account": "Create account",
+    "step_submit_documents": "Send documents",
+    "step_review": "Piquet review",
+    "step_billing": "Billing account created",
+    "step_billing_hint": "Piquet handles this step. There's nothing for you to do — once it's ready, you can go online.",
+    "step_approved": "Account approved",
+    "see_documents": "See documents"
+  },
+  "auto_acceptance": {
+    "title": "Auto-Acceptance",
+    "state": {
+      "on_title": "Auto-Acceptance on",
+      "on_subtitle": "Services scheduled within your availability are accepted automatically.",
+      "off_title": "Auto-Acceptance off",
+      "off_subtitle": "Turn it on so you don't miss scheduled requests."
+    },
+    "how_it_works": {
+      "title": "How it works",
+      "availability": "Only services scheduled within your availability are accepted automatically.",
+      "notification": "You get a notification confirming every acceptance.",
+      "customer": "The client gets immediate confirmation.",
+      "responsibility": "You are responsible for carrying out the services accepted automatically."
+    },
+    "warning": "Cancelling a service after it is accepted may lead to a penalty."
+  },
+  "history": {
+    "title": "History",
+    "error_title": "Couldn't load your history",
+    "error_subtitle": "Check your internet connection and try again. Your services are still saved.",
+    "filters": {
+      "all": "All",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "lost": "Declined"
+    },
+    "earned_summary": "You earned from {{count}} services",
+    "lost_summary": "You declined or let {{count}} requests expire",
+    "lost_hint": "This money was never yours — it's what you could have earned had you accepted in time.",
+    "empty": {
+      "all_title": "No history",
+      "all": "The services you do show up here. Go online to get your first request.",
+      "completed_title": "No completed services",
+      "completed": "Once you complete a service, it shows up here with what you earned.",
+      "cancelled_title": "No cancellations",
+      "cancelled": "Great — you haven't cancelled any service.",
+      "lost_title": "You haven't declined any request",
+      "lost": "Keep replying to requests in time to keep your acceptance rate high."
+    }
+  },
+  "my_documents": {
+    "title": "Documents",
+    "error_title": "Couldn't load your documents",
+    "error_subtitle": "Check your internet connection and try again. Nothing you sent was lost.",
+    "empty": "You haven't sent any documents yet. Send them so Piquet can validate your account.",
+    "valid_until": "Valid until {{date}}",
+    "submit_or_replace": "Send or replace documents",
+    "status": {
+      "approved": "Approved",
+      "pending": "Under review",
+      "declined": "Rejected — send another",
+      "expired": "Expired — send a new one",
+      "expiring": "Expires in {{days}} days"
+    }
+  },
+  "notification_settings": {
+    "title": "Notifications",
+    "subtitle": "Choose the notifications you want to receive.",
+    "items": {
+      "new_requests": { "title": "New requests", "subtitle": "When there's a service for you" },
+      "schedule_reminders": { "title": "Schedule reminders", "subtitle": "Before each scheduled service" },
+      "messages": { "title": "Messages", "subtitle": "Messages from clients" },
+      "payments": { "title": "Payments", "subtitle": "When you receive a payment" },
+      "news": { "title": "Piquet news", "subtitle": "Platform news and tips" }
+    }
+  },
+  "document_expiry": {
+    "expiring_title_one": "Your {{name}} expires tomorrow",
+    "expiring_title_other": "Your {{name}} expires in {{count}} days",
+    "expiring_subtitle": "Renew it to keep accepting jobs. Tap to upload the new document.",
+    "expired_title": "Your {{name}} has expired",
+    "expired_subtitle": "You can't accept jobs until you upload a valid document."
+  },
+  "notifications_disabled": {
+    "title": "Notifications are off",
+    "subtitle": "Without them we can't tell you when a request comes in. Tap to turn them on in Settings."
+  },
+  "payouts": {
+    "title": "Transactions",
+    "empty_title": "No transactions yet",
+    "empty_subtitle": "Once you complete your first service, the amount shows up here and goes to your bank account.",
+    "error_title": "Couldn't load your transactions",
+    "error_subtitle": "Check your internet connection and try again.",
+    "type_earning": "Service completed",
+    "type_transfer": "Transfer to your account",
+    "pending": "pending",
+    "load_more": "Show more"
+  },
+  "support": {
+    "title": "Support",
+    "new_ticket": "New support request",
+    "new_ticket_hint": "The Piquet team replies as soon as possible.",
+    "subject_placeholder": "Subject",
+    "message_placeholder": "Describe the problem or your question…",
+    "send": "Send request",
+    "sending": "Sending…",
+    "sent_title": "Request sent",
+    "sent_subtitle": "The Piquet team will reply shortly.",
+    "my_tickets": "My requests",
+    "reply_from_piquet": "Reply from Piquet",
+    "header_title": "Need help?",
+    "header_subtitle": "We're available every day, 8am–10pm.",
+    "faq": {
+      "title": "Frequently asked questions",
+      "items": {
+        "payments": {
+          "q": "How do I get paid?",
+          "a": "Payments build up weekly and are paid every Monday to your IBAN."
+        },
+        "auto_accept": {
+          "q": "What is Auto-Acceptance?",
+          "a": "It automatically accepts scheduled services that fall within your availability."
+        },
+        "hourly_rate": {
+          "q": "How does the hourly rate work?",
+          "a": "You set your hourly rate; you earn hourly rate × service duration, with surcharges for special hours."
+        },
+        "missed_request": {
+          "q": "Why did I miss a request?",
+          "a": "Immediate requests expire after 60 seconds and scheduled ones after 20 minutes without a reply."
+        }
+      }
+    },
+    "status": {
+      "open": "Open",
+      "answered": "Answered",
+      "closed": "Closed"
+    }
+  },
+  "reviews": {
+    "title": "Reviews",
+    "error_title": "Couldn't load your reviews",
+    "error_subtitle": "Check your internet connection and try again.",
+    "total_one": "{{count}} review",
+    "total_other": "{{count}} reviews",
+    "empty": "No reviews yet. Complete a service so the client can rate you.",
+    "empty_title": "No reviews yet",
+    "empty_subtitle": "Complete your first service to start receiving reviews.",
+    "distribution": "Reviews by star rating"
+  },
+  "documents_help": {
+    "intro": "Send the three documents so Piquet can validate your account. Each one has the official link explaining how to get it.",
+    "required": " · required",
+    "not_submitted": "Not sent",
+    "submit": "Send",
+    "replace": "Replace",
+    "how_to_get": "How to get this document",
+    "hints": {
+      "citizen_card": "Valid identification document (front and back).",
+      "criminal_record": "Criminal record certificate (valid for 90 days).",
+      "activity": "Proof of business activity registration with the tax authority."
+    },
+    "at": {
+      "section": "Tax Authority",
+      "title": "Tax Authority sub-user",
+      "configured": "Configured",
+      "description": "Create a sub-user on the tax portal with permission to report invoices and sequences, and enter the details here — Piquet uses it to report your services to the tax authority.",
+      "user_label": "Tax Authority sub-user",
+      "user_placeholder": "e.g. 123456789/1",
+      "password_label": "Password",
+      "password_saved": "Password saved ••••••••",
+      "change": "Change",
+      "save": "Save",
+      "saved": "Tax Authority details saved."
+    }
+  },
+  "settings_screen": {
+    "notifications": "Notifications",
+    "permissions": "Permissions",
+    "about": "About",
+    "items": {
+      "new_requests": "New requests",
+      "messages": "Client messages",
+      "payments": "Payments",
+      "schedule_reminders": "Schedule reminders"
+    },
+    "permission_items": {
+      "location": {
+        "title": "Location",
+        "subtitle": "Used to navigate to the client."
+      },
+      "notifications": {
+        "title": "Notifications",
+        "subtitle": "To receive requests in real time."
+      }
+    }
+  },
+  "tabs": {
+    "home": "Home",
+    "agenda": "Agenda",
+    "earnings": "Earnings",
+    "profile": "Profile"
+  },
+  "agenda": {
+    "subtitle": "Scheduled services for the next 7 days",
+    "error_title": "Couldn't load your agenda",
+    "error_subtitle": "Check your internet connection and try again. The services you accepted are still booked.",
+    "total_upcoming": "To receive in the next 7 days",
+    "estimated_end": "estimated end",
+    "empty": "The services you accept show up here, organised by day. Go online to get requests.",
+    "empty_title": "Free agenda",
+    "scheduled": "Scheduled",
+    "free_day_title": "Free day",
+    "free_day": "You have no services scheduled for this day."
+  },
+  "earnings": {
+    "this_week": "This week's earnings",
+    "error_title": "Couldn't load your earnings",
+    "error_subtitle": "Check your internet connection and try again. You haven't lost any earnings — we just can't show them right now.",
+    "this_week_short": "This week",
+    "services_completed_one": "{{count}} service completed",
+    "services_completed_other": "{{count}} services completed",
+    "next_payment": "Next payment",
+    "next_payment_hint": "Payments are made on Mondays",
+    "last_4_weeks": "LAST 4 WEEKS",
+    "last_4_weeks_title": "Last 4 weeks",
+    "total_paid": "Paid in total: {{value}}",
+    "total_earned": "Total earned to date: {{value}}",
+    "pending_payment_title": "Awaiting payment",
+    "pending_payment_subtitle_one": "{{count}} completed service awaiting payment.",
+    "pending_payment_subtitle_other": "{{count}} completed services awaiting payment.",
+    "next_payment_on": "On {{date}}",
+    "to_iban": "To IBAN {{iban}}",
+    "week_services": "This week's services",
+    "completed_title": "Completed this week",
+    "completed_empty": "The services you complete this week show up here. Go online to get requests.",
+    "completed_empty_title": "No services yet"
+  },
+  "user_header": {
+    "welcome_back": "Welcome back,",
+    "hello": "Hi, {{name}} 👋",
+    "ready": "Ready to receive services.",
+    "finish_account": "Let's finish your account."
+  },
+  "home_stats": {
+    "this_week": "This week",
+    "service": "Service",
+    "services": "Services",
+    "rating": "Rating"
+  },
+  "home_today": {
+    "title": "TODAY",
+    "service": "service",
+    "services": "services",
+    "summary": "{{label}} · {{amount}} to earn",
+    "next_stop": "Next stop at {{time}}"
+  },
+  "auto_accept_lost": {
+    "week": "This week you missed {{amount}} in requests you didn't reply to."
+  },
+  "documents_validating": {
+    "pending": "We're validating your documents. We'll let you know as soon as it's done.",
+    "missing": "Missing documents"
+  },
+  "operation_areas": {
+    "header": "Areas and services",
+    "update_skills": "Update skills",
+    "update_services_types": "Update service types",
+    "services_types": {
+      "header": "Service types",
+      "subheader": "Pick what you do",
+      "empty": "No service types to pick yet. Check your connection and try again.",
+    },
+    "update": {
+      "title": "Update working areas",
+      "subtitle": "Do you want to save the areas you picked?",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+    }
+  },
   "documents": {
     "header": "Documents",
-    "pending_documents": "Pending documents",
+    "pending_documents": "Documents under review",
     "missing_documents": "Missing documents",
     "optional_documents": "Optional documents",
-    "no_documents_found": "No documents found",
-    "reason_for_denial": "Reason for denial of last submission",
+    "no_documents_found": "No documents to show yet. Check your connection and try again.",
+    "reason_for_denial": "Reason the last submission was rejected",
     "select_file": {
-      "title": "Select file",
-      "subtitle": "Choose a file from your device",
+      "title": "Pick a file",
+      "subtitle": "Choose a file from your phone",
       "choose_from_library": "Choose from library",
       "choose_from_files": "Choose from files",
       "cancel": "Cancel",
@@ -796,22 +1311,22 @@ export default {
   "location": {
     "foreground_service": {
       "active": {
-        "title": "Tracking Active",
-        "body": "Tracking your location in the background"
+        "title": "Location on",
+        "body": "You're sharing your location with Piquet"
       },
       "permission": {
-        "title": "Location Permission",
-        "subtitle": "We need your permission to access your location, even when in the background.",
+        "title": "Location permission",
+        "subtitle": "We need access to your location, even with the app in the background, to send you requests near you.",
         "android_subtitle": "To go online on Android, you need to allow background location in the app settings.",
         "error": {
-          "title": "Error getting location permission",
-          "subtitle": "The app needs permission to access your location, even when in the background.",
+          "title": "Couldn't turn location on",
+          "subtitle": "Set location to \"Always\" in your phone Settings and try again.",
         }
       },
       "tracking": {
         "error": {
-          "title": "Error starting tracking",
-          "subtitle": "The app needs permission to access your location, even when in the background.",
+          "title": "Couldn't start location tracking",
+          "subtitle": "Set location to \"Always\" in your phone Settings and try again.",
         }
       }
     }
@@ -825,56 +1340,100 @@ export default {
   },
   "complete_profile": {
     "notice": "You need to complete your profile",
-    "header": "Complete profile",
-    "at_user":{
-      "title":"Authentication Data",
-      "subtitle":"To facilitate invoicing, please provide the sub-user details from the Tax Authority (AT) with permission to communicate series (WSE permission).",
+    "subtitle": "You won't receive requests until it's complete. Tap to continue.",
+    "header": "Complete your profile",
+    "at_user": {
+      "title": "Tax Authority details",
+      "subtitle": "So we can issue the invoices for your services, enter the details of the sub-user you created on the tax portal with permission to report invoices and sequences.",
+    },
+    "iban": {
+      "title": "Where should we send your money?",
+      "subtitle": "This is the account we pay your services into. We pay once a week, on Mondays.",
+      "company_name_help": "The tax name is the name registered against your tax number: your full name if you work as a sole trader, or your company name if you have one. This is the name that appears on invoices.",
+    },
+    "permissions": {
+      "title": "Two permissions and you're ready to work",
+      "subtitle": "Before your phone asks, here's what they're for. You can change this any time in Settings.",
+      "notifications": {
+        "title": "Notifications",
+        "description": "This is how you find out a request came in. Without notifications, requests pass you by.",
+      },
+      "location": {
+        "title": "Location",
+        "description": "So the client can see you're on the way, and so you get requests near you.",
+      },
+      "footnote": "We never share your location with anyone outside the services you accept.",
+      "allow": "Allow",
+      "asking": "Asking for permissions…",
+      "later": "Not now",
     },
     "survey": {
       "title": "Where do you provide services?",
-      "subtitle": "Select the counties where you are available",
+      "subtitle": "Pick the areas where you're available",
       "submit": "Continue",
       "skip": "Skip",
-      "zones_selected_one": "1 zone selected",
-      "zones_selected_other": "{{count}} zones selected",
+      "zones_selected_one": "1 area picked",
+      "zones_selected_other": "{{count}} areas picked",
       "district_available": "AVAILABLE",
       "district_coming_soon": "COMING SOON",
       "city_active": "Active",
       "city_coming_soon": "Coming soon",
-    }
+    },
+    "documents": {
+      "submitted": "Sent",
+      "replace": "Replace",
+      "later": "Send documents later",
+      "permission_denied_title": "A permission is missing"
+    },
   },
   "schedules": {
-    "empty": "You don't have any scheduled services yet",
     "availability": "Availability",
-    "service_zone": "Service zone",
+    "service_zone": "Service area",
+    "day_off": "Day off",
     "edit": "edit",
     "settings_schedule": "Schedule settings",
     "repeat": "Repeat",
     "auto_acceptance": "Auto-Acceptance",
+    "auto_accept_on": "On — you accept services within your availability.",
+    "auto_accept_off": "Off — you reply to each request.",
+    "auto_accept_enable": "Turn on",
     "availability_schedule": "Availability schedule",
-    "continue": "Continue",
+    "continue": "Save",
     "calendar": {
-      "blocks_hourly": "Hourly blocks",
+      "blocks_hourly": "Available hours",
+      "save": "Save"
+    },
+    "availability_range": {
+      "title": "Availability range",
+      "subtitle": "Pick the hours in which you take scheduled services.",
+      "from": "From",
+      "to": "Until",
+      "invalid": "The start time must be before the end time",
+      "cancel": "Cancel",
       "save": "Save"
     },
     "address": {
       "address": "Address",
-      "insert_address": "Enter your location details",
+      "insert_address": "You haven't set your service area yet",
+      "locating": "Getting your location…",
+      "locate_failed": "Couldn't get your location. Set the address manually.",
+      "detected": "Detected via GPS",
+      "use_current": "Use current location",
       "street": "Street",
       "placeholder_street": "Ex: Main Street",
       "number": "Number",
-      "postal_code": "Postal Code",
+      "postal_code": "Postal code",
       "city": "City",
       "placeholder_city": "Ex: Lisbon",
       "cancel": "Cancel",
       "save": "Save"
     },
     "confirmation": {
-      "repeat_title": "Change repeat setting",
-      "enable_repeat_subtitle": "By enabling the REPEAT schedule function, this week's availability will be replicated to all future weeks, replacing any manually added time slots. Do you want to continue?",
-      "disable_repeat_subtitle": "By disabling the REPEAT function, all UNSCHEDULED time slots from next week onwards will be deleted. Do you want to continue?",
-      "auto_accept_title": "Change auto-acceptance setting",
-      "auto_accept_subtitle": "By enabling the AUTO-ACCEPTANCE function, all service scheduling requests for your available slots will be automatically accepted. Do you want to continue?"
+      "repeat_title": "Change schedule repeat",
+      "enable_repeat_subtitle": "Turning repeat on makes this week's availability repeat every following week, replacing any hours you added manually. Do you want to continue?",
+      "disable_repeat_subtitle": "Turning repeat off deletes every time slot with no service booked, from next week onwards. Do you want to continue?",
+      "auto_accept_title": "Change Auto-Acceptance",
+      "auto_accept_subtitle": "With Auto-Acceptance on, scheduled requests that fall in your free hours are accepted automatically on your behalf. Do you want to continue?"
     },
     "days": {
       "Mo": "Monday",
@@ -886,7 +1445,7 @@ export default {
       "Su": "Sunday"
     },
     "schedule_for": "Scheduled for",
-    "customer": "Customer",
+    "customer": "Client",
     "new_schedule_of": "New schedule of",
     "go_destination": "Go to destination",
     "date_label": {
@@ -902,7 +1461,7 @@ export default {
     },
     "schedules": "Schedules",
     "schedules_today": "Scheduled today",
-    "agenda": "Schedule",
+    "agenda": "Agenda",
     "services": "Services",
     "schedule": "Schedule",
     "when": "When",
@@ -912,8 +1471,23 @@ export default {
     "service_immediate": "Immediate service",
     "times_up": "Time is up",
     "remaining_time": "Remaining time",
+    "empty": "No scheduled jobs right now",
+    "next_title": "Next service",
+    "pending_requests_card_one": "You have {{count}} request awaiting a reply.",
+    "pending_requests_card_other": "You have {{count}} requests awaiting a reply.",
     "requests_list": "Requests list",
+    "requests_error_title": "Couldn't load the requests",
+    "requests_error_subtitle": "Check your internet connection and try again. There may be requests waiting for you.",
+    "requests_empty_title": "No requests waiting",
+    "requests_empty_subtitle": "New requests in your area show up here for you to accept or decline. Keep notifications on so you don't miss them.",
+    "to_accept": "to accept",
+    "you_receive": "You get",
+    "close": "Close",
+    "incoming_request_title": "New request received",
+    "incoming_request_window_immediate": "You have 60 seconds to accept.",
+    "incoming_request_window_scheduled": "You have 20 minutes to accept.",
     "services_count_one": "scheduled service",
-    "services_count_other": "scheduled services"
+    "services_count_other": "scheduled services",
+    "customer_notes": "Client notes"
   }
 };
