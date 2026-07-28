@@ -1,10 +1,8 @@
 import { Colors } from "@/constants/Colors";
-import { useApi } from "@/contexts/ApiContext";
 import { Ionicons } from "@expo/vector-icons";
-import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useRef, useState } from 'react'
 import { View } from "react-native";
-import Animated, { useAnimatedProps, useSharedValue, withTiming, Easing } from "react-native-reanimated";
+import Animated, { useAnimatedProps, useSharedValue, withTiming } from "react-native-reanimated";
 import Svg, { Circle } from "react-native-svg"
 import { CustomText } from "./CustomText";
 import BackgroundTimer from 'react-native-background-timer';

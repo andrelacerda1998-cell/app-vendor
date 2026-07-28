@@ -212,7 +212,6 @@ export const LocationProvider: React.FC<{ children: ReactNode }> = ({ children }
     };
 
     const startTracking = async (): Promise<StartTrackingResult> => {
-        // console.log('starting tracking')
         if (!locationPermission.background) {
             const hasPermission = await requestPermissions();
             // requestPermissions already shows a persistent, actionable dialog on denial.
@@ -222,7 +221,6 @@ export const LocationProvider: React.FC<{ children: ReactNode }> = ({ children }
         try {
             const tasks = await TaskManager.getRegisteredTasksAsync();
             if (tasks.some(task => task.taskName === LOCATION_TASK_NAME)) {
-                // console.log('Tarefa já está em execução');
                 setIsTracking(true);
                 return { ok: true };
             }
@@ -243,7 +241,6 @@ export const LocationProvider: React.FC<{ children: ReactNode }> = ({ children }
         } catch (error) {
             setIsTracking(false);
 
-            // console.log(error, 'error starting location updates');
 
             openDialog({
                 icon: <XIcon color={Colors.primary} />,
@@ -257,7 +254,6 @@ export const LocationProvider: React.FC<{ children: ReactNode }> = ({ children }
     };
 
     const stopTracking = async (): Promise<boolean> => {
-        // console.log("Stoping tracking");
         try {
             await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME);
             setIsTracking(false);

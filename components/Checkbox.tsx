@@ -1,6 +1,4 @@
 import { TouchableOpacity, View } from "react-native";
-import { ThemedText } from "./ThemedText";
-import { FontAwesome } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
 import { CustomText } from "./CustomText";
 import CheckMark from "@/assets/icons/check-mark";

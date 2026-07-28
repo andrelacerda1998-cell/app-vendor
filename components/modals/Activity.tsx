@@ -1,6 +1,6 @@
 import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet"
 import React from 'react'
-import { Image, Text, View } from "react-native"
+import { Image, View } from "react-native";
 import { CustomText } from "../CustomText"
 import { Colors } from "@/constants/Colors"
 import { Entypo } from "@expo/vector-icons"

@@ -1,3 +1,4 @@
+import React from 'react';
 import {ApiProvider} from '@/contexts/ApiContext';
 import {SessionProvider} from '@/contexts/SessionContext';
 import {Slot} from 'expo-router';
@@ -25,7 +26,7 @@ import {
 import {useCallback, useEffect, useState, useRef} from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import * as SystemUI from 'expo-system-ui';
-import {Linking, Platform, SafeAreaView, Text, TouchableOpacity, View, Image, ImageBackground, Animated } from 'react-native';
+import { Linking, Platform, SafeAreaView, Text, View, Image, Animated } from 'react-native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {ClickOutsideProvider} from 'react-native-click-outside';
 import {StatusBar} from 'expo-status-bar';
@@ -254,7 +255,7 @@ export default function Root() {
                 position: 'absolute',
                 width: 260,
                 height: 260,
-                backgroundColor: '#FABB5B',
+                backgroundColor: Colors.brand,
                 borderRadius: 12,
                 }}
             />
@@ -271,7 +272,7 @@ export default function Root() {
                 style={{
                 position: 'absolute',
                 bottom: 30,
-                color: '#FABB5B',
+                color: Colors.brand,
                 fontSize: 14,
                 fontWeight: '600',
                 letterSpacing: 1,

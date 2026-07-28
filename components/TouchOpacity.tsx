@@ -1,7 +1,6 @@
 import { Colors } from '@/constants/Colors';
 import React from 'react'
-import { TouchableWithoutFeedback, TouchableOpacity } from 'react-native'
-
+import { TouchableOpacity } from 'react-native';
 const TouchOpacity = ({
   children,
   bgColor = null,

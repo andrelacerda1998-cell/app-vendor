@@ -17,6 +17,22 @@ export default function AppLayout() {
 
       <Stack.Screen name="(myservices)/myservices" />
 
+      <Stack.Screen name="(support)/support" />
+
+      <Stack.Screen name="(reviews)/reviews" />
+
+      <Stack.Screen name="(mydocuments)/mydocuments" />
+
+      <Stack.Screen name="(history)/history" />
+
+      <Stack.Screen name="(notifications-settings)/notifications-settings" />
+
+      <Stack.Screen name="(hourly-rate)/hourly-rate" />
+
+      <Stack.Screen name="(account-status)/account-status" />
+
+      <Stack.Screen name="(auto-acceptance)/auto-acceptance" />
+
     </Stack>
   );
 }

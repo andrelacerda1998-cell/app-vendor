@@ -1,5 +1,5 @@
 import React from 'react';
-import Svg, {G, Path} from 'react-native-svg';
+import Svg, { Path } from 'react-native-svg';
 
 const PiquetLogo = ({width = 79, height = 20, color = "#1b1b1b"}) => {
     return (

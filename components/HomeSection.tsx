@@ -17,7 +17,7 @@ const HomeSection: FC<HomeSectionProps> = ({
   children
 }) => {
   return (
-    <View className="py-4 flex-1">
+    <View className="py-4">
       <View className="flex-row items-center justify-between px-5">
         <CustomText size="large" color="secondary" boldness="bold" numberOfLines={1} classes="text-lg w-[60%]">
           { title }

@@ -1,20 +1,19 @@
 import { Colors } from '@/constants/Colors';
-import { AntDesign, Entypo, Feather, FontAwesome5 } from '@expo/vector-icons';
+import { AntDesign, Feather, FontAwesome5 } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { BackHandler, Image, ScrollView, View } from 'react-native';
+import { Image, ScrollView, View } from 'react-native';
 import BackHeader from '@/components/app/BackHeader';
 import { CustomText } from "@/components/CustomText";
 import IDomParser from "advanced-html-parser";
 import CustomTouchableOpacity from "@/components/CustomTouchableOpacity";
 import { router } from "expo-router";
-import { ServiceInterface, ServiceStatus } from "@/types/services";
+import { ServiceInterface } from "@/types/services";
 import { useTranslation } from "react-i18next";
 import UserAvatarIcon from "@/assets/icons/user-avatar";
-import { useLocalSearchParams, useSearchParams } from "expo-router/build/hooks";
+import { useLocalSearchParams } from "expo-router/build/hooks";
 import i18n from "@/translation";
 import { useService } from "@/contexts/ServiceContext";
-import TouchOpacity from "@/components/TouchOpacity";
 import * as WebBrowser from 'expo-web-browser';
 import { renderMoney } from "@/utils/money";
 
@@ -121,7 +120,7 @@ const Status = () => {
           <View className="items-center space-y-2 py-6">
             {isLoading ? (
               <View className="rounded-full overflow-hidden w-14 h-14 ">
-                <View className="w-full h-full bg-[#111215]"></View>
+                <View className="w-full h-full bg-card"></View>
               </View>
             ) : (
               <View className="relative flex items-center justify-center h-14 w-14 mx-auto rounded-full overflow-hidden">
@@ -140,10 +139,10 @@ const Status = () => {
             {isLoading ? (
               <View className="items-center w-full">
                 <View className="rounded-full overflow-hidden w-[50%] h-6">
-                  <View className="w-full h-full bg-[#111215]"></View>
+                  <View className="w-full h-full bg-card"></View>
                 </View>
                 <View className="rounded-full overflow-hidden w-[70%] h-4 mt-2">
-                  <View className="w-full h-full bg-[#111215]"></View>
+                  <View className="w-full h-full bg-card"></View>
                 </View>
               </View>
             ) : (
@@ -169,15 +168,15 @@ const Status = () => {
               <View className="w-full">
                 <View className="items-center">
                   <View className="rounded-full overflow-hidden w-24 h-24 mt-2">
-                    <View className="w-full h-full bg-[#111215]"></View>
+                    <View className="w-full h-full bg-card"></View>
                   </View>
                 </View>
                 <View className="items-center mt-4">
                   <View className="rounded-full overflow-hidden w-[50%] h-6">
-                    <View className="w-full h-full bg-[#111215]"></View>
+                    <View className="w-full h-full bg-card"></View>
                   </View>
                   <View className="rounded-full overflow-hidden w-[70%] h-4 mt-2">
-                    <View className="w-full h-full bg-[#111215]"></View>
+                    <View className="w-full h-full bg-card"></View>
                   </View>
                 </View>
               </View>
@@ -205,28 +204,28 @@ const Status = () => {
           <View>
             <View className="flex-row justify-between items-center mt-4">
               <View className="rounded-full overflow-hidden w-[33%] h-6">
-                <View className="w-full h-full bg-[#111215]"></View>
+                <View className="w-full h-full bg-card"></View>
               </View>
               <View className="rounded-full overflow-hidden w-[20%] h-6">
-                <View className="w-full h-full bg-[#111215]"></View>
+                <View className="w-full h-full bg-card"></View>
               </View>
             </View>
 
             <View className="flex-row justify-between items-center mt-4">
               <View className="rounded-full overflow-hidden w-[30%] h-6">
-                <View className="w-full h-full bg-[#111215]"></View>
+                <View className="w-full h-full bg-card"></View>
               </View>
               <View className="rounded-full overflow-hidden w-[50%] h-6">
-                <View className="w-full h-full bg-[#111215]"></View>
+                <View className="w-full h-full bg-card"></View>
               </View>
             </View>
 
             <View className="flex-row justify-between items-center mt-4">
               <View className="rounded-full overflow-hidden w-[35%] h-6">
-                <View className="w-full h-full bg-[#111215]"></View>
+                <View className="w-full h-full bg-card"></View>
               </View>
               <View className="rounded-full overflow-hidden w-[40%] h-6">
-                <View className="w-full h-full bg-[#111215]"></View>
+                <View className="w-full h-full bg-card"></View>
               </View>
             </View>
           </View>

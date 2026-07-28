@@ -1,10 +1,8 @@
-import { ThemedText } from '@/components/ThemedText';
 import { Colors } from '@/constants/Colors';
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { BackHandler, SafeAreaView, StatusBar, View } from 'react-native';
-import TouchOpacity from '@/components/TouchOpacity';
+import React, { useEffect, useState } from 'react';
+import { BackHandler, View } from 'react-native';
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useApi } from '@/contexts/ApiContext';
 import { API_ROUTES } from '@/constants/ApiRoutes';
@@ -83,7 +81,6 @@ const ServiceProposalBottomSheet = () => {
           closeAfterMSeconds: 3000,
           closeOnClickOutside: true,
         })
-        // console.log({data}, 'data before setting open service')
         if (data.data.service) {
           setOpenService(data.data.service);
           setPendingService(null);
@@ -96,8 +93,8 @@ const ServiceProposalBottomSheet = () => {
       .catch((error: any) => {
         openDialog({
           icon: <XIcon color={Colors.primary} />,
-          title: t('errors.title'),
-          subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('errors.occurred_an_error'),
+          title: t('errors.service_accept.title'),
+          subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('errors.service_accept.subtitle'),
           closeAfterMSeconds: 2000,
           closeOnClickOutside: true,
         })
@@ -136,8 +133,8 @@ const ServiceProposalBottomSheet = () => {
       .catch((error: any) => {
         openDialog({
           icon: <XIcon color={Colors.primary} />,
-          title: t('errors.title'),
-          subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('errors.occurred_an_error'),
+          title: t('errors.service_refuse.title'),
+          subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('errors.service_refuse.subtitle'),
           closeAfterMSeconds: 2000,
           closeOnClickOutside: true,
         })

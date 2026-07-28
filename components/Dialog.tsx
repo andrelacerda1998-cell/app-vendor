@@ -1,6 +1,6 @@
 import { useDialog } from "@/contexts/DialogContext";
 import React, { useEffect } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { CustomText } from "./CustomText";
 import CustomTouchableOpacity from "./CustomTouchableOpacity";
 import { useClickOutside } from "react-native-click-outside";

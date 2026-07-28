@@ -1,8 +1,8 @@
 import {Colors} from "@/constants/Colors";
 import BackHeader from "@/components/app/BackHeader";
 import {CustomText} from "@/components/CustomText";
-import {Alert, Image, KeyboardAvoidingView, Platform, ScrollView, View} from "react-native";
-import React, {useEffect, useRef, useState} from "react";
+import { Image, KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
+import React, { useEffect, useState } from "react";
 import {useSession} from "@/contexts/SessionContext";
 import CustomTouchableOpacity from "@/components/CustomTouchableOpacity";
 import {Entypo, Feather} from "@expo/vector-icons";
@@ -44,7 +44,6 @@ export default function Documents(){
         }
     }, [asset]);
 
-    // console.log({asset, isOpen, documentType, error, loadingSubmit});
     // const handleSelectFile = async (typeId) => {
     //     Alert.alert(
     //         t('documents.select_file.title'),
@@ -62,7 +61,7 @@ export default function Documents(){
             const { status } = await ImagePicker.requestCameraPermissionsAsync();
             if (status !== 'granted') {
                 openDialog({
-                    title: t('errors.title'),
+                    title: t('errors.documents_permission.title'),
                     subtitle: t('auth.sign_up.documents.camera_permission_required'),
                     icon: <XIcon color={Colors.primary}/>,
                     closeAfterMSeconds: 2000,
@@ -82,7 +81,7 @@ export default function Documents(){
                 setDocumentType(typeId);
             }
         } catch (error: any) {
-            setError(error?.message ?? t('errors.occurred_an_error'))
+            setError(error?.message ?? t('errors.documents_pick.subtitle'))
         }
         setIsOpen(null);
     };
@@ -92,7 +91,7 @@ export default function Documents(){
             const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
             if (status !== 'granted') {
                 openDialog({
-                    title: t('errors.title'),
+                    title: t('errors.documents_permission.title'),
                     subtitle: t('auth.sign_up.documents.library_permission_required'),
                     icon: <XIcon color={Colors.primary}/>,
                     closeAfterMSeconds: 2000,
@@ -112,7 +111,7 @@ export default function Documents(){
                 setAsset(result.assets[0]);
             }
         } catch (error: any) {
-            setError(error?.message ?? t('errors.occurred_an_error'))
+            setError(error?.message ?? t('errors.documents_pick.subtitle'))
         }
         setIsOpen(null);
     };
@@ -143,7 +142,6 @@ export default function Documents(){
             name: asset?.fileName ?? 'Image',
             type: asset?.mimeType
         })
-        // console.log(JSON.stringify(form), 'form before sending for post documents')
         api.post(API_ROUTES.POST_DOCUMENTS, form, {
             headers: {
                 'Content-Type': 'multipart/form-data',
@@ -151,7 +149,6 @@ export default function Documents(){
             }
         })
             .then(res => {
-                // console.log(res, 'res after post documents over here')
                 openDialog({
                     icon: <CheckMark color={Colors.primary}/>,
                     title: t('auth.sign_up.documents.submit.success.title'),
@@ -163,7 +160,7 @@ export default function Documents(){
             .catch(error => {
                 if (error?.response?.status === 422) {
                     openDialog({
-                        title: t('errors.title'),
+                        title: t('errors.documents_submit.title'),
                         subtitle: t('auth.sign_up.documents.submit.error_file_too_big'),
                         icon: <XIcon color={Colors.primary}/>,
                         closeAfterMSeconds: 2000,
@@ -171,7 +168,7 @@ export default function Documents(){
                     })
                 } else {
                     openDialog({
-                        title: t('errors.title'),
+                        title: t('errors.documents_submit.title'),
                         subtitle: error?.response?.data?.message || t('auth.sign_up.documents.submit.error'),
                         icon: <XIcon color={Colors.primary}/>,
                         closeAfterMSeconds: 2000,
@@ -235,7 +232,7 @@ export default function Documents(){
                                                     <Entypo name="time-slot" size={24} color={Colors.support_primary} />
                                                 </View>
                                             </View>
-                                            <View className="h-[1px] w-full bg-[#2F2F2F] rounded-full mt-6"></View>
+                                            <View className="h-[1px] w-full bg-line rounded-full mt-6"></View>
                                         </View>
                                     ))
                                 }
@@ -268,7 +265,7 @@ export default function Documents(){
                                                     <Entypo name="chevron-right" size={24} color={Colors.support_primary} />
                                                 </View>
                                             </View>
-                                            <View className="h-[1px] w-full bg-[#2F2F2F] rounded-full mt-6"></View>
+                                            <View className="h-[1px] w-full bg-line rounded-full mt-6"></View>
                                         </CustomTouchableOpacity>
                                     ))
                                 }
@@ -300,7 +297,7 @@ export default function Documents(){
                                                     <Entypo name="chevron-right" size={24} color={Colors.support_primary} />
                                                 </View>
                                             </View>
-                                            <View className="h-[1px] w-full bg-[#2F2F2F] rounded-full mt-6"></View>
+                                            <View className="h-[1px] w-full bg-line rounded-full mt-6"></View>
                                         </CustomTouchableOpacity>
                                     ))
                                 }
@@ -357,7 +354,6 @@ const ConfirmAssetPopup = ({
 }) => {
     const { t } = useTranslation();
 
-    // console.log({asset}, 'asset in confirm asset popup')
 
     return (
         <Modal

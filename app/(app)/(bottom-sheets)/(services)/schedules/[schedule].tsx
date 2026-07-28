@@ -342,7 +342,7 @@ const ServiceSchedulesBottomSheet = () => {
           ListEmptyComponent={
             <View className="flex-1 items-center justify-center py-12">
               <CustomText color="gray_medium" boldness="medium">
-                {t("services.empty", { defaultValue: "You don't have any services yet" })}
+                {t("services.empty")}
               </CustomText>
             </View>
           }
@@ -365,7 +365,7 @@ const ServiceSchedulesBottomSheet = () => {
 
             return (
               <View className="mb-4">
-                <View className="rounded-2xl border border-[#2C2C2C] bg-[#1F1F1F] px-4 py-4">
+                <View className="rounded-2xl border border-[#2C2C2C] bg-card px-4 py-4">
                   <View className="flex-row items-start justify-between">
                     <View className="flex-1 pr-3">
                       <View className="flex-row items-center flex-wrap">

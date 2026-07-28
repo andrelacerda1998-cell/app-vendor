@@ -1,19 +1,13 @@
-import { ThemedText } from '@/components/ThemedText'
-import { Colors } from '@/constants/Colors'
+import { CustomText } from '@/components/CustomText'
 import { Entypo, FontAwesome6, MaterialCommunityIcons } from '@expo/vector-icons'
 import { router } from 'expo-router'
-import { StatusBar } from 'expo-status-bar'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Modal, Pressable, ScrollView, TouchableOpacity, View } from 'react-native'
-import TouchOpacity from '@/components/TouchOpacity'
 import BackHeader from '@/components/app/BackHeader'
 import { useApi } from '@/contexts/ApiContext'
-import { API_ROUTES } from '@/constants/ApiRoutes'
 import { useSession } from '@/contexts/SessionContext'
 import { useTranslation } from "react-i18next"
-import CustomTouchableOpacity from "@/components/CustomTouchableOpacity"
-import XIcon from "@/assets/icons/x"
 import EmailConfirmation from "@/components/EmailConfirmation"
 
 enum Status {
@@ -46,9 +40,9 @@ const ConfirmEmail = () => {
       <BackHeader
         backButtonColor="secondary"
         middleItem={() => (
-          <ThemedText type="defaultBold" color={Colors.primary} numberOfLines={1}>
+          <CustomText size="medium" boldness="bold" color="primary" numberOfLines={1}>
             {t('session.confirm_email.header')}
-          </ThemedText>
+          </CustomText>
         )}
         onBack={onClose}
       />

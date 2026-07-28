@@ -1,113 +1,211 @@
+/**
+ * OS MEUS SERVIÇOS — áreas de operação do técnico e, dentro de cada uma, os tipos
+ * de serviço que ele executa com a duração estimada e o que ganha por serviço.
+ *
+ * NOTA sobre os dados: `time` (minutos) e `starts_from` (€) existem na tabela
+ * `services_types` do backend mas o endpoint do vendor ainda não os devolve, por isso
+ * os chips de duração/ganho só aparecem quando os campos chegarem — nunca são inventados.
+ * Ver utils/services.ts para o detalhe.
+ */
 import React, { useState } from 'react';
 import { View, ScrollView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
+import { Feather } from '@expo/vector-icons';
 import { useService } from "@/contexts/ServiceContext";
+import { useSession } from "@/contexts/SessionContext";
 import { useTranslation } from "react-i18next";
 import { CustomText } from '@/components/CustomText';
 import BackHeader from "@/components/app/BackHeader";
-import CustomTouchableOpacity from "@/components/CustomTouchableOpacity";
-import OperationAreaCardCounter from "@/components/OperationAreaCardCounter";
+import TouchOpacity from '@/components/TouchOpacity';
+import { Card, EmptyState, IconTile, SectionHeader } from '@/components/ui';
 import { Colors } from '@/constants/Colors';
+import { estimateVendorEarning, formatDuration, formatEuro } from '@/utils/services';
+import { ServiceTypeInterface } from '@/types/services';
 import BoltSm from "@/assets/icons/boltsm";
 
 interface MyServicesProps{}
 
 
 const MyServices: React.FC<MyServicesProps> = () => {
-const { t } = useTranslation();
-const { myOperationAreas} = useService();
+  const { t } = useTranslation();
+  const { myOperationAreas } = useService();
+  const { vendorData } = useSession();
 
-const [isLoading, setIsLoading] = useState({
-       wallet: false,
-       operationAreas: false,
-       vendorStatus: false
-});
+  const [expanded, setExpanded] = useState<number | null>(null);
+
+  const [isLoading, setIsLoading] = useState({
+    wallet: false,
+    operationAreas: false,
+    vendorStatus: false
+  });
+
+  const hourRate = vendorData?.price_rate != null ? Number(vendorData.price_rate) : null;
+
+  /** Linha de um tipo de serviço: nome + duração estimada + ganho (quando existirem). */
+  const ServiceTypeRow = ({ serviceType, first }: { serviceType: ServiceTypeInterface; first: boolean }) => {
+    const duration = formatDuration(serviceType.time);
+    const earning = formatEuro(estimateVendorEarning(hourRate, serviceType.time));
+
+    return (
+      <View>
+        {!first && <View style={{ height: 1, backgroundColor: Colors.line }} className="my-3" />}
+        <View className="flex-row items-start">
+          <CustomText color="secondary" size="small" boldness="medium" classes="flex-1 mr-3" numberOfLines={2}>
+            {serviceType.name}
+          </CustomText>
+          {!!earning && (
+            <CustomText color="brand" size="small" boldness="bold">
+              {earning}
+            </CustomText>
+          )}
+        </View>
+        {!!duration && (
+          <View className="flex-row items-center mt-1">
+            <Feather name="clock" size={12} color={Colors.muted} />
+            <CustomText color="muted" size="extraSmall" classes="ml-1.5">
+              {t('my_services.duration', { value: duration })}
+            </CustomText>
+          </View>
+        )}
+      </View>
+    );
+  };
 
   return (
-       <SafeAreaView className={`pt-5 h-full relative bg-strongest ${Platform.OS === 'android' ? 'pb-[100px]' : 'pb-[50px]'}`}>
-               <View className="px-3 bg-strongest rounded-b-3xl">
-                     <BackHeader
-                            backButtonColor="secondary"
-                            middleItem={() => (
-                              <CustomText color="secondary" boldness="bold" numberOfLines={1}>
-                                {t('profile.my_profile.labels.my_services')}
-                              </CustomText>
-                            )}
-                            otherClasses="pb-5 mt-5"
-                     />
-                  <ScrollView className="flex-grow-0">
-                      <View className="py-2 flex-1">
-                            <View className="flex-row items-center justify-between px-3">
-                                   <CustomText size="large" color="secondary" boldness="medium" numberOfLines={1} classes="text-lg w-[60%]">
-                                          {t('home.my_areas')}
-                                   </CustomText>
-                                   <CustomTouchableOpacity
-                                          type="transparent"
-                                          size="small"
-                                          classes="p-0"
-                                          onPress={() => {
-                                          router.push('/(app)/(bottom-sheets)/areas');
-                                          }}
-                                   >
-                                          <CustomText size="extraSmall" color="gray_light" boldness="medium" numberOfLines={1}>
-                                          {t('home.my_areas_change')}
-                                          </CustomText>
-                                   </CustomTouchableOpacity>
-                     </View>
+    <SafeAreaView className={`flex-1 bg-bg ${Platform.OS === 'android' ? 'pb-[100px]' : 'pb-[50px]'}`}>
+      <BackHeader
+        backButtonColor="secondary"
+        middleItem={() => (
+          <CustomText color="secondary" boldness="bold" numberOfLines={1}>
+            {t('profile.my_profile.labels.my_services')}
+          </CustomText>
+        )}
+        otherClasses="px-5 py-4"
+      />
 
-                            {isLoading.operationAreas ? (
-                            <View className="flex-1">
-                                   <View className="pt-4 px-3 items-center space-y-4">
-                                   {
-                                          Array.from({ length: 5 }).map((_, index) => (
-                                                 <View key={`loading-opa-${index}`} className="w-full rounded-xl overflow-hidden h-16 relative">
-                                                        <View className="w-full h-full bg-[#111215]"></View>
-                                                        <View className="absolute top-3 left-3 h-10 w-10 rounded-full overflow-hidden">
-                                                        <View className="w-full h-16 bg-[#272727]"></View>
-                                                 </View>
+      <ScrollView className="flex-1 px-5" contentContainerStyle={{ paddingBottom: 32 }}>
+        <SectionHeader
+          title={t('home.my_areas')}
+          action={t('home.my_areas_change')}
+          onAction={() => router.push('/(app)/(bottom-sheets)/areas')}
+        />
 
-                                                 <View className="absolute top-3 left-14 w-[45%] items-center p-3 rounded-full overflow-hidden">
-                                                         <View className="w-full h-5 bg-[#272727] rounded-full"></View>
-                                                 </View>
-                                                 </View>
-                                          ))
-                                   }
-                                   </View>
-                            </View>
-                            ) : (
-                            myOperationAreas && myOperationAreas.length > 0 ? (
-                                   <View className="px-3 flex-1 space-y-4 pt-4">
-                                   {
-                                   myOperationAreas.slice(0,5).map((operationArea) => {
-                                   if (!operationArea?.services_types_subscribed || operationArea?.services_types_subscribed.length === 0) {
-                                          return null;
-                                   }
+        {isLoading.operationAreas ? (
+          <View className="space-y-3">
+            {Array.from({ length: 5 }).map((_, index) => (
+              <Card key={`loading-opa-${index}`}>
+                <View className="flex-row items-center">
+                  <View
+                    className="h-10 w-10 rounded-xl"
+                    style={{ backgroundColor: Colors.card_high }}
+                  />
+                  <View
+                    className="h-4 rounded-full ml-4 flex-1"
+                    style={{ backgroundColor: Colors.card_high }}
+                  />
+                </View>
+              </Card>
+            ))}
+          </View>
+        ) : myOperationAreas && myOperationAreas.length > 0 ? (
+          <View className="space-y-3">
+            {myOperationAreas.slice(0, 5).map((operationArea) => {
+              const subscribedIds = operationArea?.services_types_subscribed;
+              if (!subscribedIds || subscribedIds.length === 0) {
+                return null;
+              }
 
-                                          return (
-                                          <View className="w-full" key={operationArea.id}>
-                                                 <OperationAreaCardCounter
-                                                        Icon={() => <BoltSm color={Colors.support_primary} size={18} filled={false}/>}
-                                                        label={operationArea.name}
-                                                        count={operationArea?.services_types_subscribed?.length}
-                                                 />
-                                          </View>
-                                          )
-                                   })}
-                                   </View>
-                            ) : (
-                                   <View className="px-3 pt-4">
-                                          <CustomText size="small" color="gray_medium" numberOfLines={1}>
-                                          {t('home.my_areas_empty')}
-                                          </CustomText>
-                                   </View>
-                            )
-                            )}
-                     </View>
-                  </ScrollView>   
-               </View>       
-       </SafeAreaView>
+              // Só os tipos de serviço a que o técnico está inscrito.
+              const subscribed = (operationArea?.services_types ?? []).filter(
+                (serviceType) => subscribedIds.includes(serviceType.id)
+              );
+              const isOpen = expanded === operationArea.id;
+
+              return (
+                <Card key={operationArea.id}>
+                  <TouchOpacity
+                    onPress={() => setExpanded((prev) => (prev === operationArea.id ? null : operationArea.id))}
+                    otherClasses="flex-row items-center"
+                  >
+                    <IconTile>
+                      <BoltSm color={Colors.brand} size={18} filled={false} />
+                    </IconTile>
+                    <CustomText
+                      boldness="semiBold"
+                      color="secondary"
+                      size="medium"
+                      classes="flex-1 ml-3"
+                      numberOfLines={2}
+                    >
+                      {operationArea.name}
+                    </CustomText>
+                    <CustomText color="muted" boldness="semiBold" size="medium" classes="mr-2">
+                      {String(subscribedIds.length)}
+                    </CustomText>
+                    {subscribed.length > 0 && (
+                      <Feather
+                        name={isOpen ? 'chevron-up' : 'chevron-down'}
+                        size={18}
+                        color={Colors.muted}
+                      />
+                    )}
+                  </TouchOpacity>
+
+                  {isOpen && subscribed.length > 0 && (
+                    <View className="mt-3 pt-3" style={{ borderTopWidth: 1, borderTopColor: Colors.line }}>
+                      {subscribed.map((serviceType, index) => (
+                        <ServiceTypeRow
+                          key={serviceType.id}
+                          serviceType={serviceType}
+                          first={index === 0}
+                        />
+                      ))}
+                    </View>
+                  )}
+                </Card>
+              )
+            })}
+          </View>
+        ) : (
+          <EmptyState icon="zap" title={t('home.my_areas_empty')} />
+        )}
+
+        {!!hourRate && (
+          <>
+            <SectionHeader title={t('my_services.earnings_title')} classes="mt-8" />
+            <Card>
+              <View className="flex-row items-center">
+                <IconTile>
+                  <Feather name="dollar-sign" size={18} color={Colors.brand} />
+                </IconTile>
+                <View className="flex-1 ml-3">
+                  <CustomText color="muted" size="extraSmall">
+                    {t('my_services.hour_rate_label')}
+                  </CustomText>
+                  <CustomText color="brand" size="large" boldness="bold">
+                    {t('my_services.hour_rate_value', { value: formatEuro(hourRate) })}
+                  </CustomText>
+                </View>
+                <TouchOpacity
+                  onPress={() => router.push('/(app)/(pages)/(hourly-rate)/hourly-rate')}
+                  otherClasses="flex-row items-center"
+                >
+                  <CustomText color="brand" size="extraSmall" boldness="bold">
+                    {t('my_services.change_rate')}
+                  </CustomText>
+                  <Feather name="chevron-right" size={16} color={Colors.brand} />
+                </TouchOpacity>
+              </View>
+              <CustomText color="muted" size="extraSmall" classes="mt-3" numberOfLines={3}>
+                {t('my_services.earnings_hint')}
+              </CustomText>
+            </Card>
+          </>
+        )}
+      </ScrollView>
+    </SafeAreaView>
   )
-} 
+}
 
 export default MyServices;

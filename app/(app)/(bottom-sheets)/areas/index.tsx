@@ -4,6 +4,7 @@ import { FlatList, View } from 'react-native';
 import { useApi } from '@/contexts/ApiContext';
 import { API_ROUTES } from '@/constants/ApiRoutes';
 import { useService } from "@/contexts/ServiceContext";
+import { useSession } from "@/contexts/SessionContext";
 import CustomTouchableOpacity from "@/components/CustomTouchableOpacity";
 import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -14,6 +15,7 @@ import { useDialog } from "@/contexts/DialogContext";
 import XIcon from "@/assets/icons/x";
 import { Colors } from "@/constants/Colors";
 import OperationAreaCard from "@/components/OperationAreaCard";
+import { SectionHeader } from "@/components/ui";
 import { Feather } from "@expo/vector-icons";
 
 export type Screen = 'operationAreas' | 'servicesTypes';
@@ -23,6 +25,7 @@ const AreasBottomSheet = () => {
   const { api } = useApi();
   const { openDialog } = useDialog();
   const { getOperationAreas, operationAreas } = useService();
+  const { vendorData } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const [selectedServicesTypes, setSelectedServicesTypes] = useState<ServiceTypeInterface['id'][]>(
     operationAreas?.map(area => area?.services_types_subscribed || []).flat() || []
@@ -54,8 +57,8 @@ const AreasBottomSheet = () => {
     } catch (error: any) {
       openDialog({
         icon: <XIcon color={Colors.primary} />,
-        title: t('errors.title'),
-        subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('errors.occurred_an_error'),
+        title: t('errors.areas_save.title'),
+        subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('errors.areas_save.subtitle'),
         closeAfterMSeconds: 2000,
         closeOnClickOutside: true,
       })
@@ -74,31 +77,35 @@ const AreasBottomSheet = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-primary">
+    <SafeAreaView className="flex-1 bg-bg">
       <BackHeader
         backButtonColor="secondary"
         middleItem={() => (
-          <CustomText color="secondary" boldness="medium" numberOfLines={1}>
+          <CustomText color="secondary" boldness="bold" numberOfLines={1}>
             {t('operation_areas.services_types.header')}
           </CustomText>
         )}
-        otherClasses="p-5"
+        otherClasses="px-5 py-4"
       />
-      <View className="flex-1 p-5">
+      <View className="flex-1 px-5">
+        <SectionHeader title={t('operation_areas.services_types.subheader')} />
         <View className="mb-5 flex-1">
           <FlatList
             data={operationAreas}
             keyExtractor={(item) => item.id.toString()}
-            ItemSeparatorComponent={() => <View className="h-4" />}
+            ItemSeparatorComponent={() => <View className="h-3" />}
+            contentContainerStyle={{ paddingBottom: 16 }}
+            showsVerticalScrollIndicator={false}
             renderItem={({ item }) => {
               return (
                 <OperationAreaCard
                   key={item.id}
-                  Icon={() => <Feather name="tool" size={32} color={Colors.support_primary} />}
+                  Icon={() => <Feather name="tool" size={18} color={Colors.brand} />}
                   label={item.name}
                   onServiceTypePress={toggleServiceType}
                   servicesTypes={item.services_types}
                   selectedServicesTypes={selectedServicesTypes}
+                  hourRate={vendorData?.price_rate != null ? Number(vendorData.price_rate) : null}
                 />
               )
             }}
@@ -107,11 +114,13 @@ const AreasBottomSheet = () => {
         <CustomTouchableOpacity
           size="large"
           type="support_primary"
-          textColor="primary"
-          textBoldness="semiBold"
+          textSize="medium"
+          textColor="on_brand"
+          textBoldness="bold"
           text={t('operation_areas.update_skills')}
           onPress={handleUpdateServicesTypes}
           disabled={isLoading}
+          classes="mb-4"
         />
       </View>
     </SafeAreaView>

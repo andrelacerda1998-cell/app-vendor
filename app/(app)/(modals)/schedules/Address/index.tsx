@@ -1,17 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  Modal,
-  SafeAreaView,
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Pressable,
-} from "react-native";
+import { Modal, SafeAreaView, View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView, Pressable } from "react-native";
 import createStyles from "./index.module";
 import {useTranslation} from "react-i18next";
 import {AddressData} from "@/types/schedule";

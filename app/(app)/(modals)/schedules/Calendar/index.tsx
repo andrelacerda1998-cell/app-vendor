@@ -1,16 +1,7 @@
 import React, { useMemo, useState } from "react";
-import {
-  Modal,
-  View,
-  Text,
-  Pressable,
-  TouchableOpacity,
-  StyleSheet,
-  SafeAreaView,
-  ScrollView,
-  Dimensions,
-} from "react-native";
+import { Modal, View, Text, Pressable, TouchableOpacity, SafeAreaView, ScrollView, Dimensions } from "react-native";
 import ArrowIcon from "@/assets/icons/arrow";
+import { Colors } from "@/constants/Colors";
 import createStyle from './index.module';
 import {useTranslation} from "react-i18next";
 
@@ -283,7 +274,7 @@ const Calendar = ({
                     activeOpacity={0.8}
                   >
                     <Text style={styles.blockTime}>{b.time}</Text>
-                    <ArrowIcon color={"#f7b85a"} position={openDropdownId === b.id ? "up" : "down"} size={12} />
+                    <ArrowIcon color={Colors.brand} position={openDropdownId === b.id ? "up" : "down"} size={12} />
                   </TouchableOpacity>
 
                   {openDropdownId === b.id && renderDropdown(b.id, b.time)}

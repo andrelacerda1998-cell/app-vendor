@@ -1,24 +1,12 @@
-import { ThemedText } from '@/components/ThemedText'
-import { Colors } from '@/constants/Colors'
 import { Entypo, FontAwesome6, MaterialCommunityIcons } from '@expo/vector-icons'
 import { router } from 'expo-router'
-import { StatusBar } from 'expo-status-bar'
-import React, { useEffect, useState } from 'react'
+import React from 'react';
 import { SafeAreaView } from "react-native-safe-area-context";
-import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native'
-import TouchOpacity from '@/components/TouchOpacity'
+import { View } from 'react-native';
 import BackHeader from '@/components/app/BackHeader'
-import { useApi } from '@/contexts/ApiContext'
-import { API_ROUTES } from '@/constants/ApiRoutes'
-import { useSession } from '@/contexts/SessionContext'
 import { useTranslation } from "react-i18next"
-import CustomTouchableOpacity from "@/components/CustomTouchableOpacity"
 import { CustomText } from "@/components/CustomText"
 import { Controller, useForm } from "react-hook-form"
-import CustomTextInput from "@/components/CustomTextInput"
-import { OtpInput } from "react-native-otp-entry";
-import { useDialog } from "@/contexts/DialogContext"
-import XIcon from "@/assets/icons/x"
 import SmsVerification from "@/components/SmsVerification"
 
 
@@ -40,9 +28,9 @@ const Sms = () => {
       <BackHeader
         backButtonColor="secondary"
         middleItem={() => (
-          <ThemedText type="defaultBold" color={Colors.secondary} numberOfLines={1}>
+          <CustomText size="medium" boldness="bold" color="secondary" numberOfLines={1}>
             {t('session.sms.header')}
-          </ThemedText>
+          </CustomText>
         )}
         onBack={onClose}
       />
