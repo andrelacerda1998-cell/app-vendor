@@ -1,24 +1,18 @@
-import { ThemedText } from '@/components/ThemedText'
 import { Colors } from '@/constants/Colors'
-import { AntDesign, Entypo, Feather, FontAwesome6, Ionicons, MaterialCommunityIcons, MaterialIcons, Octicons } from '@expo/vector-icons'
+import { MaterialIcons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router'
-import { StatusBar } from 'expo-status-bar'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react';
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Alert, FlatList, Image, ImageSourcePropType, Pressable, ScrollView, TouchableOpacity, View } from 'react-native'
-import TouchOpacity from '@/components/TouchOpacity'
+import { ScrollView, View } from 'react-native';
 import BackHeader from '@/components/app/BackHeader'
 import { Picker, PickerIOS } from '@react-native-picker/picker'
 import { useApi } from '@/contexts/ApiContext'
 import { API_ROUTES } from '@/constants/ApiRoutes'
-import axios from 'axios'
-import { jwtDecode } from 'jwt-decode'
 import { useSession } from '@/contexts/SessionContext'
 import useEcho from '@/hooks/echo'
 import CustomTouchableOpacity from "@/components/CustomTouchableOpacity"
 import { CustomText } from "@/components/CustomText"
 import { useService } from "@/contexts/ServiceContext"
-import ChatIcon from "@/assets/icons/chat"
 import { useDialog } from "@/contexts/DialogContext"
 import { useTranslation } from "react-i18next"
 import { renderMoney } from "@/utils/money"

@@ -13,6 +13,7 @@ import {showLocation} from "react-native-map-link";
 import {useApi} from "@/contexts/ApiContext";
 import {API_ROUTES} from "@/constants/ApiRoutes";
 import decodePolyline from "@/utils/map/decodePolyline";
+import { useTranslation } from "react-i18next";
 
 const isValidCoordinate = (coord?: number) =>
     coord !== undefined && coord !== null && !isNaN(coord);
@@ -117,6 +118,7 @@ const formatServiceAddress = (address?: {
 };
 
 const Progress = () => {
+  const { t } = useTranslation();
   const { openService, setOpenService } = useService();
   const { api } = useApi();
   const mapRef = useRef<MapView | null>(null);
@@ -125,10 +127,6 @@ const Progress = () => {
   const [isFollowing, setIsFollowing] = useState(true);
   const [contentHeight, setContentHeight] = useState(0);
   const [routeCoordinates, setRouteCoordinates] = useState<LatLng[]>([]);
-
-  useEffect(() => {
-    console.log("openService:", openService);
-  }, [openService]);
 
   const destinationLat = parseFloat(String(openService?.address?.latitude));
   const destinationLng = parseFloat(String(openService?.address?.longitude));
@@ -145,7 +143,7 @@ const Progress = () => {
           alwaysIncludeGoogle: true,
           appsBlackList: ['uber'],
           directionsMode: "car",
-          dialogTitle: "Go to location",
+          dialogTitle: t('services.service.status.go_to_location'),
           dialogMessage: " "
       })
   }

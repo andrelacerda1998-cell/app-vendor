@@ -1,19 +1,15 @@
 import { Colors } from '@/constants/Colors';
-import { Entypo, Feather, FontAwesome6, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { StatusBar } from 'expo-status-bar';
+import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { BackHandler, Image, ScrollView, View, Text } from 'react-native';
+import { ScrollView, View, TouchableOpacity } from 'react-native';
 import BackHeader from '@/components/app/BackHeader';
 import { useSession } from '@/contexts/SessionContext';
 import { CustomText } from "@/components/CustomText";
 import { useService } from "@/contexts/ServiceContext";
 import IDomParser from "advanced-html-parser";
 import CustomTouchableOpacity from "@/components/CustomTouchableOpacity";
-import ChatIcon from "@/assets/icons/chat";
-import LocationIcon from "@/assets/icons/location";
 import CheckMark from "@/assets/icons/check-mark";
-import CircledCheckMark from "@/assets/icons/circled-check-mark";
 import { router } from "expo-router";
 import { useApi } from "@/contexts/ApiContext";
 import { API_ROUTES } from "@/constants/ApiRoutes";
@@ -21,63 +17,106 @@ import { useDialog } from "@/contexts/DialogContext";
 import XIcon from "@/assets/icons/x";
 import { ServiceStatus } from "@/types/services";
 import { useTranslation } from "react-i18next";
-import UserAvatarIcon from "@/assets/icons/user-avatar";
 import { renderMoney } from "@/utils/money";
-import CircledCheckMarkFilled from "@/assets/icons/circled-check-mark-1";
-import CircledX from "@/assets/icons/circled-x-mark-1";
+import ServiceExtras, { ServiceExtrasActions, type ExtrasSheet } from "@/components/services/ServiceExtras";
+import ServicePhotos from "@/components/services/ServicePhotos";
+import { Card, HeroCard, IconTile } from "@/components/ui";
+import { useActionSheet } from "@expo/react-native-action-sheet";
+import { callPhone, navApps, openNavigation } from "@/utils/fieldActions";
+import { track, AnalyticsEvent } from "@/utils/analytics";
 
 interface Details{
   includes: string[];
   excludes: string[];
 };
 
-const JobDetail = ({ label, value }: {label: string, value: string}) => (
-  <View className="flex-row justify-between items-center">
-    <CustomText color="gray_medium" boldness="semiBold" classes="w-[50%]" numberOfLines={1}>
-      {label}
-    </CustomText>
-    <View className="items-end w-[48%]">
-      <CustomText color="secondary" size="large" boldness="semiBold" numberOfLines={1}>
-        {value}
-      </CustomText>
-    </View>
+const STATUS_RANK: Record<string, number> = {
+  [ServiceStatus.ACCEPTED]: 1,
+  [ServiceStatus.ARRIVED]: 2,
+  [ServiceStatus.FINISHED]: 3,
+};
+
+const Stepper = ({ steps, currentRank }: { steps: { label: string; rank: number }[]; currentRank: number }) => (
+  <View className="flex-row items-start">
+    {steps.map((s, i) => {
+      const reached = currentRank >= s.rank;
+      const nextReached = i < steps.length - 1 && currentRank >= steps[i + 1].rank;
+      // A etapa atual é a última já alcançada.
+      const isCurrent = reached && (i === steps.length - 1 || currentRank < steps[i + 1].rank);
+      return (
+        <React.Fragment key={i}>
+          <View className="flex-1 items-center">
+            <Ionicons
+              name={reached ? "checkmark-circle" : "ellipse-outline"}
+              size={22}
+              color={reached ? Colors.success : Colors.muted}
+            />
+            {/* Duas linhas: "Em execução" e "A caminho" não cabem numa só num
+                ecrã estreito, e cortavam para "Em exe…". A etapa atual fica a
+                cheio; as restantes recuam, para o olho ir direto ao ponto certo. */}
+            <CustomText
+              size="extraSmall"
+              boldness={isCurrent ? "bold" : reached ? "semiBold" : "regular"}
+              color={isCurrent ? "secondary" : reached ? "secondary" : "muted"}
+              numberOfLines={2}
+              classes="mt-1 text-center"
+              style={{ lineHeight: 14, opacity: isCurrent ? 1 : reached ? 0.75 : 0.6 }}
+            >
+              {s.label}
+            </CustomText>
+          </View>
+          {i < steps.length - 1 && (
+            // Traço de largura fixa: com `flex-1` os três conectores comiam
+            // metade da barra e as etiquetas ficavam sem espaço para as palavras.
+            <View
+              className="h-0.5"
+              style={{ width: 22, marginTop: 10, backgroundColor: nextReached ? Colors.success : Colors.line }}
+            />
+          )}
+        </React.Fragment>
+      );
+    })}
   </View>
 );
 
 const Action = ({ Icon, label, onPress, disabled, badge }: {Icon: React.FC, label: string, onPress: () => void, disabled: boolean, badge?: number}) => {
   return (
-    <CustomTouchableOpacity
-      classes="w-24 flex items-center justify-start h-full max-h-32"
-      onPress={onPress}
-      disabled={disabled}
-    >
-      <View className="flex flex-col items-center space-y-2">
-        <View className="bg-gray_strong rounded-lg h-14 w-14 p-4 flex items-center justify-center relative">
-          <Icon />
-          {badge !== undefined && badge > 0 && (
-            <View className="bg-error rounded-full h-5 w-5 flex items-center justify-center absolute -top-2 -right-2">
-              <CustomText size="extraSmall" boldness="bold" color="secondary">
-                {badge > 9 ? '9+' : badge}
-              </CustomText>
-            </View>
-          )}
-        </View>
-
-        <CustomText size="extraSmall" boldness="semiBold" color="secondary" classes="text-center" numberOfLines={1}>
-          {label}
-        </CustomText>
+    <CustomTouchableOpacity classes="items-center" onPress={onPress} disabled={disabled}>
+      <View
+        className="rounded-xl h-12 w-12 items-center justify-center relative border"
+        style={{ backgroundColor: Colors.card_high, borderColor: Colors.line }}
+      >
+        <Icon />
+        {badge !== undefined && badge > 0 && (
+          <View
+            className="rounded-full h-5 w-5 items-center justify-center absolute -top-2 -right-2"
+            style={{ backgroundColor: Colors.danger }}
+          >
+            <CustomText size="extraSmall" boldness="bold" color="secondary">
+              {badge > 9 ? '9+' : badge}
+            </CustomText>
+          </View>
+        )}
       </View>
+      <CustomText size="extraSmall" boldness="semiBold" color="muted" classes="text-center mt-1" numberOfLines={1}>
+        {label}
+      </CustomText>
     </CustomTouchableOpacity>
   )
 }
 
 const Status = () => {
   const { t } = useTranslation();
+  const { showActionSheetWithOptions } = useActionSheet();
   const { api } = useApi();
   const { vendorData } = useSession();
   const { openService, setOpenService, unreadMessages, clearUnreadMessages } = useService();
   const { openDialog } = useDialog();
   const [loadingFinishService, setLoadingFinishService] = useState(false);
+  const [busyCta, setBusyCta] = useState(false);
+  // Os botões de extras vivem no rodapé, mas a lista está no conteúdo:
+  // o ecrã guarda qual a folha aberta para os dois partilharem estado.
+  const [extrasSheet, setExtrasSheet] = useState<ExtrasSheet>(null);
   const [ servicesDetail, setServicesDetail] = useState<Details>({ includes: [], excludes: []})
 
   const desc = (text: string) => {
@@ -95,6 +134,7 @@ const Status = () => {
     api.post(API_ROUTES.POST_FINISH_SERVICE(`${openService?.id}`))
       .then(({ data }) => {
         if (data.data.service) setOpenService(data.data.service);
+        track(AnalyticsEvent.SERVICE_COMPLETED, { service_id: Number(openService?.id) });
         openDialog({
           icon: <CheckMark color={Colors.primary} />,
           title: t('services.service.finish.title'),
@@ -107,11 +147,10 @@ const Status = () => {
         })
       })
       .catch((error) => {
-        // console.log({error});
         openDialog({
           icon: <XIcon color={Colors.primary} />,
-          title: t('errors.title'),
-          subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('errors.occurred_an_error'),
+          title: t('errors.service_finish.title'),
+          subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('errors.service_finish.subtitle'),
           closeAfterMSeconds: 3000,
           closeOnClickOutside: true,
         })
@@ -187,8 +226,8 @@ const Status = () => {
         if (error?.response?.status !== 401) {
            openDialog({
              icon: <XIcon color={Colors.secondary} />,
-             title: t("errors.title"),
-             subtitle: t("errors.occurred_an_error"),
+             title: t("errors.service_details.title"),
+             subtitle: t("errors.service_details.subtitle"),
              closeAfterMSeconds: 2000,
              closeOnClickOutside: true,
            });
@@ -209,157 +248,384 @@ const Status = () => {
     handleOperationAreas();
   }, [])
 
+  const svc: any = openService;
+  const onTheWay = !!svc?.on_the_way_at;
+  const status = svc?.status;
+
+  /** Estou a caminho → Cheguei → Concluir */
+  const handlePrimaryAction = async () => {
+    if (status === ServiceStatus.ARRIVED) {
+      handleFinishService();
+      return;
+    }
+    setBusyCta(true);
+    try {
+      const url = onTheWay
+        ? API_ROUTES.POST_ARRIVED_AT_DESTINATION_SERVICE(`${svc?.id}`)
+        : API_ROUTES.VENDOR_SERVICE_ON_THE_WAY(svc?.id);
+      const { data } = await api.post(url);
+      if (data?.data?.service) setOpenService(data.data.service);
+      track(onTheWay ? AnalyticsEvent.SERVICE_STARTED : AnalyticsEvent.TRAVEL_STARTED, {
+        service_id: Number(svc?.id),
+      });
+      // Ao marcar "estou a caminho" o passo seguinte é sempre conduzir até lá:
+      // abrir logo a escolha de navegação poupa um toque no momento em que
+      // o técnico já está a arrancar.
+      if (!onTheWay) startNavigation();
+    } catch (error: any) {
+      openDialog({
+        icon: <XIcon color={Colors.primary} />,
+        title: t('errors.service_status.title'),
+        subtitle: error?.response?.data?.metadata?.message || t('errors.service_status.subtitle'),
+        closeAfterMSeconds: 2500,
+        closeOnClickOutside: true,
+      });
+    } finally {
+      setBusyCta(false);
+    }
+  };
+
+  // 4 passos: Aceite → A caminho → Em execução → Concluído
+  const currentRank =
+    status === ServiceStatus.FINISHED ? 4
+      : status === ServiceStatus.ARRIVED ? 3
+      : onTheWay ? 2
+      : 1;
+
+  const steps = [
+    { label: t("services.service.status.steps.accepted"), rank: 1 },
+    { label: t("services.service.status.steps.on_the_way"), rank: 2 },
+    { label: t("services.service.status.steps.in_progress"), rank: 3 },
+    { label: t("services.service.status.steps.completed"), rank: 4 },
+  ];
+
+  const earn = renderMoney(svc?.amount ?? svc?.amount_for_vendor ?? null);
+  const duration = svc?.service_type?.time;
+  const category = svc?.service_type?.operation_area?.name;
+
+  const statusPill =
+    status === ServiceStatus.FINISHED
+      ? { label: t('services.service.status.steps.completed'), color: Colors.success }
+      : status === ServiceStatus.ARRIVED
+      ? { label: t('services.service.status.steps.in_progress'), color: Colors.destination }
+      : onTheWay
+      ? { label: t('services.service.status.steps.on_the_way'), color: Colors.destination }
+      : { label: t('services.service.status.steps.accepted'), color: Colors.success };
+
+  const whenLabel = (() => {
+    const iso = svc?.scheduled_at || svc?.created_at;
+    if (!iso) return null;
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return null;
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const day = new Date(d); day.setHours(0, 0, 0, 0);
+    const time = d.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+    if (day.getTime() === today.getTime()) return `${t('schedules.date_label.today')}, ${time}`;
+    return `${d.toLocaleDateString('pt-PT', { day: '2-digit', month: 'short' })}, ${time}`;
+  })();
+
+  const goToMap = () => router.push(`/(app)/(services)/(open)/progress/${svc?.id}`);
+
+  /**
+   * Navegação turn-by-turn na app de mapas do telemóvel. Antes só havia o mapa
+   * dentro da app, que não dá indicações — o técnico tinha de copiar a morada à mão.
+   */
+  const startNavigation = () => {
+    const apps = navApps();
+    const labels = apps.map((a) => t(`services.service.status.nav_apps.${a}`));
+    showActionSheetWithOptions(
+      {
+        options: [...labels, t('general.cancel')],
+        cancelButtonIndex: labels.length,
+        title: t('services.service.status.navigate_with'),
+      },
+      (index?: number) => {
+        if (index == null || index >= apps.length) return;
+        track(AnalyticsEvent.NAVIGATION_OPENED, { app: apps[index] });
+        openNavigation(apps[index], svc?.address, svc?.address?.name);
+      },
+    );
+  };
+
+  // `phone_number` é o nome real da coluna; `phone` fica como salvaguarda
+  // caso algum endpoint antigo ainda devolva a chave antiga.
+  const customerPhone = (svc?.customer as any)?.phone_number ?? (svc?.customer as any)?.phone;
+
+  const goToChat = () => {
+    track(AnalyticsEvent.CHAT_OPENED, { service_id: Number(svc?.id) });
+    clearUnreadMessages();
+    router.dismissTo(`/(app)/(services)/(open)/(chat)/service/${svc?.id}`);
+  };
+
   return (
-    <SafeAreaView className="flex-1 bg-primary">
-      {/* <StatusBar backgroundColor={Colors.primary} style="light" animated /> */}
+    <SafeAreaView className="flex-1 bg-bg">
       <BackHeader
         backButtonColor="secondary"
         middleItem={() => (
-          <View className="flex flex-row items-center">
-            <CustomText color="secondary" boldness="medium" numberOfLines={1}>
-              {t('services.service.status.header')}
-            </CustomText>
-          </View>
+          <CustomText color="secondary" boldness="bold" numberOfLines={1}>
+            {t('services.service.status.header')}
+          </CustomText>
         )}
-        // rigthItem={() => (
-        //   <View className="flex items-end">
-        //     <Feather name="help-circle" size={30} color={Colors.secondary} />
-        //   </View>
-        // )}
+        rigthItem={
+          (status === ServiceStatus.ACCEPTED || status === ServiceStatus.ARRIVED)
+            ? () => (
+              <TouchableOpacity onPress={() => router.push(`/(app)/(services)/(open)/cancel/${svc?.id}`)}>
+                <Feather name="x" size={24} color={Colors.danger} />
+              </TouchableOpacity>
+            )
+            : undefined
+        }
         otherClasses="px-5 py-4"
       />
-      <ScrollView className="flex-1 px-5 space-y-8">
-        <View className="items-center space-y-2 my-6">
-          <View className="relative flex items-center justify-center h-14 w-14 mx-auto rounded-full overflow-hidden">
-            {openService?.customer?.avatar?.small ? (
-              <Image
-                src={openService?.customer?.avatar?.small}
-                source={{ uri: openService?.customer?.avatar?.small }}
-                className="w-full h-full object-cover object-center rounded-full"
-              />
-            ) : (
-              <UserAvatarIcon />
-            )}
-          </View>
-          <View>
-            <CustomText color="secondary" boldness="semiBold" size="medium" numberOfLines={1} classes="text-center">
-              {openService?.customer?.name}
-            </CustomText>
-            <CustomText color="gray_medium" boldness="regular" size="small" numberOfLines={2} classes="text-center">
-              {openService?.address?.name}
-
-            </CustomText>
-            {openService?.address?.additional_info && (
-              <CustomText color="gray_medium" boldness="regular" size="small" numberOfLines={2} classes="text-center">
-                {openService?.address?.additional_info}
+      <ScrollView className="flex-1 px-5" contentContainerStyle={{ paddingBottom: 24 }}>
+        {/* Cabeçalho: serviço + categoria + estado + meta */}
+        <Card>
+          <View className="flex-row items-center">
+            <IconTile size={52}>
+              <MaterialCommunityIcons name="pipe-wrench" size={24} color={Colors.brand} />
+            </IconTile>
+            <View className="flex-1 ml-3">
+              <CustomText color="secondary" boldness="bolder" size="medium" numberOfLines={2}>
+                {svc?.service_type?.name}
               </CustomText>
-            )}
-          </View>
-        </View>
-
-        <View className="my-2">
-          <View className="mt-4">
-            {openService?.service_type?.name && (
-              <CustomText color="support_primary" boldness="semiBold" size="medium" numberOfLines={2} classes="text-center">
-                {openService?.service_type?.name}
-              </CustomText>
+              {!!category && (
+                <CustomText color="muted" size="small" numberOfLines={1}>{category}</CustomText>
               )}
-            {/* <CustomText color="gray_medium" boldness="regular" size="small" numberOfLines={2} classes="text-center">
-              {desc(openService?.service_type?.description || "")}
-            </CustomText> */}
+            </View>
+            <View className="rounded-full px-3 py-1.5 ml-2" style={{ backgroundColor: `${statusPill.color}22` }}>
+              <CustomText size="extraSmall" boldness="bold" color="secondary" style={{ color: statusPill.color }}>
+                {statusPill.label}
+              </CustomText>
+            </View>
+          </View>
+
+          <View className="h-px my-4" style={{ backgroundColor: Colors.line }} />
+
+          {!!whenLabel && (
+            <View className="flex-row items-center mb-2">
+              <Feather name="calendar" size={15} color={Colors.muted} />
+              <CustomText color="secondary" size="small" classes="ml-2.5">{whenLabel}</CustomText>
+            </View>
+          )}
+          {!!duration && (
+            <View className="flex-row items-center mb-2">
+              <Feather name="clock" size={15} color={Colors.muted} />
+              <CustomText color="secondary" size="small" classes="ml-2.5">
+                {t('services.service.status.estimated_duration', { value: duration })}
+              </CustomText>
+            </View>
+          )}
+          {svc?.is_immediate && (
+            <View className="flex-row items-center">
+              <Ionicons name="flash" size={15} color={Colors.danger} />
+              <CustomText size="small" color="danger" classes="ml-2.5">
+                {t('services.service.status.immediate')}
+              </CustomText>
+            </View>
+          )}
+        </Card>
+
+        {/* Stepper de estado */}
+        <Card className="mt-3">
+          <Stepper steps={steps} currentRank={currentRank} />
+        </Card>
+
+        {/* Cliente + mapa + ações */}
+        <Card className="mt-3">
+          <CustomText color="muted" size="extraSmall" boldness="bold">
+            {t('schedules.customer', { defaultValue: 'Cliente' })}
+          </CustomText>
+          <CustomText color="secondary" boldness="bolder" size="large" numberOfLines={1} classes="mt-0.5">
+            {svc?.customer?.name}
+          </CustomText>
+          <View className="flex-row items-start mt-1">
+            <Feather name="map-pin" size={14} color={Colors.muted} style={{ marginTop: 2 }} />
+            <CustomText color="muted" size="small" numberOfLines={2} classes="ml-1.5 flex-1">
+              {svc?.address?.name}
+              {svc?.address?.additional_info ? ` · ${svc?.address?.additional_info}` : ''}
+            </CustomText>
+          </View>
+
+          {/* Pré-visualização do mapa */}
+          <TouchableOpacity
+            activeOpacity={0.85}
+            onPress={goToMap}
+            className="rounded-xl overflow-hidden mt-3 justify-center items-center"
+            style={{ height: 130, backgroundColor: Colors.card_high }}
+          >
+            <View className="items-center">
+              <View
+                className="items-center justify-center rounded-full"
+                style={{ width: 44, height: 44, backgroundColor: 'rgba(250,187,91,0.22)' }}
+              >
+                <Ionicons name="location" size={22} color={Colors.brand} />
+              </View>
+            </View>
+            <View
+              className="absolute rounded-full flex-row items-center px-3 py-1.5"
+              style={{ right: 10, bottom: 10, backgroundColor: 'rgba(0,0,0,0.55)' }}
+            >
+              <Feather name="navigation" size={12} color={Colors.brand} />
+              <CustomText size="extraSmall" color="secondary" boldness="semiBold" classes="ml-1.5">
+                {t('services.service.status.open_map')}
+              </CustomText>
+            </View>
+          </TouchableOpacity>
+
+          <View className="flex-row mt-3" style={{ gap: 10 }}>
+            {/* Navegar: abre o Maps/Waze do telemóvel com o destino já preenchido. */}
+            <TouchableOpacity
+              onPress={startNavigation}
+              className="flex-1 items-center rounded-xl py-3"
+              style={{ backgroundColor: 'rgba(250,187,91,0.16)', borderWidth: 1, borderColor: 'rgba(250,187,91,0.45)' }}
+            >
+              <Feather name="navigation" size={18} color={Colors.brand} />
+              <CustomText size="small" color="brand" boldness="bold" classes="mt-1">
+                {t('services.service.status.navigate')}
+              </CustomText>
+            </TouchableOpacity>
+            {/* Ligar só faz sentido a caminho: com o serviço já a decorrer o
+                técnico está com o cliente à frente. */}
+            {!!customerPhone && status !== ServiceStatus.ARRIVED && status !== ServiceStatus.FINISHED && (
+              <TouchableOpacity
+                onPress={() => { track(AnalyticsEvent.CUSTOMER_CALLED, { service_id: Number(svc?.id) }); callPhone(customerPhone); }}
+                className="flex-1 items-center rounded-xl py-3 border"
+                style={{ borderColor: Colors.line }}
+              >
+                <Feather name="phone" size={18} color={Colors.secondary} />
+                <CustomText size="small" color="secondary" boldness="semiBold" classes="mt-1">
+                  {t('services.service.status.call')}
+                </CustomText>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity
+              onPress={goToChat}
+              className="flex-1 items-center rounded-xl py-3 border"
+              style={{ borderColor: Colors.line }}
+            >
+
+              <View>
+                <Feather name="message-square" size={18} color={Colors.secondary} />
+                {unreadMessages > 0 && (
+                  <View
+                    className="absolute rounded-full items-center justify-center"
+                    style={{ width: 16, height: 16, top: -6, right: -8, backgroundColor: Colors.danger }}
+                  >
+                    <CustomText size="extraSmall" boldness="bold" color="secondary">
+                      {unreadMessages > 9 ? '9+' : unreadMessages}
+                    </CustomText>
+                  </View>
+                )}
+              </View>
+              <CustomText size="small" color="secondary" boldness="semiBold" classes="mt-1">
+                {t('services.service.status.chat')}
+              </CustomText>
+            </TouchableOpacity>
+          </View>
+
+        </Card>
+
+        {/* Valor a receber */}
+        {earn ? (
+          <HeroCard className="flex-row items-center justify-between" style={{ marginTop: 12 }}>
+            <CustomText color="secondary" boldness="semiBold" size="medium">
+              {t('services.service.status.value_to_receive')}
+            </CustomText>
+            <CustomText color="secondary" boldness="bolder" size="subtitle">
+              {earn}
+            </CustomText>
+          </HeroCard>
+        ) : null}
+
+        {/* Incluído / Não incluído */}
+        <View className="bg-card border rounded-2xl p-4 mt-3" style={{ borderColor: Colors.line }}>
+          <CustomText color="muted" boldness="bold" size="extraSmall">{t('services.includes')}</CustomText>
+          <View className="mt-2">
+            {servicesDetail?.includes?.length > 0 ? (
+              servicesDetail.includes.map((item: any, i: number) => (
+                <View className="flex-row items-start mb-1.5" key={i}>
+                  <Ionicons name="checkmark-circle" size={17} color={Colors.success} style={{ marginTop: 1 }} />
+                  <CustomText color="secondary" size="small" classes="ml-2 flex-1">
+                    {typeof item === 'string' ? item : t('services.no_info')}
+                  </CustomText>
+                </View>
+              ))
+            ) : (
+              <CustomText color="muted" size="small">{t('services.no_info')}</CustomText>
+            )}
+          </View>
+
+          <View className="h-px my-3" style={{ backgroundColor: Colors.line }} />
+
+          <CustomText color="muted" boldness="bold" size="extraSmall">{t('services.excludes')}</CustomText>
+          <View className="mt-2">
+            {servicesDetail?.excludes?.length > 0 ? (
+              servicesDetail.excludes.map((item: any, i: number) => (
+                <View className="flex-row items-start mb-1.5" key={i}>
+                  <Ionicons name="close-circle" size={17} color={Colors.muted} style={{ marginTop: 1 }} />
+                  <CustomText color="secondary" size="small" classes="ml-2 flex-1">
+                    {typeof item === 'string' ? item : t('services.no_info')}
+                  </CustomText>
+                </View>
+              ))
+            ) : (
+              <CustomText color="muted" size="small">{t('services.no_info')}</CustomText>
+            )}
           </View>
         </View>
+        {/* Fotos e extras só fazem sentido com o serviço a decorrer: antes de
+            chegar ao local não há nada para fotografar nem para acrescentar. */}
+        {status === ServiceStatus.ARRIVED && (
+          <>
+        <ServicePhotos
+          serviceId={openService?.id}
+          enabled={openService?.status === ServiceStatus.ARRIVED}
+        />
 
+        <ServiceExtras
+          serviceId={openService?.id}
+          enabled={openService?.status === ServiceStatus.ARRIVED}
+          sheet={extrasSheet}
+          onSheetChange={setExtrasSheet}
+        />
 
-        <View className="justify-end items-center space-y-1">
-            <View className="flex-row w-full">
-              <CustomText color="secondary" boldness="semiBold" size="small">{t('services.includes')}</CustomText>
-            </View>
-               { servicesDetail && servicesDetail?.includes &&
-                  Array.isArray(servicesDetail?.includes) && servicesDetail.includes?.length > 0 ?
-                  servicesDetail?.includes.map((item: any, i: number) => {
-                      return <View className="flex-row w-full" key={i}>
-                               <View className="flex-[1]" style={{ width: 18, height: 18 }}>
-                                  <CircledCheckMarkFilled color="#FFFFFF" background="lime"/>
-                                </View>
-
-                                <View className="flex-[9]">
-                                  { typeof item === 'string' && <CustomText color="secondary" boldness="regular" size="small">{item}</CustomText> ||
-                                  <CustomText color="secondary" boldness="regular" size="small">{t('services.no_info')}</CustomText>}
-                                </View>
-                              </View>
-                  }) :        <View className="flex-row w-full">
-                                <Text style={{color: 'white'}}>{t('services.no_info')}</Text>
-                              </View>
-
-              }
-
-             <View className="flex-row w-full">
-                <CustomText className='mt-4' color="secondary" boldness="semiBold" size="small">{t('services.excludes')}</CustomText>
-             </View>
-              { servicesDetail && servicesDetail?.excludes &&
-                Array.isArray(servicesDetail?.excludes) && servicesDetail?.excludes?.length > 0 ?
-                servicesDetail?.excludes.map((item: any, i: number) => {
-                    return <View className="flex-row w-full" key={i}>
-                              <View className="flex-[1]" style={{ width: 22, height: 22 }}>
-                                <CircledX color="red" />
-                              </View>
-                              <View className="flex-[9]">
-                                  { typeof item === 'string' && <CustomText color="secondary" boldness="regular" size="small">{item}</CustomText> ||
-                                  <CustomText color="secondary" boldness="regular" size="small">{t('services.no_info')}</CustomText>}
-                                </View>
-                            </View>
-                            })
-                            : <View className="flex-row w-full">
-                                <Text style={{color: 'white'}}>{t('services.no_info')}</Text>
-                              </View>
-               }
-
-        </View>
-
+          </>
+        )}
 
       </ScrollView>
-      <View className="flex-row items-center justify-evenly flex-wrap p-5">
-        <Action
-          Icon={() => <ChatIcon color={Colors.support_primary} />}
-          label={t('services.service.status.chat')}
-          onPress={() => {
-            clearUnreadMessages();
-            router.dismissTo(`/(app)/(services)/(open)/(chat)/service/${openService?.id}`);
-          }}
-          disabled={loadingFinishService}
-          badge={unreadMessages}
-        />
-        {/* <Action
-          Icon={() => <LocationIcon color={Colors.support_primary} />}
-          label="Map"
-          onPress={() => {}}
-        />
-        */}
-        {(
-          openService?.status === ServiceStatus.ACCEPTED ||
-          openService?.status === ServiceStatus.ARRIVED
-        ) && (
-          <Action
-            Icon={() => <XIcon color={Colors.support_primary} />}
-            label={t('services.service.open.cancel')}
-            onPress={() => {
-              router.push(`/(app)/(services)/(open)/cancel/${openService?.id}`);
-            }}
-            disabled={loadingFinishService}
+
+      {/* CTA principal — muda com o estado do serviço */}
+      {status !== ServiceStatus.FINISHED && (
+        <View className="px-5 pt-3 pb-5" style={{ backgroundColor: Colors.bg }}>
+          {/* Tempo extra e peças mesmo por cima do CTA: com o serviço a decorrer,
+              é aqui que a mão do técnico está, e sem ter de percorrer o ecrã. */}
+          {status === ServiceStatus.ARRIVED && (
+            <ServiceExtrasActions
+              disabled={busyCta || loadingFinishService}
+              onAddTime={() => setExtrasSheet('time')}
+              onAddPart={() => setExtrasSheet('part')}
+            />
+          )}
+          <CustomTouchableOpacity
+            type="support_primary"
+            size="large"
+            text={
+              busyCta
+                ? t('general.loading')
+                : status === ServiceStatus.ARRIVED
+                ? t('services.service.status.finish_service')
+                : onTheWay
+                ? t('services.service.status.start_service')
+                : t('services.service.status.on_my_way')
+            }
+            textSize="medium"
+            textColor="on_brand"
+            textBoldness="bold"
+            onPress={handlePrimaryAction}
+            disabled={busyCta || loadingFinishService}
           />
-        )}
-        {openService?.status !== ServiceStatus.FINISHED  && (
-          <Action
-            Icon={() => <CircledCheckMark color={Colors.support_primary} />}
-            label={t('services.service.status.finish')}
-            onPress={() => {
-              handleFinishService();
-            }}
-            disabled={loadingFinishService || openService?.status !== ServiceStatus.ARRIVED}
-          />
-        )}
-      </View>
+        </View>
+      )}
     </SafeAreaView>
   )
 }

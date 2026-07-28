@@ -1,13 +1,12 @@
 import {Colors} from '@/constants/Colors';
 import {Ionicons} from '@expo/vector-icons';
 import {router} from 'expo-router';
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {FlatList, KeyboardAvoidingView, Platform, ScrollView, StatusBar, Text, TextInput, View} from 'react-native';
+import { FlatList, ScrollView, TextInput, View } from 'react-native';
 import BackHeader from '@/components/app/BackHeader';
 import {useSession} from '@/contexts/SessionContext';
 import {CustomText} from "@/components/CustomText";
-import ClipIcon from "@/assets/icons/clip";
 import CustomTouchableOpacity from "@/components/CustomTouchableOpacity";
 import {useApi} from "@/contexts/ApiContext";
 import {API_ROUTES} from "@/constants/ApiRoutes";
@@ -71,59 +70,6 @@ const CustomerMessage = ({message, time}: { message: string, time: string }) => 
         </View>
     )
 }
-
-// const HeaderRightItem = () => {
-//   const [showPopUp, setShowPopUp] = useState(false);
-
-//   // const goToMakePayment = () => {
-//   //   router.push('/(app)/(pages)/(services)/(open)/(payment)/start/1');
-//   // };
-
-//   return (
-//     <View className="relative">
-//       <CustomTouchableOpacity
-//         size="small"
-//         type="transparent"
-//         classes="p-0"
-//         onPress={() => setShowPopUp(prev=>!prev)}
-//       >
-//         <Entypo name="dots-three-vertical" size={24} color={Colors.secondary} />
-//       </CustomTouchableOpacity>
-//       {showPopUp && (
-//         <View className="w-44 bg-support_secondary rounded-md absolute top-10 right-0 p-2">
-//           <CustomTouchableOpacity
-//             size="small"
-//             type="transparent"
-//             onPress={() => {
-//               setShowPopUp(prev=>!prev);
-//               // goToMakePayment();
-//             }}
-//             classes="p-0 mb-2"
-//           >
-//             <View className="w-full h-full rounded-md border border-secondary">
-//               <CustomText size="small" color="secondary" boldness="regular" classes="p-3">
-//                 Make payment
-//               </CustomText>
-//             </View>
-//           </CustomTouchableOpacity>
-//           <CustomTouchableOpacity
-//             size="small"
-//             type="transparent"
-//             onPress={() => setShowPopUp(prev=>!prev)}
-//             classes="p-0"
-//           >
-//             <View className="w-full h-full rounded-md border border-secondary">
-//               <CustomText size="small" color="secondary" boldness="regular" classes="p-3">
-//                 Help
-//               </CustomText>
-//             </View>
-//           </CustomTouchableOpacity>
-//         </View>
-//       )}
-//     </View>
-//   )
-// }
-
 const Service = () => {
     const {t} = useTranslation();
     const {api} = useApi();
@@ -133,6 +79,10 @@ const Service = () => {
     const serviceId = openService?.id;
     const [message, setMessage] = useState('');
     const [publicKey, setPublicKey] = useState<string>();
+    // Sem chave pública as mensagens não podem ser cifradas. Antes o campo e o
+    // botão de enviar ficavam ativos e não acontecia nada ao carregar — o técnico
+    // pensava que tinha avisado o cliente.
+    const [keyError, setKeyError] = useState(false);
     const {openDialog} = useDialog();
     const [messages, setMessages] = useState<Message[]>([]);
     const [groupedMessages, setGroupedMessages] = useState<{ date: string, messages: Message[] }[]>([]);
@@ -240,8 +190,8 @@ const Service = () => {
             .catch((error) => {
                 openDialog({
                     icon: <XIcon color={Colors.primary}/>,
-                    title: t('errors.title'),
-                    subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('errors.occurred_an_error'),
+                    title: t('errors.chat_load.title'),
+                    subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('errors.chat_load.subtitle'),
                     closeAfterMSeconds: 2000,
                     closeOnClickOutside: true,
                 })
@@ -273,8 +223,8 @@ const Service = () => {
             .catch(() => {
                 openDialog({
                     icon: <XIcon color={Colors.primary}/>,
-                    title: t('errors.title'),
-                    subtitle: t('errors.occurred_an_error'),
+                    title: t('errors.chat_arrived.title'),
+                    subtitle: t('errors.chat_arrived.subtitle'),
                     closeAfterMSeconds: 2000,
                     closeOnClickOutside: true,
                 })
@@ -287,22 +237,19 @@ const Service = () => {
         clearUnreadMessages();
     }, []);
 
-    useEffect(() => {
-        api.get(API_ROUTES.GET_SERVICE_PUBLIC_KEY(`${serviceId}`))
+    const fetchPublicKey = useCallback(() => {
+        return api.get(API_ROUTES.GET_SERVICE_PUBLIC_KEY(`${serviceId}`))
             .then((res) => {
-                // console.log({res})
                 setPublicKey(res.data.data.public_key);
+                setKeyError(false);
             })
-            .catch((error) => {
-                openDialog({
-                    icon: <XIcon color={Colors.primary}/>,
-                    title: t('errors.title'),
-                    subtitle: t('errors.occurred_an_error'),
-                    closeAfterMSeconds: 2000,
-                    closeOnClickOutside: true,
-                })
-            })
-            // .catch((error) => console.log(error.data.message, 'error data message'));
+            .catch(() => {
+                setKeyError(true);
+            });
+    }, [api, serviceId]);
+
+    useEffect(() => {
+        fetchPublicKey();
         subscribeToMessagesChannel();
     }, [echo]);
 
@@ -319,7 +266,6 @@ const Service = () => {
     const formatMessages = (messagesToFormat: Message[]) => {
         const newGroupedMessages = messagesToFormat
             .reduce((acc: { date: string, messages: Message[] }[], message: Message) => {
-                // console.log({message}, 'message is over here')
                 const date = message.time.split('T')[0];
                 const existingGroup = acc.find(group => group.date === date);
 
@@ -513,6 +459,30 @@ const Service = () => {
                             {t('chat.no_messages')}
                         </CustomText>
                     )}
+                    {/* Chave em falta: dizer porque não dá para enviar, em vez de
+                        deixar o técnico a carregar num botão que não faz nada. */}
+                    {keyError && (
+                        <View
+                            className="flex-row items-center rounded-2xl border p-3 mb-3"
+                            style={{ borderColor: Colors.danger, backgroundColor: 'rgba(255,90,95,0.10)' }}
+                        >
+                            <Ionicons name="warning-outline" size={20} color={Colors.danger} />
+                            <CustomText color="secondary" size="small" classes="flex-1 ml-2" numberOfLines={3}>
+                                {t('chat.key_error')}
+                            </CustomText>
+                            <CustomTouchableOpacity
+                                size="small"
+                                type="transparent"
+                                classes="pl-2"
+                                textColor="danger"
+                                textBoldness="bold"
+                                textSize="small"
+                                text={t('general.try_again')}
+                                onPress={() => { setKeyError(false); fetchPublicKey(); }}
+                            />
+                        </View>
+                    )}
+
                     {/* Respostas rápidas — na rua/a conduzir, um toque resolve. */}
                     <ScrollView
                         horizontal
@@ -533,7 +503,7 @@ const Service = () => {
                                 textColor="secondary"
                                 textBoldness="medium"
                                 text={reply}
-                                disabled={sendingMessage || loadingArrivedAtDestination}
+                                disabled={sendingMessage || loadingArrivedAtDestination || !publicKey}
                                 onPress={() => handleSendMessage(reply)}
                             />
                         ))}
@@ -549,16 +519,21 @@ const Service = () => {
                                     onChangeText={setMessage}
                                 />
                                 <View className="w-14 absolute right-0 h-full flex-1 items-center justify-center">
+                                    {/* `p-0` anulava o padding do componente e deixava a área
+                                        de toque nos 24×24 do ícone — o hitSlop repõe-na. */}
                                     <CustomTouchableOpacity
                                         size="small"
                                         type="transparent"
                                         classes="p-0 z-10"
+                                        hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                                        accessibilityRole="button"
+                                        accessibilityLabel={t('chat.send')}
                                         onPress={() => {
                                             if (message.trim() !== '') {
                                                 handleSendMessage();
                                             }
                                         }}
-                                        disabled={sendingMessage || loadingArrivedAtDestination}
+                                        disabled={sendingMessage || loadingArrivedAtDestination || !publicKey}
                                     >
                                         {message !== '' && (
                                             <Ionicons name="send" size={24} color={Colors.secondary}/>
