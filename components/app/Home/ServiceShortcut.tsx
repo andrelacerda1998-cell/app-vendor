@@ -1,5 +1,4 @@
 import { CustomText } from '@/components/CustomText'
-import { ThemedText } from '@/components/ThemedText'
 import TouchOpacity from '@/components/TouchOpacity'
 import React from 'react'
 import { View } from 'react-native'

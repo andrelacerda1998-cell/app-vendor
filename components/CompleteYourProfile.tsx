@@ -1,60 +1,50 @@
 import React from 'react'
-import {TouchableOpacity, View} from "react-native"
+import { TouchableOpacity, View } from "react-native"
+import { LinearGradient } from 'expo-linear-gradient'
 import { CustomText } from "./CustomText"
-import AttentionIcon from "@/assets/icons/attention"
+import { Feather } from "@expo/vector-icons"
 import { Colors } from "@/constants/Colors"
-import {useSession} from "@/contexts/SessionContext";
-import {useRouter} from "expo-router";
+import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next"
+import { cardShadow } from "@/components/ui"
 
+/** Aviso de perfil incompleto — bloqueia a receção de pedidos, por isso tem de saltar à vista. */
 const CompleteYourProfile = () => {
-  const { vendorData } = useSession();
   const { t } = useTranslation();
   const router = useRouter();
 
   return (
     <TouchableOpacity
-      onPress={()=> {
-        // if (
-        //   vendorData?.user.gender_id === null ||
-        //   !vendorData?.user.date_birthday ||
-        //   !vendorData?.user.nif
-        // ) {
-          router.push('/(app)/(complete-profile)/CompleteProfile')
-        // } else if (
-        //   !vendorData?.user.phone_number
-        // ) {
-        //   router.push('/(app)/(tabs)/profile')
-        //   router.push('/(app)/(modals)/(profile)/edit-profile')
-        // } else if (
-        //   vendorData?.user?.phone_number_verified_at === null
-        // ) {
-        //   router.push('/(app)/(modals)/sms')
-        // } else if (
-        //   vendorData?.user?.email_verified_at === null
-        // ) {
-        //   router.push('/(app)/(modals)/confirm-email')
-        // } else if (
-        //   !vendorData?.at_user ||
-        //   !vendorData?.company_address ||
-        //   !vendorData?.iban
-        // ) {
-        //   router.push('/(app)/(tabs)/profile')
-        //   router.push('/(app)/(modals)/(profile)/edit-payment')
-        // }
-      }}
-      className="flex-row justify-between items-center bg-[#6A40DA] p-3 rounded-xl"
+      activeOpacity={0.9}
+      onPress={() => router.push('/(app)/(complete-profile)/CompleteProfile')}
     >
-      <View className="w-[10%]">
-        <View className="w-7 h-7">
-          <AttentionIcon color={Colors.secondary} />
+      <LinearGradient
+        colors={['rgba(255,90,95,0.30)', 'rgba(255,90,95,0.10)']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={[
+          { borderRadius: 16, borderWidth: 1.5, borderColor: 'rgba(255,90,95,0.55)' },
+          cardShadow,
+        ]}
+      >
+        <View className="flex-row items-center p-4">
+          <View
+            className="w-11 h-11 rounded-full items-center justify-center mr-3"
+            style={{ backgroundColor: Colors.danger }}
+          >
+            <Feather name="alert-triangle" size={22} color={Colors.strongest} />
+          </View>
+          <View className="flex-1">
+            <CustomText size="medium" color="secondary" boldness="bolder" numberOfLines={2}>
+              {t('complete_profile.notice')}
+            </CustomText>
+            <CustomText size="small" color="secondary" boldness="regular" numberOfLines={2} classes="mt-0.5 opacity-80">
+              {t('complete_profile.subtitle')}
+            </CustomText>
+          </View>
+          <Feather name="chevron-right" size={22} color={Colors.danger} />
         </View>
-      </View>
-      <View className="w-[90%]">
-        <CustomText color="secondary">
-          {t('complete_profile.notice')}
-        </CustomText>
-      </View>
+      </LinearGradient>
     </TouchableOpacity>
   )
 }

@@ -2,10 +2,8 @@ import ArrowIcon from "@/assets/icons/arrow"
 import { CustomText } from "@/components/CustomText"
 import CustomTouchableOpacity from "@/components/CustomTouchableOpacity"
 import { Colors } from "@/constants/Colors"
-import { Entypo } from "@expo/vector-icons"
 import React from 'react'
-import { FlatList, Image, View } from "react-native"
-
+import { Image, View } from "react-native";
 const activity = [
   {
     user: {
