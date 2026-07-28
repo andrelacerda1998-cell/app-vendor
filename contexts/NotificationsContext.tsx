@@ -1,27 +1,47 @@
 import React, {PropsWithChildren, useEffect, useRef, useState} from "react";
+import { track, AnalyticsEvent } from '@/utils/analytics';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import { Platform } from "react-native";
 import {useApi} from "@/contexts/ApiContext";
 import {useSession} from "@/contexts/SessionContext";
+import { Colors } from "@/constants/Colors";
+
+/**
+ * Canal Android dedicado aos PEDIDOS de serviço.
+ *
+ * Um pedido tem janela curta: se o técnico não o ouvir, perde-o. Por isso vive
+ * num canal próprio, com importância MAX, vibração e som — separado do canal
+ * `default`, que continua a servir tudo o resto (campanhas, avisos, etc.) sem
+ * alterações de comportamento.
+ *
+ * O backend tem de mandar `channelId: 'requests'` no push (Expo → FCM) para o
+ * pedido cair neste canal; sem isso o Android usa o `default`.
+ */
+export const REQUESTS_CHANNEL_ID = 'requests';
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
         shouldShowAlert: true,
-        shouldPlaySound: false,
+        // Som ligado: um pedido silencioso é um pedido perdido.
+        shouldPlaySound: true,
         shouldSetBadge: false,
     }),
 });
 
 const NotificationsContext = React.createContext<{
-
+    /** Verdadeiro quando o técnico recusou as notificações do sistema. */
+    permissionDenied: boolean;
 }>({
-
+    permissionDenied: false,
 });
 
 export function NotificationsProvider({ children }: PropsWithChildren){
     const [expoPushToken, setExpoPushToken] = useState('');
+    // Sem notificações o técnico deixa de saber que há pedidos. Antes esta recusa
+    // era engolida em silêncio; agora fica registada para a Home poder avisar.
+    const [permissionDenied, setPermissionDenied] = useState(false);
     const [channels, setChannels] = useState<Notifications.NotificationChannel[]>([]);
     const [notification, setNotification] = useState<Notifications.Notification | undefined>(
         undefined
@@ -31,7 +51,6 @@ export function NotificationsProvider({ children }: PropsWithChildren){
     const { api } = useApi();
     const {session } = useSession();
 
-    // console.log("Notifications provider")
 
     useEffect(() => {
         registerForPushNotificationsAsync().then(token => {
@@ -42,12 +61,10 @@ export function NotificationsProvider({ children }: PropsWithChildren){
             Notifications.getNotificationChannelsAsync().then(value => setChannels(value ?? []));
         }
         notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-            // console.log("notification", notification)
             setNotification(notification);
         });
 
         responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-            // console.log({response});
         });
 
         return () => {
@@ -59,7 +76,6 @@ export function NotificationsProvider({ children }: PropsWithChildren){
     }, []);
 
     useEffect(() => {
-        // console.log({expoPushToken})
         if (session && api && expoPushToken) {
             api.post('/auth/device', {
                 expoPushToken,
@@ -79,10 +95,25 @@ export function NotificationsProvider({ children }: PropsWithChildren){
                 lightColor: '#FF231F7C',
             })
             .then(() => {
-                // console.log("Notification channel created");
             })
             .catch((error) => {
-                // console.log("Error creating notification channel: ", error);
+            });
+
+            // Canal só para pedidos: MAX + som + vibração insistente, para o
+            // técnico ouvir mesmo com o telemóvel no bolso.
+            await Notifications.setNotificationChannelAsync(REQUESTS_CHANNEL_ID, {
+                name: 'Pedidos de serviço',
+                description: 'Novos pedidos à espera de resposta.',
+                importance: Notifications.AndroidImportance.MAX,
+                vibrationPattern: [0, 400, 200, 400, 200, 400],
+                enableVibrate: true,
+                sound: 'default',
+                lightColor: Colors.brand,
+                lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
+                bypassDnd: false,
+            })
+            .catch(() => {
+                // Canal já existente ou API indisponível: o `default` cobre o caso.
             });
         }
 
@@ -94,9 +125,12 @@ export function NotificationsProvider({ children }: PropsWithChildren){
                 finalStatus = status;
             }
             if (finalStatus !== 'granted') {
-                //alert('Failed to get push token for push notification!');
+                setPermissionDenied(true);
+                track(AnalyticsEvent.NOTIFICATIONS_DENIED);
                 return;
             }
+            setPermissionDenied(false);
+            track(AnalyticsEvent.NOTIFICATIONS_GRANTED);
 
             try {
                 const projectId =
@@ -109,19 +143,19 @@ export function NotificationsProvider({ children }: PropsWithChildren){
                         projectId,
                     })
                 ).data;
-                // console.log(token);
             } catch (e) {
                 console.error(e);
                 // Não usar a string de erro como token: deixá-lo undefined para que a guarda
                 // `token && setExpoPushToken(token)` bloqueie o POST /auth/device com lixo.
             }
         } else {
-            // console.log("Notifications, disabled")
         }
 
 
         return token;
     }
 
-    return <NotificationsContext.Provider value={{expoPushToken}}>{children}</NotificationsContext.Provider>;
+    return <NotificationsContext.Provider value={{ permissionDenied }}>{children}</NotificationsContext.Provider>;
 }
+
+export const useNotificationPermission = () => React.useContext(NotificationsContext);

@@ -10,6 +10,7 @@ import { useDialog } from "./DialogContext";
 import { useTranslation } from "react-i18next";
 import { Colors } from "@/constants/Colors";
 import XIcon from "@/assets/icons/x";
+import { initAnalytics } from "@/utils/analytics";
 
 const ApiContext = React.createContext<{
     api: AxiosInstance;
@@ -82,11 +83,13 @@ export function ApiProvider({ children }: PropsWithChildren) {
         );
 
         Object.assign(api, instance);
+
+        // Analytics passa a usar esta instância (com token e refresh já tratados).
+        initAnalytics(api);
     }, [session]);
 
     async function refreshToken() {
         if (!session) {
-            // console.log("No session available for token refresh");
             return;
         }
         // Reutiliza o refresh já em curso (single-flight) em vez de disparar um novo.
@@ -103,11 +106,9 @@ export function ApiProvider({ children }: PropsWithChildren) {
                 const { access_token } = response?.data.data;
 
                 if (access_token) {
-                    // console.log("Token refreshed successfully");
                     setSession(access_token);
                     return access_token;
                 }
-                // console.log("No access token received");
                 return undefined;
             } catch (error) {
                 console.error("Failed to refresh token:", error);
@@ -129,31 +130,6 @@ export function ApiProvider({ children }: PropsWithChildren) {
 
 
     const handleError = async (error: any, apiInstance: AxiosInstance) => {
-        if (error.response && error?.response?.status === 500) {
-            const data = error?.response?.data;
-
-            if (data?.telescope) {
-                // Alert.alert("Something went wrong", "Please, try again", [
-                //     {
-                //         text: "Copy Error",
-                //         onPress: async () => {
-                //             try {
-                //                 await Clipboard.setStringAsync(data?.telescope);
-                //                 Alert.alert("Copied!", "Error copied to clipboard.");
-                //             } catch (copyError) {
-                //                 console.error("Failed to copy error:", copyError);
-                //             }
-                //         },
-                //     },
-                //     {
-                //         text: "OK",
-                //     },
-                // ]);
-            } else {
-                // Alert.alert("Something went wrong", "Please, try again");
-            }
-        }
-
         const originalRequest = error.config;
 
         // Check if the session is still valid
