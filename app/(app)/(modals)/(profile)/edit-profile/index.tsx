@@ -3,20 +3,19 @@ import {CustomText} from "@/components/CustomText";
 import CustomTextInput from "@/components/CustomTextInput";
 import CustomTouchableOpacity from "@/components/CustomTouchableOpacity";
 import DatePicker from '@/components/DatePicker';
-import {ThemedText} from '@/components/ThemedText';
 import TouchOpacity from '@/components/TouchOpacity';
 import {API_ROUTES} from '@/constants/ApiRoutes';
 import {Colors} from '@/constants/Colors';
 import {useApi} from '@/contexts/ApiContext';
 import {useSession} from '@/contexts/SessionContext';
-import {getDeviceId, validateNIF} from "@/utils";
+import { validateNIF } from "@/utils";
 import {parseValidDate, defaultBirthDate} from "@/utils/date";
-import {Feather, MaterialIcons, Octicons} from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import BottomSheet, {BottomSheetView} from '@gorhom/bottom-sheet';
 import {router} from 'expo-router';
-import React, {useCallback, useEffect, useRef, useState} from 'react'
-import {Control, Controller, useForm} from 'react-hook-form';
-import {View, StatusBar, Image, KeyboardAvoidingView, Platform, Alert, ImageBackground, TouchableOpacity} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { View, Platform, ImageBackground, TouchableOpacity } from 'react-native';
 import {ScrollView, TextInput} from 'react-native-gesture-handler';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import * as Location from 'expo-location';
@@ -143,11 +142,6 @@ const EditProfile = () => {
                     closeAfterMSeconds: 2000,
                     closeOnClickOutside: true,
                 })
-                // setEditData({
-                //   date_birthday: false,
-                //   nif: false,
-                //   phone_number: false,
-                // });
             })
             .catch((error) => {
                 const errors = error?.response?.data?.errors ?? {};
@@ -162,57 +156,6 @@ const EditProfile = () => {
                 setLoading(false);
             })
     }
-
-    // const handleSetCurrentLocation = async () => {
-    //     if (locationConsentStatus === "denied") {
-    //         openDialog({
-    //             icon: <XIcon color={Colors.primary} />,
-    //             title: t('profile.edit.update_location_denied.title'),
-    //             subtitle: t('profile.edit.update_location_denied.subtitle'),
-    //             closeAfterMSeconds: 3000,
-    //             closeOnClickOutside: true,
-    //         })
-    //         return;
-    //     }
-
-    //     let location = await Location.getCurrentPositionAsync({});
-
-    //     await updateLocation(location.coords.latitude, location.coords.longitude);
-    // }
-
-    // const updateLocation = async (latitude: number, longitude: number) => {
-    //     setLoadingUpdateLocation(true);
-    //     api.put(API_ROUTES.VENDOR_UPDATE_LOCATION, {
-    //         latitude,
-    //         longitude,
-    //         device_id:await getDeviceId()
-    //     }).then((response) => {
-    //         const {current_location} = response.data.data;
-    //         const newVendorData = {
-    //             ...vendorData,
-    //             current_location
-    //         }
-    //         setVendorData(newVendorData);
-    //         openDialog({
-    //             icon: <CheckMark color={Colors.primary}/>,
-    //             title: t('profile.edit.update_location_success.title'),
-    //             subtitle: t('profile.edit.update_location_success.subtitle'),
-    //             closeAfterMSeconds: 2000,
-    //             closeOnClickOutside: true,
-    //         })
-    //     }).catch(err => {
-    //         openDialog({
-    //             icon: <XIcon color={Colors.primary}/>,
-    //             title: t('errors.title'),
-    //             subtitle: t('errors.occurred_an_error'),
-    //             closeAfterMSeconds: 2000,
-    //             closeOnClickOutside: true,
-    //         })
-    //     }).finally(() => {
-    //         setLoadingUpdateLocation(false);
-    //     })
-    // }
-
     const sendResetEmail = () => {
         setLoadingResetPassword(true);
         api.post(API_ROUTES.AUTH_LOGIN_FORGOT_PASSWORD, {
@@ -232,24 +175,24 @@ const EditProfile = () => {
                 if (error.response?.status === 500) {
                     openDialog({
                         icon: <XIcon color={Colors.primary}/>,
-                        title: t('errors.title'),
-                        subtitle: t('errors.server_error'),
+                        title: t('errors.reset_password_email.title'),
+                        subtitle: t('errors.reset_password_email.subtitle'),
                         closeAfterMSeconds: 2000,
                         closeOnClickOutside: true,
                     })
                 } else if (error.response?.status === 400) {
                     openDialog({
                         icon: <XIcon color={Colors.primary}/>,
-                        title: t('errors.title'),
-                        subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('error.occurred_an_error'),
+                        title: t('errors.profile_save.title'),
+                        subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('errors.profile_save.subtitle'),
                         closeAfterMSeconds: 2000,
                         closeOnClickOutside: true,
                     })
                 } else {
                     openDialog({
                         icon: <XIcon color={Colors.primary}/>,
-                        title: t('errors.title'),
-                        subtitle: t('errors.occurred_an_error'),
+                        title: t('errors.profile_save.title'),
+                        subtitle: t('errors.profile_save.subtitle'),
                         closeAfterMSeconds: 2000,
                         closeOnClickOutside: true,
                     })
@@ -647,23 +590,6 @@ const EditProfile = () => {
                             </CustomText>
                         )}
                     </View>
-
-                    {/* <View>
-                        <CustomText color="secondary" boldness="semiBold" numberOfLines={1}>
-                            {t('general.address')}
-                        </CustomText>
-                        <CustomTouchableOpacity
-                            size="large"
-                            type="secondary_outline"
-                            textColor="secondary"
-                            textBoldness="semiBold"
-                            text={loadingUpdateLocation ? t('profile.edit.updating_location') : t('profile.edit.update_location')}
-                            classes="mt-2"
-                            onPress={handleSetCurrentLocation}
-                            disabled={loading || loadingUpdateLocation || loadingResetPassword}
-                        />
-                    </View> */}
-
                     <View>
                         <CustomText color="secondary" boldness="semiBold" numberOfLines={1}>
                             {t('profile.edit.reset_password')}
