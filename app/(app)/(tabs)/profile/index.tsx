@@ -1,4 +1,5 @@
 import BackHeader from '@/components/app/BackHeader';
+import { tabBarContentPadding } from '@/constants/Layout';
 import { CustomText } from "@/components/CustomText";
 import { useApi } from '@/contexts/ApiContext';
 import { useDialog } from "@/contexts/DialogContext";
@@ -7,7 +8,7 @@ import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from "react-i18next";
 import { View, Image, TouchableOpacity, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather, Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
 import { API_ROUTES } from '@/constants/ApiRoutes';
@@ -26,6 +27,7 @@ interface Section {
 }
 
 const Profile = () => {
+  const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const { signOut, vendorData } = useSession();
   const { api } = useApi();
@@ -154,7 +156,7 @@ const Profile = () => {
         otherClasses="px-5 py-4"
       />
 
-      <ScrollView className="flex-1 px-5" contentContainerStyle={{ paddingBottom: 24 }}>
+      <ScrollView className="flex-1 px-5" contentContainerStyle={{ paddingBottom: tabBarContentPadding(insets.bottom) }}>
         {/* Cabeçalho de perfil */}
         <View className="flex-row items-center">
           <View

@@ -1,4 +1,5 @@
 import UserHeader from '@/components/app/UserHeader';
+import { tabBarContentPadding } from '@/constants/Layout';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Colors } from '@/constants/Colors';
 import {AntDesign, Entypo, Feather, Ionicons} from '@expo/vector-icons';
@@ -6,7 +7,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { View, ScrollView, Animated, TouchableOpacity, Platform } from 'react-native';
 import { FlatList, TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CustomText } from '@/components/CustomText';
 import { useApi } from "@/contexts/ApiContext";
 import { API_ROUTES } from "@/constants/ApiRoutes";
@@ -35,6 +36,7 @@ import NotificationsDisabledBanner from "@/components/NotificationsDisabledBanne
 import DocumentExpiryBanner from "@/components/DocumentExpiryBanner";
 
 const Home = () => {
+  const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const { api } = useApi();
   const { vendorData, vendorStatus, setVendorStatus, getWalletInfo, wallet, isLoadingUserData, session } = useSession();
@@ -241,7 +243,7 @@ const Home = () => {
   }
 
   return (
-    <SafeAreaView className={`pt-5 h-full relative bg-strongest ${Platform.OS === 'android' ? 'pb-[100px]' : 'pb-[50px]'}`}>
+    <SafeAreaView className={`pt-5 h-full relative bg-strongest`}>
       {/* Cabeçalho compacto: avatar, saudação e notificações numa só linha.
           O logótipo saiu daqui — está no arranque, na autenticação e no ícone da
           app — e ocupava ~70pt do topo, o espaço mais valioso do ecrã. A marca
@@ -263,7 +265,7 @@ const Home = () => {
           trazia o seu próprio padding e as distâncias entre secções variavam. */}
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ flexGrow: 1, paddingTop: 16, paddingBottom: 28, gap: 16 }}
+        contentContainerStyle={{ flexGrow: 1, paddingTop: 16, paddingBottom: tabBarContentPadding(insets.bottom), gap: 16 }}
       >
         {session && !isLoadingUserData && (
           <View className="px-5" style={{ gap: 10 }}>

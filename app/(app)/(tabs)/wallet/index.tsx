@@ -3,8 +3,9 @@
  * (A rota chama-se "wallet" por legado; o separador é a Agenda.)
  */
 import React, { useMemo, useState } from 'react';
+import { tabBarContentPadding } from '@/constants/Layout';
 import { View, ScrollView, RefreshControl, TouchableOpacity, Platform } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Feather } from '@expo/vector-icons';
@@ -33,6 +34,7 @@ const keyOf = (d: Date) =>
 const hhmm = (t?: string) => (t ? String(t).slice(0, 5) : '');
 
 const Agenda = () => {
+  const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const {
     scheduledServicesData,
@@ -102,7 +104,7 @@ const Agenda = () => {
   };
 
   return (
-    <SafeAreaView className={`flex-1 bg-bg ${Platform.OS === 'android' ? 'pb-[90px]' : 'pb-[70px]'}`}>
+    <SafeAreaView className={`flex-1 bg-bg`}>
       <View className="px-5 pt-4 pb-3">
         <CustomText size="subtitle" color="secondary" boldness="bolder">
           {t('tabs.agenda')}
@@ -148,7 +150,7 @@ const Agenda = () => {
 
       <ScrollView
         className="flex-1 px-5"
-        contentContainerStyle={{ paddingBottom: 32 }}
+        contentContainerStyle={{ paddingBottom: tabBarContentPadding(insets.bottom) }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.brand} />}
       >
         {/* Ordem importa: a carregar e o erro vêm ANTES do vazio, senão uma

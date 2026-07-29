@@ -3,8 +3,9 @@
  * (Rota "history" por legado; o separador é Ganhos.)
  */
 import React, { useCallback, useState } from 'react';
+import { tabBarContentPadding } from '@/constants/Layout';
 import { View, ScrollView, RefreshControl, Platform, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useFocusEffect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Feather, Ionicons } from '@expo/vector-icons';
@@ -55,6 +56,7 @@ const maskIban = (iban?: string | null) => {
 };
 
 const Earnings = () => {
+  const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const { api } = useApi();
   const { vendorData } = useSession();
@@ -96,7 +98,7 @@ const Earnings = () => {
   const iban = maskIban(vendorData?.iban);
 
   return (
-    <SafeAreaView className={`flex-1 bg-bg ${Platform.OS === 'android' ? 'pb-[90px]' : 'pb-[70px]'}`}>
+    <SafeAreaView className={`flex-1 bg-bg`}>
       <View className="px-5 pt-4 pb-3 flex-row items-center justify-between">
         <CustomText size="subtitle" color="secondary" boldness="bolder">
           {t('tabs.earnings')}
@@ -109,7 +111,7 @@ const Earnings = () => {
 
       <ScrollView
         className="flex-1 px-5"
-        contentContainerStyle={{ paddingBottom: 32 }}
+        contentContainerStyle={{ paddingBottom: tabBarContentPadding(insets.bottom) }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.brand} />}
       >
         {loading && !stats ? (
