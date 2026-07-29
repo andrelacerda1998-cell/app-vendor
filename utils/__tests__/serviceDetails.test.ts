@@ -3,7 +3,40 @@ import {
   formatCustomerNotes,
   formatEstimatedDuration,
   formatFullAddress,
+  formatStreetLine,
 } from '@/utils/serviceDetails';
+
+describe('formatStreetLine', () => {
+  it('mostra a rua com número', () => {
+    expect(
+      formatStreetLine({ street_name: 'Rua de Cedofeita', street_number: '120', city: 'Porto' } as any),
+    ).toBe('Rua de Cedofeita, 120');
+  });
+
+  it('mostra só a rua quando não há número', () => {
+    expect(formatStreetLine({ street_name: 'Rua de Cedofeita', city: 'Porto' } as any)).toBe(
+      'Rua de Cedofeita',
+    );
+  });
+
+  it('cai para a cidade quando não há rua', () => {
+    expect(formatStreetLine({ city: 'Porto', postal_code: '4050-174' } as any)).toBe('Porto');
+  });
+
+  it('cai para `name` e depois para o fallback', () => {
+    expect(formatStreetLine({ name: 'Praça da Liberdade' } as any)).toBe('Praça da Liberdade');
+    expect(formatStreetLine({} as any, 'Lisboa, Lisboa')).toBe('Lisboa, Lisboa');
+    expect(formatStreetLine(null, 'Lisboa, Lisboa')).toBe('Lisboa, Lisboa');
+  });
+
+  it('ignora campos só com espaços', () => {
+    expect(formatStreetLine({ street_name: '  ', city: 'Porto' } as any)).toBe('Porto');
+  });
+
+  it('devolve null quando não há nada', () => {
+    expect(formatStreetLine(null, null)).toBeNull();
+  });
+});
 
 describe('formatFullAddress', () => {
   it('junta rua + número e código postal + cidade', () => {

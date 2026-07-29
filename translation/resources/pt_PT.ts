@@ -1,9 +1,9 @@
 export default {
     "auth": {
         "home": {
-            "title": "Começa a ganhar com as tuas competências",
-            "subtitle": "Encontra clientes perto de ti que procuram exatamente o que sabes fazer.",
-            "access_account": "Aceder à conta",
+            "title": "Recebe trabalho perto de ti",
+            "subtitle": "Vês os pedidos de serviço na tua zona, aceitas os que te dão jeito e és pago por cada trabalho concluído.",
+            "access_account": "Entrar",
             "create_account": "Criar conta"
         },
         "forgot_password": {
@@ -81,6 +81,7 @@ export default {
             "skills_selection": {
                 "title": "Indica as tuas competências",
                 "subtitle": "Escolhe o que sabes fazer. É com isto que te enviamos pedidos.",
+                "hint": "Toca numa categoria para veres os trabalhos que tem dentro.",
                 "no_skills_found": "Ainda não há competências para mostrar. Verifica a ligação e tenta outra vez.",
                 "error_must_select": {
                     "title": "Falta escolher uma competência",
@@ -814,11 +815,8 @@ export default {
         "password_required": "Escreve a tua palavra-passe",
         "password_invalid": "Palavra-passe inválida",
         "password_min_length": "A palavra-passe tem de ter pelo menos 8 caracteres",
-        "password_uppercase": "A palavra-passe tem de ter pelo menos uma letra maiúscula",
-        "password_lowercase": "A palavra-passe tem de ter pelo menos uma letra minúscula",
-        "password_number": "A palavra-passe tem de ter pelo menos um número",
-        "password_special_character": "A palavra-passe tem de ter pelo menos um caractere especial (!@?#$%^&*_/-)",
-        "password_common": "Esta palavra-passe é fácil de adivinhar. Escolhe outra.",
+        "password_length_requirement": "Pelo menos 8 caracteres",
+        "password_uncompromised": "Esta palavra-passe apareceu em fugas de dados conhecidas. Escolhe outra.",
         "password_match": "As palavras-passe têm de ser iguais",
         "confirm_password": "Confirmar palavra-passe",
         "confirm_password_placeholder": "Password12345@",
@@ -1249,6 +1247,7 @@ export default {
         "empty": "Os serviços que aceitares aparecem aqui, organizados por dia. Fica online para receberes pedidos.",
         "empty_title": "Agenda livre",
         "scheduled": "Agendado",
+        "open_service_hint": "Abre o estado do serviço, com a morada, o que está incluído e o chat com o cliente.",
         "free_day_title": "Dia livre",
         "free_day": "Não tens serviços agendados para este dia."
     },
@@ -1309,6 +1308,9 @@ export default {
             "header": "Tipos de serviço",
             "subheader": "Escolhe o que executas",
             "empty": "Ainda não há tipos de serviço para escolher. Verifica a ligação e tenta outra vez.",
+            "none_selected": "Nenhum selecionado",
+            "selected_count_one": "{{count}} selecionado",
+            "selected_count_other": "{{count}} selecionados",
         },
         "update": {
             "title": "Atualizar zonas de trabalho",
@@ -1402,10 +1404,11 @@ export default {
             "later": "Agora não",
         },
         "survey": {
-            "title": "Onde prestas serviços?",
-            "subtitle": "Escolhe os concelhos onde estás disponível",
+            "title": "Onde queres trabalhar?",
+            "subtitle": "Escolhe pelo menos 3 concelhos. Nos que já estão ativos passas a receber os pedidos dessa zona; nos que ainda vão abrir, a tua escolha ajuda a Piquet a decidir onde abrir a seguir.",
             "submit": "Continuar",
             "skip": "Saltar",
+            "progress_min": "{{count}} de 3 mínimas",
             "zones_selected_one": "1 zona escolhida",
             "zones_selected_other": "{{count}} zonas escolhidas",
             "district_available": "DISPONÍVEL",

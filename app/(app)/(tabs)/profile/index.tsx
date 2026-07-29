@@ -138,7 +138,9 @@ const Profile = () => {
     });
   };
 
-  const name = vendorData?.username || vendorData?.user?.first_name || '';
+  // O nome próprio vem primeiro: o `username` deixou de ser escrito pelo técnico
+  // (passou a ser gerado no servidor) e mostrá-lo daria "joaoavilasa" em vez de "João".
+  const name = vendorData?.user?.first_name || vendorData?.username || '';
   const city = vendorData?.user?.address?.city;
   const phone = vendorData?.user?.phone_number;
   const subtitle = [city, phone].filter(Boolean).join(' · ');

@@ -4,11 +4,20 @@ import { CustomText } from '@/components/CustomText'
 import CustomTextInput from '@/components/CustomTextInput'
 import { Colors } from '@/constants/Colors'
 import { Feather } from '@expo/vector-icons';
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Controller, FieldErrors, FieldValues } from 'react-hook-form';
 import { TouchableWithoutFeedback, View } from 'react-native';
-import { commonPasswords, offensiveUsernames } from '@/utils'
 import { useTranslation } from "react-i18next"
+
+/**
+ * Comprimento mínimo da palavra-passe. Alinhado com o backend
+ * (`Password::min(8)->uncompromised()` no CreateVendorRequest).
+ *
+ * Não há regras de composição (maiúsculas/números/símbolos): só comprimento. A
+ * defesa que resta é o `uncompromised()` do servidor, que rejeita palavras-passe
+ * já vistas em fugas de dados — e essa a app não consegue verificar localmente.
+ */
+const PASSWORD_MIN_LENGTH = 8;
 
 const PasswordStep = ({
   control,
@@ -18,51 +27,21 @@ const PasswordStep = ({
   errors: FieldErrors<FieldValues>,
 }) => {
   const { t } = useTranslation();
-  const wrongPassword = {
-    MINIMUM: t('general.password_min_length'),
-    UPPERCASE: t('general.password_uppercase'),
-    LOWERCASE: t('general.password_lowercase'),
-    NUMBER: t('general.password_number'),
-    SPECIAL_CHAR: t('general.password_special_character'),
-    COMMON: t('general.password_common'),
-    MATCH: t('general.password_match'),
-  }
-  const [passwordErrors, setPasswordErrors] = useState({
-    MINIMUM: true,
-    UPPERCASE: true,
-    LOWERCASE: true,
-    NUMBER: true,
-    SPECIAL_CHAR: true,
-    COMMON: true,
-    MATCH: true,
-  });
+  // Espelho local do que está escrito, só para o feedback ao vivo do comprimento.
+  const [password, setPassword] = useState<string>(control._formValues.password ?? '');
   const [showPassword, setShowPassword] = useState(false);
 
-  const validatePassword = () => {
-    const password = control._formValues.password;
-    const password_confirmation = control._formValues.password_confirmation;
-    const errors = {
-      MINIMUM: password.length < 8,
-      UPPERCASE: !/[A-Z]/.test(password),
-      LOWERCASE: !/[a-z]/.test(password),
-      NUMBER: !/[0-9]/.test(password),
-      SPECIAL_CHAR: !/[!@?#$%^&*_/-]/.test(password),
-      COMMON: commonPasswords.includes(password),
-      MATCH: password !== password_confirmation,
-    };
+  const isLongEnough = password.length >= PASSWORD_MIN_LENGTH;
 
-    setPasswordErrors(errors);
+  const validateLength = () =>
+    (control._formValues.password ?? '').length >= PASSWORD_MIN_LENGTH
+      ? true
+      : t('general.password_length_requirement');
 
-    if (Object.values(errors).some(error => error)) {
-      return false;
-    }
-
-    return true;
-  };
-
-  useEffect(() => {
-    validatePassword();
-  }, []);
+  const validateMatch = () =>
+    control._formValues.password === control._formValues.password_confirmation
+      ? true
+      : t('general.password_match');
 
   return (
     <View className="flex-1">
@@ -75,64 +54,6 @@ const PasswordStep = ({
 
       <View className="mt-8">
         <CustomText color="secondary" boldness="semiBold" numberOfLines={1}>
-          {t('general.username')}
-        </CustomText>
-
-        <Controller
-            control={control}
-            name="username"
-            rules={{
-              required: t('general.username_required'),
-              minLength: { value: 2, message: t('general.username_min_length') },
-              validate: (value) => {
-                  if (value.length > 30) {
-                    return t('general.username_max_length')
-                  } else if (/[^a-zA-Z0-9_]/.test(value)) {
-                    return t('general.username_invalid_characters')
-                  } else if (value.trim().length === 0) {
-                    return t('general.username_cannot_be_empty_or_only_spaces')
-                  } else if (/^\d+$/.test(value)) {
-                    return t('general.username_cannot_be_only_numbers')
-                  } else if (/\s/.test(value)) {
-                    return t('general.username_cannot_contain_spaces')
-                  } else if (offensiveUsernames.includes(value.toLowerCase())) {
-                    return t('general.username_not_allowed')
-                  }
-                  return true;
-              }
-
-            }}
-            render={({ field }) => (
-                <View className="mt-2">
-                  <CustomTextInput
-                    {...field}
-                    size="large"
-                    onChangeText={(value: string) => {
-                      const filteredValue = value.replace(/\s/g, '');
-                      field.onChange(filteredValue);
-                    }}
-                    placeholder={t('general.username_placeholder')}
-                    error={errors.username && errors.username.message}
-                    displayErrorIcon={true}
-                    success={!errors.username && field.value}
-                    displaySuccessIcon={true}
-                  />
-                </View>
-            )}
-        />
-        {errors.username && errors.username.message && (
-            <CustomText
-              size="small"
-              color="danger"
-              classes="mt-1"
-            >
-              {errors.username.message as string}
-            </CustomText>
-        )}
-      </View>
-
-      <View className="mt-8">
-        <CustomText color="secondary" boldness="semiBold" numberOfLines={1}>
           {t('general.password')}
         </CustomText>
 
@@ -142,7 +63,7 @@ const PasswordStep = ({
           defaultValue=""
           rules={{
             required: t('general.password_required'),
-            validate: () => validatePassword()
+            validate: validateLength
           }}
           render={({ field }) => (
             <View className="mt-2 justify-center" removeClippedSubviews={true}>
@@ -151,6 +72,7 @@ const PasswordStep = ({
                   size="large"
                   onChangeText={(value: string) => {
                     const filteredValue = value.replace(/\s/g, '');
+                    setPassword(filteredValue);
                     field.onChange(filteredValue);
                   }}
                   textContentType="password"
@@ -201,7 +123,7 @@ const PasswordStep = ({
           defaultValue=""
           rules={{
             required: t('general.confirm_password_required'),
-            validate: () => validatePassword()
+            validate: validateMatch
           }}
           render={({ field }) => (
             <View className="mt-2 justify-center" removeClippedSubviews={true}>
@@ -221,32 +143,36 @@ const PasswordStep = ({
                   error={errors.password_confirmation && errors.password_confirmation.message}
                   success={!errors.password_confirmation && field.value}
               />
+              {errors.password_confirmation && errors.password_confirmation.message && (
+                <CustomText
+                  size="small"
+                  color="danger"
+                  classes="mt-1"
+                >
+                  {errors.password_confirmation.message as string}
+                </CustomText>
+              )}
             </View>
           )}
         />
       </View>
 
-      <View className="mt-4">
-        {
-          Object.keys(passwordErrors).map((key) => (
-            <View key={key} className="flex flex-row gap-2 items-center">
-              {
-                passwordErrors[key as keyof typeof passwordErrors] ? (
-                  <View className="w-3 h-3">
-                    <XIcon color={Colors.error} />
-                  </View>
-                ) : (
-                  <View className="w-4 h-4">
-                    <CheckMark color={Colors.success} />
-                  </View>
-                )
-              }
-              <CustomText color="muted" size="small" numberOfLines={2}>
-                {wrongPassword[key as keyof typeof wrongPassword]}
-              </CustomText>
+      {/* Uma única linha, com feedback ao vivo. Tudo o resto é validado no servidor. */}
+      <View className="mt-6">
+        <View className="flex flex-row gap-2 items-center">
+          {isLongEnough ? (
+            <View className="w-4 h-4">
+              <CheckMark color={Colors.success} />
             </View>
-          ))
-        }
+          ) : (
+            <View className="w-3 h-3">
+              <XIcon color={Colors.error} />
+            </View>
+          )}
+          <CustomText color={isLongEnough ? 'secondary' : 'muted'} size="small" numberOfLines={2}>
+            {t('general.password_length_requirement')}
+          </CustomText>
+        </View>
       </View>
     </View>
   )

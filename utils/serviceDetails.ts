@@ -40,6 +40,37 @@ export const formatFullAddress = (
   return clean(fallback);
 };
 
+/**
+ * Uma linha curta para os cartões de lista: a RUA (e número, se existir).
+ *
+ * Porquê a rua e não a cidade: `address.name` que o backend devolve é
+ * `"Cidade, Estado"` (ServiceRequestedData) — dizer "Lisboa" a um técnico que
+ * só trabalha em Lisboa não acrescenta nada. A rua é o que ele precisa de ler
+ * de relance para saber onde vai.
+ *
+ * Cadeia de recurso (nunca deixar a linha vazia):
+ * rua [+ número] → cidade → `name` da morada → `fallback` (`customer.address`).
+ */
+export const formatStreetLine = (
+  details?: ServiceAddressDetails | null,
+  fallback?: string | null,
+): string | null => {
+  if (details) {
+    const street = [clean(details.street_name), clean(details.street_number)]
+      .filter(Boolean)
+      .join(", ");
+    if (street.length) return street;
+
+    const city = clean(details.city);
+    if (city) return city;
+
+    const name = clean(details.name);
+    if (name) return name;
+  }
+
+  return clean(fallback);
+};
+
 /** Complemento da morada (andar, porta, ponto de referência), se existir. */
 export const formatAddressExtra = (details?: ServiceAddressDetails | null): string | null =>
   clean(details?.additional_info);

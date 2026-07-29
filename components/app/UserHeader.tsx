@@ -74,7 +74,7 @@ const UserHeader = () => {
               <Image source={{ uri: vendorData.user.avatar.src }} className="w-full h-full" />
             ) : (
               <CustomText size="medium" boldness="bolder" color="on_brand">
-                {(vendorData?.username || vendorData?.user?.first_name || '?').charAt(0).toUpperCase()}
+                {(vendorData?.user?.first_name || vendorData?.username || '?').charAt(0).toUpperCase()}
               </CustomText>
             )}
           </View>

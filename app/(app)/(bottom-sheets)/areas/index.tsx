@@ -16,7 +16,6 @@ import XIcon from "@/assets/icons/x";
 import { Colors } from "@/constants/Colors";
 import OperationAreaCard from "@/components/OperationAreaCard";
 import { SectionHeader } from "@/components/ui";
-import { Feather } from "@expo/vector-icons";
 
 export type Screen = 'operationAreas' | 'servicesTypes';
 
@@ -100,7 +99,6 @@ const AreasBottomSheet = () => {
               return (
                 <OperationAreaCard
                   key={item.id}
-                  Icon={() => <Feather name="tool" size={18} color={Colors.brand} />}
                   label={item.name}
                   onServiceTypePress={toggleServiceType}
                   servicesTypes={item.services_types}

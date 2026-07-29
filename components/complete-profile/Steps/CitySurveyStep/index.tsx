@@ -9,6 +9,8 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
 
+const MIN_CITIES = 3;
+
 const CitySurveyStep = ({ onNext }: { onNext: () => void }) => {
     const { t } = useTranslation();
     const { api } = useApi();
@@ -67,6 +69,7 @@ const CitySurveyStep = ({ onNext }: { onNext: () => void }) => {
     const districtEntries = Object.entries(groupedDistricts);
 
     const selectedCount = selectedAllowedIds.length + selectedSurveyIds.length;
+    const meetsMinimum = selectedCount >= MIN_CITIES;
 
     return (
         <View className="flex-1 p-5">
@@ -77,26 +80,34 @@ const CitySurveyStep = ({ onNext }: { onNext: () => void }) => {
                 <CustomText size="small" color="muted" boldness="regular" classes="mt-1">
                     {t('complete_profile.survey.subtitle')}
                 </CustomText>
-                {selectedCount > 0 && (
+                {/* Progresso sempre visível: "x de 3 mínimas" até cumprir o mínimo */}
+                <View
+                    style={{
+                        alignSelf: 'flex-start',
+                        backgroundColor: (meetsMinimum ? Colors.support_primary : Colors.gray_medium) + '33',
+                        borderRadius: 999,
+                        paddingHorizontal: 12,
+                        paddingVertical: 4,
+                        marginTop: 10,
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        gap: 6,
+                    }}
+                >
                     <View
                         style={{
-                            alignSelf: 'flex-start',
-                            backgroundColor: Colors.support_primary + '33',
-                            borderRadius: 999,
-                            paddingHorizontal: 12,
-                            paddingVertical: 4,
-                            marginTop: 10,
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            gap: 6,
+                            width: 8,
+                            height: 8,
+                            borderRadius: 4,
+                            backgroundColor: meetsMinimum ? Colors.support_primary : Colors.gray_light,
                         }}
-                    >
-                        <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: Colors.support_primary }} />
-                        <CustomText size="small" color="support_primary" boldness="semiBold">
-                            {t('complete_profile.survey.zones_selected_other', { count: selectedCount })}
-                        </CustomText>
-                    </View>
-                )}
+                    />
+                    <CustomText size="small" color={meetsMinimum ? 'support_primary' : 'gray_light'} boldness="semiBold">
+                        {meetsMinimum
+                            ? t('complete_profile.survey.zones_selected_other', { count: selectedCount })
+                            : t('complete_profile.survey.progress_min', { count: selectedCount })}
+                    </CustomText>
+                </View>
             </View>
 
             <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
@@ -211,7 +222,7 @@ const CitySurveyStep = ({ onNext }: { onNext: () => void }) => {
                     textBoldness="bold"
                     text={t('complete_profile.survey.submit')}
                     onPress={submit}
-                    disabled={submitting || selectedCount === 0}
+                    disabled={submitting || !meetsMinimum}
                 />
             </View>
         </View>

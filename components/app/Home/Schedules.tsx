@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import { SectionHeader } from "@/components/ui";
 import { useSchedule } from "@/contexts/ScheduleContext";
 import { renderMoney } from "@/utils/money";
+import { formatStreetLine } from "@/utils/serviceDetails";
 
 export const schedulesSection = {
   all: "all",
@@ -26,11 +27,13 @@ const Schedules = () => {
     router.push(`/(app)/(bottom-sheets)/(services)/schedules/${schedulesSection.today}`);
 
   const price = next ? renderMoney(next.amount_for_vendor ?? null) : false;
+  // Mesma regra do cartão da Agenda: a RUA, não a cidade. `customer.address`
+  // é "Cidade, Estado" no payload e não diz nada a quem já lá trabalha.
   const metaLine = next
     ? [
         next.schedule?.date_label ? t(`schedules.date_label.${next.schedule.date_label}`) : null,
         next.schedule?.scheduled_time?.start?.slice(0, 5),
-        next.customer?.name,
+        formatStreetLine(next.address_details, next.customer?.address),
       ].filter(Boolean).join(" · ")
     : "";
 

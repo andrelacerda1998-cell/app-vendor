@@ -4,7 +4,7 @@
  */
 import React, { useMemo, useState } from 'react';
 import { tabBarContentPadding } from '@/constants/Layout';
-import { View, ScrollView, RefreshControl, TouchableOpacity, Platform } from 'react-native';
+import { View, ScrollView, RefreshControl, TouchableOpacity } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -14,8 +14,9 @@ import { Colors } from '@/constants/Colors';
 import { useSchedule } from '@/contexts/ScheduleContext';
 import { useSession } from '@/contexts/SessionContext';
 import { renderMoney } from '@/utils/money';
-import { Card, IconTile, EmptyState, ErrorState, SkeletonList } from '@/components/ui';
+import { Card, EmptyState, ErrorState, SkeletonList } from '@/components/ui';
 import { useIsOnline } from '@/hooks/useIsOnline';
+import { formatStreetLine } from '@/utils/serviceDetails';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const WEEKDAY_LETTERS = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
@@ -96,11 +97,16 @@ const Agenda = () => {
     return date.toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'short' });
   };
 
-  const statusUi = (item: any) => {
-    const st = item?.status;
-    if (item?.on_the_way_at) return { label: t('services.service.status.steps.on_the_way'), color: Colors.destination };
-    if (st === 'Arrived') return { label: t('services.service.status.steps.in_progress'), color: Colors.destination };
-    return { label: t('agenda.scheduled'), color: Colors.destination };
+  /**
+   * `accent` pinta sempre a barra lateral do cartão; `label` só existe quando
+   * há mesmo novidade — o estado "agendado" já é o que a Agenda inteira mostra.
+   */
+  const statusUi = (item: any): { label: string | null; accent: string } => {
+    if (item?.on_the_way_at)
+      return { label: t('services.service.status.steps.on_the_way'), accent: Colors.destination };
+    if (item?.status === 'Arrived')
+      return { label: t('services.service.status.steps.in_progress'), accent: Colors.destination };
+    return { label: null, accent: Colors.brand };
   };
 
   return (
@@ -109,9 +115,11 @@ const Agenda = () => {
         <CustomText size="subtitle" color="secondary" boldness="bolder">
           {t('tabs.agenda')}
         </CustomText>
-        {/* Atalho para a lista completa — o toque no cartão passou a abrir o detalhe. */}
+        {/* Atalho para a lista completa: a Agenda só mostra os próximos 7 dias. */}
         <TouchableOpacity
           activeOpacity={0.7}
+          accessibilityRole="button"
+          accessibilityLabel={t('services.view_all')}
           onPress={() => router.push('/(app)/(bottom-sheets)/(services)/schedules/all')}
         >
           <CustomText size="extraSmall" color="brand" boldness="bold">
@@ -131,6 +139,13 @@ const Agenda = () => {
               <TouchableOpacity
                 key={k}
                 activeOpacity={0.8}
+                accessibilityRole="button"
+                accessibilityState={{ selected: isSelected }}
+                accessibilityLabel={d.toLocaleDateString('pt-PT', {
+                  weekday: 'long',
+                  day: 'numeric',
+                  month: 'long',
+                })}
                 onPress={() => setSelectedDay(isSelected ? null : k)}
                 className="flex-1 items-center rounded-2xl border py-2.5"
                 style={{
@@ -201,46 +216,75 @@ const Agenda = () => {
                     const start = hhmm(item?.schedule?.scheduled_time?.start);
                     const price = renderMoney(item?.amount_for_vendor ?? null);
                     const ui = statusUi(item);
-                    const meta = [
-                      `${dayTitle(date).split(',')[0]}${start ? `, ${start}` : ''}`,
-                      item?.customer?.address,
-                    ].filter(Boolean).join(' · ');
+                    const serviceName = item?.service_type?.name ?? '—';
+                    // A RUA, não a cidade: `customer.address` é "Cidade, Estado"
+                    // e o técnico já sabe em que cidade trabalha.
+                    const street = formatStreetLine(item?.address_details, item?.customer?.address);
 
                     return (
                       <TouchableOpacity
                         key={`${k}-${i}`}
                         activeOpacity={0.85}
+                        accessibilityRole="button"
+                        accessibilityLabel={[
+                          start,
+                          serviceName,
+                          street,
+                          price,
+                        ].filter(Boolean).join(', ')}
+                        accessibilityHint={t('agenda.open_service_hint')}
+                        // O estado do serviço (o que está incluído, morada, chat
+                        // com o cliente) é o que o técnico precisa ao abrir um
+                        // agendamento — daí abrir aqui e não um detalhe passivo.
                         onPress={() =>
-                          router.push(`/(app)/(pages)/(schedule-detail)/${item?.schedule_id ?? item?.service_id}`)
+                          router.push(`/(app)/(services)/(open)/status/${item?.service_id}`)
                         }
                       >
+                        {/* Toque na linha inteira, não só na seta. */}
                         <Card className="flex-row items-center">
-                          <IconTile size={52}>
-                            <Feather name="tool" size={22} color={Colors.brand} />
-                          </IconTile>
-
-                          <View className="flex-1 ml-3">
-                            <CustomText color="secondary" boldness="bold" size="medium" numberOfLines={2}>
-                              {item?.service_type?.name ?? '—'}
+                          {/* Hora primeiro: numa agenda é por ela que se lê o dia. */}
+                          <View className="items-center" style={{ width: 52 }}>
+                            <CustomText color="secondary" boldness="bolder" size="medium">
+                              {start || '--:--'}
                             </CustomText>
-                            <CustomText color="muted" size="small" numberOfLines={1} classes="mt-0.5">
-                              {meta}
-                            </CustomText>
-                            <View
-                              className="self-start rounded-full px-3 py-1 mt-2"
-                              style={{ backgroundColor: `${ui.color}22` }}
-                            >
-                              <CustomText size="extraSmall" boldness="bold" color="secondary" style={{ color: ui.color }}>
-                                {ui.label}
-                              </CustomText>
-                            </View>
                           </View>
 
-                          <View className="items-end ml-2">
+                          <View
+                            className="self-stretch mx-3"
+                            style={{ width: 2, borderRadius: 1, backgroundColor: ui.accent }}
+                          />
+
+                          <View className="flex-1">
+                            <CustomText color="secondary" boldness="bold" size="medium" numberOfLines={1}>
+                              {serviceName}
+                            </CustomText>
+                            {street ? (
+                              <View className="flex-row items-center mt-0.5">
+                                <Feather name="map-pin" size={12} color={Colors.muted} />
+                                <CustomText color="muted" size="small" numberOfLines={1} classes="ml-1.5 flex-1">
+                                  {street}
+                                </CustomText>
+                              </View>
+                            ) : null}
+                            {/* A etiqueta só aparece quando diz algo novo: num ecrã
+                                chamado Agenda, "Agendado" em todos os cartões é ruído. */}
+                            {ui.label ? (
+                              <View
+                                className="self-start rounded-full px-2.5 py-0.5 mt-1.5"
+                                style={{ backgroundColor: `${ui.accent}22` }}
+                              >
+                                <CustomText size="extraSmall" boldness="bold" color="secondary" style={{ color: ui.accent }}>
+                                  {ui.label}
+                                </CustomText>
+                              </View>
+                            ) : null}
+                          </View>
+
+                          <View className="flex-row items-center ml-2">
                             {price ? (
                               <CustomText color="secondary" boldness="bolder" size="medium">{price}</CustomText>
                             ) : null}
-                            <Feather name="chevron-right" size={18} color={Colors.muted} style={{ marginTop: 6 }} />
+                            <Feather name="chevron-right" size={18} color={Colors.muted} style={{ marginLeft: 6 }} />
                           </View>
                         </Card>
                       </TouchableOpacity>

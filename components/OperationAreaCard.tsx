@@ -10,7 +10,8 @@ import ServiceTypeItemSelector from "./services/ServiceTypeItemSelector";
 import { ServiceTypeInterface } from "@/types/services";
 
 type OperationAreaCardProps = {
-  Icon: () => React.JSX.Element;
+  /** Opcional: sem ícone, a linha fica só com o nome da categoria e o contador. */
+  Icon?: () => React.JSX.Element;
   label: string;
   onServiceTypePress: (serviceTypeId: number) => void;
   otherClasses?: string;
@@ -34,20 +35,29 @@ const OperationAreaCard = ({
   const [open, setOpen] = useState(false);
 
   const servicesSelected = servicesTypes?.filter(serviceType => selectedServicesTypes?.includes(serviceType.id)) || [];
+  const hasSelection = servicesSelected.length > 0;
 
   return (
-    <Card padded={false}>
+    // Categoria com escolhas feitas: borda âmbar. A distinção não fica dependente
+    // só da cor do contador (quem não distingue bem cores continua a ver a diferença,
+    // reforçada pela etiqueta em texto ao lado).
+    <Card
+      padded={false}
+      style={hasSelection ? { borderColor: Colors.brand, borderTopColor: Colors.brand } : undefined}
+    >
       <TouchOpacity
-        otherClasses={`w-full flex-row items-center px-4 py-3 ${otherClasses}`}
+        otherClasses={`w-full flex-row items-center px-4 py-4 ${otherClasses}`}
         onPress={() => {
           setOpen(prev => !prev);
         }}
         {...props}
       >
-        <IconTile>
-          <Icon />
-        </IconTile>
-        <View className="flex-1 px-3">
+        {Icon && (
+          <IconTile>
+            <Icon />
+          </IconTile>
+        )}
+        <View className={`flex-1 ${Icon ? 'px-3' : 'pr-3'}`}>
           <CustomText
             boldness="semiBold"
             color="secondary"
@@ -56,15 +66,19 @@ const OperationAreaCard = ({
           >
             {label}
           </CustomText>
+          {/* Contador legível ("3 selecionados") em vez de um número solto. */}
+          <CustomText
+            color={hasSelection ? 'brand' : 'muted'}
+            boldness="medium"
+            size="small"
+            classes="mt-1"
+            numberOfLines={1}
+          >
+            {hasSelection
+              ? t('operation_areas.services_types.selected_count', { count: servicesSelected.length })
+              : t('operation_areas.services_types.none_selected')}
+          </CustomText>
         </View>
-        <CustomText
-          color={servicesSelected.length > 0 ? 'brand' : 'muted'}
-          boldness="semiBold"
-          size="medium"
-          classes="mr-2"
-        >
-          {servicesSelected.length}
-        </CustomText>
         <Feather
           name={open ? 'chevron-up' : 'chevron-down'}
           size={20}

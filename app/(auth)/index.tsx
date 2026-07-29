@@ -12,40 +12,48 @@ const App = () => {
   const { t } = useTranslation();
 
   return (
-    <SafeAreaView className="py-6 w-full px-6 flex-1 bg-bg">
+    <SafeAreaView className="w-full px-6 pt-6 pb-8 flex-1 bg-bg">
         <StatusBar backgroundColor={Colors.bg} style="light" />
-        <View className="flex-1 items-center justify-center p-4">
-          <View className="absolute bg-transparent border-[0.5px] border-support_primary w-60 h-60 rounded-[62px]"></View>
-          <View className="absolute bg-transparent border border-support_primary w-44 h-44 rounded-[42px]"></View>
+
+        {/* Marca */}
+        <View className="flex-1 items-center justify-center">
+          <View className="absolute bg-transparent border-[0.5px] border-support_primary w-60 h-60 rounded-[62px]" />
+          <View className="absolute bg-transparent border border-support_primary w-44 h-44 rounded-[42px]" />
           <View className="bg-support_primary border-2 border-support_primary w-28 h-28 p-6 rounded-[22px] items-center justify-center">
             <AdaptiveLogo color={Colors.primary} />
           </View>
         </View>
 
-        <CustomText
-          size="title"
-          color="secondary"
-          boldness="bold"
-        >
-          {t('auth.home.title')}
-        </CustomText>
-        <CustomText
-          size="medium"
-          color="muted"
-          boldness="regular"
-          numberOfLines={5}
-          classes="my-4"
-        >
-          {t('auth.home.subtitle')}
-        </CustomText>
-        <View className="mt-8">
+        {/* Promessa */}
+        <View>
+          <CustomText
+            size="title"
+            color="secondary"
+            boldness="bold"
+            numberOfLines={2}
+          >
+            {t('auth.home.title')}
+          </CustomText>
+          <CustomText
+            size="medium"
+            color="muted"
+            boldness="regular"
+            numberOfLines={4}
+            classes="mt-3"
+          >
+            {t('auth.home.subtitle')}
+          </CustomText>
+        </View>
+
+        {/* Ações */}
+        <View className="mt-10">
           <CustomTouchableOpacity
             type="support_primary"
             size="large"
             text={t('auth.home.access_account')}
             textSize="default"
             textColor="on_brand"
-            textBoldness="semiBold"
+            textBoldness="bold"
             onPress={() => {
               router.navigate('/(auth)/signin')
             }}
@@ -60,7 +68,7 @@ const App = () => {
             onPress={() => {
               router.navigate('/(auth)/signup')
             }}
-            classes="mt-4"
+            classes="mt-3"
           />
         </View>
     </SafeAreaView>

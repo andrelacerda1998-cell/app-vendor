@@ -69,7 +69,7 @@ const UserProfile = () => {
             classes="text-center"
             numberOfLines={1}
           >
-            {vendorData?.username}
+            {vendorData?.user?.first_name || vendorData?.username}
           </CustomText>
           <CustomText size="small" color="muted" classes="text-center" numberOfLines={1}>
             {vendorData?.user?.email}

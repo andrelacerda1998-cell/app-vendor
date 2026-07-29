@@ -33,6 +33,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
  */
 const SIGNUP_DRAFT_KEY = '@piquet_vendor_signup_draft_v1';
 
+/**
+ * A regra `uncompromised` (palavra-passe vista em fugas de dados) só é verificável
+ * no servidor — a app não a consegue antecipar. Quando o 422 vem por esse motivo,
+ * mostramos a nossa própria mensagem, mais clara do que a do validador.
+ */
+const isBreachedPasswordMessage = (message: string) =>
+    /fuga|comprometid|violaç|breach|compromis/i.test(message ?? '');
+
 type GenderOption = { id: number; name: string };
 
 type SignUpDocument = {
@@ -42,7 +50,6 @@ type SignUpDocument = {
 
 type SignUpDraft = {
     name?: string;
-    username?: string;
     email?: string;
     phone_number?: string;
     date_birthday?: string;
@@ -53,7 +60,6 @@ type SignUpDraft = {
 };
 
 export type SignUpData = {
-    username: string;
     name: string;
     email: string;
     date_birthday: Date;
@@ -97,7 +103,6 @@ const SignUp = () => {
     const { control, handleSubmit, setValue, getValues, watch, formState: { errors, isLoading, isValid }, setError } = useForm<SignUpData>({
         mode: 'onChange',
         defaultValues: {
-            username: '',
             name: '',
             email: '',
             password: '',
@@ -118,7 +123,6 @@ const SignUp = () => {
                 if (cancelled || !raw) return;
                 const draft: SignUpDraft = JSON.parse(raw);
                 if (draft.name) setValue('name', draft.name);
-                if (draft.username) setValue('username', draft.username);
                 if (draft.email) setValue('email', draft.email);
                 if (draft.phone_number) setValue('phone_number', draft.phone_number);
                 if (draft.date_birthday) setValue('date_birthday', new Date(draft.date_birthday));
@@ -141,7 +145,6 @@ const SignUp = () => {
         const subscription = watch((values) => {
             const draft: SignUpDraft = {
                 name: values.name,
-                username: values.username,
                 email: values.email,
                 phone_number: values.phone_number,
                 date_birthday: values.date_birthday instanceof Date
@@ -163,7 +166,6 @@ const SignUp = () => {
         const values = getValues();
         const draft: SignUpDraft = {
             name: values.name,
-            username: values.username,
             email: values.email,
             phone_number: values.phone_number,
             date_birthday: values.date_birthday instanceof Date
@@ -198,9 +200,12 @@ const SignUp = () => {
     const handleFinalErrorAndGoToStep = (error: AxiosError<any, any>) => {
         if (error.response?.status === 422) {
             Object.keys(error?.response?.data?.errors ?? {}).forEach((key: any) => {
+                const serverMessage: string = error?.response?.data?.errors?.[key]?.[0] ?? '';
                 setError(key, {
                     type: 'manual',
-                    message: error?.response?.data?.errors?.[key]?.[0]
+                    message: key === 'password' && isBreachedPasswordMessage(serverMessage)
+                        ? t('general.password_uncompromised')
+                        : serverMessage
                 });
                 switch (key) {
                     case 'name':
@@ -218,7 +223,6 @@ const SignUp = () => {
                         break
                     case 'password':
                     case 'password_confirmation':
-                    case 'username':
                         setStep(SignUpSteps.password);
                         break
                     default:

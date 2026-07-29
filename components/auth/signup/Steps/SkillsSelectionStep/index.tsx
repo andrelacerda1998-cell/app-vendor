@@ -1,8 +1,6 @@
 import { CustomText } from '@/components/CustomText'
 import OperationAreaCard from "@/components/OperationAreaCard"
-import { Colors } from '@/constants/Colors'
 import { OperationArea } from "@/types/services"
-import { Feather } from '@expo/vector-icons';
 import React from 'react';
 import { FieldErrors, FieldValues } from 'react-hook-form';
 import { useTranslation } from "react-i18next"
@@ -29,26 +27,33 @@ const SkillsSelectionStep = ({
   toggleServiceType: (id: number) => void
 }) => {
   const { t } = useTranslation();
-  
+
   return (
     <View className="flex-1 w-full p-5">
-      <View className="pb-4">
+      <View className="pb-5">
         <CustomText size="title" color="secondary" boldness="bold" numberOfLines={3}>
           {t('auth.sign_up.skills_selection.title')}
         </CustomText>
         <CustomText color="muted" numberOfLines={3} classes="mt-2">
           {t('auth.sign_up.skills_selection.subtitle')}
         </CustomText>
+        <CustomText color="muted" size="small" numberOfLines={2} classes="mt-3">
+          {t('auth.sign_up.skills_selection.hint')}
+        </CustomText>
       </View>
 
       <FlatList
         data={availableOperationAreas}
         keyExtractor={(item) => item.id.toString()}
-        ItemSeparatorComponent={() => <View className="h-4" />}
+        // Linhas mais respiráveis: separador maior entre categorias.
+        ItemSeparatorComponent={() => <View className="h-3" />}
+        contentContainerStyle={{ paddingBottom: 16 }}
+        showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
+          // Sem ícone: era a mesma chave-inglesa em todas as categorias, não
+          // distinguia nada e só acrescentava ruído à lista.
           <OperationAreaCard
             key={item.id}
-            Icon={() => <Feather name="tool" size={18} color={Colors.brand} />}
             label={item.name}
             onServiceTypePress={toggleServiceType}
             servicesTypes={item.services_types}

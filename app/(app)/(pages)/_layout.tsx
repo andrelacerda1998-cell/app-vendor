@@ -35,8 +35,6 @@ export default function AppLayout() {
 
       <Stack.Screen name="(auto-acceptance)/auto-acceptance" />
 
-      <Stack.Screen name="(schedule-detail)/[scheduleId]" />
-
     </Stack>
   );
 }

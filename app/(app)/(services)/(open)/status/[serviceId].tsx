@@ -10,7 +10,7 @@ import { useService } from "@/contexts/ServiceContext";
 import IDomParser from "advanced-html-parser";
 import CustomTouchableOpacity from "@/components/CustomTouchableOpacity";
 import CheckMark from "@/assets/icons/check-mark";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useApi } from "@/contexts/ApiContext";
 import { API_ROUTES } from "@/constants/ApiRoutes";
 import { useDialog } from "@/contexts/DialogContext";
@@ -20,7 +20,7 @@ import { useTranslation } from "react-i18next";
 import { renderMoney } from "@/utils/money";
 import ServiceExtras, { ServiceExtrasActions, type ExtrasSheet } from "@/components/services/ServiceExtras";
 import ServicePhotos from "@/components/services/ServicePhotos";
-import { Card, HeroCard, IconTile } from "@/components/ui";
+import { Card, HeroCard, IconTile, ErrorState, SkeletonList } from "@/components/ui";
 import { useActionSheet } from "@expo/react-native-action-sheet";
 import { callPhone, navApps, openNavigation } from "@/utils/fieldActions";
 import { track, AnalyticsEvent } from "@/utils/analytics";
@@ -107,6 +107,7 @@ const Action = ({ Icon, label, onPress, disabled, badge }: {Icon: React.FC, labe
 
 const Status = () => {
   const { t } = useTranslation();
+  const { serviceId } = useLocalSearchParams<{ serviceId: string }>();
   const { showActionSheetWithOptions } = useActionSheet();
   const { api } = useApi();
   const { vendorData } = useSession();
@@ -118,6 +119,37 @@ const Status = () => {
   // o ecrã guarda qual a folha aberta para os dois partilharem estado.
   const [extrasSheet, setExtrasSheet] = useState<ExtrasSheet>(null);
   const [ servicesDetail, setServicesDetail] = useState<Details>({ includes: [], excludes: []})
+  /**
+   * O ecrã nasceu para o serviço EM CURSO (`openService`, do ServiceContext).
+   * A Agenda passou a abri-lo também para serviços apenas AGENDADOS, que não
+   * são o serviço aberto — nesse caso `openService` está vazio (ou é outro) e
+   * o ecrã aparecia em branco. Buscamos então o serviço do URL:
+   * `GET /vendor/services/{id}` devolve o mesmo `formatDataForVendor()`.
+   */
+  const [routeService, setRouteService] = useState<any>(null);
+  const [loadingRouteService, setLoadingRouteService] = useState(false);
+
+  // O serviço aberto ganha sempre ao que veio do URL: é o que os sockets e o
+  // resto da app mantêm a par. Só quando não é este serviço é que usamos a cópia.
+  const svc: any =
+    openService && String(openService.id) === String(serviceId) ? openService : routeService;
+  const serviceTypeId = svc?.service_type?.id;
+
+  useEffect(() => {
+    if (!serviceId || svc) return;
+    let cancelled = false;
+    setLoadingRouteService(true);
+    api
+      .get(API_ROUTES.GET_SERVICE_DETAILS(String(serviceId)))
+      .then(({ data }) => {
+        if (!cancelled) setRouteService(data?.data?.service ?? null);
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setLoadingRouteService(false);
+      });
+    return () => { cancelled = true; };
+  }, [serviceId, svc]);
 
   const desc = (text: string) => {
     if (text[0] !== "<") return text;
@@ -131,10 +163,13 @@ const Status = () => {
 
   const finishService = async () => {
     setLoadingFinishService(true);
-    api.post(API_ROUTES.POST_FINISH_SERVICE(`${openService?.id}`))
+    api.post(API_ROUTES.POST_FINISH_SERVICE(`${svc?.id}`))
       .then(({ data }) => {
-        if (data.data.service) setOpenService(data.data.service);
-        track(AnalyticsEvent.SERVICE_COMPLETED, { service_id: Number(openService?.id) });
+        if (data.data.service) {
+          setRouteService(data.data.service);
+          setOpenService(data.data.service);
+        }
+        track(AnalyticsEvent.SERVICE_COMPLETED, { service_id: Number(svc?.id) });
         openDialog({
           icon: <CheckMark color={Colors.primary} />,
           title: t('services.service.finish.title'),
@@ -178,7 +213,7 @@ const Status = () => {
   };
 
 
-  const getOperationAreas = async (): Promise<void> => {
+  const getOperationAreas = async (typeId?: number): Promise<void> => {
     api
       .post(API_ROUTES.POST_SEARCH_OPERATION_AREAS, {})
       .then((response) => {
@@ -186,7 +221,7 @@ const Status = () => {
 
         if (data?.services_types && Array.isArray(data?.services_types)) {
           let filtered: any = data?.services_types?.filter(
-            (elem: any) => elem?.id === openService?.service_type?.id
+            (elem: any) => elem?.id === typeId
             // (elem: any) => elem?.id === 85 //mock for test purposes
           );
 
@@ -239,16 +274,14 @@ const Status = () => {
 
 
 
+  // Só depois de sabermos o tipo de serviço: num agendamento aberto pela Agenda
+  // o `svc` chega depois do primeiro render, e com `[]` a lista de
+  // incluído/não incluído ficava sempre vazia.
   useEffect(() => {
-    const handleOperationAreas = async () => {
-      // setLoadingOperationAreas(true);
-      await getOperationAreas();
-      // setLoadingOperationAreas(false);
-    }
-    handleOperationAreas();
-  }, [])
+    if (!serviceTypeId) return;
+    getOperationAreas(serviceTypeId);
+  }, [serviceTypeId])
 
-  const svc: any = openService;
   const onTheWay = !!svc?.on_the_way_at;
   const status = svc?.status;
 
@@ -260,11 +293,24 @@ const Status = () => {
     }
     setBusyCta(true);
     try {
+      // Um serviço ainda AGENDADO tem de passar primeiro por go-to-location
+      // (Scheduled → Accepted, e é o que avisa o cliente); só depois é que
+      // /on-the-way é aceite pelo backend — de outra forma devolvia 422.
+      if (status === ServiceStatus.SCHEDULED) {
+        const accepted = await api.post(API_ROUTES.VENDOR_SCHEDULE_GO_TO_LOCATION(Number(svc?.id)));
+        if (accepted?.data?.data?.service) {
+          setRouteService(accepted.data.data.service);
+          setOpenService(accepted.data.data.service);
+        }
+      }
       const url = onTheWay
         ? API_ROUTES.POST_ARRIVED_AT_DESTINATION_SERVICE(`${svc?.id}`)
         : API_ROUTES.VENDOR_SERVICE_ON_THE_WAY(svc?.id);
       const { data } = await api.post(url);
-      if (data?.data?.service) setOpenService(data.data.service);
+      if (data?.data?.service) {
+        setRouteService(data.data.service);
+        setOpenService(data.data.service);
+      }
       track(onTheWay ? AnalyticsEvent.SERVICE_STARTED : AnalyticsEvent.TRAVEL_STARTED, {
         service_id: Number(svc?.id),
       });
@@ -304,7 +350,9 @@ const Status = () => {
   const category = svc?.service_type?.operation_area?.name;
 
   const statusPill =
-    status === ServiceStatus.FINISHED
+    status === ServiceStatus.SCHEDULED
+      ? { label: t('agenda.scheduled'), color: Colors.brand }
+      : status === ServiceStatus.FINISHED
       ? { label: t('services.service.status.steps.completed'), color: Colors.success }
       : status === ServiceStatus.ARRIVED
       ? { label: t('services.service.status.steps.in_progress'), color: Colors.destination }
@@ -354,8 +402,41 @@ const Status = () => {
   const goToChat = () => {
     track(AnalyticsEvent.CHAT_OPENED, { service_id: Number(svc?.id) });
     clearUnreadMessages();
-    router.dismissTo(`/(app)/(services)/(open)/(chat)/service/${svc?.id}`);
+    // `navigate` e não `dismissTo`: aberto a partir da Agenda o chat ainda não
+    // está na pilha, e `dismissTo` só sabe voltar a ecrãs que já lá estejam.
+    router.navigate(`/(app)/(services)/(open)/(chat)/service/${svc?.id}`);
   };
+
+  // Sem serviço não há nada de verdadeiro para mostrar: mais vale dizê-lo do
+  // que desenhar os cartões todos vazios.
+  if (!svc) {
+    return (
+      <SafeAreaView className="flex-1 bg-bg">
+        <BackHeader
+          backButtonColor="secondary"
+          middleItem={() => (
+            <CustomText color="secondary" boldness="bold" numberOfLines={1}>
+              {t('services.service.status.header')}
+            </CustomText>
+          )}
+          otherClasses="px-5 py-4"
+        />
+        <View className="flex-1 px-5 pt-2">
+          {loadingRouteService ? (
+            <SkeletonList rows={3} />
+          ) : (
+            <ErrorState
+              icon="alert-circle"
+              title={t('errors.service_details.title')}
+              subtitle={t('errors.service_details.subtitle')}
+              onRetry={() => router.back()}
+              retryLabel={t('general.back')}
+            />
+          )}
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-bg">
@@ -445,6 +526,19 @@ const Status = () => {
               {svc?.address?.additional_info ? ` · ${svc?.address?.additional_info}` : ''}
             </CustomText>
           </View>
+
+          {/* Observações do cliente. Vinham do detalhe do agendamento, que
+              deixou de existir — sem isto perdia-se o que o cliente escreveu. */}
+          {!!svc?.customer_notes && (
+            <View className="mt-3">
+              <CustomText color="muted" size="extraSmall" boldness="bold">
+                {t('schedules.customer_notes')}
+              </CustomText>
+              <CustomText color="secondary" size="small" classes="mt-1">
+                {svc.customer_notes}
+              </CustomText>
+            </View>
+          )}
 
           {/* Pré-visualização do mapa */}
           <TouchableOpacity
@@ -578,13 +672,13 @@ const Status = () => {
         {status === ServiceStatus.ARRIVED && (
           <>
         <ServicePhotos
-          serviceId={openService?.id}
-          enabled={openService?.status === ServiceStatus.ARRIVED}
+          serviceId={svc?.id}
+          enabled={svc?.status === ServiceStatus.ARRIVED}
         />
 
         <ServiceExtras
-          serviceId={openService?.id}
-          enabled={openService?.status === ServiceStatus.ARRIVED}
+          serviceId={svc?.id}
+          enabled={svc?.status === ServiceStatus.ARRIVED}
           sheet={extrasSheet}
           onSheetChange={setExtrasSheet}
         />

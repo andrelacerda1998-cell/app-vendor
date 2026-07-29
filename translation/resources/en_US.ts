@@ -1,9 +1,9 @@
 export default {
   "auth": {
     "home": {
-      "title": "Start earning with your skills",
-      "subtitle": "Find clients near you looking for exactly what you do.",
-      "access_account": "Access account",
+      "title": "Get work near you",
+      "subtitle": "See the service requests in your area, accept the ones that suit you, and get paid for every job you complete.",
+      "access_account": "Log in",
       "create_account": "Create account"
     },
     "forgot_password": {
@@ -81,6 +81,7 @@ export default {
       "skills_selection": {
         "title": "Tell us your skills",
         "subtitle": "Pick what you can do. This is how we send you requests.",
+        "hint": "Tap a category to see the jobs inside it.",
         "no_skills_found": "No skills to show yet. Check your connection and try again.",
         "error_must_select": {
           "title": "Pick at least one skill",
@@ -814,11 +815,8 @@ export default {
     "password_required": "Enter your password",
     "password_invalid": "Invalid password",
     "password_min_length": "The password must be at least 8 characters",
-    "password_uppercase": "The password must have at least one uppercase letter",
-    "password_lowercase": "The password must have at least one lowercase letter",
-    "password_number": "The password must have at least one number",
-    "password_special_character": "The password must have at least one special character (!@?#$%^&*_/-)",
-    "password_common": "This password is easy to guess. Choose another one.",
+    "password_length_requirement": "At least 8 characters",
+    "password_uncompromised": "This password has appeared in known data breaches. Choose another one.",
     "password_match": "The passwords must match",
     "confirm_password": "Confirm password",
     "confirm_password_placeholder": "Password12345@",
@@ -1249,6 +1247,7 @@ export default {
     "empty": "The services you accept show up here, organised by day. Go online to get requests.",
     "empty_title": "Free agenda",
     "scheduled": "Scheduled",
+    "open_service_hint": "Opens the service status, with the address, what's included and the customer chat.",
     "free_day_title": "Free day",
     "free_day": "You have no services scheduled for this day."
   },
@@ -1309,6 +1308,9 @@ export default {
       "header": "Service types",
       "subheader": "Pick what you do",
       "empty": "No service types to pick yet. Check your connection and try again.",
+      "none_selected": "None selected",
+      "selected_count_one": "{{count}} selected",
+      "selected_count_other": "{{count}} selected",
     },
     "update": {
       "title": "Update working areas",
@@ -1402,10 +1404,11 @@ export default {
       "later": "Not now",
     },
     "survey": {
-      "title": "Where do you provide services?",
-      "subtitle": "Pick the areas where you're available",
+      "title": "Where do you want to work?",
+      "subtitle": "Pick at least 3 areas. In the ones already active you'll start receiving that zone's requests; for the ones not open yet, your pick helps Piquet decide where to launch next.",
       "submit": "Continue",
       "skip": "Skip",
+      "progress_min": "{{count}} of 3 minimum",
       "zones_selected_one": "1 area picked",
       "zones_selected_other": "{{count}} areas picked",
       "district_available": "AVAILABLE",
