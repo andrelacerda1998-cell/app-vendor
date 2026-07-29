@@ -72,10 +72,12 @@ export default function TabBar({ state, descriptors, navigation }: BottomTabBarP
             style={styles.tabButton}
             key={route.key}
           >
-            {icon ? icon({ color: isFocused ? Colors.support_primary : Colors.gray_strong, focused: isFocused, size: 24 }) : null}
+            {/* Não selecionado é branco (não cinzento): os separadores leem-se
+                bem em qualquer luz. O âmbar fica reservado ao que está ativo. */}
+            {icon ? icon({ color: isFocused ? Colors.support_primary : Colors.secondary, focused: isFocused, size: 24 }) : null}
             <CustomText
               size="extraSmall"
-              color={isFocused ? "support_primary" : "gray_medium"}
+              color={isFocused ? "support_primary" : "secondary"}
               boldness={isFocused ? "semiBold" : "regular"}
               classes="mt-1"
               numberOfLines={1}

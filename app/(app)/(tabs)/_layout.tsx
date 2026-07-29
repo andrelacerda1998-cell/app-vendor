@@ -44,7 +44,7 @@ export default function AppLayout() {
           title: t('tabs.home'),
           tabBarIcon: ({ focused }: { focused: boolean }) => (
             <View className="w-6 h-6 items-center justify-center">
-              <HomeIcon color={focused ? Colors.support_primary : Colors.gray_strong} filled={focused} />
+              <HomeIcon color={focused ? Colors.support_primary : Colors.secondary} filled={focused} />
             </View>
           ),
         }}
@@ -57,7 +57,7 @@ export default function AppLayout() {
             <View className="w-7 h-7 items-center justify-center">
               {focused
                 ? <Ionicons name="calendar" size={26} color={Colors.support_primary} />
-                : <Ionicons name="calendar-outline" size={26} color={Colors.gray_strong} />
+                : <Ionicons name="calendar-outline" size={26} color={Colors.secondary} />
               }
             </View>
           ),
@@ -73,7 +73,7 @@ export default function AppLayout() {
               <Ionicons
                 name={focused ? 'cash' : 'cash-outline'}
                 size={26}
-                color={focused ? Colors.support_primary : Colors.gray_strong}
+                color={focused ? Colors.support_primary : Colors.secondary}
               />
             </View>
           ),

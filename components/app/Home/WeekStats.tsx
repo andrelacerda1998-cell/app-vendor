@@ -35,7 +35,15 @@ const StatItem = ({
       >
         {value}
       </CustomText>
-      {star && <Feather name="star" size={14} color={Colors.brand} style={{ marginLeft: 3 }} />}
+      {/* Estrela só ganha cor quando há avaliação a sério. */}
+      {star && (
+        <Feather
+          name="star"
+          size={14}
+          color={value === '—' ? Colors.muted : Colors.brand}
+          style={{ marginLeft: 3 }}
+        />
+      )}
     </View>
     <CustomText size="extraSmall" color="muted" boldness="regular" classes="mt-1" numberOfLines={1}>{label}</CustomText>
   </View>

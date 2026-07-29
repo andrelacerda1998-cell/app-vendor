@@ -48,8 +48,13 @@ const Schedules = () => {
             borderColor="line"
             otherClasses="flex-row items-center p-4"
           >
-            <View className="w-11 h-11 rounded-xl items-center justify-center mr-3 bg-brand_soft">
-              <CalendarIcon color={Colors.brand} />
+            {/* Estado vazio em cinzento, não em âmbar: não há serviço nenhum,
+                e a cor da marca não deve prometer conteúdo que não existe. */}
+            <View
+              className="w-11 h-11 rounded-xl items-center justify-center mr-3"
+              style={{ backgroundColor: Colors.card_high }}
+            >
+              <CalendarIcon color={Colors.muted} />
             </View>
             <CustomText color="muted" boldness="medium" size="medium" classes="flex-1">
               {t("schedules.empty")}

@@ -11,7 +11,7 @@ type Shortcut = {
   icon: keyof typeof MaterialIcons.glyphMap;
   label: string;
   onPress: () => void;
-  /** Cor do atalho: dois tiles iguais não se distinguem de relance. */
+  /** Âmbar só para o que exige ação; o resto fica neutro. */
   tone: string;
 };
 
@@ -45,7 +45,7 @@ const HomeShortcuts = () => {
         />
         <ShortcutCard
           icon="support-agent"
-          tone={Colors.destination}
+          tone={Colors.muted}
           label={t('home.shortcuts.support')}
           onPress={() => router.push('/(app)/(pages)/(support)/support')}
         />

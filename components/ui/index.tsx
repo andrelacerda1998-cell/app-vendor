@@ -317,7 +317,9 @@ export const ListCard = ({ items }: { items: ListRowItem[] }) => (
           style={{ minHeight: 58 }}
         >
           {!!item.icon && <View className="w-8 items-center mr-4">{item.icon}</View>}
-          <CustomText color="secondary" size="medium" boldness="medium" classes="flex-1" numberOfLines={1}>
+          {/* Duas linhas: os rótulos costumam caber numa, mas conteúdo dinâmico
+              (uma morada, por exemplo) cortava a meio. */}
+          <CustomText color="secondary" size="medium" boldness="medium" classes="flex-1" numberOfLines={2}>
             {item.label}
           </CustomText>
           {!!item.value && (

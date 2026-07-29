@@ -78,6 +78,11 @@ const OpenService = () => {
 
   const price = renderMoney(svc?.amount ?? svc?.amount_for_vendor ?? null);
 
+  // Serviço já concluído sai da Home: o trabalho do técnico acabou e o valor
+  // passa a estar nos Ganhos, em "Por receber", até o serviço fechar. A
+  // avaliação do cliente é despoletada pelo socket de fecho, não por aqui.
+  if (svc?.status === ServiceStatus.FINISHED) return null;
+
   return (
     <View className="px-5">
       <TouchableOpacity
