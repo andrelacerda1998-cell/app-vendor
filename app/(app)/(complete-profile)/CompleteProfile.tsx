@@ -112,10 +112,9 @@ const CompleteProfile = () => {
     const handleSurveyComplete = () => {
         track(AnalyticsEvent.ONBOARDING_COMPLETED);
         fetchAndSaveUserData();
-        if (router.canGoBack()) {
-            return router.back();
-        }
-        router.replace('/(app)/(tabs)/home');
+        // Fecho com expectativas (prazo de análise, como será avisado) em vez
+        // de largar o técnico na Home sem saber se acabou.
+        router.replace('/(app)/(pages)/(onboarding-success)/onboarding-success');
     };
 
     const goToNextDataStep = (data: VendorDataInterface) => {

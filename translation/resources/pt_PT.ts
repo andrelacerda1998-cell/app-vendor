@@ -1103,6 +1103,27 @@ export default {
         "title": "Notificações desligadas",
         "subtitle": "Sem elas não te avisamos quando entra um pedido. Toca para as ativar nas Definições."
     },
+    "onboarding_success": {
+        "title": "Registo concluído!",
+        "subtitle": "Obrigado. A partir de agora, a bola está do nosso lado.",
+        "steps": {
+            "review": {
+                "title": "A Piquet analisa a tua conta",
+                "subtitle": "Validamos os teus documentos e dados em 24 a 48 horas úteis."
+            },
+            "notify": {
+                "title": "Avisamos-te por notificação",
+                "subtitle": "Recebes um aviso assim que a conta estiver aprovada. Mantém as notificações ligadas."
+            },
+            "start": {
+                "title": "Ficas online e começas a receber pedidos",
+                "subtitle": "Com a conta aprovada, ativa 'Receber pedidos' no Perfil e é só começar."
+            }
+        },
+        "missing_docs_one": "Falta-te {{count}} documento. Envia-o já para não atrasar a aprovação.",
+        "missing_docs_other": "Faltam-te {{count}} documentos. Envia-os já para não atrasar a aprovação.",
+        "cta": "Ir para o início"
+    },
     "payouts": {
         "title": "Movimentos",
         "empty_title": "Ainda não tens movimentos",

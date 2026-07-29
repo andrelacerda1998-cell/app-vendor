@@ -1103,6 +1103,27 @@ export default {
     "title": "Notifications are off",
     "subtitle": "Without them we can't tell you when a request comes in. Tap to turn them on in Settings."
   },
+  "onboarding_success": {
+    "title": "You're all set!",
+    "subtitle": "Thanks. The ball is in our court now.",
+    "steps": {
+        "review": {
+            "title": "Piquet reviews your account",
+            "subtitle": "We validate your documents and details within 24 to 48 working hours."
+        },
+        "notify": {
+            "title": "We'll notify you",
+            "subtitle": "You'll get a push as soon as your account is approved. Keep notifications on."
+        },
+        "start": {
+            "title": "Go online and start receiving jobs",
+            "subtitle": "Once approved, turn on 'Receive requests' in your Profile and you're good to go."
+        }
+    },
+    "missing_docs_one": "You're missing {{count}} document. Upload it now to avoid delaying approval.",
+    "missing_docs_other": "You're missing {{count}} documents. Upload them now to avoid delaying approval.",
+    "cta": "Go to home"
+  },
   "payouts": {
     "title": "Transactions",
     "empty_title": "No transactions yet",
