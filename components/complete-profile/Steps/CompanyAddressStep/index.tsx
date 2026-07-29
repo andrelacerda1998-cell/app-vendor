@@ -56,9 +56,11 @@ const Field = ({
 );
 
 const CompanyAddressStep = ({
-    onNext
+    onNext,
+    onSkip,
 }: {
     onNext: (data: VendorDataInterface) => void;
+    onSkip: () => void;
 }) => {
     const { t } = useTranslation();
     const { api } = useApi();
@@ -287,6 +289,20 @@ const CompanyAddressStep = ({
                     text={loadingUpdateLocation ? t('profile.edit.saving_changes') : t('general.continue')}
                     onPress={handleSubmit(updateCompanyAddress)}
                     disabled={loading || loadingUpdateLocation}
+                />
+                {/* A morada pode não estar à mão (quem fatura com a morada da
+                    empresa, por exemplo). Sem saída, o registo trancava aqui;
+                    o que falta continua no aviso da Home. */}
+                <CustomTouchableOpacity
+                    size="large"
+                    type="transparent"
+                    textColor="muted"
+                    textSize="medium"
+                    textBoldness="regular"
+                    text={t('complete_profile.company_address.later')}
+                    onPress={onSkip}
+                    disabled={loadingUpdateLocation}
+                    classes="self-center mt-1"
                 />
             </View>
         </View>

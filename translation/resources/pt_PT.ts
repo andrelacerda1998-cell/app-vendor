@@ -1374,7 +1374,8 @@ export default {
     },
     "complete_profile": {
         "company_address": {
-            "subtitle": "É esta a morada que aparece nas tuas faturas."
+            "subtitle": "É esta a morada que aparece nas tuas faturas.",
+            "later": "Faço isto mais tarde"
         },
         "missing_list": "Falta: {{items}}. Toca para continuar.",
         "missing": {

@@ -129,7 +129,7 @@ const CompleteProfile = () => {
     const goToNextDataStep = (data: VendorDataInterface, adiados: VerifySteps[] = skipped) => {
         if (!data?.at_user && !adiados.includes(VerifySteps.atUser)) {
             setStep(VerifySteps.atUser);
-        } else if (!data?.company_address) {
+        } else if (!data?.company_address && !adiados.includes(VerifySteps.companyAddress)) {
             setStep(VerifySteps.companyAddress);
         } else if (!data?.iban) {
             setStep(VerifySteps.iban);
@@ -196,7 +196,12 @@ const CompleteProfile = () => {
                         <SmsVerification onNext={(data: VendorDataInterface) => handleNextStep(data)} />
                     </View>
                 )}
-                {step === VerifySteps.companyAddress && <CompanyAddressStep onNext={(data: VendorDataInterface) => handleNextStep(data)} />}
+                {step === VerifySteps.companyAddress && (
+                    <CompanyAddressStep
+                        onNext={(data: VendorDataInterface) => handleNextStep(data)}
+                        onSkip={() => skipStep(VerifySteps.companyAddress)}
+                    />
+                )}
                 {step === VerifySteps.iban && <IbanStep onNext={(data: VendorDataInterface) => handleNextStep(data)} />}
                 {step === VerifySteps.citySurvey && (
                     <CitySurveyStep onNext={() => setStep(VerifySteps.emailVerification)} />

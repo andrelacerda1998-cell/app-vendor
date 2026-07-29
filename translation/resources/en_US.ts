@@ -1374,7 +1374,8 @@ export default {
   },
   "complete_profile": {
     "company_address": {
-      "subtitle": "This is the address that appears on your invoices."
+      "subtitle": "This is the address that appears on your invoices.",
+      "later": "I'll do this later"
     },
     "missing_list": "Missing: {{items}}. Tap to continue.",
     "missing": {
