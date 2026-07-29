@@ -76,7 +76,7 @@ export default {
       },
       "password_information": {
         "title": "Create a password",
-        "subtitle": "Security"
+        "subtitle": "This is how you sign in. Keep it safe."
       },
       "skills_selection": {
         "title": "Tell us your skills",
@@ -811,7 +811,7 @@ export default {
     "username_cannot_contain_spaces": "The username can't contain spaces",
     "username_not_allowed": "This username isn't available",
     "password": "Password",
-    "password_placeholder": "Password12345@",
+    "password_placeholder": "",
     "password_required": "Enter your password",
     "password_invalid": "Invalid password",
     "password_min_length": "The password must be at least 8 characters",
@@ -819,7 +819,7 @@ export default {
     "password_uncompromised": "This password has appeared in known data breaches. Choose another one.",
     "password_match": "The passwords must match",
     "confirm_password": "Confirm password",
-    "confirm_password_placeholder": "Password12345@",
+    "confirm_password_placeholder": "",
     "confirm_password_required": "Enter the password again",
     "address": "Address",
     "no_address": "No address",

@@ -1,5 +1,4 @@
 import CheckMark from '@/assets/icons/check-mark'
-import XIcon from '@/assets/icons/x'
 import { CustomText } from '@/components/CustomText'
 import CustomTextInput from '@/components/CustomTextInput'
 import { Colors } from '@/constants/Colors'
@@ -32,11 +31,12 @@ const PasswordStep = ({
   const [showPassword, setShowPassword] = useState(false);
 
   const isLongEnough = password.length >= PASSWORD_MIN_LENGTH;
+  const lengthHint = t('general.password_length_requirement');
 
   const validateLength = () =>
     (control._formValues.password ?? '').length >= PASSWORD_MIN_LENGTH
       ? true
-      : t('general.password_length_requirement');
+      : lengthHint;
 
   const validateMatch = () =>
     control._formValues.password === control._formValues.password_confirmation
@@ -98,14 +98,31 @@ const PasswordStep = ({
                     </View>
                   )}
               />
-              {errors.password && errors.password.message && (
-                <CustomText
-                  size="small"
-                  color="danger"
-                  classes="mt-1"
-                >
+              {/* Uma só linha para a regra do comprimento, colada ao campo.
+                  Fica neutra enquanto o campo está vazio (nada a apontar a
+                  quem ainda não escreveu), verde assim que chega aos 8, e só
+                  fica vermelha se o técnico escreveu algo curto de mais.
+                  Erros vindos do servidor (palavra-passe exposta em fugas)
+                  passam por aqui na mesma. */}
+              {errors.password?.message && errors.password.message !== lengthHint ? (
+                <CustomText size="small" color="danger" classes="mt-1.5" numberOfLines={3}>
                   {errors.password.message as string}
                 </CustomText>
+              ) : (
+                <View className="flex-row items-center mt-1.5" style={{ gap: 6 }}>
+                  {isLongEnough && (
+                    <View className="w-4 h-4">
+                      <CheckMark color={Colors.success} />
+                    </View>
+                  )}
+                  <CustomText
+                    size="small"
+                    numberOfLines={2}
+                    color={isLongEnough ? 'success' : password.length > 0 ? 'danger' : 'muted'}
+                  >
+                    {lengthHint}
+                  </CustomText>
+                </View>
               )}
             </View>
           )}
@@ -157,23 +174,6 @@ const PasswordStep = ({
         />
       </View>
 
-      {/* Uma única linha, com feedback ao vivo. Tudo o resto é validado no servidor. */}
-      <View className="mt-6">
-        <View className="flex flex-row gap-2 items-center">
-          {isLongEnough ? (
-            <View className="w-4 h-4">
-              <CheckMark color={Colors.success} />
-            </View>
-          ) : (
-            <View className="w-3 h-3">
-              <XIcon color={Colors.error} />
-            </View>
-          )}
-          <CustomText color={isLongEnough ? 'secondary' : 'muted'} size="small" numberOfLines={2}>
-            {t('general.password_length_requirement')}
-          </CustomText>
-        </View>
-      </View>
     </View>
   )
 }

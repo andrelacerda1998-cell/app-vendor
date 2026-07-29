@@ -76,7 +76,7 @@ export default {
             },
             "password_information": {
                 "title": "Cria uma palavra-passe",
-                "subtitle": "Segurança"
+                "subtitle": "É com ela que entras na app. Guarda-a bem."
             },
             "skills_selection": {
                 "title": "Indica as tuas competências",
@@ -811,7 +811,7 @@ export default {
         "username_cannot_contain_spaces": "O nome de utilizador não pode ter espaços",
         "username_not_allowed": "Este nome de utilizador não está disponível",
         "password": "Palavra-passe",
-        "password_placeholder": "Password12345@",
+        "password_placeholder": "",
         "password_required": "Escreve a tua palavra-passe",
         "password_invalid": "Palavra-passe inválida",
         "password_min_length": "A palavra-passe tem de ter pelo menos 8 caracteres",
@@ -819,7 +819,7 @@ export default {
         "password_uncompromised": "Esta palavra-passe apareceu em fugas de dados conhecidas. Escolhe outra.",
         "password_match": "As palavras-passe têm de ser iguais",
         "confirm_password": "Confirmar palavra-passe",
-        "confirm_password_placeholder": "Password12345@",
+        "confirm_password_placeholder": "",
         "confirm_password_required": "Escreve a palavra-passe outra vez",
         "address": "Morada",
         "no_address": "Sem morada",
