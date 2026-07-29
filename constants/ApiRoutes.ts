@@ -31,6 +31,8 @@ export const API_ROUTES = {
 
     // Campaign notification tracking
     ANALYTICS_EVENTS: `${API_BASE_URL}/common/analytics/events`,
+    /** Sugestões de morada (Google Places, já com rua/número/cidade/código postal). */
+    PLACES_AUTOCOMPLETE: `${API_BASE_URL}/common/places/autocomplete`,
     CAMPAIGN_LOG_OPEN: (campaignLogId: number | string) => `${API_BASE_URL}/common/notifications/campaign-log/${campaignLogId}/open`,
     CAMPAIGN_LOG_CLICK: (campaignLogId: number | string) => `${API_BASE_URL}/common/notifications/campaign-log/${campaignLogId}/click`,
     CAMPAIGN_OPT_OUT: `${API_BASE_URL}/common/notifications/opt-out`,

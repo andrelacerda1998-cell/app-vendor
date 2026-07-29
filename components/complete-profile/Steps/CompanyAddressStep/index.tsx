@@ -1,21 +1,55 @@
-import {CustomText} from "@/components/CustomText";
+/**
+ * Morada de faturacao.
+ *
+ * Sao seis campos escritos a mao, num telemovel, muitas vezes na rua: era o
+ * passo mais lento do onboarding e a origem das moradas erradas nas faturas.
+ * Agora comeca por uma pesquisa que preenche tudo de uma vez; os campos
+ * continuam la, editaveis, para corrigir o numero da porta ou para quando a
+ * pesquisa nao encontrar a morada.
+ *
+ * "Pais" e "Distrito" sairam: a Piquet so opera em Portugal (o pais era um
+ * campo desativado com "Portugal" escrito) e o distrito nao e exigido pelo
+ * backend nem usado na fatura -- a localidade da fatura e a cidade.
+ */
+import { CustomText } from "@/components/CustomText";
 import CustomTextInput from "@/components/CustomTextInput";
 import CustomTouchableOpacity from "@/components/CustomTouchableOpacity";
-import {API_ROUTES} from '@/constants/ApiRoutes';
-import {Colors} from '@/constants/Colors';
-import {useApi} from '@/contexts/ApiContext';
-import {useSession} from '@/contexts/SessionContext';
-import {Feather, MaterialIcons, Octicons} from '@expo/vector-icons';
-import BottomSheet, {BottomSheetView} from '@gorhom/bottom-sheet';
+import { API_ROUTES } from '@/constants/ApiRoutes';
+import { Colors } from '@/constants/Colors';
+import { useApi } from '@/contexts/ApiContext';
+import { useSession } from '@/contexts/SessionContext';
 import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { View } from 'react-native';
-import {ScrollView, TextInput} from 'react-native-gesture-handler';
-import {useDialog} from "@/contexts/DialogContext";
+import { useDialog } from "@/contexts/DialogContext";
 import XIcon from "@/assets/icons/x";
 import { useTranslation } from "react-i18next";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { VendorDataInterface } from "@/types/session";
+import AddressAutocomplete, { AddressSuggestion } from "@/components/address/AddressAutocomplete";
+
+/** Campo de texto com rotulo e erro por baixo — o padrao repetido deste ecra. */
+const Field = ({
+  label,
+  error,
+  children,
+}: {
+  label: string;
+  error?: string;
+  children: React.ReactNode;
+}) => (
+  <View>
+    <CustomText color="secondary" boldness="semiBold" numberOfLines={1}>
+      {label}
+    </CustomText>
+    <View className="mt-2">{children}</View>
+    {!!error && (
+      <CustomText size="small" color="error" classes="mt-1" numberOfLines={2}>
+        {error}
+      </CustomText>
+    )}
+  </View>
+);
 
 const CompanyAddressStep = ({
     onNext
@@ -23,20 +57,18 @@ const CompanyAddressStep = ({
     onNext: (data: VendorDataInterface) => void;
 }) => {
     const { t } = useTranslation();
-    const {api} = useApi();
-    const {vendorData, setVendorData} = useSession();
-    const {openDialog} = useDialog();
+    const { api } = useApi();
+    const { vendorData, setVendorData } = useSession();
+    const { openDialog } = useDialog();
     const [loading, setLoading] = useState(false);
     const [loadingUpdateLocation, setLoadingUpdateLocation] = useState(false);
-    const {control, handleSubmit, formState: {errors, isLoading, isValid}, getValues, setError, reset} = useForm({
+    const { control, handleSubmit, formState: { errors }, getValues, setValue, reset } = useForm({
         mode: 'onChange',
         defaultValues: {
             street_name: "",
             street_number: "",
             postal_code: "",
             city: "",
-            state: "",
-            country: "Portugal",
         },
     });
 
@@ -49,19 +81,17 @@ const CompanyAddressStep = ({
     const getAddress = () => {
         setLoading(true);
         api.get(API_ROUTES.GET_COMPANY_ADDRESS)
-            .then((response) => {
+            .then((response: any) => {
                 if (!response.data.data) return;
                 const address = response.data.data;
                 reset({
-                    street_name: address?.street_name,
-                    street_number: address?.street_number,
-                    postal_code: address?.postal_code,
-                    city: address?.city,
-                    state: address?.state,
-                    country: address?.country,
+                    street_name: address?.street_name ?? '',
+                    street_number: address?.street_number ?? '',
+                    postal_code: address?.postal_code ?? '',
+                    city: address?.city ?? '',
                 })
             })
-            .catch((error) => {
+            .catch(() => {
                 openDialog({
                     icon: <XIcon color={Colors.primary}/>,
                     title: t('errors.address_load.title'),
@@ -75,6 +105,18 @@ const CompanyAddressStep = ({
             })
     }
 
+    /**
+     * Preenche o que a sugestao trouxer, sem apagar o que ja la esta: o Google
+     * costuma nao devolver o numero da porta, e apagar um numero ja escrito
+     * seria pior do que nao preencher nada.
+     */
+    const applySuggestion = (s: AddressSuggestion) => {
+        if (s.street_name) setValue('street_name', s.street_name, { shouldValidate: true });
+        if (s.street_number) setValue('street_number', s.street_number, { shouldValidate: true });
+        if (s.postal_code) setValue('postal_code', s.postal_code, { shouldValidate: true });
+        if (s.city) setValue('city', s.city, { shouldValidate: true });
+    };
+
     const updateCompanyAddress = () => {
         setLoadingUpdateLocation(true);
         api.post(API_ROUTES.POST_COMPANY_ADDRESS, {
@@ -82,28 +124,19 @@ const CompanyAddressStep = ({
             street_number: getValues('street_number'),
             postal_code: getValues('postal_code'),
             city: getValues('city'),
-            state: getValues('state'),
-            country: getValues('country'),
+            // Só operamos em Portugal; deixou de haver campo para isto.
+            country: 'Portugal',
         })
-            .then((response) => {
+            .then((response: any) => {
                 const { address } = response.data.data;
                 const newVendorData = {
                     ...vendorData,
                     company_address: address.name
                 }
                 setVendorData(newVendorData);
-                // openDialog({
-                //     icon: <CheckMark color={Colors.primary}/>,
-                //     title: t('profile.edit.update_location_success.title'),
-                //     subtitle: t('profile.edit.update_location_success.subtitle'),
-                //     closeAfterMSeconds: 2000,
-                //     closeOnClickOutside: true,
-                //     onClose: () => {
-                //     }
-                // })
                 onNext(newVendorData as VendorDataInterface);
             })
-            .catch(err => {
+            .catch(() => {
                 openDialog({
                     icon: <XIcon color={Colors.primary}/>,
                     title: t('errors.address_save.title'),
@@ -117,266 +150,123 @@ const CompanyAddressStep = ({
             })
     }
 
-    // const openSaveDialog = () => {
-    //     openDialog({
-    //         title: t('profile.edit.save.title'),
-    //         subtitle: t('profile.edit.save.subtitle'),
-    //         successButtonText: t('profile.edit.save.confirm'),
-    //         cancelButtonText: t('profile.edit.save.cancel'),
-    //         onSuccess: () => {
-    //             updateCompanyAddress();
-    //         },
-    //     })
-    // }
-
     return (
         <View className="flex-1">
-            <View className="p-5">
-                <CustomText size="title" color="secondary" boldness="bold" numberOfLines={3}>
+            <KeyboardAwareScrollView
+                bottomOffset={20}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={{ padding: 20, paddingBottom: 24 }}
+            >
+                <CustomText size="title" color="secondary" boldness="bold" numberOfLines={2}>
                     {t('general.company_address')}
                 </CustomText>
-            </View>
+                <CustomText color="muted" classes="mt-2 mb-5" numberOfLines={3}>
+                    {t('complete_profile.company_address.subtitle')}
+                </CustomText>
 
-            <KeyboardAwareScrollView bottomOffset={20}>
-                <View className="space-y-8 flex-1 p-5">
-                    <View>
-                        <CustomText color="secondary" boldness="semiBold" numberOfLines={1}>
-                            {t('general.street_name')}
-                        </CustomText>
-                        <Controller
-                            control={control}
-                            name="street_name"
-                            rules={{
-                                required: t('general.street_name_required'),
-                            }}
-                            render={({ field }) => (
-                                <View className="mt-2">
-                                    <CustomTextInput
-                                        {...field}
-                                        size="large"
-                                        onChangeText={field.onChange}
-                                        placeholder={t('general.street_name_placeholder')}
-                                        error={errors.street_name && errors.street_name.message}
-                                        displayErrorIcon={true}
-                                        success={!errors.street_name && field.value}
-                                        displaySuccessIcon={true}
-                                    />
-                                </View>
-                            )}
-                        />
-                        {errors.street_name && errors.street_name.message && (
-                            <CustomText
-                                size="small"
-                                color="error"
-                                classes="mt-1"
+                <AddressAutocomplete onSelect={applySuggestion} />
 
-                            >
-                                {errors.street_name.message as string}
-                            </CustomText>
+                <View className="mt-7" style={{ gap: 20 }}>
+                    <Controller
+                        control={control}
+                        name="street_name"
+                        rules={{ required: t('general.street_name_required') }}
+                        render={({ field }) => (
+                            <Field label={t('general.street_name')} error={errors.street_name?.message as string}>
+                                <CustomTextInput
+                                    {...field}
+                                    size="large"
+                                    onChangeText={field.onChange}
+                                    placeholder={t('general.street_name_placeholder')}
+                                    error={errors.street_name && errors.street_name.message}
+                                    displayErrorIcon={true}
+                                    success={!errors.street_name && field.value}
+                                    displaySuccessIcon={true}
+                                />
+                            </Field>
                         )}
-                    </View>
+                    />
 
-                    <View>
-                        <CustomText color="secondary" boldness="semiBold" numberOfLines={1}>
-                            {t('general.street_number')}
-                        </CustomText>
-                        <Controller
-                            control={control}
-                            name="street_number"
-                            render={({ field }) => (
-                                <View className="mt-2">
-                                    <CustomTextInput
-                                        {...field}
-                                        size="large"
-                                        onChangeText={field.onChange}
-                                        placeholder={t('general.street_number_placeholder')}
-                                        error={errors.street_number && errors.street_number.message}
-                                        displayErrorIcon={true}
-                                        success={!errors.street_number && field.value}
-                                        displaySuccessIcon={true}
-                                    />
-                                </View>
-                            )}
-                        />
-                        {errors.street_number && errors.street_number.message && (
-                            <CustomText
-                                size="small"
-                                color="error"
-                                classes="mt-1"
-                            >
-                            {errors.street_number.message as string}
-                            </CustomText>
+                    <Controller
+                        control={control}
+                        name="street_number"
+                        rules={{ required: t('general.street_number_required') }}
+                        render={({ field }) => (
+                            <Field label={t('general.street_number')} error={errors.street_number?.message as string}>
+                                <CustomTextInput
+                                    {...field}
+                                    size="large"
+                                    onChangeText={field.onChange}
+                                    placeholder={t('general.street_number_placeholder')}
+                                    error={errors.street_number && errors.street_number.message}
+                                    displayErrorIcon={true}
+                                    success={!errors.street_number && field.value}
+                                    displaySuccessIcon={true}
+                                />
+                            </Field>
                         )}
-                    </View>
+                    />
 
-                    <View className="mt-8">
-                        <CustomText color="secondary" boldness="semiBold">
-                            {t('general.postal_code')}
-                        </CustomText>
-
-                        <Controller
-                            control={control}
-                            name="postal_code"
-                            rules={{
-                                required: t('general.postal_code_required'),
-                                pattern: {
-                                    value: /^\d{4}-\d{3}$/,
-                                    message: t('general.postal_code_invalid_format'),
-                                },
-                            }}
-                            render={({ field }) => (
-                                <View className="mt-2">
-                                    <CustomTextInput
-                                        {...field}
-                                        size="large"
-                                        onChangeText={(value: string) => {
-                                            value = value.replace(/\s{2,}/g, ' ').replace(/[^\d]/g, '');
-                                            if (value.endsWith('-')) {
-                                                value = value.slice(0, -1)
-                                            } else {
-                                                value = value.replace(/(\d{4})(\d{1})/, '$1-$2')
-                                            }
-                                            field.onChange(value)
-                                        }}
-                                        maxLength={8}
-                                        placeholder={t('general.postal_code_placeholder')}
-                                        keyboardType="number-pad"
-                                        error={errors.postal_code && errors.postal_code.message}
-                                        displayErrorIcon={true}
-                                        success={!errors.postal_code && field.value}
-                                        displaySuccessIcon={true}
-                                    />
-                                </View>
-                            )}
-                        />
-                        {errors.postal_code && errors.postal_code.message && (
-                            <CustomText
-                                size="small"
-                                color="error"
-                                classes="mt-1"
-                            >
-                                {errors.postal_code.message as string}
-                            </CustomText>
+                    <Controller
+                        control={control}
+                        name="postal_code"
+                        rules={{
+                            required: t('general.postal_code_required'),
+                            pattern: {
+                                value: /^\d{4}-\d{3}$/,
+                                message: t('general.postal_code_invalid_format'),
+                            },
+                        }}
+                        render={({ field }) => (
+                            <Field label={t('general.postal_code')} error={errors.postal_code?.message as string}>
+                                <CustomTextInput
+                                    {...field}
+                                    size="large"
+                                    onChangeText={(value: string) => {
+                                        value = value.replace(/[^\d]/g, '');
+                                        field.onChange(value.replace(/(\d{4})(\d{1,3})/, '$1-$2'));
+                                    }}
+                                    maxLength={8}
+                                    placeholder={t('general.postal_code_placeholder')}
+                                    keyboardType="number-pad"
+                                    error={errors.postal_code && errors.postal_code.message}
+                                    displayErrorIcon={true}
+                                    success={!errors.postal_code && field.value}
+                                    displaySuccessIcon={true}
+                                />
+                            </Field>
                         )}
-                    </View>
+                    />
 
-                    <View className="mt-8">
-                        <CustomText color="secondary" boldness="semiBold">
-                            {t('general.city')}
-                        </CustomText>
-
-                        <Controller
-                            control={control}
-                            name="city"
-                            rules={{
-                                required: t('general.city_required'),
-                            }}
-                            render={({ field }) => (
-                                <View className="mt-2">
-                                    <CustomTextInput
-                                        {...field}
-                                        size="large"
-                                        onChangeText={field.onChange}
-                                        placeholder={t('general.city_placeholder')}
-                                        error={errors.city && errors.city.message}
-                                        displayErrorIcon={true}
-                                        success={!errors.city && field.value}
-                                        displaySuccessIcon={true}
-                                    />
-                                </View>
-                            )}
-                        />
-                        {errors.city && errors.city.message && (
-                            <CustomText
-                                size="small"
-                                color="error"
-                                classes="mt-1"
-                            >
-                                {errors.city.message as string}
-                            </CustomText>
+                    <Controller
+                        control={control}
+                        name="city"
+                        rules={{ required: t('general.city_required') }}
+                        render={({ field }) => (
+                            <Field label={t('general.city')} error={errors.city?.message as string}>
+                                <CustomTextInput
+                                    {...field}
+                                    size="large"
+                                    onChangeText={field.onChange}
+                                    placeholder={t('general.city_placeholder')}
+                                    error={errors.city && errors.city.message}
+                                    displayErrorIcon={true}
+                                    success={!errors.city && field.value}
+                                    displaySuccessIcon={true}
+                                />
+                            </Field>
                         )}
-                    </View>
-
-                    <View className="mt-8">
-                        <CustomText color="secondary" boldness="semiBold">
-                            {t('general.locality')}
-                        </CustomText>
-
-                        <Controller
-                            control={control}
-                            name="state"
-                            rules={{
-                                required: t('general.locality_required'),
-                            }}
-                            render={({ field }) => (
-                                <View className="mt-2">
-                                    <CustomTextInput
-                                        {...field}
-                                        size="large"
-                                        onChangeText={field.onChange}
-                                        placeholder={t('general.locality_placeholder')}
-                                        error={errors.state && errors.state.message}
-                                        displayErrorIcon={true}
-                                        success={!errors.state && field.value}
-                                        displaySuccessIcon={true}
-                                    />
-                                </View>
-                            )}
-                        />
-                        {errors.state && errors.state.message && (
-                            <CustomText
-                                size="small"
-                                color="error"
-                                classes="mt-1"
-                            >
-                                {errors.state.message as string}
-                            </CustomText>
-                        )}
-                    </View>
-
-                    <View>
-                        <CustomText color="secondary" boldness="semiBold">
-                            {t('general.country')}
-                        </CustomText>
-
-                        <Controller
-                            control={control}
-                            name="country"
-                            render={({ field }) => (
-                                <View className="mt-2">
-                                    <CustomTextInput
-                                        {...field}
-                                        size="large"
-                                        onChangeText={field.onChange}
-                                        placeholder={t('general.country_placeholder')}
-                                        disabled
-                                        error={errors.country && errors.country.message}
-                                        displayErrorIcon={true}
-                                        success={!errors.country && field.value}
-                                        displaySuccessIcon={true}
-                                    />
-                                </View>
-                            )}
-                        />
-                        {errors.country && errors.country.message && (
-                            <CustomText
-                                size="small"
-                                color="error"
-                                classes="mt-1"
-                            >
-                            {errors.country.message as string}
-                            </CustomText>
-                        )}
-                    </View>
+                    />
                 </View>
             </KeyboardAwareScrollView>
+
             <View className="pb-5 px-5">
                 <CustomTouchableOpacity
                     size="large"
                     type="support_primary"
                     textColor="primary"
                     textBoldness="semiBold"
-                    text={loadingUpdateLocation ? t('profile.edit.saving_changes') : t('profile.edit.save_changes')}
+                    text={loadingUpdateLocation ? t('profile.edit.saving_changes') : t('general.continue')}
                     onPress={handleSubmit(updateCompanyAddress)}
                     disabled={loading || loadingUpdateLocation}
                 />
