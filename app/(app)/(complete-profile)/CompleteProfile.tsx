@@ -74,6 +74,15 @@ const CompleteProfile = () => {
     const [step, setStep] = useState<VerifySteps>(VerifySteps.instructions);
     const [docsStepDone, setDocsStepDone] = useState(false);
     const [permissionsStepDone, setPermissionsStepDone] = useState(false);
+    // Passos adiados nesta sessão ("faço isto mais tarde"). Sem isto, o
+    // goToNextDataStep reencaminhava para o mesmo passo enquanto o dado
+    // faltasse — carregar em "mais tarde" não saía dali.
+    const [skipped, setSkipped] = useState<VerifySteps[]>([]);
+    const skipStep = (which: VerifySteps) => {
+        const next = skipped.includes(which) ? skipped : [...skipped, which];
+        setSkipped(next);
+        goToNextDataStep(vendorData as VendorDataInterface, next);
+    };
 
     const totalSteps = DISPLAY_ORDER.length;
     const currentStepNumber = Math.max(DISPLAY_ORDER.indexOf(step), 0) + 1;
@@ -117,8 +126,8 @@ const CompleteProfile = () => {
         router.replace('/(app)/(pages)/(onboarding-success)/onboarding-success');
     };
 
-    const goToNextDataStep = (data: VendorDataInterface) => {
-        if (!data?.at_user) {
+    const goToNextDataStep = (data: VendorDataInterface, adiados: VerifySteps[] = skipped) => {
+        if (!data?.at_user && !adiados.includes(VerifySteps.atUser)) {
             setStep(VerifySteps.atUser);
         } else if (!data?.company_address) {
             setStep(VerifySteps.companyAddress);
@@ -176,7 +185,12 @@ const CompleteProfile = () => {
             </View>
 
             <View className="flex-1">
-                {step === VerifySteps.atUser && <AtUserStep onNext={(data: VendorDataInterface) => handleNextStep(data)} />}
+                {step === VerifySteps.atUser && (
+                    <AtUserStep
+                        onNext={(data: VendorDataInterface) => handleNextStep(data)}
+                        onSkip={() => skipStep(VerifySteps.atUser)}
+                    />
+                )}
                 {step === VerifySteps.phoneVerification && (
                     <View className="flex-1 p-5">
                         <SmsVerification onNext={(data: VendorDataInterface) => handleNextStep(data)} />

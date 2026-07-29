@@ -18,9 +18,11 @@ import { TouchableWithoutFeedback, View } from 'react-native';
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller"
 
 const AtUserStep = ({
-	onNext
+	onNext,
+	onSkip,
 }: {
 	onNext: (data: VendorDataInterface) => void;
+	onSkip: () => void;
 }) => {
     const { api } = useApi();
     const { vendorData, setVendorData } = useSession();
@@ -91,7 +93,13 @@ const AtUserStep = ({
 
   return (
     <View className="flex-1 p-5">
-        <KeyboardAwareScrollView bottomOffset={20} showsVerticalScrollIndicator={false}>
+        {/* O rodape (Continuar + "mais tarde") e fixo e fica POR CIMA da lista:
+            sem esta folga, o ultimo campo ficava escondido atras dos botoes. */}
+        <KeyboardAwareScrollView
+            bottomOffset={20}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 24 }}
+        >
             <CustomText size="title" color="secondary" boldness="bold" numberOfLines={3}>
                 {t('complete_profile.at_user.title')}
             </CustomText>
@@ -235,6 +243,21 @@ const AtUserStep = ({
                 text={loading ? t('profile.edit.saving_changes') : t('general.continue')}
                 onPress={handleSubmit(updateAtUser)}
                 disabled={loading}
+            />
+            {/* Criar o subutilizador obriga a sair da app e ir ao Portal das
+                Financas, muitas vezes no computador. Sem esta saida, o tecnico
+                ficava preso aqui e abandonava o registo a meio. O que falta
+                continua a aparecer no aviso da Home. */}
+            <CustomTouchableOpacity
+                size="large"
+                type="transparent"
+                textColor="muted"
+                textSize="medium"
+                textBoldness="regular"
+                text={t('complete_profile.at_user.later')}
+                onPress={onSkip}
+                disabled={loading}
+                classes="self-center mt-1"
             />
         </View>
     </View>

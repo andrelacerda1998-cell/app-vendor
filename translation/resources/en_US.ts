@@ -881,14 +881,14 @@ export default {
     "company_name_placeholder": "Tax name",
     "company_address": "Billing address",
     "company_address_change": "Change billing address",
-    "at_user": "Tax Authority sub-user",
+    "at_user": "Username (tax-number/number)",
     "at_user_change": "Change Tax Authority sub-user",
     "at_user_required": "Enter your Tax Authority sub-user",
     "at_user_placeholder": "e.g. 123456789/1",
     "at_user_invalid": "Invalid Tax Authority sub-user",
-    "at_password": "Tax Authority sub-user password",
+    "at_password": "Password for this login",
     "at_password_required": "Enter the Tax Authority sub-user password",
-    "at_password_placeholder": "Tax Authority sub-user password",
+    "at_password_placeholder": "",
     "at_password_helper": "Use the password of the sub-user you created on the tax portal. It's not the phone access code.",
     "iban": "IBAN",
     "iban_required": "Enter your IBAN",
@@ -1381,20 +1381,21 @@ export default {
     "subtitle": "You won't receive requests until it's complete. Tap to continue.",
     "header": "Complete your profile",
     "at_user": {
-      "title": "Access to issue invoices",
-      "subtitle": "Invoices for your services are issued in your name. To do that, create a separate login on the Portuguese tax portal \u2014 a sub-user \u2014 and enter it here.",
+      "title": "Access for invoices",
+      "subtitle": "Invoices are issued in your name. Create a login on the tax portal just for that and enter it here.",
       "warning": {
-        "title": "Don't use your personal login",
-        "body": "Don't enter the tax number and password you use to sign in to the tax portal. A sub-user is a separate login that can only report invoices, and you can delete it whenever you like without touching your account."
+        "title": "Don't use your own tax portal login",
+        "body": "This login is separate and only handles invoices. Delete it whenever you like, without touching your account."
       },
+      "later": "I'll do this later",
       "how_to": {
-        "toggle": "How do I create the sub-user?",
+        "toggle": "How do I create this login?",
         "steps": {
-          "portal": "Sign in to the tax portal with your personal details.",
-          "menu": "Go to All Services and look for User Management.",
-          "new": "Create a new user. The name follows the format tax-number/number \u2014 that's what you enter below.",
-          "permissions": "Under permissions, tick WFA (reporting invoice data) and WSE (reporting sequences). Without both, we can't issue your invoices.",
-          "password": "Set a password between 8 and 14 characters and save it \u2014 you only see it once."
+          "portal": "Sign in to the tax portal.",
+          "menu": "Look for User Management.",
+          "new": "Create a user. It gets the format tax-number/number.",
+          "permissions": "Tick the WFA and WSE permissions. Those are what let us issue the invoices.",
+          "password": "Pick a password of 8 to 14 characters. Save it: you only see it once."
         },
         "open_portal": "Open the tax portal"
       }

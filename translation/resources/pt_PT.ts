@@ -881,14 +881,14 @@ export default {
         "company_name_placeholder": "Denominação fiscal",
         "company_address": "Morada de faturação",
         "company_address_change": "Alterar morada de faturação",
-        "at_user": "Subutilizador AT",
+        "at_user": "Utilizador (NIF/número)",
         "at_user_change": "Alterar subutilizador AT",
         "at_user_required": "Escreve o teu subutilizador AT",
         "at_user_placeholder": "Ex.: 123456789/1",
         "at_user_invalid": "Subutilizador AT inválido",
-        "at_password": "Palavra-passe do subutilizador AT",
+        "at_password": "Palavra-passe deste acesso",
         "at_password_required": "Escreve a palavra-passe do subutilizador AT",
-        "at_password_placeholder": "Palavra-passe do subutilizador AT",
+        "at_password_placeholder": "",
         "at_password_helper": "Usa a palavra-passe do subutilizador que criaste no Portal das Finanças. Não é o código de acesso telefónico.",
         "iban": "IBAN",
         "iban_required": "Escreve o teu IBAN",
@@ -1381,20 +1381,21 @@ export default {
         "subtitle": "Enquanto não estiver completo não recebes pedidos. Toca para continuar.",
         "header": "Completar o teu perfil",
         "at_user": {
-            "title": "Acesso para emitir faturas",
-            "subtitle": "As faturas dos teus serviços são emitidas em teu nome. Para isso, cria no Portal das Finanças um acesso separado — um subutilizador — e escreve-o aqui.",
+            "title": "Acesso para as faturas",
+            "subtitle": "As faturas são emitidas em teu nome. Cria um acesso nas Finanças só para isso e escreve-o aqui.",
             "warning": {
-                "title": "Não uses o teu acesso pessoal",
-                "body": "Não escrevas aqui o NIF e a palavra-passe com que entras nas Finanças. O subutilizador é um acesso à parte, que só pode comunicar faturas e que podes apagar quando quiseres, sem mexer na tua conta."
+                "title": "Não uses o teu acesso das Finanças",
+                "body": "Este acesso é à parte e só serve para faturas. Apagas quando quiseres, sem mexer na tua conta."
             },
+            "later": "Faço isto mais tarde",
             "how_to": {
-                "toggle": "Como crio o subutilizador?",
+                "toggle": "Como crio este acesso?",
                 "steps": {
-                    "portal": "Entra no Portal das Finanças com os teus dados pessoais.",
-                    "menu": "Vai a Todos os Serviços e procura Gestão de Utilizadores.",
-                    "new": "Cria um novo utilizador. O nome fica no formato NIF/número — é esse que escreves em baixo.",
-                    "permissions": "Nas permissões, marca WFA (comunicação de dados de faturas) e WSE (comunicação de séries). Sem estas duas, não conseguimos emitir as tuas faturas.",
-                    "password": "Define uma palavra-passe entre 8 e 14 caracteres e guarda-a — só a vês nesse momento."
+                    "portal": "Entra no Portal das Finanças.",
+                    "menu": "Procura Gestão de Utilizadores.",
+                    "new": "Cria um utilizador. Fica com o formato NIF/número.",
+                    "permissions": "Marca as permissões WFA e WSE. São estas que nos deixam emitir as faturas.",
+                    "password": "Escolhe uma palavra-passe de 8 a 14 caracteres. Guarda-a: só a vês uma vez."
                 },
                 "open_portal": "Abrir o Portal das Finanças"
             }
