@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, View, ActivityIndicator, Linking } from 'react-native';
+import { ScrollView, View, ActivityIndicator, Linking, TouchableOpacity } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
 import Modal from 'react-native-modal';
@@ -15,6 +15,7 @@ import { API_ROUTES } from '@/constants/ApiRoutes';
 import i18n from '@/translation';
 import DynamicSizingSheet from '@/components/sheets/DynamicSizingSheet';
 import XIcon from '@/assets/icons/x';
+import { helpForDocument } from '@/utils/documentHelp';
 
 type DocType = { id: number; name: string; description?: string; uploaded?: boolean };
 
@@ -200,6 +201,22 @@ const DocumentsProfileStep = ({ onNext }: { onNext: () => void }) => {
                       {doc.description}
                     </CustomText>
                   ) : null}
+
+                  {/* Onde se arranja o documento. Só aparece enquanto falta:
+                      depois de submetido, deixa de ter utilidade. */}
+                  {!doc.uploaded && helpForDocument(doc.name) && (
+                    <TouchableOpacity
+                      onPress={() => Linking.openURL(helpForDocument(doc.name)!.url)}
+                      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                      accessibilityRole="link"
+                      className="flex-row items-center mt-1.5"
+                    >
+                      <Feather name="external-link" size={13} color={Colors.brand} />
+                      <CustomText color="brand" size="extraSmall" boldness="bold" classes="ml-1.5" numberOfLines={1}>
+                        {t(helpForDocument(doc.name)!.labelKey)}
+                      </CustomText>
+                    </TouchableOpacity>
+                  )}
                 </View>
                 <CustomTouchableOpacity
                   size="small"

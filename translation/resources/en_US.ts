@@ -1449,7 +1449,11 @@ export default {
       "submitted": "Sent",
       "replace": "Replace",
       "later": "Send documents later",
-      "permission_denied_title": "A permission is missing"
+      "permission_denied_title": "A permission is missing",
+      "help": {
+        "criminal_record": "Request on the justice portal",
+        "activity_declaration": "Get it on the tax portal"
+      }
     },
   },
   "schedules": {

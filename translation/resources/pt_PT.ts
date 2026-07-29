@@ -1449,7 +1449,11 @@ export default {
             "submitted": "Enviado",
             "replace": "Substituir",
             "later": "Enviar documentos mais tarde",
-            "permission_denied_title": "Falta uma permissão"
+            "permission_denied_title": "Falta uma permissão",
+            "help": {
+                "criminal_record": "Pedir no portal da Justiça",
+                "activity_declaration": "Obter no Portal das Finanças"
+            }
         }
     },
     "schedules": {
