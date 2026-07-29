@@ -1373,9 +1373,9 @@ export default {
         "search_failed": "Não conseguimos procurar agora. Escreve a morada em baixo."
     },
     "complete_profile": {
+        "later": "Faço isto mais tarde",
         "company_address": {
-            "subtitle": "É esta a morada que aparece nas tuas faturas.",
-            "later": "Faço isto mais tarde"
+            "subtitle": "É esta a morada que aparece nas tuas faturas."
         },
         "missing_list": "Falta: {{items}}. Toca para continuar.",
         "missing": {
@@ -1395,7 +1395,6 @@ export default {
             "warning": {
                 "title": "Não é o teu acesso pessoal das Finanças."
             },
-            "later": "Faço isto mais tarde",
             "how_to": {
                 "toggle": "Como crio este acesso?",
                 "steps": {
@@ -1410,8 +1409,8 @@ export default {
         },
         "iban": {
             "title": "Onde queres receber o teu dinheiro?",
-            "subtitle": "É para esta conta que te enviamos o valor dos serviços que fazes. Pagamos uma vez por semana, às segundas-feiras.",
-            "company_name_help": "Denominação fiscal é o nome que está associado ao teu NIF nas Finanças: o teu nome completo, se trabalhas como recibos verdes, ou o nome da empresa, se tens empresa. É este nome que aparece nas faturas.",
+            "subtitle": "Pagamos para esta conta, uma vez por semana, à segunda-feira.",
+            "company_name_help": "O nome associado ao teu NIF: o teu nome completo ou o da tua empresa. Aparece nas faturas.",
         },
         "permissions": {
             "title": "Duas permissões e ficas a trabalhar",

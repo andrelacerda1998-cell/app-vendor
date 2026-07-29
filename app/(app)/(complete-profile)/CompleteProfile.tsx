@@ -131,7 +131,7 @@ const CompleteProfile = () => {
             setStep(VerifySteps.atUser);
         } else if (!data?.company_address && !adiados.includes(VerifySteps.companyAddress)) {
             setStep(VerifySteps.companyAddress);
-        } else if (!data?.iban) {
+        } else if (!data?.iban && !adiados.includes(VerifySteps.iban)) {
             setStep(VerifySteps.iban);
         } else if (data?.user?.phone_number_verified_at === null) {
             setStep(VerifySteps.phoneVerification);
@@ -202,7 +202,12 @@ const CompleteProfile = () => {
                         onSkip={() => skipStep(VerifySteps.companyAddress)}
                     />
                 )}
-                {step === VerifySteps.iban && <IbanStep onNext={(data: VendorDataInterface) => handleNextStep(data)} />}
+                {step === VerifySteps.iban && (
+                    <IbanStep
+                        onNext={(data: VendorDataInterface) => handleNextStep(data)}
+                        onSkip={() => skipStep(VerifySteps.iban)}
+                    />
+                )}
                 {step === VerifySteps.citySurvey && (
                     <CitySurveyStep onNext={() => setStep(VerifySteps.emailVerification)} />
                 )}

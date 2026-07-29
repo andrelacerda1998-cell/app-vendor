@@ -1373,9 +1373,9 @@ export default {
     "search_failed": "We couldn't search right now. Type the address below."
   },
   "complete_profile": {
+    "later": "I'll do this later",
     "company_address": {
-      "subtitle": "This is the address that appears on your invoices.",
-      "later": "I'll do this later"
+      "subtitle": "This is the address that appears on your invoices."
     },
     "missing_list": "Missing: {{items}}. Tap to continue.",
     "missing": {
@@ -1395,7 +1395,6 @@ export default {
       "warning": {
         "title": "This is not your personal tax portal login."
       },
-      "later": "I'll do this later",
       "how_to": {
         "toggle": "How do I create this login?",
         "steps": {
@@ -1410,8 +1409,8 @@ export default {
     },
     "iban": {
       "title": "Where should we send your money?",
-      "subtitle": "This is the account we pay your services into. We pay once a week, on Mondays.",
-      "company_name_help": "The tax name is the name registered against your tax number: your full name if you work as a sole trader, or your company name if you have one. This is the name that appears on invoices.",
+      "subtitle": "We pay into this account once a week, on Mondays.",
+      "company_name_help": "The name registered against your tax number: your full name or your company's. It appears on invoices.",
     },
     "permissions": {
       "title": "Two permissions and you're ready to work",

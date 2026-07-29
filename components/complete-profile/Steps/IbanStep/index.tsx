@@ -17,9 +17,11 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { VendorDataInterface } from "@/types/session";
 
 const IbanStep = ({
-  onNext
+  onNext,
+  onSkip,
 }: {
   onNext: (data: VendorDataInterface) => void;
+  onSkip: () => void;
 }) => {
   const {t} = useTranslation();
     const {api} = useApi();
@@ -226,9 +228,22 @@ const IbanStep = ({
               type="support_primary"
               textColor="primary"
               textBoldness="semiBold"
-              text={loading ? t('profile.edit.saving_changes') : t('profile.edit.save_changes')}
+              text={loading ? t('profile.edit.saving_changes') : t('general.continue')}
               onPress={handleSubmit(updateProfile)}
               disabled={loading}
+          />
+          {/* Sem o IBAN a mao (conta nova, cartao noutro sitio), o registo
+              trancava aqui. O que falta continua no aviso da Home. */}
+          <CustomTouchableOpacity
+              size="large"
+              type="transparent"
+              textColor="muted"
+              textSize="medium"
+              textBoldness="regular"
+              text={t('complete_profile.later')}
+              onPress={onSkip}
+              disabled={loading}
+              classes="self-center mt-1"
           />
       </View>
     </View>
