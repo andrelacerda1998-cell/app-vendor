@@ -1381,8 +1381,23 @@ export default {
         "subtitle": "Enquanto não estiver completo não recebes pedidos. Toca para continuar.",
         "header": "Completar o teu perfil",
         "at_user": {
-            "title": "Dados da Autoridade Tributária",
-            "subtitle": "Para podermos emitir as faturas dos teus serviços, indica os dados do subutilizador que criaste no Portal das Finanças com permissão para comunicar faturas e séries.",
+            "title": "Acesso para emitir faturas",
+            "subtitle": "As faturas dos teus serviços são emitidas em teu nome. Para isso, cria no Portal das Finanças um acesso separado — um subutilizador — e escreve-o aqui.",
+            "warning": {
+                "title": "Não uses o teu acesso pessoal",
+                "body": "Não escrevas aqui o NIF e a palavra-passe com que entras nas Finanças. O subutilizador é um acesso à parte, que só pode comunicar faturas e que podes apagar quando quiseres, sem mexer na tua conta."
+            },
+            "how_to": {
+                "toggle": "Como crio o subutilizador?",
+                "steps": {
+                    "portal": "Entra no Portal das Finanças com os teus dados pessoais.",
+                    "menu": "Vai a Todos os Serviços e procura Gestão de Utilizadores.",
+                    "new": "Cria um novo utilizador. O nome fica no formato NIF/número — é esse que escreves em baixo.",
+                    "permissions": "Nas permissões, marca WFA (comunicação de dados de faturas) e WSE (comunicação de séries). Sem estas duas, não conseguimos emitir as tuas faturas.",
+                    "password": "Define uma palavra-passe entre 8 e 14 caracteres e guarda-a — só a vês nesse momento."
+                },
+                "open_portal": "Abrir o Portal das Finanças"
+            }
         },
         "iban": {
             "title": "Onde queres receber o teu dinheiro?",

@@ -25,7 +25,12 @@ export function ApiProvider({ children }: PropsWithChildren) {
     const { signOut, session, setSession } = useSession();
     const { openDialog } = useDialog();
     const { t } = useTranslation();
-    const [api] = useState<AxiosInstance>(axios.create({
+    // O `() =>` NÃO é estilo: uma instância do axios é uma função, e o useState
+    // trata uma função passada diretamente como inicializador preguiçoso — chamava
+    // `axios.create(...)()`, disparava um pedido a esmo e guardava a Promise como
+    // se fosse o cliente. Daí `api.get is not a function` em tudo o que renderize
+    // antes de o efeito abaixo enxertar os métodos por cima dessa Promise.
+    const [api] = useState<AxiosInstance>(() => axios.create({
         baseURL: API_BASE_URL,
         timeout: 30000,
     }));

@@ -7,6 +7,7 @@ import { Colors } from '@/constants/Colors'
 import { useApi } from "@/contexts/ApiContext"
 import { useDialog } from "@/contexts/DialogContext"
 import { useSession } from "@/contexts/SessionContext"
+import AtSubuserHelp from "@/components/at/AtSubuserHelp"
 import { VendorDataInterface } from "@/types/session"
 import { validateNIF } from "@/utils"
 import { Feather } from "@expo/vector-icons"
@@ -90,16 +91,17 @@ const AtUserStep = ({
 
   return (
     <View className="flex-1 p-5">
-         <CustomText size="title" color="secondary" boldness="bold" numberOfLines={3}>
-             {t('complete_profile.at_user.title')}
-        </CustomText>
-        <CustomText color="gray_medium" numberOfLines={4} classes="mt-2 mb-20">
-            {t('complete_profile.at_user.subtitle')}
-        </CustomText>
+        <KeyboardAwareScrollView bottomOffset={20} showsVerticalScrollIndicator={false}>
+            <CustomText size="title" color="secondary" boldness="bold" numberOfLines={3}>
+                {t('complete_profile.at_user.title')}
+            </CustomText>
+            <CustomText color="muted" numberOfLines={5} classes="mt-2 mb-5">
+                {t('complete_profile.at_user.subtitle')}
+            </CustomText>
 
+            <AtSubuserHelp />
 
-        <KeyboardAwareScrollView bottomOffset={20}>
-            <View className="space-y-8 flex-1">
+            <View className="space-y-8 flex-1 mt-7">
 
                 <View>
                     <CustomText color="secondary" boldness="semiBold" numberOfLines={1}>
@@ -223,12 +225,14 @@ const AtUserStep = ({
                     </CustomText>
                 </View>
             )}
+            {/* "Guardar alteracoes" nao encaixa num passo de registo: nao ha
+                nada anterior para alterar. */}
             <CustomTouchableOpacity
                 size="large"
                 type="support_primary"
                 textColor="primary"
                 textBoldness="semiBold"
-                text={loading ? t('profile.edit.saving_changes') : t('profile.edit.save_changes')}
+                text={loading ? t('profile.edit.saving_changes') : t('general.continue')}
                 onPress={handleSubmit(updateAtUser)}
                 disabled={loading}
             />
