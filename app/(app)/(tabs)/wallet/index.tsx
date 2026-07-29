@@ -105,10 +105,19 @@ const Agenda = () => {
 
   return (
     <SafeAreaView className={`flex-1 bg-bg`}>
-      <View className="px-5 pt-4 pb-3">
+      <View className="px-5 pt-4 pb-3 flex-row items-center justify-between">
         <CustomText size="subtitle" color="secondary" boldness="bolder">
           {t('tabs.agenda')}
         </CustomText>
+        {/* Atalho para a lista completa — o toque no cartão passou a abrir o detalhe. */}
+        <TouchableOpacity
+          activeOpacity={0.7}
+          onPress={() => router.push('/(app)/(bottom-sheets)/(services)/schedules/all')}
+        >
+          <CustomText size="extraSmall" color="brand" boldness="bold">
+            {t('services.view_all')}
+          </CustomText>
+        </TouchableOpacity>
       </View>
 
       {/* Fita de semana */}
@@ -201,7 +210,9 @@ const Agenda = () => {
                       <TouchableOpacity
                         key={`${k}-${i}`}
                         activeOpacity={0.85}
-                        onPress={() => router.push('/(app)/(bottom-sheets)/(services)/schedules/all')}
+                        onPress={() =>
+                          router.push(`/(app)/(pages)/(schedule-detail)/${item?.schedule_id ?? item?.service_id}`)
+                        }
                       >
                         <Card className="flex-row items-center">
                           <IconTile size={52}>

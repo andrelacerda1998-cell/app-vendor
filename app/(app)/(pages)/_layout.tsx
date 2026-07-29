@@ -9,6 +9,8 @@ export default function AppLayout() {
       }}
     >
  
+      <Stack.Screen name="(onboarding-success)/onboarding-success" />
+ 
       <Stack.Screen name="(userprofile)/userprofile" />
 
       <Stack.Screen name="(payments)/payments" />
@@ -32,6 +34,8 @@ export default function AppLayout() {
       <Stack.Screen name="(account-status)/account-status" />
 
       <Stack.Screen name="(auto-acceptance)/auto-acceptance" />
+
+      <Stack.Screen name="(schedule-detail)/[scheduleId]" />
 
     </Stack>
   );
