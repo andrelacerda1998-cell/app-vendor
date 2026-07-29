@@ -31,21 +31,14 @@ export const AtSubuserHelp = () => {
 
   return (
     <View>
-      {/* Aviso primeiro: e o erro que custa mais caro. */}
-      <Card
-        className="flex-row"
-        style={{ borderColor: 'rgba(233,162,59,0.45)' }}
-      >
-        <Feather name="shield" size={20} color={Colors.warning} style={{ marginTop: 2 }} />
-        <View className="flex-1 ml-3">
-          <CustomText color="secondary" size="small" boldness="bold" numberOfLines={2}>
-            {t('complete_profile.at_user.warning.title')}
-          </CustomText>
-          <CustomText color="muted" size="small" classes="mt-1" numberOfLines={5}>
-            {t('complete_profile.at_user.warning.body')}
-          </CustomText>
-        </View>
-      </Card>
+      {/* O aviso era um cartao de cinco linhas que repetia metade do subtitulo.
+          O que tem mesmo de passar cabe numa linha; o resto vive nos passos. */}
+      <View className="flex-row items-center">
+        <Feather name="shield" size={16} color={Colors.warning} />
+        <CustomText color="secondary" size="small" boldness="semiBold" classes="ml-2 flex-1" numberOfLines={2}>
+          {t('complete_profile.at_user.warning.title')}
+        </CustomText>
+      </View>
 
       <TouchableOpacity
         onPress={() => setOpen(prev => !prev)}

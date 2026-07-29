@@ -883,12 +883,12 @@ export default {
         "company_name_placeholder": "Denominação fiscal",
         "company_address": "Morada de faturação",
         "company_address_change": "Alterar morada de faturação",
-        "at_user": "Utilizador (NIF/número)",
+        "at_user": "Utilizador",
         "at_user_change": "Alterar subutilizador AT",
         "at_user_required": "Escreve o teu subutilizador AT",
         "at_user_placeholder": "Ex.: 123456789/1",
         "at_user_invalid": "Subutilizador AT inválido",
-        "at_password": "Palavra-passe deste acesso",
+        "at_password": "Palavra-passe",
         "at_password_required": "Escreve a palavra-passe do subutilizador AT",
         "at_password_placeholder": "",
         "at_password_helper": "Usa a palavra-passe do subutilizador que criaste no Portal das Finanças. Não é o código de acesso telefónico.",
@@ -1393,10 +1393,9 @@ export default {
         "header": "Completar o teu perfil",
         "at_user": {
             "title": "Acesso para as faturas",
-            "subtitle": "As faturas são emitidas em teu nome. Cria um acesso nas Finanças só para isso e escreve-o aqui.",
+            "subtitle": "Cria um acesso nas Finanças só para faturas e escreve-o aqui.",
             "warning": {
-                "title": "Não uses o teu acesso das Finanças",
-                "body": "Este acesso é à parte e só serve para faturas. Apagas quando quiseres, sem mexer na tua conta."
+                "title": "Não é o teu acesso pessoal das Finanças."
             },
             "later": "Faço isto mais tarde",
             "how_to": {

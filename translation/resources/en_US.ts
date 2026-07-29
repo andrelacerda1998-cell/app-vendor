@@ -883,12 +883,12 @@ export default {
     "company_name_placeholder": "Tax name",
     "company_address": "Billing address",
     "company_address_change": "Change billing address",
-    "at_user": "Username (tax-number/number)",
+    "at_user": "Username",
     "at_user_change": "Change Tax Authority sub-user",
     "at_user_required": "Enter your Tax Authority sub-user",
     "at_user_placeholder": "e.g. 123456789/1",
     "at_user_invalid": "Invalid Tax Authority sub-user",
-    "at_password": "Password for this login",
+    "at_password": "Password",
     "at_password_required": "Enter the Tax Authority sub-user password",
     "at_password_placeholder": "",
     "at_password_helper": "Use the password of the sub-user you created on the tax portal. It's not the phone access code.",
@@ -1393,10 +1393,9 @@ export default {
     "header": "Complete your profile",
     "at_user": {
       "title": "Access for invoices",
-      "subtitle": "Invoices are issued in your name. Create a login on the tax portal just for that and enter it here.",
+      "subtitle": "Create a tax portal login just for invoices and enter it here.",
       "warning": {
-        "title": "Don't use your own tax portal login",
-        "body": "This login is separate and only handles invoices. Delete it whenever you like, without touching your account."
+        "title": "This is not your personal tax portal login."
       },
       "later": "I'll do this later",
       "how_to": {
