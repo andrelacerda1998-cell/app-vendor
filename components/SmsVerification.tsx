@@ -135,32 +135,37 @@ const SmsVerification = ({
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   };
 
+  /**
+   * Fazia `router.replace` para o separador Perfil antes de abrir a edicao:
+   * isso deitava fora a pilha do onboarding, e depois de mudar o numero o
+   * tecnico ficava no Perfil sem forma de voltar ao passo. Um push simples
+   * empilha por cima e o voltar traz de volta a este ecra.
+   */
   const goToEditProfile = () => {
-    router.replace("/(app)/(tabs)/profile");
     router.push("/(app)/(modals)/(profile)/edit-profile");
   }
 
   return (
-    <ScrollView contentContainerStyle={{
-        flexGrow: 1,
-        width: "100%",
-        justifyContent: "center",
-        backgroundColor: Colors.primary,
-        borderTopStartRadius: 30,
-        borderTopEndRadius: 30,
-      }}>
+    // Era um bottom sheet: tinha fundo proprio (Colors.primary, mais claro que
+    // o do ecra) e cantos de 30, o que desenhava um cartao por cima do titulo
+    // no meio do onboarding. Agora e so o conteudo do passo.
+    <ScrollView
+      contentContainerStyle={{ flexGrow: 1 }}
+      showsVerticalScrollIndicator={false}
+    >
         {status === Status.PENDING && (
           <View className="flex-1 justify-between">
             <View className="flex-1">
               <View>
-                <CustomText color="secondary" boldness="semiBold" size="large" numberOfLines={3}>
+                {/* `title` como nos outros passos — este vinha um degrau abaixo. */}
+                <CustomText color="secondary" boldness="bold" size="title" numberOfLines={2}>
                   {t('session.sms.pending.title')}
                 </CustomText>
-                <CustomText color="gray_strong" boldness="semiBold" numberOfLines={3}>
+                <CustomText color="muted" classes="mt-2" numberOfLines={3}>
                   {t('session.sms.pending.subtitle')}
-                </CustomText>   
+                </CustomText>
               </View>
-              <View className="mt-8">
+              <View className="mt-7">
                 <CustomText color="secondary" boldness="semiBold" numberOfLines={1}>
                     {t('general.phone_number')}
                 </CustomText>
@@ -205,27 +210,27 @@ const SmsVerification = ({
                     </CustomText>
                 )}
               </View>
-              <View className="mt-4">
-                <CustomTouchableOpacity
-                  type="transparent"
-                  size="large"
-                  text={t('session.sms.pending.edit_phone_number')}
-                  textSize="medium"
-                  textColor="secondary"
-                  textBoldness="regular"
-                  className="p-0"
-                  onPress={goToEditProfile}
-                  disabled={loading}
-                />
-              </View>
+              {/* Era texto branco a parecer um rotulo; a cor da marca diz que
+                  se toca. Encostado a esquerda, sob o campo a que se refere. */}
+              <CustomTouchableOpacity
+                type="transparent"
+                size="small"
+                text={t('session.sms.pending.edit_phone_number')}
+                textSize="small"
+                textColor="support_primary"
+                textBoldness="bold"
+                onPress={goToEditProfile}
+                disabled={loading}
+                classes="self-start mt-2"
+              />
             </View>
             <View className="mt-4">
               <CustomTouchableOpacity
-                type="secondary"
+                type="support_primary"
                 size="large"
                 text={t('session.sms.pending.send_sms')}
                 textSize="medium"
-                textColor="primary"
+                textColor="on_brand"
                 textBoldness="semiBold"
                 onPress={sendCode}
                 disabled={loading}
@@ -237,15 +242,15 @@ const SmsVerification = ({
           <View className="flex-1 justify-between">
             <View className="flex-1">
               <View>
-                <CustomText color="secondary" boldness="semiBold" size="large" numberOfLines={3}>
+                <CustomText color="secondary" boldness="bold" size="title" numberOfLines={2}>
                   {t('session.sms.sent.title')}
                 </CustomText>
-                <CustomText color="gray_strong" boldness="semiBold" numberOfLines={3}>
+                <CustomText color="muted" classes="mt-2" numberOfLines={3}>
                   {t('session.sms.sent.subtitle')}
                 </CustomText>
               </View>
-              <View className="w-full my-8">
-                <CustomText color="gray_strong" boldness="semiBold" numberOfLines={1}>
+              <View className="w-full mt-7">
+                <CustomText color="secondary" boldness="semiBold" numberOfLines={1}>
                   {t('session.sms.sent.code')}
                 </CustomText>
 
@@ -297,30 +302,32 @@ const SmsVerification = ({
                   </CustomText>
                 )}
 
-                <View className="flex-row items-center justify-between w-full mt-8">
+                {/* Enquanto o contador corre, reenviar esta desativado — a cor
+                    da marca so aparece quando o toque faz mesmo alguma coisa. */}
+                <View className="flex-row items-center justify-between w-full mt-6">
                   <CustomTouchableOpacity
                     type="transparent"
-                    size="large"
+                    size="small"
                     text={t('session.sms.sent.resend_code')}
-                    textSize="medium"
-                    textColor="secondary"
-                    textBoldness="regular"
-                    className="p-0"
+                    textSize="small"
+                    textColor={timer > 0 ? 'muted' : 'support_primary'}
+                    textBoldness="bold"
                     onPress={resendCode}
                     disabled={loading || timer > 0}
+                    classes="self-start"
                   />
-                  <CustomText color="gray_strong" boldness="semiBold" numberOfLines={3}>
+                  <CustomText color="muted" size="small" numberOfLines={1}>
                     {formatTime(timer)}
                   </CustomText>
                 </View>
               </View>
             </View>
             <CustomTouchableOpacity
-              type="secondary"
+              type="support_primary"
               size="large"
               text={t('session.sms.sent.verify')}
               textSize="medium"
-              textColor="primary"
+              textColor="on_brand"
               textBoldness="semiBold"
               onPress={verify}
               disabled={loading || codeError !== null || code.length < 6}
@@ -340,11 +347,11 @@ const SmsVerification = ({
               </View>
             </View>
             <CustomTouchableOpacity
-              type="secondary"
+              type="support_primary"
               size="large"
               text={t('session.sms.verified.close')}
               textSize="medium"
-              textColor="primary"
+              textColor="on_brand"
               textBoldness="semiBold"
               onPress={onNext}
               disabled={loading}
@@ -364,11 +371,11 @@ const SmsVerification = ({
               </View>
             </View>
             <CustomTouchableOpacity
-              type="secondary"
+              type="support_primary"
               size="large"
               text={t('session.sms.error.close')}
               textSize="medium"
-              textColor="primary"
+              textColor="on_brand"
               textBoldness="semiBold"
               onPress={() => {
                 if (router.canGoBack()) {
