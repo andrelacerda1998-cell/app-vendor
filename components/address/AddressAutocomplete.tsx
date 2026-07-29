@@ -1,16 +1,17 @@
 /**
- * Pesquisa de morada com sugestoes.
+ * Sugestoes de morada agarradas a um campo existente.
  *
- * Escrever cinco campos a mao num telemovel, muitas vezes na rua, era o que
- * mais travava este passo -- e o que mais erros de morada gerava nas faturas.
- * Aqui escreve-se a rua e escolhe-se da lista; os campos ficam preenchidos.
+ * A primeira versao era uma caixa de pesquisa separada por cima do formulario
+ * -- ou seja, dois sitios onde escrever a rua. O dono do produto cortou-a: e
+ * o proprio campo "Nome da rua" que sugere enquanto se escreve, e escolher
+ * uma sugestao preenche o resto da morada.
  *
  * Usa o endpoint que ja existia no backend (POST /common/places/autocomplete),
  * que devolve rua, numero, cidade e codigo postal por sugestao -- nao ha
  * chamada ao Google a partir da app nem chave no cliente.
  */
-import React, { useEffect, useRef, useState } from 'react';
-import { View, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { View, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 
@@ -33,16 +34,14 @@ const MIN_CHARS = 4;
 /** O tecnico escreve a correr: so procuramos quando para de escrever. */
 const DEBOUNCE_MS = 400;
 
-const AddressAutocomplete = ({
-  onSelect,
-  initialQuery = '',
-}: {
-  onSelect: (suggestion: AddressSuggestion) => void;
-  initialQuery?: string;
-}) => {
-  const { t } = useTranslation();
+/**
+ * Liga as sugestoes ao texto de um campo. O campo continua a ser de quem
+ * chama; daqui vem so o estado (resultados, a procurar, falhou, vazio).
+ * `dismiss()` cala as sugestoes ate o texto voltar a mudar — para o momento
+ * em que uma sugestao e escolhida e o texto muda por causa disso.
+ */
+export const useAddressSuggestions = (query: string) => {
   const { api } = useApi();
-  const [query, setQuery] = useState(initialQuery);
   const [results, setResults] = useState<AddressSuggestion[]>([]);
   const [searching, setSearching] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -51,12 +50,20 @@ const AddressAutocomplete = ({
   // Descarta respostas de pesquisas antigas que cheguem depois de uma mais
   // recente — senão a lista pisca com resultados do que já foi apagado.
   const latest = useRef(0);
+  const lastQuery = useRef(query);
+
+  // Texto mudou pela mão do técnico → volta a sugerir.
+  if (query !== lastQuery.current) {
+    lastQuery.current = query;
+    if (dismissed) setDismissed(false);
+  }
 
   useEffect(() => {
     if (timer.current) clearTimeout(timer.current);
     if (dismissed || query.trim().length < MIN_CHARS) {
       setResults([]);
       setSearching(false);
+      setFailed(false);
       return;
     }
 
@@ -86,49 +93,33 @@ const AddressAutocomplete = ({
     };
   }, [query, dismissed]);
 
+  const dismiss = () => {
+    setDismissed(true);
+    setResults([]);
+  };
+
   const showEmpty =
     !searching && !dismissed && !failed && results.length === 0 && query.trim().length >= MIN_CHARS;
 
-  const choose = (item: AddressSuggestion) => {
-    setQuery(item.description ?? '');
-    setDismissed(true);
-    setResults([]);
-    onSelect(item);
-  };
+  return { results, searching, failed, showEmpty, dismiss };
+};
+
+/** A lista que aparece por baixo do campo enquanto ha sugestoes. */
+export const AddressSuggestionList = ({
+  results,
+  failed,
+  showEmpty,
+  onSelect,
+}: {
+  results: AddressSuggestion[];
+  failed: boolean;
+  showEmpty: boolean;
+  onSelect: (s: AddressSuggestion) => void;
+}) => {
+  const { t } = useTranslation();
 
   return (
     <View>
-      <View
-        className="flex-row items-center rounded-2xl bg-card border px-4"
-        style={{ borderColor: Colors.line, height: 56 }}
-      >
-        <Feather name="search" size={20} color={Colors.muted} />
-        <TextInput
-          value={query}
-          onChangeText={(value) => {
-            setQuery(value);
-            setDismissed(false);
-          }}
-          autoCorrect={false}
-          placeholder={t('address.search_placeholder')}
-          placeholderTextColor={Colors.muted}
-          accessibilityLabel={t('address.search_label')}
-          className="flex-1 ml-3"
-          style={{ color: Colors.secondary, fontFamily: 'Poppins_500Medium', fontSize: 16 }}
-        />
-        {searching && <ActivityIndicator size="small" color={Colors.brand} />}
-        {!searching && query.length > 0 && (
-          <TouchableOpacity
-            onPress={() => { setQuery(''); setResults([]); setDismissed(true); }}
-            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-            accessibilityRole="button"
-            accessibilityLabel={t('general.clear')}
-          >
-            <Feather name="x" size={18} color={Colors.muted} />
-          </TouchableOpacity>
-        )}
-      </View>
-
       {results.length > 0 && (
         <View
           className="rounded-2xl border mt-2 overflow-hidden"
@@ -137,7 +128,7 @@ const AddressAutocomplete = ({
           {results.slice(0, 5).map((item, index) => (
             <TouchableOpacity
               key={item.place_id ?? index}
-              onPress={() => choose(item)}
+              onPress={() => onSelect(item)}
               activeOpacity={0.7}
               accessibilityRole="button"
               className="flex-row items-center px-4"
@@ -167,5 +158,3 @@ const AddressAutocomplete = ({
     </View>
   );
 };
-
-export default AddressAutocomplete;

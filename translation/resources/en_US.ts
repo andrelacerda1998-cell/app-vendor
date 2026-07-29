@@ -833,7 +833,6 @@ export default {
     "street_name_placeholder": "Street name",
     "street_name_required": "Enter the street name",
     "street_number_required": "Enter the door number",
-    "clear": "Clear",
     "street_number": "Door/building number",
     "street_number_placeholder": "Door/building number",
     "locality": "District",
@@ -1370,8 +1369,6 @@ export default {
     "settings_dialog_confirm": "Open Settings",
   },
   "address": {
-    "search_placeholder": "Search for your address",
-    "search_label": "Search address",
     "search_empty": "We couldn't find that address. Type it in the fields below.",
     "search_failed": "We couldn't search right now. Type the address below."
   },

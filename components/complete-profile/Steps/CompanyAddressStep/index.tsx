@@ -26,7 +26,11 @@ import XIcon from "@/assets/icons/x";
 import { useTranslation } from "react-i18next";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { VendorDataInterface } from "@/types/session";
-import AddressAutocomplete, { AddressSuggestion } from "@/components/address/AddressAutocomplete";
+import {
+  AddressSuggestion,
+  AddressSuggestionList,
+  useAddressSuggestions,
+} from "@/components/address/AddressAutocomplete";
 
 /** Campo de texto com rotulo e erro por baixo — o padrao repetido deste ecra. */
 const Field = ({
@@ -62,7 +66,7 @@ const CompanyAddressStep = ({
     const { openDialog } = useDialog();
     const [loading, setLoading] = useState(false);
     const [loadingUpdateLocation, setLoadingUpdateLocation] = useState(false);
-    const { control, handleSubmit, formState: { errors }, getValues, setValue, reset } = useForm({
+    const { control, handleSubmit, formState: { errors }, getValues, setValue, reset, watch } = useForm({
         mode: 'onChange',
         defaultValues: {
             street_name: "",
@@ -71,6 +75,12 @@ const CompanyAddressStep = ({
             city: "",
         },
     });
+
+    // As sugestões vêm do próprio campo da rua: escreve-se lá, a lista aparece
+    // por baixo, e escolher preenche o resto. (Havia uma caixa de pesquisa
+    // separada por cima — era escrever a rua duas vezes.)
+    const streetText = watch('street_name');
+    const suggestions = useAddressSuggestions(streetText);
 
     useEffect(() => {
         if (!vendorData?.company_address) {
@@ -111,6 +121,9 @@ const CompanyAddressStep = ({
      * seria pior do que nao preencher nada.
      */
     const applySuggestion = (s: AddressSuggestion) => {
+        // Calar as sugestões ANTES de escrever no campo: o setValue muda o
+        // texto observado e, sem isto, a mudança reabria a própria lista.
+        suggestions.dismiss();
         if (s.street_name) setValue('street_name', s.street_name, { shouldValidate: true });
         if (s.street_number) setValue('street_number', s.street_number, { shouldValidate: true });
         if (s.postal_code) setValue('postal_code', s.postal_code, { shouldValidate: true });
@@ -164,9 +177,7 @@ const CompanyAddressStep = ({
                     {t('complete_profile.company_address.subtitle')}
                 </CustomText>
 
-                <AddressAutocomplete onSelect={applySuggestion} />
-
-                <View className="mt-7" style={{ gap: 20 }}>
+                <View style={{ gap: 20 }}>
                     <Controller
                         control={control}
                         name="street_name"
@@ -178,10 +189,17 @@ const CompanyAddressStep = ({
                                     size="large"
                                     onChangeText={field.onChange}
                                     placeholder={t('general.street_name_placeholder')}
+                                    autoCorrect={false}
                                     error={errors.street_name && errors.street_name.message}
                                     displayErrorIcon={true}
                                     success={!errors.street_name && field.value}
                                     displaySuccessIcon={true}
+                                />
+                                <AddressSuggestionList
+                                    results={suggestions.results}
+                                    failed={suggestions.failed}
+                                    showEmpty={suggestions.showEmpty}
+                                    onSelect={applySuggestion}
                                 />
                             </Field>
                         )}

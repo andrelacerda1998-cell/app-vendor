@@ -833,7 +833,6 @@ export default {
         "street_name_placeholder": "Nome da rua",
         "street_name_required": "Escreve o nome da rua",
         "street_number_required": "Escreve o número da porta",
-        "clear": "Limpar",
         "street_number": "Número da porta/edifício",
         "street_number_placeholder": "Número da porta/edifício",
         "locality": "Distrito",
@@ -1370,8 +1369,6 @@ export default {
         "settings_dialog_confirm": "Abrir Definições",
     },
     "address": {
-        "search_placeholder": "Procura a tua morada",
-        "search_label": "Procurar morada",
         "search_empty": "Não encontrámos essa morada. Escreve-a nos campos em baixo.",
         "search_failed": "Não conseguimos procurar agora. Escreve a morada em baixo."
     },
