@@ -38,7 +38,8 @@ export default {
         },
         "sign_in": {
             "title": "Iniciar sessão",
-            "subtitle": "Bem-vindo de volta. Escreve os teus dados para entrares.",
+            "subtitle": "Entra para veres os teus serviços.",
+            "password_placeholder": "A tua palavra-passe",
             "forgot_password": "Esqueceste-te da palavra-passe?",
             "sign_in": "Iniciar sessão",
             "signing_in": "A iniciar sessão...",
@@ -682,6 +683,7 @@ export default {
         "wait_before_trying_again": "Espera um pouco antes de tentares outra vez.",
         "address_invalid": "Esta morada não é válida. Confirma a rua, o número e o código postal.",
         "invalid_email_or_password": "Email ou palavra-passe errados. Confirma os dados e tenta outra vez.",
+        "network": "Sem ligação à internet. Verifica a ligação e tenta outra vez.",
         "account_under_verification": "A tua conta ainda está em análise. Avisamos-te assim que estiver aprovada.",
         "need_update": {
             "title": "Atualização necessária",

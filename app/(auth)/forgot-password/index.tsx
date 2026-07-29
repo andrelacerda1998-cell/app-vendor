@@ -126,7 +126,7 @@ const ForgotPassword = () => {
                   textSize="medium"
                   textColor="primary"
                   textBoldness="bold"
-                  onPress={() => router.push('/(auth)/signin')}
+                  onPress={() => router.push('/(auth)')}
                 />
               </View>
             </View>

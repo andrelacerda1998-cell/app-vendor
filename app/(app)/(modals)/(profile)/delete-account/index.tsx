@@ -54,7 +54,7 @@ const DeleteAccount = () => {
               .then((response) => {
                   signOut();
                   router.dismissAll();
-                  router.replace("/(auth)/signin");
+                  router.replace("/(auth)");
               })
               .catch((error) => {
                   if (error?.response?.status === 400){

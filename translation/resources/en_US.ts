@@ -38,7 +38,8 @@ export default {
     },
     "sign_in": {
       "title": "Sign in",
-      "subtitle": "Welcome back. Enter your details to continue.",
+      "subtitle": "Sign in to see your jobs.",
+      "password_placeholder": "Your password",
       "forgot_password": "Forgot your password?",
       "sign_in": "Sign in",
       "signing_in": "Signing in...",
@@ -682,6 +683,7 @@ export default {
     "wait_before_trying_again": "Wait a moment before trying again.",
     "address_invalid": "This address isn't valid. Check the street, number and postal code.",
     "invalid_email_or_password": "Wrong email or password. Check your details and try again.",
+    "network": "No internet connection. Check your connection and try again.",
     "account_under_verification": "Your account is still under review. We'll let you know as soon as it's approved.",
     "need_update": {
       "title": "Update required",

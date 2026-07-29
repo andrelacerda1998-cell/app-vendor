@@ -37,12 +37,6 @@ export default function AppLayout() {
                 }}
             />
             <Stack.Screen
-                name="signin/index"
-                options={{
-                    animation: "fade_from_bottom"
-                }}
-            />
-            <Stack.Screen
                 name="forgot-password/index"
                 options={{
                     animation: "fade_from_bottom"
