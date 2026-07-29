@@ -7,11 +7,32 @@ import { Colors } from "@/constants/Colors"
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next"
 import { cardShadow } from "@/components/ui"
+import { useSession } from "@/contexts/SessionContext"
 
 /** Aviso de perfil incompleto — bloqueia a receção de pedidos, por isso tem de saltar à vista. */
 const CompleteYourProfile = () => {
   const { t } = useTranslation();
   const router = useRouter();
+  const { vendorData } = useSession();
+
+  /**
+   * O que falta em concreto, pela mesma ordem do ecrã de Estado da conta.
+   * Dizer "completa o teu perfil" sem dizer o quê obrigava o técnico a entrar
+   * e procurar. A morada de faturação é o caso mais silencioso: sem ela, a
+   * criação da conta de faturação rebenta no InvoiceXpress e ele nunca fica
+   * online, sem nada na app que o explique.
+   */
+  const missing: string[] = [];
+  if ((vendorData?.missing_documents?.length ?? 0) > 0) missing.push(t('complete_profile.missing.documents'));
+  if (!vendorData?.user?.phone_number_verified_at) missing.push(t('complete_profile.missing.phone'));
+  if (!vendorData?.user?.email_verified_at) missing.push(t('complete_profile.missing.email'));
+  if (!vendorData?.at_user) missing.push(t('complete_profile.missing.at_user'));
+  if (!vendorData?.company_address) missing.push(t('complete_profile.missing.company_address'));
+  if (!vendorData?.iban) missing.push(t('complete_profile.missing.iban'));
+
+  const subtitle = missing.length > 0
+    ? t('complete_profile.missing_list', { items: missing.join(' · ') })
+    : t('complete_profile.subtitle');
 
   return (
     <TouchableOpacity
@@ -38,8 +59,8 @@ const CompleteYourProfile = () => {
             <CustomText size="medium" color="secondary" boldness="bolder" numberOfLines={2}>
               {t('complete_profile.notice')}
             </CustomText>
-            <CustomText size="small" color="secondary" boldness="regular" numberOfLines={2} classes="mt-0.5 opacity-80">
-              {t('complete_profile.subtitle')}
+            <CustomText size="small" color="secondary" boldness="regular" numberOfLines={3} classes="mt-0.5 opacity-80">
+              {subtitle}
             </CustomText>
           </View>
           <Feather name="chevron-right" size={22} color={Colors.danger} />

@@ -500,6 +500,10 @@ export default {
                 "cancel": "Não",
                 "loading": "A guardar..."
             },
+            "partial_save": {
+                "title": "Perfil guardado, IBAN não",
+                "subtitle": "Guardámos o teu nome, telefone e foto, mas não conseguimos guardar o IBAN. Confirma o IBAN e tenta outra vez."
+            },
             "change_address": "Alterar morada",
             "reset_password": "Alterar palavra-passe",
             "sending_reset_email": "A enviar email...",
@@ -1339,6 +1343,15 @@ export default {
         "settings_dialog_confirm": "Abrir Definições",
     },
     "complete_profile": {
+        "missing_list": "Falta: {{items}}. Toca para continuar.",
+        "missing": {
+            "documents": "documentos",
+            "phone": "confirmar o telemóvel",
+            "email": "confirmar o email",
+            "at_user": "subutilizador AT",
+            "company_address": "morada de faturação",
+            "iban": "IBAN"
+        },
         "notice": "Precisas de completar o teu perfil",
         "subtitle": "Enquanto não estiver completo não recebes pedidos. Toca para continuar.",
         "header": "Completar o teu perfil",

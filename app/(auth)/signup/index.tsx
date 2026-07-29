@@ -43,7 +43,6 @@ type SignUpDocument = {
 type SignUpDraft = {
     name?: string;
     username?: string;
-    nif?: string;
     email?: string;
     phone_number?: string;
     date_birthday?: string;
@@ -56,7 +55,6 @@ type SignUpDraft = {
 export type SignUpData = {
     username: string;
     name: string;
-    nif: string;
     email: string;
     date_birthday: Date;
     password: string;
@@ -101,7 +99,6 @@ const SignUp = () => {
         defaultValues: {
             username: '',
             name: '',
-            nif: '',
             email: '',
             password: '',
             password_confirmation: '',
@@ -122,7 +119,6 @@ const SignUp = () => {
                 const draft: SignUpDraft = JSON.parse(raw);
                 if (draft.name) setValue('name', draft.name);
                 if (draft.username) setValue('username', draft.username);
-                if (draft.nif) setValue('nif', draft.nif);
                 if (draft.email) setValue('email', draft.email);
                 if (draft.phone_number) setValue('phone_number', draft.phone_number);
                 if (draft.date_birthday) setValue('date_birthday', new Date(draft.date_birthday));
@@ -146,7 +142,6 @@ const SignUp = () => {
             const draft: SignUpDraft = {
                 name: values.name,
                 username: values.username,
-                nif: values.nif,
                 email: values.email,
                 phone_number: values.phone_number,
                 date_birthday: values.date_birthday instanceof Date
@@ -169,7 +164,6 @@ const SignUp = () => {
         const draft: SignUpDraft = {
             name: values.name,
             username: values.username,
-            nif: values.nif,
             email: values.email,
             phone_number: values.phone_number,
             date_birthday: values.date_birthday instanceof Date
@@ -297,7 +291,7 @@ const SignUp = () => {
         setIsSigningUp(false);
     };
 
-    const verifyUserData = async (email: string, nif: string, phone_number: string) => {
+    const verifyUserData = async (email: string, phone_number: string) => {
         try {
             const response = await axios.post(API_ROUTES.AUTH_VERIFY_USER_DATA, {
                 email,
@@ -348,7 +342,7 @@ const SignUp = () => {
         const nextStep = step + 1;
         if (step === SignUpSteps.personalInformation && data.email) {
             setIsVerifyingEmail(true);
-            const validEmail = await verifyUserData(data.email, data.nif, data.phone_number);
+            const validEmail = await verifyUserData(data.email, data.phone_number);
             setIsVerifyingEmail(false);
             if (!validEmail) return;
         }

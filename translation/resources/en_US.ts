@@ -500,6 +500,10 @@ export default {
         "cancel": "No",
         "loading": "Saving..."
       },
+      "partial_save": {
+        "title": "Profile saved, IBAN not",
+        "subtitle": "We saved your name, phone and photo, but we couldn't save the IBAN. Check the IBAN and try again."
+      },
       "change_address": "Change address",
       "reset_password": "Change password",
       "sending_reset_email": "Sending email...",
@@ -1339,6 +1343,15 @@ export default {
     "settings_dialog_confirm": "Open Settings",
   },
   "complete_profile": {
+    "missing_list": "Missing: {{items}}. Tap to continue.",
+    "missing": {
+        "documents": "documents",
+        "phone": "confirm your phone",
+        "email": "confirm your email",
+        "at_user": "AT sub-user",
+        "company_address": "billing address",
+        "iban": "IBAN"
+    },
     "notice": "You need to complete your profile",
     "subtitle": "You won't receive requests until it's complete. Tap to continue.",
     "header": "Complete your profile",
