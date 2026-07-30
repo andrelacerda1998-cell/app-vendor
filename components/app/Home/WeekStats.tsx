@@ -22,14 +22,18 @@ const StatItem = ({
   label,
   star,
   highlight,
-}: { value: string; label: string; star?: boolean; highlight?: boolean }) => (
+  empty,
+}: { value: string; label: string; star?: boolean; highlight?: boolean; empty?: boolean }) => (
   <View className="flex-1 items-center">
     <View className="flex-row items-center justify-center">
       {/* O dinheiro ganho é a razão pela qual o técnico abre a app: é o único
-          número em âmbar. Os outros ficam em branco para não competirem. */}
+          número em âmbar. Os outros ficam em branco para não competirem.
+          Mas só quando há dinheiro: a cor da marca num 0,00 € celebra o nada
+          e, de tanto aparecer, deixa de significar seja o que for. Mesma regra
+          da estrela aqui em baixo. */}
       <CustomText
         size={highlight ? 'extraLarge' : 'large'}
-        color={highlight ? 'brand' : 'secondary'}
+        color={highlight && !empty ? 'brand' : 'secondary'}
         boldness="bolder"
         numberOfLines={1}
       >
@@ -75,7 +79,12 @@ const WeekStats = () => {
       onPress={() => router.push('/(app)/(tabs)/history')}
     >
       <Card className="flex-row items-center" padded={false} style={{ paddingVertical: 18 }}>
-      <StatItem value={earnings} label={t('home_stats.this_week')} highlight />
+      <StatItem
+        value={earnings}
+        label={t('home_stats.this_week')}
+        highlight
+        empty={!(stats?.this_week_earnings)}
+      />
       <Divider />
       <StatItem
         value={services}

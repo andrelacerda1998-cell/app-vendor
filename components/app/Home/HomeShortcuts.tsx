@@ -11,15 +11,23 @@ type Shortcut = {
   icon: keyof typeof MaterialIcons.glyphMap;
   label: string;
   onPress: () => void;
-  /** Âmbar só para o que exige ação; o resto fica neutro. */
-  tone: string;
 };
 
-const ShortcutCard = ({ icon, label, onPress, tone }: Shortcut) => (
+/**
+ * Os atalhos sao pares: dois destinos de navegacao, nenhum urgente. A
+ * Disponibilidade estava em ambar e o Suporte em cinzento, o que sugeria uma
+ * hierarquia que nao existe — abrir a disponibilidade nao e mais premente do
+ * que pedir ajuda. Ficam ambos neutros, e o ambar fica reservado para o que
+ * significa mesmo alguma coisa na Home: o dinheiro ganho e o aviso de perfil
+ * incompleto.
+ */
+const TONE = Colors.muted;
+
+const ShortcutCard = ({ icon, label, onPress }: Shortcut) => (
   <TouchableOpacity activeOpacity={0.85} onPress={onPress} className="flex-1">
     <Card className="items-center py-5">
-      <IconTile size={44} tint={`${tone}1F`}>
-        <MaterialIcons name={icon} size={22} color={tone} />
+      <IconTile size={44} tint={`${TONE}1F`}>
+        <MaterialIcons name={icon} size={22} color={TONE} />
       </IconTile>
       <CustomText size="small" color="secondary" boldness="semiBold" classes="mt-2" numberOfLines={1}>
         {label}
@@ -39,13 +47,11 @@ const HomeShortcuts = () => {
             à disponibilidade, que não está em mais lado nenhum na Home. */}
         <ShortcutCard
           icon="schedule"
-          tone={Colors.brand}
           label={t('profile.activity.availability')}
           onPress={() => router.push('/(app)/(bottom-sheets)/(services)/schedulesSettings')}
         />
         <ShortcutCard
           icon="support-agent"
-          tone={Colors.muted}
           label={t('home.shortcuts.support')}
           onPress={() => router.push('/(app)/(pages)/(support)/support')}
         />

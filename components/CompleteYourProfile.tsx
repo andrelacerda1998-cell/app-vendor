@@ -9,7 +9,16 @@ import { useTranslation } from "react-i18next"
 import { cardShadow } from "@/components/ui"
 import { useSession } from "@/contexts/SessionContext"
 
-/** Aviso de perfil incompleto — bloqueia a receção de pedidos, por isso tem de saltar à vista. */
+/**
+ * Aviso de perfil incompleto — bloqueia a receção de pedidos, por isso tem de
+ * saltar à vista.
+ *
+ * Em ambar, nao em vermelho. Vermelho diz "esta partido" ou "vais perder algo";
+ * isto e uma tarefa por acabar. E como so desaparece quando o perfil estiver
+ * completo, o tecnico abria a app durante dias com um alarme a gritar por uma
+ * coisa que depende dele fazer com calma. Continua a ser o unico elemento
+ * colorido acima da dobra, por isso nao se perde.
+ */
 const CompleteYourProfile = () => {
   const { t } = useTranslation();
   const router = useRouter();
@@ -47,20 +56,20 @@ const CompleteYourProfile = () => {
       onPress={() => router.push('/(app)/(complete-profile)/CompleteProfile')}
     >
       <LinearGradient
-        colors={['rgba(255,90,95,0.30)', 'rgba(255,90,95,0.10)']}
+        colors={['rgba(250,187,91,0.26)', 'rgba(250,187,91,0.08)']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={[
-          { borderRadius: 16, borderWidth: 1.5, borderColor: 'rgba(255,90,95,0.55)' },
+          { borderRadius: 16, borderWidth: 1.5, borderColor: 'rgba(250,187,91,0.50)' },
           cardShadow,
         ]}
       >
         <View className="flex-row items-center p-4">
           <View
             className="w-11 h-11 rounded-full items-center justify-center mr-3"
-            style={{ backgroundColor: Colors.danger }}
+            style={{ backgroundColor: Colors.brand }}
           >
-            <Feather name="alert-triangle" size={22} color={Colors.strongest} />
+            <Feather name="alert-triangle" size={22} color={Colors.on_brand} />
           </View>
           <View className="flex-1">
             <CustomText size="medium" color="secondary" boldness="bolder" numberOfLines={2}>
@@ -70,7 +79,7 @@ const CompleteYourProfile = () => {
               {subtitle}
             </CustomText>
           </View>
-          <Feather name="chevron-right" size={22} color={Colors.danger} />
+          <Feather name="chevron-right" size={22} color={Colors.brand} />
         </View>
       </LinearGradient>
     </TouchableOpacity>
