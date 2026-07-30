@@ -30,8 +30,15 @@ const CompleteYourProfile = () => {
   if (!vendorData?.company_address) missing.push(t('complete_profile.missing.company_address'));
   if (!vendorData?.iban) missing.push(t('complete_profile.missing.iban'));
 
+  /**
+   * Contagem em vez da lista toda. Enumerar tudo separado por " · " nao cabia
+   * no cartao: cortava a meio ("morada de faturacao…") e o tecnico nem chegava
+   * a ler o que faltava. O detalhe esta a um toque, no ecra seguinte.
+   */
   const subtitle = missing.length > 0
-    ? t('complete_profile.missing_list', { items: missing.join(' · ') })
+    ? t(missing.length === 1 ? 'complete_profile.missing_one' : 'complete_profile.missing_many', {
+        count: missing.length,
+      })
     : t('complete_profile.subtitle');
 
   return (

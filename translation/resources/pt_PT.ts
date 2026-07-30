@@ -1377,7 +1377,8 @@ export default {
         "company_address": {
             "subtitle": "É esta a morada que aparece nas tuas faturas."
         },
-        "missing_list": "Falta: {{items}}. Toca para continuar.",
+        "missing_one": "Falta 1 passo para começares a receber pedidos.",
+        "missing_many": "Faltam {{count}} passos para começares a receber pedidos.",
         "missing": {
             "documents": "documentos",
             "phone": "confirmar o telemóvel",
@@ -1386,8 +1387,8 @@ export default {
             "company_address": "morada de faturação",
             "iban": "IBAN"
         },
-        "notice": "Precisas de completar o teu perfil",
-        "subtitle": "Enquanto não estiver completo não recebes pedidos. Toca para continuar.",
+        "notice": "Completa o teu perfil",
+        "subtitle": "Enquanto não estiver completo não recebes pedidos.",
         "header": "Completar o teu perfil",
         "at_user": {
             "title": "Acesso para as faturas",

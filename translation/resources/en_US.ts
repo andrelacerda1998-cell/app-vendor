@@ -1377,7 +1377,8 @@ export default {
     "company_address": {
       "subtitle": "This is the address that appears on your invoices."
     },
-    "missing_list": "Missing: {{items}}. Tap to continue.",
+    "missing_one": "1 step left before you can receive requests.",
+    "missing_many": "{{count}} steps left before you can receive requests.",
     "missing": {
         "documents": "documents",
         "phone": "confirm your phone",
@@ -1386,8 +1387,8 @@ export default {
         "company_address": "billing address",
         "iban": "IBAN"
     },
-    "notice": "You need to complete your profile",
-    "subtitle": "You won't receive requests until it's complete. Tap to continue.",
+    "notice": "Complete your profile",
+    "subtitle": "You won't receive requests until it's complete.",
     "header": "Complete your profile",
     "at_user": {
       "title": "Access for invoices",
