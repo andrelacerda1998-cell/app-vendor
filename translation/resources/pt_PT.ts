@@ -370,7 +370,6 @@ export default {
                 "finish_service": "Concluir serviço",
                 "immediate": "Serviço imediato",
                 "open_map": "Abrir mapa",
-                "call": "Ligar",
                 "navigate_with": "Navegar com",
                 "nav_apps": {
                     "apple_maps": "Apple Maps",
@@ -378,7 +377,6 @@ export default {
                     "waze": "Waze"
                 },
                 "navigate": "Navegar",
-                "go_to_location": "Ir para a morada do cliente",
                 "close": {
                     "title": "Serviço concluído",
                     "subtitle": "Estás a confirmar que o serviço ficou concluído. Tens a certeza?",

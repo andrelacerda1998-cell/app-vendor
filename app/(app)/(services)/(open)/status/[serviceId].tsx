@@ -21,8 +21,7 @@ import { renderMoney } from "@/utils/money";
 import ServiceExtras, { ServiceExtrasActions, type ExtrasSheet } from "@/components/services/ServiceExtras";
 import ServicePhotos from "@/components/services/ServicePhotos";
 import { Card, HeroCard, IconTile, ErrorState, SkeletonList } from "@/components/ui";
-import { useActionSheet } from "@expo/react-native-action-sheet";
-import { callPhone, navApps, openNavigation } from "@/utils/fieldActions";
+import { useNavChooser } from "@/hooks/useNavChooser";
 import { track, AnalyticsEvent } from "@/utils/analytics";
 
 interface Details{
@@ -108,7 +107,6 @@ const Action = ({ Icon, label, onPress, disabled, badge }: {Icon: React.FC, labe
 const Status = () => {
   const { t } = useTranslation();
   const { serviceId } = useLocalSearchParams<{ serviceId: string }>();
-  const { showActionSheetWithOptions } = useActionSheet();
   const { api } = useApi();
   const { vendorData } = useSession();
   const { openService, setOpenService, unreadMessages, clearUnreadMessages } = useService();
@@ -375,29 +373,15 @@ const Status = () => {
   const goToMap = () => router.push(`/(app)/(services)/(open)/progress/${svc?.id}`);
 
   /**
-   * Navegação turn-by-turn na app de mapas do telemóvel. Antes só havia o mapa
-   * dentro da app, que não dá indicações — o técnico tinha de copiar a morada à mão.
+   * Navegação turn-by-turn na app de mapas do telemóvel (só Apple/Google/Waze,
+   * via useNavChooser). Antes só havia o mapa dentro da app, que não dá
+   * indicações — o técnico tinha de copiar a morada à mão.
    */
-  const startNavigation = () => {
-    const apps = navApps();
-    const labels = apps.map((a) => t(`services.service.status.nav_apps.${a}`));
-    showActionSheetWithOptions(
-      {
-        options: [...labels, t('general.cancel')],
-        cancelButtonIndex: labels.length,
-        title: t('services.service.status.navigate_with'),
-      },
-      (index?: number) => {
-        if (index == null || index >= apps.length) return;
-        track(AnalyticsEvent.NAVIGATION_OPENED, { app: apps[index] });
-        openNavigation(apps[index], svc?.address, svc?.address?.name);
-      },
+  const chooseNavApp = useNavChooser();
+  const startNavigation = () =>
+    chooseNavApp(svc?.address, svc?.address?.name, (app) =>
+      track(AnalyticsEvent.NAVIGATION_OPENED, { app }),
     );
-  };
-
-  // `phone_number` é o nome real da coluna; `phone` fica como salvaguarda
-  // caso algum endpoint antigo ainda devolva a chave antiga.
-  const customerPhone = (svc?.customer as any)?.phone_number ?? (svc?.customer as any)?.phone;
 
   const goToChat = () => {
     track(AnalyticsEvent.CHAT_OPENED, { service_id: Number(svc?.id) });
@@ -578,20 +562,8 @@ const Status = () => {
                 {t('services.service.status.navigate')}
               </CustomText>
             </TouchableOpacity>
-            {/* Ligar só faz sentido a caminho: com o serviço já a decorrer o
-                técnico está com o cliente à frente. */}
-            {!!customerPhone && status !== ServiceStatus.ARRIVED && status !== ServiceStatus.FINISHED && (
-              <TouchableOpacity
-                onPress={() => { track(AnalyticsEvent.CUSTOMER_CALLED, { service_id: Number(svc?.id) }); callPhone(customerPhone); }}
-                className="flex-1 items-center rounded-xl py-3 border"
-                style={{ borderColor: Colors.line }}
-              >
-                <Feather name="phone" size={18} color={Colors.secondary} />
-                <CustomText size="small" color="secondary" boldness="semiBold" classes="mt-1">
-                  {t('services.service.status.call')}
-                </CustomText>
-              </TouchableOpacity>
-            )}
+            {/* Sem opção de ligar: o contacto com o cliente passa só pelo chat,
+                que deixa rasto e evita expor/usar o número de telefone. */}
             <TouchableOpacity
               onPress={goToChat}
               className="flex-1 items-center rounded-xl py-3 border"

@@ -370,7 +370,6 @@ export default {
             "finish_service": "Complete job",
         "immediate": "Immediate service",
         "open_map": "Open map",
-        "call": "Call",
         "navigate_with": "Navigate with",
         "nav_apps": {
           "apple_maps": "Apple Maps",
@@ -378,7 +377,6 @@ export default {
           "waze": "Waze"
         },
         "navigate": "Navigate",
-        "go_to_location": "Go to the client's address",
         "close": {
           "title": "Service completed",
           "subtitle": "You're confirming the service is complete. Are you sure?",

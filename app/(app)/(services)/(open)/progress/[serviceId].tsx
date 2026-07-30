@@ -9,10 +9,10 @@ import ServiceInProgress from "@/components/modals/services/ServiceInProgress";
 import {useService} from "@/contexts/ServiceContext";
 import MapView, {Polyline, PROVIDER_GOOGLE, Marker, LatLng} from "react-native-maps";
 import {getPoints} from "@/utils/map/getPoints";
-import {showLocation} from "react-native-map-link";
 import {useApi} from "@/contexts/ApiContext";
 import {API_ROUTES} from "@/constants/ApiRoutes";
 import decodePolyline from "@/utils/map/decodePolyline";
+import { useNavChooser } from "@/hooks/useNavChooser";
 import { useTranslation } from "react-i18next";
 
 const isValidCoordinate = (coord?: number) =>
@@ -136,17 +136,12 @@ const Progress = () => {
   const validDestination = isValidCoordinate(destinationLat) && isValidCoordinate(destinationLng);
   const validUserLocation = isValidCoordinate(vendorLat) && isValidCoordinate(vendorLng);
 
-  const handlePressNavigation = () => {
-      showLocation({
-          latitude: openService?.address.latitude,
-          longitude: openService?.address.longitude,
-          alwaysIncludeGoogle: true,
-          appsBlackList: ['uber'],
-          directionsMode: "car",
-          dialogTitle: t('services.service.status.go_to_location'),
-          dialogMessage: " "
-      })
-  }
+  // So Apple/Google/Waze, via useNavChooser. Antes usava o react-native-map-link,
+  // que abria uma lista longa (Citymapper, Moovit, Yandex...) impossivel de
+  // restringir a estas tres.
+  const chooseNavApp = useNavChooser();
+  const handlePressNavigation = () =>
+    chooseNavApp(openService?.address, openService?.address?.name);
 
   useEffect(() => {
     if (!openService?.id) return;
