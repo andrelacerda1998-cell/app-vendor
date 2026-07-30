@@ -156,6 +156,7 @@ export default {
         "title": "Let's verify your phone",
         "subtitle": "You'll get a code by SMS on this number.",
         "edit_phone_number": "Change phone number",
+          "edit_phone_number_short": "Change",
         "send_sms": "Send code",
       },
       "sent": {
@@ -877,9 +878,9 @@ export default {
       "cancel": "Cancel",
       "choose_an_option": "Choose an option"
     },
-    "company_name": "Tax name",
+    "company_name": "Name on invoices",
     "company_name_required": "Enter your tax name",
-    "company_name_placeholder": "Tax name",
+    "company_name_placeholder": "Your name or your company's",
     "company_address": "Billing address",
     "company_address_change": "Change billing address",
     "at_user": "Username",
@@ -1410,7 +1411,7 @@ export default {
     "iban": {
       "title": "Where should we send your money?",
       "subtitle": "We pay into this account once a week, on Mondays.",
-      "company_name_help": "The name registered against your tax number: your full name or your company's. It appears on invoices.",
+      "company_name_help": "It must match the name registered against your tax number.",
     },
     "permissions": {
       "title": "Two permissions and you're ready to work",

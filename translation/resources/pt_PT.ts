@@ -156,6 +156,7 @@ export default {
                 "title": "Vamos verificar o teu telefone",
                 "subtitle": "Recebes um código por SMS neste número.",
                 "edit_phone_number": "Alterar número de telefone",
+                    "edit_phone_number_short": "Alterar",
                 "send_sms": "Enviar código",
             },
             "sent": {
@@ -877,9 +878,9 @@ export default {
             "cancel": "Cancelar",
             "choose_an_option": "Escolhe uma opção"
         },
-        "company_name": "Denominação fiscal",
+        "company_name": "Nome nas faturas",
         "company_name_required": "Escreve a tua denominação fiscal",
-        "company_name_placeholder": "Denominação fiscal",
+        "company_name_placeholder": "O teu nome ou o da empresa",
         "company_address": "Morada de faturação",
         "company_address_change": "Alterar morada de faturação",
         "at_user": "Utilizador",
@@ -1410,7 +1411,7 @@ export default {
         "iban": {
             "title": "Onde queres receber o teu dinheiro?",
             "subtitle": "Pagamos para esta conta, uma vez por semana, à segunda-feira.",
-            "company_name_help": "O nome associado ao teu NIF: o teu nome completo ou o da tua empresa. Aparece nas faturas.",
+            "company_name_help": "Tem de ser igual ao que está associado ao teu NIF.",
         },
         "permissions": {
             "title": "Duas permissões e ficas a trabalhar",

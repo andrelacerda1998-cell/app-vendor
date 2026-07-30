@@ -1,5 +1,5 @@
 import { Colors } from '@/constants/Colors'
-import { FontAwesome6 } from '@expo/vector-icons';
+import { Feather, FontAwesome6 } from '@expo/vector-icons';
 import { router } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
@@ -9,8 +9,6 @@ import { useSession } from '@/contexts/SessionContext'
 import { useTranslation } from "react-i18next"
 import CustomTouchableOpacity from "@/components/CustomTouchableOpacity"
 import { CustomText } from "@/components/CustomText"
-import { Controller, useForm } from "react-hook-form"
-import CustomTextInput from "@/components/CustomTextInput"
 import { OtpInput } from "react-native-otp-entry";
 import { useDialog } from "@/contexts/DialogContext"
 import XIcon from "@/assets/icons/x"
@@ -48,13 +46,6 @@ const SmsVerification = ({
       return () => clearInterval(intervalId);
     }
   }, [timer, loading, status]);
-
-  const { control, handleSubmit, formState: { errors, isLoading, isValid },getValues, setError, reset } = useForm({
-    mode: 'onChange',
-    defaultValues: {
-      phone_number: vendorData?.user?.phone_number || "",
-    },
-  });
 
   const sendCode = () => {
     setLoading(true);
@@ -165,64 +156,30 @@ const SmsVerification = ({
                   {t('session.sms.pending.subtitle')}
                 </CustomText>
               </View>
-              <View className="mt-7">
-                <CustomText color="secondary" boldness="semiBold" numberOfLines={1}>
-                    {t('general.phone_number')}
+              {/* O numero vem do registo e nao se edita aqui: mostra-se, nao se
+                  formulariza. Antes era rotulo + caixa desativada + link, tres
+                  elementos para uma linha de texto -- e a caixa exibia um visto
+                  VERDE num numero que ainda nao foi verificado, que e
+                  exatamente o que este passo vai fazer a seguir. */}
+              <View
+                className="flex-row items-center rounded-2xl border mt-7 px-4"
+                style={{ borderColor: Colors.line, backgroundColor: Colors.card, minHeight: 60 }}
+              >
+                <Feather name="smartphone" size={18} color={Colors.muted} />
+                <CustomText color="secondary" size="medium" boldness="semiBold" classes="flex-1 ml-3" numberOfLines={1}>
+                  {vendorData?.user?.phone_number}
                 </CustomText>
-                <Controller
-                    control={control}
-                    name="phone_number"
-                    rules={{
-                      required: t('general.phone_number_required'),
-                      pattern: {
-                        value: /^\+351\d{9}$/,
-                        message: t('general.phone_number_invalid_portuguese'),
-                      },
-                    }}
-                    render={({field}) => (
-                      <View className="mt-2 justify-center">
-                        <CustomTextInput
-                          {...field}
-                          size="large"
-                          onChangeText={(value: string) => {
-                              const newValue = value.replace(/^\+351-?|\D/g, '').trim();
-                              field.onChange(newValue ? `+351${newValue}` : '');
-                          }}
-                          placeholder={t('general.phone_number_placeholder')}
-                          keyboardType="phone-pad"
-                          textContentType="telephoneNumber"
-                          error={errors.phone_number && errors.phone_number.message}
-                          displayErrorIcon={true}
-                          success={!errors.phone_number && field.value !== "+351"}
-                          displaySuccessIcon={true}
-                          disabled
-                        />
-                      </View>
-                    )}
+                <CustomTouchableOpacity
+                  type="transparent"
+                  size="small"
+                  text={t('session.sms.pending.edit_phone_number_short')}
+                  textSize="small"
+                  textColor="support_primary"
+                  textBoldness="bold"
+                  onPress={goToEditProfile}
+                  disabled={loading}
                 />
-                {errors.phone_number && errors.phone_number.message && (
-                    <CustomText
-                        size="small"
-                        color="error"
-                        classes="mt-1"
-                    >
-                        {errors.phone_number.message as string}
-                    </CustomText>
-                )}
               </View>
-              {/* Era texto branco a parecer um rotulo; a cor da marca diz que
-                  se toca. Encostado a esquerda, sob o campo a que se refere. */}
-              <CustomTouchableOpacity
-                type="transparent"
-                size="small"
-                text={t('session.sms.pending.edit_phone_number')}
-                textSize="small"
-                textColor="support_primary"
-                textBoldness="bold"
-                onPress={goToEditProfile}
-                disabled={loading}
-                classes="self-start mt-2"
-              />
             </View>
             <View className="mt-4">
               <CustomTouchableOpacity
@@ -273,7 +230,7 @@ const SmsVerification = ({
                             // onBlur={() => console.log("Blurred")}
                             onTextChange={text => {
                                 setCode(text)
-                                if (errors) setCodeError(null);
+                                setCodeError(null);
                             }}
                             // onFilled={(text) => console.log(`OTP is ${text}`)}
                             textInputProps={{
