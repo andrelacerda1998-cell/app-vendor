@@ -481,8 +481,6 @@ export default {
       "subtitle": "We've let the client know you've arrived."
     },
     "actions": {
-      "service_status": "Service status",
-      "arrived_at_destination": "I've arrived",
       "arrived": "Arrived"
     }
   },

@@ -1,6 +1,5 @@
 import {Colors} from '@/constants/Colors';
 import {Ionicons} from '@expo/vector-icons';
-import {router} from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import { FlatList, ScrollView, TextInput, View } from 'react-native';
@@ -13,10 +12,8 @@ import {API_ROUTES} from "@/constants/ApiRoutes";
 import useEcho from "@/hooks/echo";
 import {RSA} from "react-native-rsa-native";
 import {useService} from "@/contexts/ServiceContext";
-import CheckMark from "@/assets/icons/check-mark";
 import {useDialog} from "@/contexts/DialogContext";
 import XIcon from "@/assets/icons/x";
-import {ServiceStatus} from "@/types/services";
 import { useTranslation } from "react-i18next";
 import { useAppStateStatus } from "@/contexts/AppStateStatusContext";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
@@ -75,7 +72,7 @@ const Service = () => {
     const {api} = useApi();
     const echo = useEcho();
     const {vendorData} = useSession();
-    const {openService, setOpenService, clearUnreadMessages} = useService();
+    const {openService, clearUnreadMessages} = useService();
     const serviceId = openService?.id;
     const [message, setMessage] = useState('');
     const [publicKey, setPublicKey] = useState<string>();
@@ -88,7 +85,6 @@ const Service = () => {
     const [groupedMessages, setGroupedMessages] = useState<{ date: string, messages: Message[] }[]>([]);
     const [sendingMessage, setSendingMessage] = useState(false);
     const [loadingMessages, setLoadingMessages] = useState(true);
-    const [loadingArrivedAtDestination, setLoadingArrivedAtDestination] = useState(false);
     const { appStateStatus } = useAppStateStatus();
 
     function formatDateToISO(date: Date): string {
@@ -207,31 +203,6 @@ const Service = () => {
         return `${hours}:${minutes}`;
     }
 
-    const handleArrivedAtDestination = () => {
-        setLoadingArrivedAtDestination(true);
-        api.post(API_ROUTES.POST_ARRIVED_AT_DESTINATION_SERVICE(`${serviceId}`))
-            .then(({data}) => {
-                setOpenService(data.data.service);
-                openDialog({
-                    icon: <CheckMark color={Colors.primary}/>,
-                    title: t('chat.arrived_at_destination.title'),
-                    subtitle: t('chat.arrived_at_destination.subtitle'),
-                    closeAfterMSeconds: 2000,
-                    closeOnClickOutside: true,
-                })
-            })
-            .catch(() => {
-                openDialog({
-                    icon: <XIcon color={Colors.primary}/>,
-                    title: t('errors.chat_arrived.title'),
-                    subtitle: t('errors.chat_arrived.subtitle'),
-                    closeAfterMSeconds: 2000,
-                    closeOnClickOutside: true,
-                })
-            })
-            .finally(() => setLoadingArrivedAtDestination(false));
-    }
-
     // Clear unread messages when chat is opened
     useEffect(() => {
         clearUnreadMessages();
@@ -340,32 +311,10 @@ const Service = () => {
                             </View>
                         )}
                     />
-                    {openService?.status === ServiceStatus.ACCEPTED && (
-                        <View className="flex-row justify-between items-center">
-                            <CustomTouchableOpacity
-                                size="medium"
-                                text={t('chat.actions.service_status')}
-                                type="secondary_outline"
-                                textColor="secondary"
-                                textBoldness="medium"
-                                classes="w-[48%] h-full"
-                                onPress={() => router.navigate(`/(app)/(services)/(open)/status/${openService?.id}`)}
-                                disabled={loadingArrivedAtDestination}
-                            />
-                            <CustomTouchableOpacity
-                                size="medium"
-                                text={t('chat.actions.arrived_at_destination')}
-                                type="support_primary"
-                                textColor="strongest"
-                                textBoldness="medium"
-                                classes="w-[48%]"
-                                textClasses="text-center"
-                                textNumberOfLines={2}
-                                onPress={handleArrivedAtDestination}
-                                disabled={loadingArrivedAtDestination}
-                            />
-                        </View>
-                    )}
+                    {/* O chat é só conversa. "Estado do serviço" e "Cheguei ao
+                        destino" viviam aqui como atalhos, mas duplicavam o que o
+                        ecrã de Estado já faz (lá o CTA principal marca a chegada)
+                        e enchiam o topo da conversa. */}
                 </View>
                 <View className="flex-1 px-5 overflow-hidden">
                     {loadingMessages ? (
@@ -503,7 +452,7 @@ const Service = () => {
                                 textColor="secondary"
                                 textBoldness="medium"
                                 text={reply}
-                                disabled={sendingMessage || loadingArrivedAtDestination || !publicKey}
+                                disabled={sendingMessage || !publicKey}
                                 onPress={() => handleSendMessage(reply)}
                             />
                         ))}
@@ -533,7 +482,7 @@ const Service = () => {
                                                 handleSendMessage();
                                             }
                                         }}
-                                        disabled={sendingMessage || loadingArrivedAtDestination || !publicKey}
+                                        disabled={sendingMessage || !publicKey}
                                     >
                                         {message !== '' && (
                                             <Ionicons name="send" size={24} color={Colors.secondary}/>

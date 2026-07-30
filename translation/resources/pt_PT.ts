@@ -481,8 +481,6 @@ export default {
             "subtitle": "Avisámos o cliente de que já chegaste."
         },
         "actions": {
-            "service_status": "Estado do serviço",
-            "arrived_at_destination": "Cheguei ao destino",
             "arrived": "Cheguei",
         }
     },
