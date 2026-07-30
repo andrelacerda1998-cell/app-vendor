@@ -185,8 +185,8 @@ export default {
             "header": "Confirmar email",
             "pending": {
                 "title": "Confirma o teu email",
-                "subtitle": "Enviamos-te um link. Abre-o para confirmares o endereço.",
-                "received": "Receber email de confirmação",
+                "subtitle": "Abre o link que te enviámos para confirmares.",
+                "sending": "A enviar…",
                 "check_later": "Confirmar mais tarde",
                 "resend_email": "Reenviar email"
             },
@@ -1022,8 +1022,7 @@ export default {
         "step_create_account": "Criar conta",
         "step_submit_documents": "Enviar documentos",
         "step_review": "Análise da Piquet",
-        "step_billing": "Conta de faturação criada",
-        "step_billing_hint": "É a Piquet que trata deste passo. Não precisas de fazer nada — assim que estiver pronto, podes ficar online.",
+        "step_at_user": "Subutilizador AT",
         "step_approved": "Conta aprovada",
         "see_documents": "Ver documentos"
     },

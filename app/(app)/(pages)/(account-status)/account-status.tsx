@@ -45,19 +45,16 @@ const AccountStatus = () => {
       ? t('account_status.review_message')
       : t('account_status.onboarding_message');
 
-  // A conta de faturação é criada pela equipa Piquet no backoffice — o técnico
-  // não tem como a criar. Sem este passo não consegue ficar online, por isso
-  // aparece na lista com a nota de que não depende dele.
-  const billingReady = (vendorData as any)?.invoice_workspace_ready === true;
-
+  // Esta linha seguia `invoice_workspace_ready` — a conta de faturação que a
+  // Piquet cria no backoffice. Era o unico passo da lista que o tecnico nao
+  // podia destrancar, e por isso precisava de uma nota a explicar que nao
+  // dependia dele: sinal de que nao pertencia a uma lista de "proximos passos".
+  // Passa a seguir o subutilizador AT, que e trabalho dele e que ja tem ecra
+  // proprio no onboarding.
   const steps: { label: string; done: boolean; hint?: string }[] = [
     { label: t('account_status.step_create_account'), done: true },
     { label: t('account_status.step_submit_documents'), done: submitted || approved },
-    {
-      label: t('account_status.step_billing'),
-      done: billingReady,
-      hint: billingReady ? undefined : t('account_status.step_billing_hint'),
-    },
+    { label: t('account_status.step_at_user'), done: !!vendorData?.at_user },
     { label: t('account_status.step_review'), done: approved },
     { label: t('account_status.step_approved'), done: approved },
   ];

@@ -185,8 +185,8 @@ export default {
       "header": "Confirm email",
       "pending": {
         "title": "Confirm your email",
-        "subtitle": "We'll send you a link. Open it to confirm your address.",
-        "received": "Get confirmation email",
+        "subtitle": "Open the link we sent you to confirm.",
+        "sending": "Sending…",
         "check_later": "Confirm later",
         "resend_email": "Resend email"
       },
@@ -1022,8 +1022,7 @@ export default {
     "step_create_account": "Create account",
     "step_submit_documents": "Send documents",
     "step_review": "Piquet review",
-    "step_billing": "Billing account created",
-    "step_billing_hint": "Piquet handles this step. There's nothing for you to do — once it's ready, you can go online.",
+    "step_at_user": "Tax Authority sub-user",
     "step_approved": "Account approved",
     "see_documents": "See documents"
   },
