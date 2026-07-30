@@ -2,8 +2,8 @@
  * VALOR/HORA — o técnico vê e edita o seu valor/hora, com simulação de ganhos.
  * Inspirado no ecrã Flutter piquet_pro/lib/screens/pricing/hourly_rate_screen.dart
  */
-import React, { useRef, useState } from 'react';
-import { View, ScrollView, PanResponder } from 'react-native';
+import React, { useState } from 'react';
+import { View, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { Feather } from '@expo/vector-icons';
@@ -17,6 +17,7 @@ import { API_ROUTES } from '@/constants/ApiRoutes';
 import { useApi } from '@/contexts/ApiContext';
 import { useDialog } from '@/contexts/DialogContext';
 import { useSession } from '@/contexts/SessionContext';
+import RateSlider from '@/components/ui/RateSlider';
 import CheckMark from '@/assets/icons/check-mark';
 import XIcon from '@/assets/icons/x';
 
@@ -24,65 +25,8 @@ const RATE_MIN = 8;
 const RATE_MAX = 50;
 const MARKET_MIN = 14;
 const MARKET_MAX = 22;
-const THUMB = 26;
 
 const formatEuro = (v: number) => `${(Number(v) || 0).toFixed(2).replace('.', ',')} €`;
-
-/** Slider em JS puro (sem dependência nativa) — mesmo padrão do PriceRateStep. */
-const RateSlider = ({ value, onChange }: { value: number; onChange: (v: number) => void }) => {
-  const widthRef = useRef(0);
-  const [, force] = useState(0);
-
-  const clamp = (v: number) => Math.max(RATE_MIN, Math.min(RATE_MAX, v));
-  const xToValue = (x: number) => {
-    const w = widthRef.current || 1;
-    return clamp(Math.round(RATE_MIN + (x / w) * (RATE_MAX - RATE_MIN)));
-  };
-
-  const pan = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: () => true,
-      onPanResponderGrant: (e) => onChange(xToValue(e.nativeEvent.locationX)),
-      onPanResponderMove: (e) => onChange(xToValue(e.nativeEvent.locationX)),
-    })
-  ).current;
-
-  const pct = (clamp(value) - RATE_MIN) / (RATE_MAX - RATE_MIN);
-  const w = widthRef.current;
-  const thumbLeft = pct * Math.max(0, w - THUMB);
-
-  return (
-    <View
-      className="h-7 justify-center"
-      onLayout={(ev) => {
-        widthRef.current = ev.nativeEvent.layout.width;
-        force((n) => n + 1);
-      }}
-      {...pan.panHandlers}
-    >
-      {/* trilho */}
-      <View className="h-1.5 rounded-full" style={{ backgroundColor: Colors.card_high }} />
-      {/* preenchimento */}
-      <View
-        className="h-1.5 rounded-full absolute"
-        style={{ backgroundColor: Colors.brand, width: Math.max(THUMB / 2, thumbLeft + THUMB / 2) }}
-      />
-      {/* thumb */}
-      <View
-        className="absolute rounded-full"
-        style={{
-          width: THUMB,
-          height: THUMB,
-          left: thumbLeft,
-          backgroundColor: Colors.brand,
-          borderWidth: 3,
-          borderColor: Colors.bg,
-        }}
-      />
-    </View>
-  );
-};
 
 const HourlyRate = () => {
   const { t } = useTranslation();
@@ -159,7 +103,13 @@ const HourlyRate = () => {
           </CustomText>
 
           <View className="mt-6 px-1">
-            <RateSlider value={rate} onChange={setRate} />
+            <RateSlider
+              value={rate}
+              onChange={setRate}
+              min={RATE_MIN}
+              max={RATE_MAX}
+              accessibilityLabel={t('hourly_rate.your_rate_label')}
+            />
             <View className="flex-row justify-between mt-2">
               <CustomText color="muted" size="extraSmall">{formatEuro(RATE_MIN)}</CustomText>
               <CustomText color="muted" size="extraSmall">{formatEuro(RATE_MAX)}</CustomText>

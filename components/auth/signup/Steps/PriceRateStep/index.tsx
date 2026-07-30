@@ -1,76 +1,20 @@
 import { SignUpData } from '@/app/(auth)/signup';
 import { CustomText } from '@/components/CustomText';
 import { Colors } from '@/constants/Colors';
+import RateSlider from '@/components/ui/RateSlider';
 import { Feather } from '@expo/vector-icons';
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import { Control, Controller, FieldErrors, FieldValues } from 'react-hook-form';
 import { useTranslation } from "react-i18next";
-import { PanResponder, View } from 'react-native';
+import { View } from 'react-native';
 import { ScrollView } from 'react-native';
 
 const RATE_MIN = 8;
 const RATE_MAX = 50;
 const MARKET_MIN = 14;
 const MARKET_MAX = 22;
-const THUMB = 26;
 
 const formatEuro = (v: number) => `${(Number(v) || 0).toFixed(2).replace('.', ',')} €`;
-
-// Slider em JS puro (sem dependência nativa)
-const RateSlider = ({ value, onChange }: { value: number; onChange: (v: number) => void }) => {
-  const widthRef = useRef(0);
-  const [, force] = useState(0);
-
-  const clamp = (v: number) => Math.max(RATE_MIN, Math.min(RATE_MAX, v));
-  const xToValue = (x: number) => {
-    const w = widthRef.current || 1;
-    return clamp(Math.round(RATE_MIN + (x / w) * (RATE_MAX - RATE_MIN)));
-  };
-
-  const pan = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: () => true,
-      onPanResponderGrant: (e) => onChange(xToValue(e.nativeEvent.locationX)),
-      onPanResponderMove: (e) => onChange(xToValue(e.nativeEvent.locationX)),
-    })
-  ).current;
-
-  const pct = (clamp(value) - RATE_MIN) / (RATE_MAX - RATE_MIN);
-  const w = widthRef.current;
-  const thumbLeft = pct * Math.max(0, w - THUMB);
-
-  return (
-    <View
-      className="h-7 justify-center"
-      onLayout={(ev) => {
-        widthRef.current = ev.nativeEvent.layout.width;
-        force((n) => n + 1);
-      }}
-      {...pan.panHandlers}
-    >
-      {/* trilho */}
-      <View className="h-1.5 rounded-full" style={{ backgroundColor: Colors.card_high }} />
-      {/* preenchimento */}
-      <View
-        className="h-1.5 rounded-full absolute"
-        style={{ backgroundColor: Colors.brand, width: Math.max(THUMB / 2, thumbLeft + THUMB / 2) }}
-      />
-      {/* thumb */}
-      <View
-        className="absolute rounded-full"
-        style={{
-          width: THUMB,
-          height: THUMB,
-          left: thumbLeft,
-          backgroundColor: Colors.brand,
-          borderWidth: 3,
-          borderColor: Colors.bg,
-        }}
-      />
-    </View>
-  );
-};
 
 const PriceRateStep = ({
   control,
@@ -120,7 +64,13 @@ const PriceRateStep = ({
 
               {/* Slider */}
               <View className="mt-6 px-1">
-                <RateSlider value={rate} onChange={(v) => field.onChange(v)} />
+                <RateSlider
+                  value={rate}
+                  onChange={(v) => field.onChange(v)}
+                  min={RATE_MIN}
+                  max={RATE_MAX}
+                  accessibilityLabel={t('general.price_rate.title')}
+                />
                 <View className="flex-row justify-between mt-2">
                   <CustomText color="muted" size="extraSmall">{formatEuro(RATE_MIN)}</CustomText>
                   <CustomText color="muted" size="extraSmall">{formatEuro(RATE_MAX)}</CustomText>
