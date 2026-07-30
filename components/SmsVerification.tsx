@@ -23,8 +23,11 @@ enum Status {
 
 const SmsVerification = ({
   onNext,
+  onSkip,
 }: {
   onNext: (data: VendorDataInterface) => void;
+  /** Ausente fora do onboarding (ex.: a partir do perfil), onde nao ha passo a saltar. */
+  onSkip?: () => void;
 }) => {
   const { api } = useApi();
   const { t } = useTranslation();
@@ -192,6 +195,21 @@ const SmsVerification = ({
                 onPress={sendCode}
                 disabled={loading}
               />
+              {/* O SMS pode nao chegar (rede fraca, numero de outro pais a ser
+                  corrigido). Sem saida, o registo trancava aqui. */}
+              {!!onSkip && (
+                <CustomTouchableOpacity
+                  type="transparent"
+                  size="large"
+                  text={t('complete_profile.later')}
+                  textSize="medium"
+                  textColor="muted"
+                  textBoldness="regular"
+                  onPress={onSkip}
+                  disabled={loading}
+                  classes="self-center mt-1"
+                />
+              )}
             </View>
           </View>
         )}
@@ -279,16 +297,31 @@ const SmsVerification = ({
                 </View>
               </View>
             </View>
-            <CustomTouchableOpacity
-              type="support_primary"
-              size="large"
-              text={t('session.sms.sent.verify')}
-              textSize="medium"
-              textColor="on_brand"
-              textBoldness="semiBold"
-              onPress={verify}
-              disabled={loading || codeError !== null || code.length < 6}
-            />
+            <View>
+              <CustomTouchableOpacity
+                type="support_primary"
+                size="large"
+                text={t('session.sms.sent.verify')}
+                textSize="medium"
+                textColor="on_brand"
+                textBoldness="semiBold"
+                onPress={verify}
+                disabled={loading || codeError !== null || code.length < 6}
+              />
+              {!!onSkip && (
+                <CustomTouchableOpacity
+                  type="transparent"
+                  size="large"
+                  text={t('complete_profile.later')}
+                  textSize="medium"
+                  textColor="muted"
+                  textBoldness="regular"
+                  onPress={onSkip}
+                  disabled={loading}
+                  classes="self-center mt-1"
+                />
+              )}
+            </View>
           </View>
         )}
         {status === Status.VERIFIED && (

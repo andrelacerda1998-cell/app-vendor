@@ -1409,8 +1409,8 @@ export default {
       }
     },
     "iban": {
-      "title": "Where should we send your money?",
-      "subtitle": "We pay into this account once a week, on Mondays.",
+      "title": "How we pay you",
+      "subtitle": "Every Monday we transfer what you earned the week before.",
       "company_name_help": "It must match the name registered against your tax number.",
     },
     "permissions": {

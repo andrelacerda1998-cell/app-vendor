@@ -133,7 +133,7 @@ const CompleteProfile = () => {
             setStep(VerifySteps.companyAddress);
         } else if (!data?.iban && !adiados.includes(VerifySteps.iban)) {
             setStep(VerifySteps.iban);
-        } else if (data?.user?.phone_number_verified_at === null) {
+        } else if (data?.user?.phone_number_verified_at === null && !adiados.includes(VerifySteps.phoneVerification)) {
             setStep(VerifySteps.phoneVerification);
         } else if (data?.user?.email_verified_at === null) {
             setStep(VerifySteps.citySurvey);
@@ -193,7 +193,10 @@ const CompleteProfile = () => {
                 )}
                 {step === VerifySteps.phoneVerification && (
                     <View className="flex-1 p-5">
-                        <SmsVerification onNext={(data: VendorDataInterface) => handleNextStep(data)} />
+                        <SmsVerification
+                            onNext={(data: VendorDataInterface) => handleNextStep(data)}
+                            onSkip={() => skipStep(VerifySteps.phoneVerification)}
+                        />
                     </View>
                 )}
                 {step === VerifySteps.companyAddress && (

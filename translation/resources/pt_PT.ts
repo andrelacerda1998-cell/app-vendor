@@ -1409,8 +1409,8 @@ export default {
             }
         },
         "iban": {
-            "title": "Onde queres receber o teu dinheiro?",
-            "subtitle": "Pagamos para esta conta, uma vez por semana, à segunda-feira.",
+            "title": "Como te pagamos",
+            "subtitle": "Todas as segundas transferimos o que ganhaste na semana anterior.",
             "company_name_help": "Tem de ser igual ao que está associado ao teu NIF.",
         },
         "permissions": {
