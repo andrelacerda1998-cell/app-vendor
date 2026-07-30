@@ -96,8 +96,8 @@ export default {
                 "loading_services": "A carregar serviços...",
             },
             "documents": {
-                "title": "Carrega os teus documentos",
-                "subtitle": "PDF, JPG ou PNG, até 2 MB por ficheiro.",
+                "title": "Os teus documentos",
+                "subtitle": "PDF ou foto, até 2 MB cada.",
                 "documents_permission_required": "Para escolheres um ficheiro precisamos de acesso aos teus documentos. Podes ativar nas Definições.",
                 "no_documents_found": "Ainda não há documentos para carregar. Verifica a ligação e tenta outra vez.",
                 "camera_permission_required": "Para tirares a foto do documento precisamos de acesso à câmara. Podes ativar nas Definições.",
@@ -1415,16 +1415,16 @@ export default {
         },
         "permissions": {
             "title": "Duas permissões e ficas a trabalhar",
-            "subtitle": "Antes de o telemóvel te perguntar, fica a saber para que servem. Podes mudar isto a qualquer momento nas Definições.",
+            "subtitle": "Podes mudar isto quando quiseres nas Definições.",
             "notifications": {
                 "title": "Notificações",
-                "description": "É assim que sabes que entrou um pedido. Sem notificações, os pedidos passam-te ao lado.",
+                "description": "Sem elas, os pedidos passam-te ao lado.",
             },
             "location": {
                 "title": "Localização",
-                "description": "Serve para o cliente te ver a caminho e para receberes pedidos perto de ti.",
+                "description": "Para receberes pedidos perto de ti e o cliente te ver a caminho.",
             },
-            "footnote": "Não partilhamos a tua localização com ninguém fora dos serviços que aceitas.",
+            "footnote": "Só partilhamos a tua localização nos serviços que aceitas.",
             "allow": "Permitir",
             "asking": "A pedir permissões…",
             "later": "Agora não",

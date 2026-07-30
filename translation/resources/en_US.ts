@@ -96,8 +96,8 @@ export default {
         "loading_services": "Loading services...",
       },
       "documents": {
-        "title": "Upload your documents",
-        "subtitle": "PDF, JPG or PNG, up to 2 MB per file.",
+        "title": "Your documents",
+        "subtitle": "PDF or photo, up to 2 MB each.",
         "documents_permission_required": "To pick a file we need access to your documents. You can enable it in Settings.",
         "no_documents_found": "No documents to upload yet. Check your connection and try again.",
         "camera_permission_required": "To take a photo of the document we need access to your camera. You can enable it in Settings.",
@@ -1415,16 +1415,16 @@ export default {
     },
     "permissions": {
       "title": "Two permissions and you're ready to work",
-      "subtitle": "Before your phone asks, here's what they're for. You can change this any time in Settings.",
+      "subtitle": "You can change this any time in Settings.",
       "notifications": {
         "title": "Notifications",
-        "description": "This is how you find out a request came in. Without notifications, requests pass you by.",
+        "description": "Without them, requests pass you by.",
       },
       "location": {
         "title": "Location",
-        "description": "So the client can see you're on the way, and so you get requests near you.",
+        "description": "So you get requests near you and the client sees you on the way.",
       },
-      "footnote": "We never share your location with anyone outside the services you accept.",
+      "footnote": "We only share your location on services you accept.",
       "allow": "Allow",
       "asking": "Asking for permissions…",
       "later": "Not now",
