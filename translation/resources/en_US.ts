@@ -1413,7 +1413,7 @@ export default {
     "iban": {
       "title": "How we pay you",
       "subtitle": "Every Monday we transfer what you earned the week before.",
-      "company_name_help": "It must match the name registered against your tax number.",
+      "company_name_help": "Already set to your name. Change it only if you invoice as a company.",
     },
     "survey": {
       "title": "Where do you want to work?",

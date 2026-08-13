@@ -33,7 +33,13 @@ const IbanStep = ({
         mode: 'onChange',
         defaultValues: {
             iban: vendorData?.iban || "",
-            company_name: vendorData?.company_name || "",
+            // O nome fiscal e exigido pela faturacao (vai como organization_name
+            // para o InvoiceXpress) e nao vem da AT — as credenciais do
+            // subutilizador so servem para comunicar series, nao a identidade.
+            // Mas para recibos verdes o nome fiscal E o nome do tecnico, que ja
+            // recolhemos no registo: pre-preenchemo-lo para nao pedir duas vezes.
+            // Quem tem empresa edita; e sempre editavel.
+            company_name: vendorData?.company_name || vendorData?.user?.name || "",
             // nif: vendorData?.nif || "",
         },
     });

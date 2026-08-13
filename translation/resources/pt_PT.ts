@@ -1413,7 +1413,7 @@ export default {
         "iban": {
             "title": "Como te pagamos",
             "subtitle": "Todas as segundas transferimos o que ganhaste na semana anterior.",
-            "company_name_help": "Tem de ser igual ao que está associado ao teu NIF.",
+            "company_name_help": "Já está com o teu nome. Muda só se faturas por uma empresa.",
         },
         "survey": {
             "title": "Onde queres trabalhar?",
