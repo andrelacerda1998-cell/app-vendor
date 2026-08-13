@@ -1375,8 +1375,11 @@ export default {
     },
     "complete_profile": {
         "later": "Faço isto mais tarde",
-        "company_address": {
-            "subtitle": "É esta a morada que aparece nas tuas faturas."
+        "billing": {
+            "title": "Dados de faturação",
+            "subtitle": "É com isto que a Piquet emite as faturas dos teus serviços.",
+            "at_section": "Acesso à AT",
+            "address_section": "Morada de faturação"
         },
         "missing_one": "Falta 1 passo para começares a receber pedidos.",
         "missing_many": "Faltam {{count}} passos para começares a receber pedidos.",
@@ -1392,8 +1395,6 @@ export default {
         "subtitle": "Enquanto não estiver completo não recebes pedidos.",
         "header": "Completar o teu perfil",
         "at_user": {
-            "title": "Acesso para as faturas",
-            "subtitle": "Cria um acesso nas Finanças só para faturas e escreve-o aqui.",
             "warning": {
                 "title": "Não é o teu acesso pessoal das Finanças."
             },
@@ -1413,22 +1414,6 @@ export default {
             "title": "Como te pagamos",
             "subtitle": "Todas as segundas transferimos o que ganhaste na semana anterior.",
             "company_name_help": "Tem de ser igual ao que está associado ao teu NIF.",
-        },
-        "permissions": {
-            "title": "Duas permissões e ficas a trabalhar",
-            "subtitle": "Podes mudar isto quando quiseres nas Definições.",
-            "notifications": {
-                "title": "Notificações",
-                "description": "Sem elas, os pedidos passam-te ao lado.",
-            },
-            "location": {
-                "title": "Localização",
-                "description": "Para receberes pedidos perto de ti e o cliente te ver a caminho.",
-            },
-            "footnote": "Só partilhamos a tua localização nos serviços que aceitas.",
-            "allow": "Permitir",
-            "asking": "A pedir permissões…",
-            "later": "Agora não",
         },
         "survey": {
             "title": "Onde queres trabalhar?",

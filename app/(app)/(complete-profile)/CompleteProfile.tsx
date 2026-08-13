@@ -9,14 +9,12 @@ import BackHeader from "@/components/app/BackHeader";
 import {CustomText} from "@/components/CustomText";
 import {router} from "expo-router";
 import ProgressBar from "@/components/auth/signup/ProgressBar";
-import AtUserStep from "@/components/complete-profile/Steps/AtUserStep";
+import BillingStep from "@/components/complete-profile/Steps/BillingStep";
 import SmsVerification from "@/components/SmsVerification";
-import CompanyAddressStep from "@/components/complete-profile/Steps/CompanyAddressStep";
 import IbanStep from "@/components/complete-profile/Steps/IbanStep";
 import EmailConfirmation from "@/components/EmailConfirmation";
 import CitySurveyStep from "@/components/complete-profile/Steps/CitySurveyStep";
 import DocumentsProfileStep from "@/components/complete-profile/Steps/DocumentsProfileStep";
-import PermissionsStep from "@/components/complete-profile/Steps/PermissionsStep";
 import { VendorDataInterface } from "@/types/session";
 import { useAppStateStatus } from "@/contexts/AppStateStatusContext";
 
@@ -36,26 +34,27 @@ export type SignUpData = {
 
 enum VerifySteps {
     'instructions' = 0,
-    'atUser' = 1,
-    'companyAddress' = 2,
-    'iban' = 3,
-    'phoneVerification' = 4,
-    'citySurvey' = 5,
-    'emailVerification' = 6,
-    'documents' = 7,
-    'permissions' = 8,
+    // `billing` funde o antigo acesso à AT + morada de faturação num só passo.
+    'billing' = 1,
+    'iban' = 2,
+    'phoneVerification' = 3,
+    'citySurvey' = 4,
+    'emailVerification' = 5,
+    'documents' = 6,
 }
 
 /**
  * Ordem REAL de apresentação (os documentos são o primeiro ecrã).
  * A barra de progresso segue esta ordem — usar o valor do enum dava
- * 100% logo no arranque (documents = 7) e depois caía para 14%.
+ * 100% logo no arranque e depois caía.
+ *
+ * Passou de 8 para 6 passos: as permissões deixaram de ser um ecrã (são
+ * pedidas no momento em que fazem falta, pelos contextos de notificações e
+ * localização), e o acesso à AT + morada de faturação fundiram-se em `billing`.
  */
 const DISPLAY_ORDER: VerifySteps[] = [
     VerifySteps.documents,
-    VerifySteps.permissions,
-    VerifySteps.atUser,
-    VerifySteps.companyAddress,
+    VerifySteps.billing,
     VerifySteps.iban,
     VerifySteps.phoneVerification,
     VerifySteps.citySurvey,
@@ -73,7 +72,6 @@ const CompleteProfile = () => {
     const { appStateStatus } = useAppStateStatus();
     const [step, setStep] = useState<VerifySteps>(VerifySteps.instructions);
     const [docsStepDone, setDocsStepDone] = useState(false);
-    const [permissionsStepDone, setPermissionsStepDone] = useState(false);
     // Passos adiados nesta sessão ("faço isto mais tarde"). Sem isto, o
     // goToNextDataStep reencaminhava para o mesmo passo enquanto o dado
     // faltasse — carregar em "mais tarde" não saía dali.
@@ -127,10 +125,9 @@ const CompleteProfile = () => {
     };
 
     const goToNextDataStep = (data: VendorDataInterface, adiados: VerifySteps[] = skipped) => {
-        if (!data?.at_user && !adiados.includes(VerifySteps.atUser)) {
-            setStep(VerifySteps.atUser);
-        } else if (!data?.company_address && !adiados.includes(VerifySteps.companyAddress)) {
-            setStep(VerifySteps.companyAddress);
+        // `billing` cobre AT + morada: só se dá por feito quando os dois existem.
+        if ((!data?.at_user || !data?.company_address) && !adiados.includes(VerifySteps.billing)) {
+            setStep(VerifySteps.billing);
         } else if (!data?.iban && !adiados.includes(VerifySteps.iban)) {
             setStep(VerifySteps.iban);
         } else if (data?.user?.phone_number_verified_at === null && !adiados.includes(VerifySteps.phoneVerification)) {
@@ -146,8 +143,6 @@ const CompleteProfile = () => {
         // Documentos primeiro (saltável, "enviar mais tarde"); auto-salta se não faltarem documentos.
         if (!docsStepDone) {
             setStep(VerifySteps.documents);
-        } else if (!permissionsStepDone) {
-            setStep(VerifySteps.permissions);
         } else {
             goToNextDataStep(data);
         }
@@ -185,10 +180,10 @@ const CompleteProfile = () => {
             </View>
 
             <View className="flex-1">
-                {step === VerifySteps.atUser && (
-                    <AtUserStep
+                {step === VerifySteps.billing && (
+                    <BillingStep
                         onNext={(data: VendorDataInterface) => handleNextStep(data)}
-                        onSkip={() => skipStep(VerifySteps.atUser)}
+                        onSkip={() => skipStep(VerifySteps.billing)}
                     />
                 )}
                 {step === VerifySteps.phoneVerification && (
@@ -198,12 +193,6 @@ const CompleteProfile = () => {
                             onSkip={() => skipStep(VerifySteps.phoneVerification)}
                         />
                     </View>
-                )}
-                {step === VerifySteps.companyAddress && (
-                    <CompanyAddressStep
-                        onNext={(data: VendorDataInterface) => handleNextStep(data)}
-                        onSkip={() => skipStep(VerifySteps.companyAddress)}
-                    />
                 )}
                 {step === VerifySteps.iban && (
                     <IbanStep
@@ -220,10 +209,7 @@ const CompleteProfile = () => {
                     </View>
                 )}
                 {step === VerifySteps.documents && (
-                    <DocumentsProfileStep onNext={() => { setDocsStepDone(true); setStep(VerifySteps.permissions); }} />
-                )}
-                {step === VerifySteps.permissions && (
-                    <PermissionsStep onNext={() => { setPermissionsStepDone(true); goToNextDataStep(vendorData as VendorDataInterface); }} />
+                    <DocumentsProfileStep onNext={() => { setDocsStepDone(true); goToNextDataStep(vendorData as VendorDataInterface); }} />
                 )}
             </View>
         </SafeAreaView>

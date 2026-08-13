@@ -1375,8 +1375,11 @@ export default {
   },
   "complete_profile": {
     "later": "I'll do this later",
-    "company_address": {
-      "subtitle": "This is the address that appears on your invoices."
+    "billing": {
+      "title": "Billing details",
+      "subtitle": "This is what Piquet uses to issue the invoices for your jobs.",
+      "at_section": "Tax authority access",
+      "address_section": "Billing address"
     },
     "missing_one": "1 step left before you can receive requests.",
     "missing_many": "{{count}} steps left before you can receive requests.",
@@ -1392,8 +1395,6 @@ export default {
     "subtitle": "You won't receive requests until it's complete.",
     "header": "Complete your profile",
     "at_user": {
-      "title": "Access for invoices",
-      "subtitle": "Create a tax portal login just for invoices and enter it here.",
       "warning": {
         "title": "This is not your personal tax portal login."
       },
@@ -1413,22 +1414,6 @@ export default {
       "title": "How we pay you",
       "subtitle": "Every Monday we transfer what you earned the week before.",
       "company_name_help": "It must match the name registered against your tax number.",
-    },
-    "permissions": {
-      "title": "Two permissions and you're ready to work",
-      "subtitle": "You can change this any time in Settings.",
-      "notifications": {
-        "title": "Notifications",
-        "description": "Without them, requests pass you by.",
-      },
-      "location": {
-        "title": "Location",
-        "description": "So you get requests near you and the client sees you on the way.",
-      },
-      "footnote": "We only share your location on services you accept.",
-      "allow": "Allow",
-      "asking": "Asking for permissions…",
-      "later": "Not now",
     },
     "survey": {
       "title": "Where do you want to work?",
