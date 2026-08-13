@@ -6,6 +6,7 @@ import {ServiceRequestedInterface} from "@/types/services";
 import { useTranslation } from "react-i18next";
 import { Feather } from "@expo/vector-icons";
 import { Card, IconTile } from "@/components/ui";
+import CustomerPhotos from "@/components/app/CustomerPhotos";
 import { formatDistanceKm, isImmediateRequest } from "@/utils/requestTiming";
 import {
   formatAddressExtra,
@@ -200,6 +201,11 @@ const ServiceCard = ({
         </View>
       </View>
     )}
+
+    {/* As fotos vêm a seguir às observações: são a mesma resposta ("o que é
+        isto?") em duas linguagens, e o profissional lê-as em conjunto antes
+        de decidir se aceita. */}
+    <CustomerPhotos photos={item.customer_photos} compact />
 
     {/* Contagem decrescente para aceitar + barra fina que esvazia */}
     {!!remainingTime && (

@@ -10,6 +10,8 @@ import { useSchedule } from "@/contexts/ScheduleContext";
 import { useService } from "@/contexts/ServiceContext";
 import DynamicSizingSheet from "@/components/sheets/DynamicSizingSheet";
 import { CustomText } from "@/components/CustomText";
+import { Feather } from "@expo/vector-icons";
+import CustomerPhotos from "@/components/app/CustomerPhotos";
 import CustomTouchableOpacity from "@/components/CustomTouchableOpacity";
 import Timer from "@/components/Timer";
 import CheckMark from "@/assets/icons/check-mark";
@@ -251,6 +253,27 @@ const ScheduleProposalBottomSheet = () => {
                 value={pendingSchedule?.customer_address || "—"}
               />
             </View>
+
+            {/* Descrição e fotos do cliente, ANTES de aceitar — o mesmo que no
+                pedido imediato. Só aparecem quando existem mesmo. */}
+            {!!pendingSchedule?.customer_notes && (
+              <View
+                className="mt-4 rounded-2xl p-3 border flex-row"
+                style={{ backgroundColor: Colors.card_high, borderColor: Colors.line }}
+              >
+                <Feather name="message-square" size={16} color={Colors.brand} style={{ marginTop: 2 }} />
+                <View className="flex-1 ml-2">
+                  <CustomText color="muted" size="extraSmall" boldness="bold">
+                    {t('schedules.customer_notes', { defaultValue: 'Observações do cliente' }).toUpperCase()}
+                  </CustomText>
+                  <CustomText color="secondary" size="small" numberOfLines={5} classes="mt-1">
+                    {pendingSchedule.customer_notes}
+                  </CustomText>
+                </View>
+              </View>
+            )}
+
+            <CustomerPhotos photos={pendingSchedule?.customer_photos} />
           </>
         )}
       </View>

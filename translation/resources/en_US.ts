@@ -1,4 +1,7 @@
 export default {
+  "common": {
+    "close": "Close"
+  },
   "auth": {
     "home": {
       "title": "Get work near you",
@@ -230,6 +233,8 @@ export default {
     }
   },
   "services": {
+    "customer_photos": "Customer photos",
+    "customer_photo_open": "View photo {{n}}",
     "title": "Service",
     "title_plural": "Services",
     "view_all": "View all",

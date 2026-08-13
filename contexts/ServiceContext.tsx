@@ -287,6 +287,8 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
           // precisa para decidir. Ausentes => null (o cartão omite).
           address_details: service.address_details ?? null,
           customer_notes: service.customer_notes ?? null,
+          // Fotos do problema. Payloads antigos não as trazem => [].
+          customer_photos: Array.isArray(service.customer_photos) ? service.customer_photos : [],
           amount_for_vendor: service.amount_for_vendor,
           service_id: service.id,
           schedule_id: service.schedule?.id ?? service.schedule_id ?? null,

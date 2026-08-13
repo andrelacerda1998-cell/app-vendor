@@ -1,5 +1,6 @@
 import { Colors } from '@/constants/Colors';
-import { AntDesign, MaterialIcons } from '@expo/vector-icons';
+import { AntDesign, MaterialIcons, Feather } from '@expo/vector-icons';
+import CustomerPhotos from "@/components/app/CustomerPhotos";
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { BackHandler, View } from 'react-native';
@@ -226,6 +227,29 @@ const ServiceProposalBottomSheet = () => {
             value={renderMoney(pendingService?.amount_for_vendor || null) || t('services.service.no_price')}
           />
         </View>
+
+        {/* Descrição e fotos do cliente: é aqui, ANTES de aceitar, que valem —
+            dão ao técnico o "o que é isto?" para decidir se vai e o que leva na
+            carrinha. Antes só apareciam depois de aceitar (ecrã de estado). Só
+            se mostram quando existem mesmo. */}
+        {!!pendingService?.customer_notes && (
+          <View
+            className="mt-4 rounded-2xl p-3 border flex-row"
+            style={{ backgroundColor: Colors.card_high, borderColor: Colors.line }}
+          >
+            <Feather name="message-square" size={16} color={Colors.brand} style={{ marginTop: 2 }} />
+            <View className="flex-1 ml-2">
+              <CustomText color="muted" size="extraSmall" boldness="bold">
+                {t('schedules.customer_notes', { defaultValue: 'Observações do cliente' }).toUpperCase()}
+              </CustomText>
+              <CustomText color="secondary" size="small" numberOfLines={5} classes="mt-1">
+                {pendingService.customer_notes}
+              </CustomText>
+            </View>
+          </View>
+        )}
+
+        <CustomerPhotos photos={pendingService?.customer_photos} />
       </View>
       <View className="flex-row justify-between p-5">
         <View className="w-[47%]">

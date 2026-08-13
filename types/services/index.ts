@@ -51,6 +51,13 @@ export interface ServiceInterface {
   address: AdressInterface | null,
   invoice?:string,
   server_time?: string,
+  /** Observações escritas pelo cliente ao abrir o pedido (formatDataForVendor). */
+  customer_notes?: string | null,
+  /**
+   * Fotos que o cliente juntou ao pedir (Service::customerPhotosPayload).
+   * URL assinados e temporários — não guardar nem partilhar fora do ecrã.
+   */
+  customer_photos?: { id: number; url: string }[] | null,
   schedule?: {
     scheduled_day: string;
     date_label: string;
@@ -129,6 +136,11 @@ export interface ServiceRequestedInterface {
   address_details?: ServiceAddressDetails | null;
   /** Observações escritas pelo cliente ao abrir o pedido. */
   customer_notes?: string | null;
+  /**
+   * Fotos que o cliente juntou ao pedir (Service::customerPhotosPayload).
+   * URL assinados e temporários — não guardar nem partilhar fora do ecrã.
+   */
+  customer_photos?: { id: number; url: string }[] | null;
 }
 
 export interface ServiceAddressDetails {

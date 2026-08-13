@@ -6,6 +6,7 @@ import { ScrollView, View, TouchableOpacity } from 'react-native';
 import BackHeader from '@/components/app/BackHeader';
 import { useSession } from '@/contexts/SessionContext';
 import { CustomText } from "@/components/CustomText";
+import CustomerPhotos from "@/components/app/CustomerPhotos";
 import { useService } from "@/contexts/ServiceContext";
 import IDomParser from "advanced-html-parser";
 import CustomTouchableOpacity from "@/components/CustomTouchableOpacity";
@@ -523,6 +524,11 @@ const Status = () => {
               </CustomText>
             </View>
           )}
+
+          {/* Também durante a execução, e não só ao aceitar: já no local, a foto
+              do que o cliente mostrou é a referência para confirmar que se está
+              a olhar para o problema certo. */}
+          <CustomerPhotos photos={svc?.customer_photos} />
 
           {/* Pré-visualização do mapa */}
           <TouchableOpacity

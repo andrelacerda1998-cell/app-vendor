@@ -17,6 +17,13 @@ export interface ScheduledServiceInterface {
   };
   service_id: number;
   customer_address: string;
+  /** Observações escritas pelo cliente ao pedir (ServiceRequestedData). */
+  customer_notes?: string | null;
+  /**
+   * Fotos que o cliente juntou ao pedido (Service::customerPhotosPayload).
+   * URL assinados e temporários — não guardar nem partilhar fora do ecrã.
+   */
+  customer_photos?: { id: number; url: string }[] | null;
   date_label: string;
   //added to handle the countdown counters
   created_at?: number;
