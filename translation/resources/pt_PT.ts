@@ -1375,6 +1375,20 @@ export default {
     },
     "complete_profile": {
         "later": "Faço isto mais tarde",
+        "contacts": {
+            "title": "Confirma os teus contactos",
+            "subtitle": "Confirma o telemóvel e o email para começares a receber pedidos.",
+            "verified": "Confirmado",
+            "sending": "A enviar…",
+            "verifying": "A confirmar…",
+            "checking": "A verificar…",
+            "phone_send": "Enviar código por SMS",
+            "phone_verify": "Confirmar telemóvel",
+            "email_send": "Enviar link de confirmação",
+            "email_sent": "Enviámos um link para o teu email. Abre-o para confirmar.",
+            "email_not_yet": "Ainda não confirmámos. Abre o link e tenta outra vez.",
+            "email_check": "Já confirmei"
+        },
         "billing": {
             "title": "Dados de faturação",
             "subtitle": "É com isto que a Piquet emite as faturas dos teus serviços.",

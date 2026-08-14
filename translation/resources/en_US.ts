@@ -1375,6 +1375,20 @@ export default {
   },
   "complete_profile": {
     "later": "I'll do this later",
+    "contacts": {
+      "title": "Confirm your contacts",
+      "subtitle": "Confirm your phone and email to start receiving requests.",
+      "verified": "Confirmed",
+      "sending": "Sending…",
+      "verifying": "Confirming…",
+      "checking": "Checking…",
+      "phone_send": "Send code by SMS",
+      "phone_verify": "Confirm phone",
+      "email_send": "Send confirmation link",
+      "email_sent": "We sent a link to your email. Open it to confirm.",
+      "email_not_yet": "Not confirmed yet. Open the link and try again.",
+      "email_check": "I've confirmed"
+    },
     "billing": {
       "title": "Billing details",
       "subtitle": "This is what Piquet uses to issue the invoices for your jobs.",

@@ -10,9 +10,8 @@ import {CustomText} from "@/components/CustomText";
 import {router} from "expo-router";
 import ProgressBar from "@/components/auth/signup/ProgressBar";
 import BillingStep from "@/components/complete-profile/Steps/BillingStep";
-import SmsVerification from "@/components/SmsVerification";
+import ContactsStep from "@/components/complete-profile/Steps/ContactsStep";
 import IbanStep from "@/components/complete-profile/Steps/IbanStep";
-import EmailConfirmation from "@/components/EmailConfirmation";
 import CitySurveyStep from "@/components/complete-profile/Steps/CitySurveyStep";
 import DocumentsProfileStep from "@/components/complete-profile/Steps/DocumentsProfileStep";
 import { VendorDataInterface } from "@/types/session";
@@ -37,10 +36,10 @@ enum VerifySteps {
     // `billing` funde o antigo acesso à AT + morada de faturação num só passo.
     'billing' = 1,
     'iban' = 2,
-    'phoneVerification' = 3,
+    // `contacts` funde a verificação de telemóvel + email num só ecrã.
+    'contacts' = 3,
     'citySurvey' = 4,
-    'emailVerification' = 5,
-    'documents' = 6,
+    'documents' = 5,
 }
 
 /**
@@ -48,17 +47,16 @@ enum VerifySteps {
  * A barra de progresso segue esta ordem — usar o valor do enum dava
  * 100% logo no arranque e depois caía.
  *
- * Passou de 8 para 6 passos: as permissões deixaram de ser um ecrã (são
- * pedidas no momento em que fazem falta, pelos contextos de notificações e
- * localização), e o acesso à AT + morada de faturação fundiram-se em `billing`.
+ * Passou de 8 para 5 passos: as permissões deixaram de ser um ecrã (pedidas no
+ * momento em que fazem falta), o acesso à AT + morada de faturação fundiram-se
+ * em `billing`, e a verificação de telemóvel + email fundiram-se em `contacts`.
  */
 const DISPLAY_ORDER: VerifySteps[] = [
     VerifySteps.documents,
     VerifySteps.billing,
     VerifySteps.iban,
-    VerifySteps.phoneVerification,
+    VerifySteps.contacts,
     VerifySteps.citySurvey,
-    VerifySteps.emailVerification,
 ];
 
 const CompleteProfile = () => {
@@ -72,6 +70,10 @@ const CompleteProfile = () => {
     const { appStateStatus } = useAppStateStatus();
     const [step, setStep] = useState<VerifySteps>(VerifySteps.instructions);
     const [docsStepDone, setDocsStepDone] = useState(false);
+    // Os concelhos não têm sinal persistente de "feito" no vendorData; um flag
+    // de sessão evita que reapareçam depois de passados (ex.: ao adiar os
+    // contactos, o encaminhamento voltaria a cair no survey).
+    const [surveyStepDone, setSurveyStepDone] = useState(false);
     // Passos adiados nesta sessão ("faço isto mais tarde"). Sem isto, o
     // goToNextDataStep reencaminhava para o mesmo passo enquanto o dado
     // faltasse — carregar em "mais tarde" não saía dali.
@@ -79,7 +81,7 @@ const CompleteProfile = () => {
     const skipStep = (which: VerifySteps) => {
         const next = skipped.includes(which) ? skipped : [...skipped, which];
         setSkipped(next);
-        goToNextDataStep(vendorData as VendorDataInterface, next);
+        goToNextDataStep(vendorData as VendorDataInterface, next, surveyStepDone);
     };
 
     const totalSteps = DISPLAY_ORDER.length;
@@ -124,15 +126,22 @@ const CompleteProfile = () => {
         router.replace('/(app)/(pages)/(onboarding-success)/onboarding-success');
     };
 
-    const goToNextDataStep = (data: VendorDataInterface, adiados: VerifySteps[] = skipped) => {
+    const goToNextDataStep = (
+        data: VendorDataInterface,
+        adiados: VerifySteps[] = skipped,
+        surveyDone: boolean = surveyStepDone,
+    ) => {
+        const phoneMissing = !data?.user?.phone_number_verified_at;
+        const emailMissing = !data?.user?.email_verified_at;
         // `billing` cobre AT + morada: só se dá por feito quando os dois existem.
         if ((!data?.at_user || !data?.company_address) && !adiados.includes(VerifySteps.billing)) {
             setStep(VerifySteps.billing);
         } else if (!data?.iban && !adiados.includes(VerifySteps.iban)) {
             setStep(VerifySteps.iban);
-        } else if (data?.user?.phone_number_verified_at === null && !adiados.includes(VerifySteps.phoneVerification)) {
-            setStep(VerifySteps.phoneVerification);
-        } else if (data?.user?.email_verified_at === null) {
+        } else if ((phoneMissing || emailMissing) && !adiados.includes(VerifySteps.contacts)) {
+            // `contacts` cobre telemóvel + email no mesmo ecrã.
+            setStep(VerifySteps.contacts);
+        } else if (!surveyDone) {
             setStep(VerifySteps.citySurvey);
         } else {
             handleSurveyComplete();
@@ -186,27 +195,20 @@ const CompleteProfile = () => {
                         onSkip={() => skipStep(VerifySteps.billing)}
                     />
                 )}
-                {step === VerifySteps.phoneVerification && (
-                    <View className="flex-1 p-5">
-                        <SmsVerification
-                            onNext={(data: VendorDataInterface) => handleNextStep(data)}
-                            onSkip={() => skipStep(VerifySteps.phoneVerification)}
-                        />
-                    </View>
-                )}
                 {step === VerifySteps.iban && (
                     <IbanStep
                         onNext={(data: VendorDataInterface) => handleNextStep(data)}
                         onSkip={() => skipStep(VerifySteps.iban)}
                     />
                 )}
-                {step === VerifySteps.citySurvey && (
-                    <CitySurveyStep onNext={() => setStep(VerifySteps.emailVerification)} />
+                {step === VerifySteps.contacts && (
+                    <ContactsStep
+                        onNext={(data: VendorDataInterface) => handleNextStep(data)}
+                        onSkip={() => skipStep(VerifySteps.contacts)}
+                    />
                 )}
-                {step === VerifySteps.emailVerification && (
-                    <View className="flex-1 p-5">
-                        <EmailConfirmation onNext={(data: VendorDataInterface) => handleNextStep(data)} />
-                    </View>
+                {step === VerifySteps.citySurvey && (
+                    <CitySurveyStep onNext={() => { setSurveyStepDone(true); goToNextDataStep(vendorData as VendorDataInterface, skipped, true); }} />
                 )}
                 {step === VerifySteps.documents && (
                     <DocumentsProfileStep onNext={() => { setDocsStepDone(true); goToNextDataStep(vendorData as VendorDataInterface); }} />
