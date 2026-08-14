@@ -33,14 +33,6 @@ const IbanStep = ({
         mode: 'onChange',
         defaultValues: {
             iban: vendorData?.iban || "",
-            // O nome fiscal e exigido pela faturacao (vai como organization_name
-            // para o InvoiceXpress) e nao vem da AT — as credenciais do
-            // subutilizador so servem para comunicar series, nao a identidade.
-            // Mas para recibos verdes o nome fiscal E o nome do tecnico, que ja
-            // recolhemos no registo: pre-preenchemo-lo para nao pedir duas vezes.
-            // Quem tem empresa edita; e sempre editavel.
-            company_name: vendorData?.company_name || vendorData?.user?.name || "",
-            // nif: vendorData?.nif || "",
         },
     });
 
@@ -53,9 +45,9 @@ const IbanStep = ({
         // O backend (UpdatePaymentRequest) continua a exigir o campo, por isso enviamos
         // o valor já guardado sem o mostrar.
         formData.append('price_rate', String(vendorData?.price_rate ?? 0));
-        formData.append('company_name', getValues('company_name'));
-        // formData.append('nif', getValues('nif'));
-        // formData.append('company_name', getValues('company_name'));
+        // O nome fiscal deixou de ser pedido aqui: o backend preenche-o com o
+        // nome do registo do técnico (obrigatório para o InvoiceXpress). Quem
+        // fatura por empresa edita-o depois em Definições.
 
         api.post(API_ROUTES.VENDOR_UPDATE_PAYMENT + '?_method=PUT', formData, {
             headers: {
@@ -178,51 +170,6 @@ const IbanStep = ({
                         classes="mt-1"
                     >
                         {errors.iban.message as string}
-                    </CustomText>
-                )}
-            </View>
-
-            <View>
-                <CustomText color="secondary" boldness="semiBold" numberOfLines={1}>
-                    {t('general.company_name')}
-                </CustomText>
-                <CustomText color="muted" size="small" numberOfLines={4} classes="mt-1">
-                    {t('complete_profile.iban.company_name_help')}
-                </CustomText>
-
-                <Controller
-                    control={control}
-                    name="company_name"
-                    rules={{
-                        required: t('general.company_name_required'),
-                    }}
-                    render={({field}) => (
-                        <View className="mt-2">
-                            <CustomTextInput
-                                {...field}
-                                size="large"
-                                onChangeText={(value: string) => {
-                                    value = value.replace(/\s{2,}/g, ' ')
-                                    field.onChange(value)
-                                }}
-                                autoCorrect={false}
-                                placeholder={t('general.company_name_placeholder')}
-                                error={errors.company_name && errors.company_name.message}
-                                displayErrorIcon={true}
-                                success={!errors.company_name && field.value}
-                                displaySuccessIcon={true}
-                                disabled={loading}
-                            />
-                        </View>
-                    )}
-                />
-                {errors.company_name && errors.company_name.message && (
-                    <CustomText
-                        size="small"
-                        color="error"
-                        classes="mt-1"
-                    >
-                        {errors.company_name.message as string}
                     </CustomText>
                 )}
             </View>
