@@ -1379,7 +1379,9 @@ export default {
             "title": "Dados de faturação",
             "subtitle": "É com isto que a Piquet emite as faturas dos teus serviços.",
             "at_section": "Acesso à AT",
-            "address_section": "Morada de faturação"
+            "address_section": "Morada de faturação",
+            "address_edit": "Editar",
+            "address_manual": "Não encontras? Introduz o código postal e a cidade"
         },
         "missing_one": "Falta 1 passo para começares a receber pedidos.",
         "missing_many": "Faltam {{count}} passos para começares a receber pedidos.",

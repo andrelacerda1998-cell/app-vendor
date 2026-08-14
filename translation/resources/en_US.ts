@@ -1379,7 +1379,9 @@ export default {
       "title": "Billing details",
       "subtitle": "This is what Piquet uses to issue the invoices for your jobs.",
       "at_section": "Tax authority access",
-      "address_section": "Billing address"
+      "address_section": "Billing address",
+      "address_edit": "Edit",
+      "address_manual": "Can't find it? Enter the postal code and city"
     },
     "missing_one": "1 step left before you can receive requests.",
     "missing_many": "{{count}} steps left before you can receive requests.",
