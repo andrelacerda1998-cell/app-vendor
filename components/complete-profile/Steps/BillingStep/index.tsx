@@ -1,13 +1,7 @@
 /**
- * Dados de faturacao — funde num so ecra o que eram dois passos: o acesso a AT
- * (subutilizador) e a morada de faturacao. Sao a mesma ideia para o tecnico
- * ("o que a Piquet precisa para emitir as tuas faturas"), e separa-los era um
- * toque a mais no registo. O IBAN fica de fora, no passo "Pagamento", porque e
- * outra coisa (onde recebes, nao como faturas).
- *
- * Uma so submissao: grava o acesso a AT e depois a morada. So avanca quando as
- * duas passam; se a morada falhar, o acesso a AT ja ficou gravado e uma nova
- * tentativa volta a envia-lo (e uma atualizacao, nao cria nada novo).
+ * Acesso à AT (subutilizador) — o que a Piquet precisa para emitir as tuas
+ * faturas em teu nome. A morada de faturacao vive agora no passo do pagamento
+ * (IBAN), por isso este passo trata so do acesso a AT.
  */
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -20,11 +14,6 @@ import { CustomText } from '@/components/CustomText';
 import CustomTextInput from '@/components/CustomTextInput';
 import CustomTouchableOpacity from '@/components/CustomTouchableOpacity';
 import AtSubuserHelp from '@/components/at/AtSubuserHelp';
-import {
-  AddressSuggestion,
-  AddressSuggestionList,
-  useAddressSuggestions,
-} from '@/components/address/AddressAutocomplete';
 import { API_ROUTES } from '@/constants/ApiRoutes';
 import { Colors } from '@/constants/Colors';
 import { useApi } from '@/contexts/ApiContext';
@@ -34,7 +23,7 @@ import XIcon from '@/assets/icons/x';
 import { VendorDataInterface } from '@/types/session';
 import { validateNIF } from '@/utils';
 
-/** Campo com rotulo e erro por baixo — o padrao repetido do ecra. */
+/** Campo com rotulo e erro por baixo. */
 const Field = ({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) => (
   <View>
     <CustomText color="secondary" boldness="semiBold" numberOfLines={1}>
@@ -47,13 +36,6 @@ const Field = ({ label, error, children }: { label: string; error?: string; chil
       </CustomText>
     )}
   </View>
-);
-
-/** Cabecalho de secao dentro do ecra (AT / Morada). */
-const SectionTitle = ({ children }: { children: React.ReactNode }) => (
-  <CustomText color="muted" size="small" boldness="bold" classes="mt-8 mb-1">
-    {String(children).toUpperCase()}
-  </CustomText>
 );
 
 const BillingStep = ({
@@ -70,88 +52,35 @@ const BillingStep = ({
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const { control, handleSubmit, formState: { errors }, getValues, setValue, watch } = useForm({
+  const { control, handleSubmit, formState: { errors }, getValues } = useForm({
     mode: 'onChange',
     defaultValues: {
       at_user: vendorData?.at_user || '',
       at_password: '',
-      street_name: '',
-      street_number: '',
-      postal_code: '',
-      city: '',
     },
   });
 
-  // Codigo postal e cidade vêm da sugestao do Google; nao se pedem como campos.
-  // So aparecem em edicao quando o tecnico escolhe corrigir, quando a sugestao
-  // nao os trouxe, ou quando falta preenche-los ao submeter.
-  const [manualAddress, setManualAddress] = useState(false);
-  const postal = watch('postal_code');
-  const city = watch('city');
-  const addressCaptured = !manualAddress && !!postal && !!city;
-
-  // Sugestoes de morada agarradas ao campo da rua.
-  const suggestions = useAddressSuggestions(watch('street_name'));
-  const applySuggestion = (s: AddressSuggestion) => {
-    suggestions.dismiss();
-    if (s.street_name) setValue('street_name', s.street_name, { shouldValidate: true });
-    if (s.street_number) setValue('street_number', s.street_number, { shouldValidate: true });
-    if (s.postal_code) setValue('postal_code', s.postal_code, { shouldValidate: true });
-    if (s.city) setValue('city', s.city, { shouldValidate: true });
-    // Se a sugestao nao trouxe CP/cidade, abre os campos para os completar.
-    if (!s.postal_code || !s.city) setManualAddress(true);
-    else setManualAddress(false);
-  };
-
-  const showError = (title: string, subtitle: string) => {
-    openDialog({
-      icon: <XIcon color={Colors.primary} />,
-      title,
-      subtitle,
-      closeAfterMSeconds: 2500,
-      closeOnClickOutside: true,
-    });
-  };
-
-  const submitBilling = async () => {
+  const submitAt = () => {
     setLoading(true);
-    try {
-      // 1) Acesso a AT.
-      await api.post(API_ROUTES.POST_AT_USER, {
-        at_user: getValues('at_user'),
-        at_password: getValues('at_password'),
-      });
-    } catch (err: any) {
-      setLoading(false);
-      return showError(
-        t('errors.at_user_save.title'),
-        err?.response?.data?.message || t('errors.at_user_save.subtitle'),
-      );
-    }
-
-    try {
-      // 2) Morada de faturacao. Só operamos em Portugal.
-      const response: any = await api.post(API_ROUTES.POST_COMPANY_ADDRESS, {
-        street_name: getValues('street_name'),
-        street_number: getValues('street_number'),
-        postal_code: getValues('postal_code'),
-        city: getValues('city'),
-        country: 'Portugal',
-      });
-      const address = response?.data?.data?.address;
-      const newVendorData = {
-        ...vendorData,
-        at_user: getValues('at_user'),
-        company_address: address?.name,
-      };
-      setVendorData(newVendorData);
-      onNext(newVendorData as VendorDataInterface);
-    } catch {
-      // O acesso a AT ja ficou gravado; uma nova tentativa reenvia-o (update).
-      showError(t('errors.address_save.title'), t('errors.address_save.subtitle'));
-    } finally {
-      setLoading(false);
-    }
+    api.post(API_ROUTES.POST_AT_USER, {
+      at_user: getValues('at_user'),
+      at_password: getValues('at_password'),
+    })
+      .then(() => {
+        const newVendorData = { ...vendorData, at_user: getValues('at_user') };
+        setVendorData(newVendorData);
+        onNext(newVendorData as VendorDataInterface);
+      })
+      .catch((err: any) => {
+        openDialog({
+          icon: <XIcon color={Colors.primary} />,
+          title: t('errors.at_user_save.title'),
+          subtitle: err?.response?.data?.message || t('errors.at_user_save.subtitle'),
+          closeAfterMSeconds: 2500,
+          closeOnClickOutside: true,
+        });
+      })
+      .finally(() => setLoading(false));
   };
 
   return (
@@ -164,17 +93,13 @@ const BillingStep = ({
         <CustomText size="title" color="secondary" boldness="bold" numberOfLines={2}>
           {t('complete_profile.billing.title')}
         </CustomText>
-        <CustomText color="muted" numberOfLines={3} classes="mt-2">
+        <CustomText color="muted" numberOfLines={3} classes="mt-2 mb-5">
           {t('complete_profile.billing.subtitle')}
         </CustomText>
 
-        {/* ---- Acesso a AT ---- */}
-        <SectionTitle>{t('complete_profile.billing.at_section')}</SectionTitle>
-        <View className="mt-2">
-          <AtSubuserHelp />
-        </View>
+        <AtSubuserHelp />
 
-        <View className="mt-6" style={{ gap: 20 }}>
+        <View className="mt-7" style={{ gap: 20 }}>
           <Controller
             control={control}
             name="at_user"
@@ -242,145 +167,6 @@ const BillingStep = ({
             )}
           />
         </View>
-
-        {/* ---- Morada de faturacao ---- */}
-        <SectionTitle>{t('complete_profile.billing.address_section')}</SectionTitle>
-        <View className="mt-2" style={{ gap: 20 }}>
-          <Controller
-            control={control}
-            name="street_name"
-            rules={{ required: t('general.street_name_required') }}
-            render={({ field }) => (
-              <Field label={t('general.street_name')} error={errors.street_name?.message as string}>
-                <CustomTextInput
-                  {...field}
-                  size="large"
-                  onChangeText={field.onChange}
-                  placeholder={t('general.street_name_placeholder')}
-                  autoCorrect={false}
-                  error={errors.street_name && errors.street_name.message}
-                  displayErrorIcon
-                  success={!errors.street_name && field.value}
-                  displaySuccessIcon
-                />
-                <AddressSuggestionList
-                  results={suggestions.results}
-                  failed={suggestions.failed}
-                  showEmpty={suggestions.showEmpty}
-                  onSelect={applySuggestion}
-                />
-              </Field>
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="street_number"
-            rules={{ required: t('general.street_number_required') }}
-            render={({ field }) => (
-              <Field label={t('general.street_number')} error={errors.street_number?.message as string}>
-                <CustomTextInput
-                  {...field}
-                  size="large"
-                  onChangeText={field.onChange}
-                  placeholder={t('general.street_number_placeholder')}
-                  error={errors.street_number && errors.street_number.message}
-                  displayErrorIcon
-                  success={!errors.street_number && field.value}
-                  displaySuccessIcon
-                />
-              </Field>
-            )}
-          />
-
-          {/* Codigo postal + cidade: confirmados a partir da sugestao, nao
-              digitados. So viram campos quando ha algo a corrigir/completar. */}
-          {addressCaptured ? (
-            <View
-              className="flex-row items-center rounded-2xl border px-4"
-              style={{ borderColor: Colors.line, backgroundColor: Colors.card, minHeight: 60 }}
-            >
-              <Feather name="map-pin" size={18} color={Colors.muted} />
-              <CustomText color="secondary" size="medium" boldness="semiBold" classes="flex-1 ml-3" numberOfLines={1}>
-                {postal} · {city}
-              </CustomText>
-              <CustomTouchableOpacity
-                type="transparent"
-                size="small"
-                text={t('complete_profile.billing.address_edit')}
-                textSize="small"
-                textColor="support_primary"
-                textBoldness="bold"
-                onPress={() => setManualAddress(true)}
-              />
-            </View>
-          ) : (
-            <CustomTouchableOpacity
-              type="transparent"
-              size="small"
-              text={t('complete_profile.billing.address_manual')}
-              textSize="small"
-              textColor="support_primary"
-              textBoldness="bold"
-              onPress={() => setManualAddress(true)}
-              classes="self-start"
-            />
-          )}
-
-          {/* Campos de CP/cidade: registados sempre (para validar na submissao),
-              mas so mostrados quando estamos em edicao manual. */}
-          <Controller
-            control={control}
-            name="postal_code"
-            rules={{
-              required: t('general.postal_code_required'),
-              pattern: { value: /^\d{4}-\d{3}$/, message: t('general.postal_code_invalid_format') },
-            }}
-            render={({ field }) =>
-              manualAddress ? (
-                <Field label={t('general.postal_code')} error={errors.postal_code?.message as string}>
-                  <CustomTextInput
-                    {...field}
-                    size="large"
-                    onChangeText={(value: string) => {
-                      value = value.replace(/[^\d]/g, '');
-                      field.onChange(value.replace(/(\d{4})(\d{1,3})/, '$1-$2'));
-                    }}
-                    maxLength={8}
-                    placeholder={t('general.postal_code_placeholder')}
-                    keyboardType="number-pad"
-                    error={errors.postal_code && errors.postal_code.message}
-                    displayErrorIcon
-                    success={!errors.postal_code && field.value}
-                    displaySuccessIcon
-                  />
-                </Field>
-              ) : <View />
-            }
-          />
-
-          <Controller
-            control={control}
-            name="city"
-            rules={{ required: t('general.city_required') }}
-            render={({ field }) =>
-              manualAddress ? (
-                <Field label={t('general.city')} error={errors.city?.message as string}>
-                  <CustomTextInput
-                    {...field}
-                    size="large"
-                    onChangeText={field.onChange}
-                    placeholder={t('general.city_placeholder')}
-                    error={errors.city && errors.city.message}
-                    displayErrorIcon
-                    success={!errors.city && field.value}
-                    displaySuccessIcon
-                  />
-                </Field>
-              ) : <View />
-            }
-          />
-        </View>
       </KeyboardAwareScrollView>
 
       <View className="pt-5">
@@ -390,8 +176,7 @@ const BillingStep = ({
           textColor="primary"
           textBoldness="semiBold"
           text={loading ? t('profile.edit.saving_changes') : t('general.continue')}
-          // Se faltar CP/cidade, abre os campos manuais para o erro ser visivel.
-          onPress={handleSubmit(submitBilling, () => setManualAddress(true))}
+          onPress={handleSubmit(submitAt)}
           disabled={loading}
         />
         {/* Criar o subutilizador obriga a sair da app; sem saida o registo

@@ -133,10 +133,11 @@ const CompleteProfile = () => {
     ) => {
         const phoneMissing = !data?.user?.phone_number_verified_at;
         const emailMissing = !data?.user?.email_verified_at;
-        // `billing` cobre AT + morada: só se dá por feito quando os dois existem.
-        if ((!data?.at_user || !data?.company_address) && !adiados.includes(VerifySteps.billing)) {
+        // `billing` = só o acesso à AT; a morada passou para o passo do IBAN.
+        if (!data?.at_user && !adiados.includes(VerifySteps.billing)) {
             setStep(VerifySteps.billing);
-        } else if (!data?.iban && !adiados.includes(VerifySteps.iban)) {
+        } else if ((!data?.iban || !data?.company_address) && !adiados.includes(VerifySteps.iban)) {
+            // `iban` cobre pagamento + morada de faturação.
             setStep(VerifySteps.iban);
         } else if ((phoneMissing || emailMissing) && !adiados.includes(VerifySteps.contacts)) {
             // `contacts` cobre telemóvel + email no mesmo ecrã.

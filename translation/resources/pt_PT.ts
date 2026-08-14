@@ -1390,12 +1390,8 @@ export default {
             "email_check": "Já confirmei"
         },
         "billing": {
-            "title": "Dados de faturação",
-            "subtitle": "É com isto que a Piquet emite as faturas dos teus serviços.",
-            "at_section": "Acesso à AT",
-            "address_section": "Morada de faturação",
-            "address_edit": "Editar",
-            "address_manual": "Não encontras? Introduz o código postal e a cidade"
+            "title": "Acesso à AT",
+            "subtitle": "Cria um acesso nas Finanças só para faturas e escreve-o aqui."
         },
         "missing_one": "Falta 1 passo para começares a receber pedidos.",
         "missing_many": "Faltam {{count}} passos para começares a receber pedidos.",
@@ -1429,6 +1425,9 @@ export default {
         "iban": {
             "title": "Como te pagamos",
             "subtitle": "Todas as segundas transferimos o que ganhaste na semana anterior.",
+            "address_section": "Morada de faturação",
+            "address_edit": "Editar",
+            "address_manual": "Não encontras? Introduz o código postal e a cidade"
         },
         "survey": {
             "title": "Onde queres trabalhar?",

@@ -1390,12 +1390,8 @@ export default {
       "email_check": "I've confirmed"
     },
     "billing": {
-      "title": "Billing details",
-      "subtitle": "This is what Piquet uses to issue the invoices for your jobs.",
-      "at_section": "Tax authority access",
-      "address_section": "Billing address",
-      "address_edit": "Edit",
-      "address_manual": "Can't find it? Enter the postal code and city"
+      "title": "Tax authority access",
+      "subtitle": "Create a tax portal login just for invoices and enter it here."
     },
     "missing_one": "1 step left before you can receive requests.",
     "missing_many": "{{count}} steps left before you can receive requests.",
@@ -1429,6 +1425,9 @@ export default {
     "iban": {
       "title": "How we pay you",
       "subtitle": "Every Monday we transfer what you earned the week before.",
+      "address_section": "Billing address",
+      "address_edit": "Edit",
+      "address_manual": "Can't find it? Enter the postal code and city"
     },
     "survey": {
       "title": "Where do you want to work?",
