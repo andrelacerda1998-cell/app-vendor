@@ -111,21 +111,10 @@ const Agenda = () => {
 
   return (
     <SafeAreaView className={`flex-1 bg-bg`}>
-      <View className="px-5 pt-4 pb-3 flex-row items-center justify-between">
+      <View className="px-5 pt-4 pb-3">
         <CustomText size="subtitle" color="secondary" boldness="bolder">
           {t('tabs.agenda')}
         </CustomText>
-        {/* Atalho para a lista completa: a Agenda só mostra os próximos 7 dias. */}
-        <TouchableOpacity
-          activeOpacity={0.7}
-          accessibilityRole="button"
-          accessibilityLabel={t('services.view_all')}
-          onPress={() => router.push('/(app)/(bottom-sheets)/(services)/schedules/all')}
-        >
-          <CustomText size="extraSmall" color="brand" boldness="bold">
-            {t('services.view_all')}
-          </CustomText>
-        </TouchableOpacity>
       </View>
 
       {/* Fita de semana */}

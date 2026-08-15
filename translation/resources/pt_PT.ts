@@ -237,7 +237,6 @@ export default {
         "customer_photo_open": "Ver fotografia {{n}}",
         "title": "Serviço",
         "title_plural": "Serviços",
-        "view_all": "Ver todos",
         "empty": "Ainda não tens serviços aqui. Aceita um pedido e ele aparece nesta lista.",
         "select_service_type": {
             "title": "Escolhe o serviço",
