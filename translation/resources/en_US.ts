@@ -1541,7 +1541,7 @@ export default {
     "times_up": "Time is up",
     "remaining_time": "Remaining time",
     "empty": "Free agenda",
-    "next_title": "Next service",
+    "section_title": "Your agenda",
     "pending_requests_card_one": "You have {{count}} request awaiting a reply.",
     "pending_requests_card_other": "You have {{count}} requests awaiting a reply.",
     "requests_list": "Requests list",

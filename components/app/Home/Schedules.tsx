@@ -41,7 +41,7 @@ const Schedules = () => {
 
   return (
     <View className="px-5">
-      <SectionHeader title={t("schedules.next_title")} />
+      <SectionHeader title={t("schedules.section_title")} />
       <View>
         {!next ? (
           // Estado vazio
