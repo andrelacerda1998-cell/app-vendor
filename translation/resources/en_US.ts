@@ -1541,7 +1541,7 @@ export default {
     "service_immediate": "Immediate service",
     "times_up": "Time is up",
     "remaining_time": "Remaining time",
-    "empty": "Nothing scheduled yet",
+    "empty": "Free agenda",
     "next_title": "Next service",
     "pending_requests_card_one": "You have {{count}} request awaiting a reply.",
     "pending_requests_card_other": "You have {{count}} requests awaiting a reply.",
