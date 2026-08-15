@@ -5,6 +5,7 @@ import { CustomText } from "@/components/CustomText";
 import TouchOpacity from "@/components/TouchOpacity";
 import { Colors } from "@/constants/Colors";
 import CalendarIcon from "@/assets/icons/calendar";
+import AgendaFree from "@/assets/icons/agenda-free";
 import { useTranslation } from "react-i18next";
 import { SectionHeader } from "@/components/ui";
 import { useSchedule } from "@/contexts/ScheduleContext";
@@ -52,14 +53,11 @@ const Schedules = () => {
             borderColor="line"
             otherClasses="flex-row items-center justify-center p-4"
           >
-            {/* Estado vazio: ícone + texto centrados no ecrã, texto em branco.
-                Sem seta — o layout centrado não é uma linha de lista, e o
-                cartão inteiro continua tocável. */}
-            <View
-              className="w-11 h-11 rounded-xl items-center justify-center mr-3"
-              style={{ backgroundColor: Colors.card_high }}
-            >
-              <CalendarIcon color={Colors.muted} />
+            {/* Estado vazio: ilustração + texto centrados no ecrã, texto em
+                branco. Sem seta — o layout centrado não é uma linha de lista, e
+                o cartão inteiro continua tocável. */}
+            <View className="mr-3">
+              <AgendaFree color={Colors.muted} accent={Colors.success} size={40} />
             </View>
             <CustomText color="secondary" boldness="semiBold" size="medium">
               {t("schedules.empty")}
