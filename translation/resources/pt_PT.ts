@@ -1541,7 +1541,7 @@ export default {
       "service_immediate": "Serviço imediato",
       "times_up": "O tempo terminou",
       "remaining_time": "Tempo restante",
-      "empty": "Sem serviços agendados",
+      "empty": "Nada agendado para já",
       "next_title": "Próximo serviço",
       "pending_requests_card_one": "Tens {{count}} pedido à espera de resposta.",
       "pending_requests_card_other": "Tens {{count}} pedidos à espera de resposta.",

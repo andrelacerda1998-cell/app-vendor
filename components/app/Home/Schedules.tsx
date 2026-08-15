@@ -23,8 +23,10 @@ const Schedules = () => {
   const hasSchedules = scheduledServicesData && scheduledServicesData.length > 0;
   const next = hasSchedules ? scheduledServicesData[0] : null;
 
-  const goToSchedules = () =>
-    router.push(`/(app)/(bottom-sheets)/(services)/schedules/${schedulesSection.today}`);
+  // Abre o separador Agenda (com a tira da semana e os serviços por dia), e não
+  // a lista simples do bottom-sheet — é a vista que o técnico reconhece como
+  // "a agenda". O "Ver todos" lá dentro é que leva à lista detalhada.
+  const goToSchedules = () => router.navigate('/(app)/(tabs)/wallet');
 
   const price = next ? renderMoney(next.amount_for_vendor ?? null) : false;
   // Mesma regra do cartão da Agenda: a RUA, não a cidade. `customer.address`
