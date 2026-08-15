@@ -5,7 +5,6 @@ import { CustomText } from "@/components/CustomText";
 import TouchOpacity from "@/components/TouchOpacity";
 import { Colors } from "@/constants/Colors";
 import CalendarIcon from "@/assets/icons/calendar";
-import { Feather } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import { SectionHeader } from "@/components/ui";
 import { useSchedule } from "@/contexts/ScheduleContext";
@@ -51,20 +50,20 @@ const Schedules = () => {
             rounded="2xl"
             border
             borderColor="line"
-            otherClasses="flex-row items-center p-4"
+            otherClasses="flex-row items-center justify-center p-4"
           >
-            {/* Estado vazio em cinzento, não em âmbar: não há serviço nenhum,
-                e a cor da marca não deve prometer conteúdo que não existe. */}
+            {/* Estado vazio: ícone + texto centrados no ecrã, texto em branco.
+                Sem seta — o layout centrado não é uma linha de lista, e o
+                cartão inteiro continua tocável. */}
             <View
               className="w-11 h-11 rounded-xl items-center justify-center mr-3"
               style={{ backgroundColor: Colors.card_high }}
             >
               <CalendarIcon color={Colors.muted} />
             </View>
-            <CustomText color="muted" boldness="medium" size="medium" classes="flex-1">
+            <CustomText color="secondary" boldness="semiBold" size="medium">
               {t("schedules.empty")}
             </CustomText>
-            <Feather name="chevron-right" size={22} color={Colors.muted} />
           </TouchOpacity>
         ) : (
           // Próximo serviço
