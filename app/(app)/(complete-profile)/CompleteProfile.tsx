@@ -52,11 +52,11 @@ enum VerifySteps {
  * em `billing`, e a verificação de telemóvel + email fundiram-se em `contacts`.
  */
 const DISPLAY_ORDER: VerifySteps[] = [
-    VerifySteps.documents,
-    VerifySteps.billing,
-    VerifySteps.iban,
     VerifySteps.contacts,
     VerifySteps.citySurvey,
+    VerifySteps.iban,
+    VerifySteps.billing,
+    VerifySteps.documents,
 ];
 
 const CompleteProfile = () => {
@@ -81,7 +81,7 @@ const CompleteProfile = () => {
     const skipStep = (which: VerifySteps) => {
         const next = skipped.includes(which) ? skipped : [...skipped, which];
         setSkipped(next);
-        goToNextDataStep(vendorData as VendorDataInterface, next, surveyStepDone);
+        goToNextDataStep(vendorData as VendorDataInterface, next, surveyStepDone, docsStepDone);
     };
 
     const totalSteps = DISPLAY_ORDER.length;
@@ -89,7 +89,8 @@ const CompleteProfile = () => {
     const hasInitialized = useRef(false);
 
     useEffect(() => {
-        // Começa sempre pelos documentos (saltável), mesmo antes de vendorData carregar.
+        // Arranca no primeiro passo em falta pela ordem de fricção crescente
+        // (contactos primeiro), mesmo antes de vendorData carregar por completo.
         handleNextStep(vendorData as VendorDataInterface);
     }, []);
 
@@ -126,37 +127,45 @@ const CompleteProfile = () => {
         router.replace('/(app)/(pages)/(onboarding-success)/onboarding-success');
     };
 
+    /**
+     * Ordem por fricção crescente: primeiro as vitórias rápidas (contactos,
+     * concelhos), depois o que obriga a sair da app (AT, documentos). Assim o
+     * técnico entra e fica investido antes de bater nas paredes — e o que não
+     * tiver à mão adia, com o aviso da Home a relembrar.
+     *
+     * `contacts`/`iban`/`billing` gerem-se pelo dado + lista de adiados;
+     * `citySurvey` e `documents` não têm sinal persistente, por isso usam flags
+     * de sessão (passados por parâmetro para não apanhar estado obsoleto).
+     */
     const goToNextDataStep = (
         data: VendorDataInterface,
         adiados: VerifySteps[] = skipped,
         surveyDone: boolean = surveyStepDone,
+        docsDone: boolean = docsStepDone,
     ) => {
         const phoneMissing = !data?.user?.phone_number_verified_at;
         const emailMissing = !data?.user?.email_verified_at;
-        // `billing` = só o acesso à AT; a morada passou para o passo do IBAN.
-        if (!data?.at_user && !adiados.includes(VerifySteps.billing)) {
-            setStep(VerifySteps.billing);
-        } else if ((!data?.iban || !data?.company_address) && !adiados.includes(VerifySteps.iban)) {
-            // `iban` cobre pagamento + morada de faturação.
-            setStep(VerifySteps.iban);
-        } else if ((phoneMissing || emailMissing) && !adiados.includes(VerifySteps.contacts)) {
-            // `contacts` cobre telemóvel + email no mesmo ecrã.
+        if ((phoneMissing || emailMissing) && !adiados.includes(VerifySteps.contacts)) {
+            // 1) Contactos: telemóvel + email no mesmo ecrã. Rápido, dá o 1.º ✓.
             setStep(VerifySteps.contacts);
         } else if (!surveyDone) {
+            // 2) Concelhos: leve e motivador.
             setStep(VerifySteps.citySurvey);
+        } else if ((!data?.iban || !data?.company_address) && !adiados.includes(VerifySteps.iban)) {
+            // 3) Pagamento + morada de faturação.
+            setStep(VerifySteps.iban);
+        } else if (!data?.at_user && !adiados.includes(VerifySteps.billing)) {
+            // 4) Acesso à AT (sai da app para o Portal das Finanças).
+            setStep(VerifySteps.billing);
+        } else if (!docsDone) {
+            // 5) Documentos (o mais pesado; muitas vezes fica para depois).
+            setStep(VerifySteps.documents);
         } else {
             handleSurveyComplete();
         }
     };
 
-    const handleNextStep = (data: VendorDataInterface) => {
-        // Documentos primeiro (saltável, "enviar mais tarde"); auto-salta se não faltarem documentos.
-        if (!docsStepDone) {
-            setStep(VerifySteps.documents);
-        } else {
-            goToNextDataStep(data);
-        }
-    };
+    const handleNextStep = (data: VendorDataInterface) => goToNextDataStep(data);
 
     return (
         <SafeAreaView className="flex-1 bg-bg">
@@ -209,10 +218,10 @@ const CompleteProfile = () => {
                     />
                 )}
                 {step === VerifySteps.citySurvey && (
-                    <CitySurveyStep onNext={() => { setSurveyStepDone(true); goToNextDataStep(vendorData as VendorDataInterface, skipped, true); }} />
+                    <CitySurveyStep onNext={() => { setSurveyStepDone(true); goToNextDataStep(vendorData as VendorDataInterface, skipped, true, docsStepDone); }} />
                 )}
                 {step === VerifySteps.documents && (
-                    <DocumentsProfileStep onNext={() => { setDocsStepDone(true); goToNextDataStep(vendorData as VendorDataInterface); }} />
+                    <DocumentsProfileStep onNext={() => { setDocsStepDone(true); goToNextDataStep(vendorData as VendorDataInterface, skipped, surveyStepDone, true); }} />
                 )}
             </View>
         </SafeAreaView>
