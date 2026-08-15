@@ -23,10 +23,17 @@ const OnboardingSuccess = () => {
   const { t } = useTranslation();
   const { vendorData } = useSession();
 
-  // Documentos saltados durante o onboarding: lembrar aqui, enquanto o
-  // contexto ainda é "estou a acabar o registo", evita a surpresa de mais
-  // tarde não perceber porque não fica aprovado.
+  // Com a reordenação, qualquer passo pode ficar por fazer (tudo é saltável).
+  // O fecho tem de ser honesto: "concluído" só quando está mesmo tudo; senão
+  // "estás quase", para não dizer que acabou com coisas em falta.
   const missingDocs = vendorData?.missing_documents?.length ?? 0;
+  const pending =
+    missingDocs > 0 ||
+    !vendorData?.user?.phone_number_verified_at ||
+    !vendorData?.user?.email_verified_at ||
+    !vendorData?.at_user ||
+    !vendorData?.company_address ||
+    !vendorData?.iban;
 
   return (
     <SafeAreaView className="flex-1 bg-bg">
@@ -37,15 +44,19 @@ const OnboardingSuccess = () => {
         <View className="items-center mb-8">
           <View
             className="items-center justify-center rounded-full mb-5"
-            style={{ width: 88, height: 88, backgroundColor: 'rgba(35,230,158,0.14)' }}
+            style={{ width: 88, height: 88, backgroundColor: pending ? 'rgba(233,162,59,0.16)' : 'rgba(35,230,158,0.14)' }}
           >
-            <Feather name="check-circle" size={44} color={Colors.success} />
+            <Feather
+              name={pending ? 'clock' : 'check-circle'}
+              size={44}
+              color={pending ? Colors.warning : Colors.success}
+            />
           </View>
           <CustomText size="title" color="secondary" boldness="bolder" classes="text-center">
-            {t('onboarding_success.title')}
+            {t(pending ? 'onboarding_success.title_pending' : 'onboarding_success.title')}
           </CustomText>
           <CustomText size="medium" color="muted" classes="text-center mt-2 px-4" numberOfLines={4}>
-            {t('onboarding_success.subtitle')}
+            {t(pending ? 'onboarding_success.subtitle_pending' : 'onboarding_success.subtitle')}
           </CustomText>
         </View>
 
@@ -79,15 +90,18 @@ const OnboardingSuccess = () => {
           ))}
         </Card>
 
-        {/* Documentos em falta — só quando é verdade */}
-        {missingDocs > 0 && (
+        {/* O que falta — documentos em concreto, ou uma nota genérica quando
+            faltam outros passos (contactos, AT, IBAN, morada). */}
+        {pending && (
           <Card
             className="flex-row items-center mt-3"
             style={{ borderColor: 'rgba(233,162,59,0.5)' }}
           >
             <Feather name="alert-triangle" size={20} color={Colors.warning} />
             <CustomText color="secondary" size="small" classes="flex-1 ml-3" numberOfLines={3}>
-              {t('onboarding_success.missing_docs', { count: missingDocs })}
+              {missingDocs > 0
+                ? t('onboarding_success.missing_docs', { count: missingDocs })
+                : t('onboarding_success.missing_generic')}
             </CustomText>
           </Card>
         )}

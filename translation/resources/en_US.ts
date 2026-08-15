@@ -1108,6 +1108,9 @@ export default {
   "onboarding_success": {
     "title": "You're all set!",
     "subtitle": "Thanks. The ball is in our court now.",
+    "title_pending": "You're almost there!",
+    "subtitle_pending": "We saved your progress. A few steps are left before you can receive requests.",
+    "missing_generic": "A few steps are still missing. Finish them from the home screen to get approved.",
     "steps": {
         "review": {
             "title": "Piquet reviews your account",

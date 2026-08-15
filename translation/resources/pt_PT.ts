@@ -1108,6 +1108,9 @@ export default {
     "onboarding_success": {
         "title": "Registo concluído!",
         "subtitle": "Obrigado. A partir de agora, a bola está do nosso lado.",
+        "title_pending": "Estás quase!",
+        "subtitle_pending": "Guardámos o teu progresso. Faltam alguns passos para começares a receber pedidos.",
+        "missing_generic": "Ainda faltam alguns passos. Completa-os no início para ficares aprovado.",
         "steps": {
             "review": {
                 "title": "A Piquet analisa a tua conta",
