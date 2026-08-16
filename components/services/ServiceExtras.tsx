@@ -3,7 +3,8 @@
  * Só entram no valor a receber depois de o cliente aprovar.
  */
 import React, { useEffect, useState } from 'react';
-import { View, Modal, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Modal, TextInput, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView, Platform, Pressable } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons, Feather } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { CustomText } from '@/components/CustomText';
@@ -26,6 +27,45 @@ interface Extra {
 const PRESET_MINUTES = [15, 30, 45, 60];
 
 export type ExtrasSheet = 'time' | 'part' | null;
+
+/**
+ * Casca comum das folhas de extras: pega de arrasto, fecho ao tocar fora,
+ * respeito pela área segura e recuo com o teclado (sem isto, o campo do valor
+ * ficava tapado ao escrever no iPhone).
+ */
+const Sheet = ({
+  visible,
+  onClose,
+  children,
+}: {
+  visible: boolean;
+  onClose: () => void;
+  children: React.ReactNode;
+}) => {
+  const insets = useSafeAreaInsets();
+  return (
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        className="flex-1 justify-end"
+        style={{ backgroundColor: 'rgba(0,0,0,0.7)' }}
+      >
+        {/* Tocar fora fecha — convenção de bottom sheet. */}
+        <Pressable className="flex-1" onPress={onClose} />
+        <View
+          className="rounded-t-3xl px-5 pt-3"
+          style={{ backgroundColor: Colors.card, paddingBottom: Math.max(insets.bottom, 16) }}
+        >
+          <View
+            className="self-center rounded-full mb-4"
+            style={{ width: 40, height: 4, backgroundColor: Colors.line }}
+          />
+          {children}
+        </View>
+      </KeyboardAvoidingView>
+    </Modal>
+  );
+};
 
 /**
  * Lista dos extras do serviço.
@@ -195,78 +235,98 @@ const ServiceExtras = ({
         </View>
       )}
 
-      {/* Sheet: tempo extra */}
-      <Modal visible={timeSheet} transparent animationType="slide" onRequestClose={() => setTimeSheet(false)}>
-        <View className="flex-1 justify-end" style={{ backgroundColor: 'rgba(0,0,0,0.7)' }}>
-          <View className="rounded-t-3xl p-5" style={{ backgroundColor: Colors.card }}>
-            <CustomText size="large" color="secondary" boldness="bolder">
-              {t('service_extras.add_time_title')}
-            </CustomText>
-            <CustomText size="small" color="muted" classes="mt-1 mb-4">
-              {t('service_extras.add_time_hint')}
-            </CustomText>
-            {PRESET_MINUTES.map((m) => (
-              <CustomTouchableOpacity
-                key={m}
-                type="secondary_outline"
-                size="large"
-                text={m === 60 ? '+ 1 h' : `+ ${m} min`}
-                textColor="secondary"
-                textBoldness="semiBold"
-                onPress={() => addTime(m)}
-                disabled={busy}
-                classes="mb-2"
-              />
-            ))}
-            <CustomTouchableOpacity
-              type="transparent" size="large" text={t('general.cancel')}
-              textColor="muted" textBoldness="regular"
-              onPress={() => setTimeSheet(false)} classes="mt-1"
-            />
-          </View>
+      {/* Sheet: tempo extra.
+          Os presets passaram de quatro botões empilhados a uma grelha 2x2 —
+          ocupavam meio ecrã e liam-se como uma lista de opções longa, quando
+          são só quatro escolhas rápidas. */}
+      <Sheet visible={timeSheet} onClose={() => setTimeSheet(false)}>
+        <CustomText size="large" color="secondary" boldness="bolder">
+          {t('service_extras.add_time_title')}
+        </CustomText>
+        <CustomText size="small" color="gray_light" classes="mt-1 mb-5" numberOfLines={3}>
+          {t('service_extras.add_time_hint')}
+        </CustomText>
+
+        <View className="flex-row flex-wrap" style={{ gap: 10 }}>
+          {PRESET_MINUTES.map((m) => (
+            <TouchableOpacity
+              key={m}
+              onPress={() => addTime(m)}
+              disabled={busy}
+              accessibilityRole="button"
+              className="items-center justify-center rounded-2xl border"
+              style={{
+                width: '47.5%',
+                paddingVertical: 20,
+                // Âmbar como nos botões de extras do rodapé: sobre o fundo do
+                // sheet, `card_high` (#26262B) era quase indistinguível de
+                // `card` (#1A1A1D) e os botões não se liam como botões.
+                borderColor: 'rgba(250,187,91,0.55)',
+                backgroundColor: 'rgba(250,187,91,0.18)',
+                opacity: busy ? 0.6 : 1,
+              }}
+            >
+              <CustomText size="large" color="brand" boldness="bolder">
+                {m === 60 ? '1 h' : `${m} min`}
+              </CustomText>
+            </TouchableOpacity>
+          ))}
         </View>
-      </Modal>
+
+        <CustomTouchableOpacity
+          type="danger_outline" size="large" text={t('general.cancel')}
+          textColor="error" textBoldness="semiBold"
+          onPress={() => setTimeSheet(false)} classes="mt-2"
+        />
+      </Sheet>
 
       {/* Sheet: peça/material */}
-      <Modal visible={partSheet} transparent animationType="slide" onRequestClose={() => setPartSheet(false)}>
-        <View className="flex-1 justify-end" style={{ backgroundColor: 'rgba(0,0,0,0.7)' }}>
-          <View className="rounded-t-3xl p-5" style={{ backgroundColor: Colors.card }}>
-            <CustomText size="large" color="secondary" boldness="bolder">
-              {t('service_extras.add_part_title')}
-            </CustomText>
-            <CustomText size="small" color="muted" classes="mt-1 mb-4">
-              {t('service_extras.add_part_hint')}
-            </CustomText>
-            <TextInput
-              value={desc}
-              onChangeText={setDesc}
-              placeholder={t('service_extras.part_placeholder')}
-              placeholderTextColor={Colors.muted}
-              className="rounded-xl border px-4 mb-3"
-              style={{ borderColor: Colors.line, color: Colors.secondary, height: 48, fontFamily: 'Poppins_500Medium' }}
-            />
-            <TextInput
-              value={price}
-              onChangeText={setPrice}
-              keyboardType="decimal-pad"
-              placeholder={t('service_extras.value_placeholder')}
-              placeholderTextColor={Colors.muted}
-              className="rounded-xl border px-4"
-              style={{ borderColor: Colors.line, color: Colors.secondary, height: 48, fontFamily: 'Poppins_500Medium' }}
-            />
-            <CustomTouchableOpacity
-              type="support_primary" size="large" text={t('service_extras.ask_client')}
-              textColor="on_brand" textBoldness="bold"
-              onPress={addPart} disabled={busy || !desc.trim() || !price.trim()} classes="mt-4"
-            />
-            <CustomTouchableOpacity
-              type="transparent" size="large" text={t('general.cancel')}
-              textColor="muted" textBoldness="regular"
-              onPress={() => setPartSheet(false)} classes="mt-1"
-            />
-          </View>
-        </View>
-      </Modal>
+      <Sheet visible={partSheet} onClose={() => setPartSheet(false)}>
+        <CustomText size="large" color="secondary" boldness="bolder">
+          {t('service_extras.add_part_title')}
+        </CustomText>
+        <CustomText size="small" color="gray_light" classes="mt-1 mb-5" numberOfLines={3}>
+          {t('service_extras.add_part_hint')}
+        </CustomText>
+
+        {/* Campos etiquetados: com o placeholder sozinho, mal se escreve
+            deixa de haver pista do que aquele campo é. */}
+        <CustomText size="small" color="secondary" boldness="bold" classes="mb-2">
+          {t('service_extras.part_label')}
+        </CustomText>
+        <TextInput
+          value={desc}
+          onChangeText={setDesc}
+          placeholder={t('service_extras.part_placeholder')}
+          placeholderTextColor={Colors.muted}
+          className="rounded-xl border px-4 mb-4"
+          style={{ borderColor: Colors.gray_strong, backgroundColor: Colors.card_high, color: Colors.secondary, height: 52, fontFamily: 'Poppins_500Medium' }}
+        />
+
+        <CustomText size="small" color="secondary" boldness="bold" classes="mb-2">
+          {t('service_extras.value_label')}
+        </CustomText>
+        <TextInput
+          value={price}
+          onChangeText={setPrice}
+          keyboardType="decimal-pad"
+          placeholder={t('service_extras.value_placeholder')}
+          placeholderTextColor={Colors.muted}
+          className="rounded-xl border px-4"
+          style={{ borderColor: Colors.gray_strong, backgroundColor: Colors.card_high, color: Colors.secondary, height: 52, fontFamily: 'Poppins_500Medium' }}
+        />
+
+        <CustomTouchableOpacity
+          type="support_primary" size="large" text={t('service_extras.ask_client')}
+          textColor="on_brand" textBoldness="bold"
+          onPress={addPart} disabled={busy || !desc.trim() || !price.trim()} classes="mt-5"
+        />
+        <CustomTouchableOpacity
+          type="danger_outline" size="large" text={t('general.cancel')}
+          textColor="error" textBoldness="semiBold"
+          onPress={() => setPartSheet(false)} classes="mt-1"
+        />
+      </Sheet>
     </View>
   );
 };
