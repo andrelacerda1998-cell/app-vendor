@@ -1562,6 +1562,7 @@ export default {
     "today_count_other": "{{count}} services today",
     "next_at": "Next at {{time}}",
     "next_service": "Next service",
+    "day_total": "Amounts to receive",
     "pending_requests_card_one": "You have {{count}} request awaiting a reply.",
     "pending_requests_card_other": "You have {{count}} requests awaiting a reply.",
     "requests_list": "Requests list",

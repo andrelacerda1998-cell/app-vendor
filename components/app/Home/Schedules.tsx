@@ -95,10 +95,17 @@ const Schedules = () => {
           </CustomText>
         ) : null}
       </View>
+      {/* Rótulo por cima do montante: sem ele o número ficava sem contexto —
+          podia ler-se como o preço de um serviço e não como o total do dia. */}
       {value ? (
-        <CustomText color="brand" boldness="bolder" size="large" classes="ml-3">
-          {value}
-        </CustomText>
+        <View className="items-end ml-3">
+          <CustomText color="muted" size="extraSmall">
+            {t("schedules.day_total")}
+          </CustomText>
+          <CustomText color="brand" boldness="bolder" size="large" classes="mt-0.5">
+            {value}
+          </CustomText>
+        </View>
       ) : null}
     </TouchOpacity>
   );
