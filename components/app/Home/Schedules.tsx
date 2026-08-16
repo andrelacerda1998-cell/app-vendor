@@ -6,11 +6,11 @@ import TouchOpacity from "@/components/TouchOpacity";
 import { Colors } from "@/constants/Colors";
 import CalendarIcon from "@/assets/icons/calendar";
 import AgendaFree from "@/assets/icons/agenda-free";
+import { Feather } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import { SectionHeader } from "@/components/ui";
 import { useSchedule } from "@/contexts/ScheduleContext";
 import { renderMoney } from "@/utils/money";
-import { formatStreetLine } from "@/utils/serviceDetails";
 
 export const schedulesSection = {
   all: "all",
@@ -29,13 +29,12 @@ const Schedules = () => {
   const goToSchedules = () => router.navigate('/(app)/(tabs)/wallet');
 
   const price = next ? renderMoney(next.amount_for_vendor ?? null) : false;
-  // Mesma regra do cartão da Agenda: a RUA, não a cidade. `customer.address`
-  // é "Cidade, Estado" no payload e não diz nada a quem já lá trabalha.
+  // Só o "quando" (dia + hora) — o essencial de relance. A rua e o resto vivem
+  // no ecrã do serviço, que abre ao tocar; amontoá-los aqui só apertava o cartão.
   const metaLine = next
     ? [
         next.schedule?.date_label ? t(`schedules.date_label.${next.schedule.date_label}`) : null,
         next.schedule?.scheduled_time?.start?.slice(0, 5),
-        formatStreetLine(next.address_details, next.customer?.address),
       ].filter(Boolean).join(" · ")
     : "";
 
@@ -64,44 +63,35 @@ const Schedules = () => {
             </CustomText>
           </TouchOpacity>
         ) : (
-          // Próximo serviço
+          // Próximo serviço — toca para abrir ESSE serviço (não a agenda toda).
           <TouchOpacity
-            onPress={goToSchedules}
+            onPress={() => router.push(`/(app)/(services)/(open)/status/${next.service_id}`)}
             bgColor="card"
             rounded="2xl"
             border
             borderColor="line"
-            otherClasses="p-4"
+            otherClasses="flex-row items-center p-4"
           >
-            {next.schedule?.date_label === "today" && (
-              <View className="flex-row justify-end mb-2">
-                <View className="rounded-full px-2 py-[3px] bg-brand_soft">
-                  <CustomText color="brand" size="extraSmall" boldness="bolder">
-                    {t(`schedules.date_label.${next.schedule.date_label}`)}
-                  </CustomText>
-                </View>
-              </View>
-            )}
-            <View className="flex-row items-center">
-              <View className="w-11 h-11 rounded-xl items-center justify-center mr-3 bg-brand_soft">
-                <CalendarIcon color={Colors.brand} />
-              </View>
-              <View className="flex-1">
-                <CustomText color="secondary" boldness="semiBold" size="medium" numberOfLines={1}>
-                  {next.service_type?.name ?? t("schedules.agenda")}
-                </CustomText>
-                {metaLine ? (
-                  <CustomText color="muted" size="small" numberOfLines={1} classes="mt-0.5">
-                    {metaLine}
-                  </CustomText>
-                ) : null}
-              </View>
-              {price ? (
-                <CustomText color="secondary" boldness="bolder" size="medium" classes="ml-2">
-                  {price}
+            <View className="w-11 h-11 rounded-xl items-center justify-center mr-3 bg-brand_soft">
+              <CalendarIcon color={Colors.brand} />
+            </View>
+            <View className="flex-1">
+              <CustomText color="secondary" boldness="semiBold" size="medium" numberOfLines={1}>
+                {next.service_type?.name ?? t("schedules.agenda")}
+              </CustomText>
+              {/* Meta = dia + hora (o "quando"). */}
+              {metaLine ? (
+                <CustomText color="muted" size="small" numberOfLines={1} classes="mt-0.5">
+                  {metaLine}
                 </CustomText>
               ) : null}
             </View>
+            {price ? (
+              <CustomText color="brand" boldness="bolder" size="medium" classes="ml-2">
+                {price}
+              </CustomText>
+            ) : null}
+            <Feather name="chevron-right" size={20} color={Colors.muted} style={{ marginLeft: 6 }} />
           </TouchOpacity>
         )}
       </View>

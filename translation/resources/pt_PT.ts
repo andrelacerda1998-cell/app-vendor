@@ -1501,8 +1501,8 @@ export default {
         "repeat_title": "Alterar a repetição da agenda",
         "enable_repeat_subtitle": "Ao ativares a repetição, a disponibilidade desta semana passa a repetir-se em todas as semanas seguintes e substitui os horários que tenhas adicionado à mão. Queres continuar?",
         "disable_repeat_subtitle": "Ao desativares a repetição, todos os horários ainda sem serviço marcado, a partir da próxima semana, são apagados. Queres continuar?",
-        "auto_accept_title": "Alterar a Auto-Aceitação",
-        "auto_accept_subtitle": "Com a Auto-Aceitação ativa, os pedidos agendados que caiam nos teus horários livres são aceites automaticamente por ti. Queres continuar?",
+        "auto_accept_title": "Ativar a Auto-Aceitação?",
+        "auto_accept_subtitle": "Os pedidos agendados nos teus horários livres passam a ser aceites automaticamente.",
       },
       "days": {
         "Mo": "Segunda-feira",

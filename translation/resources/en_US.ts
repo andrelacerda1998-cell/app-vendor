@@ -1501,8 +1501,8 @@ export default {
       "repeat_title": "Change schedule repeat",
       "enable_repeat_subtitle": "Turning repeat on makes this week's availability repeat every following week, replacing any hours you added manually. Do you want to continue?",
       "disable_repeat_subtitle": "Turning repeat off deletes every time slot with no service booked, from next week onwards. Do you want to continue?",
-      "auto_accept_title": "Change Auto-Acceptance",
-      "auto_accept_subtitle": "With Auto-Acceptance on, scheduled requests that fall in your free hours are accepted automatically on your behalf. Do you want to continue?"
+      "auto_accept_title": "Turn on Auto-Acceptance?",
+      "auto_accept_subtitle": "Scheduled requests in your free hours will be accepted automatically."
     },
     "days": {
       "Mo": "Monday",
