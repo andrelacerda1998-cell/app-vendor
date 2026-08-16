@@ -1299,6 +1299,11 @@ export default {
     "summary": "{{label}} · {{amount}} to earn",
     "next_stop": "Next stop at {{time}}"
   },
+  "departure_reminder": {
+    "title": "Time to head out 🚗",
+    "body": "Leave now to arrive on time: {{service}} at {{time}}.",
+    "fallback_service": "your service"
+  },
   "auto_accept_lost": {
     "week": "This week you missed {{amount}} in requests you didn't reply to."
   },
@@ -1542,6 +1547,11 @@ export default {
     "remaining_time": "Remaining time",
     "empty": "Free agenda",
     "section_title": "Your agenda",
+    "today_count_one": "{{count}} service today",
+    "today_count_other": "{{count}} services today",
+    "next_at": "Next at {{time}}",
+    "next_service": "Next service",
+    "to_receive": "to receive",
     "pending_requests_card_one": "You have {{count}} request awaiting a reply.",
     "pending_requests_card_other": "You have {{count}} requests awaiting a reply.",
     "requests_list": "Requests list",

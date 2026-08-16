@@ -31,9 +31,9 @@ import WeekStats from "@/components/app/Home/WeekStats";
 import PendingRequestsCard from "@/components/app/Home/PendingRequestsCard";
 import HomeShortcuts from "@/components/app/Home/HomeShortcuts";
 import AutoAcceptCard from "@/components/app/Home/AutoAcceptCard";
-import TodaySummary from "@/components/app/Home/TodaySummary";
 import NotificationsDisabledBanner from "@/components/NotificationsDisabledBanner";
 import DocumentExpiryBanner from "@/components/DocumentExpiryBanner";
+import { useDepartureReminders } from "@/hooks/useDepartureReminders";
 
 const Home = () => {
   const insets = useSafeAreaInsets();
@@ -53,6 +53,9 @@ const Home = () => {
   const [disableStatusVendor, setDisableStatusVendor] = useState(false);
   const [geoLoading, setGeoLoading] = useState(false);
   const { startTracking, stopTracking, isTracking, locationPermission, permissionsChecked, requestPermissions } = useLocation();
+
+  // Agenda o aviso "está na hora de sair" (30 min antes de cada serviço).
+  useDepartureReminders();
 
   const handleRequestGeolocationPermission = async () => {
     setGeoLoading(true);
@@ -315,9 +318,6 @@ const Home = () => {
         <NotificationsDisabledBanner />
 
         {openService && <OpenService />}
-
-        {/* Resumo de hoje — some por completo quando não há serviços agendados. */}
-        <TodaySummary />
 
         <View className="px-5">
           <WeekStats />

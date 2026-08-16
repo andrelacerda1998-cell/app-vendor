@@ -1299,6 +1299,11 @@ export default {
         "summary": "{{label}} · {{amount}} a ganhar",
         "next_stop": "Próxima paragem às {{time}}"
     },
+    "departure_reminder": {
+        "title": "Está na hora de sair 🚗",
+        "body": "Sai agora para chegares a horas: {{service}} às {{time}}.",
+        "fallback_service": "o teu serviço"
+    },
     "auto_accept_lost": {
         "week": "Esta semana passaram-te ao lado {{amount}} em pedidos a que não respondeste."
     },
@@ -1542,6 +1547,11 @@ export default {
       "remaining_time": "Tempo restante",
       "empty": "Agenda livre",
       "section_title": "A tua agenda",
+      "today_count_one": "{{count}} serviço hoje",
+      "today_count_other": "{{count}} serviços hoje",
+      "next_at": "Próximo às {{time}}",
+      "next_service": "Próximo serviço",
+      "to_receive": "a receber",
       "pending_requests_card_one": "Tens {{count}} pedido à espera de resposta.",
       "pending_requests_card_other": "Tens {{count}} pedidos à espera de resposta.",
       "requests_list": "Lista de pedidos",
