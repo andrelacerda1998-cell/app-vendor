@@ -344,7 +344,11 @@ const Status = () => {
     { label: t("services.service.status.steps.completed"), rank: 4 },
   ];
 
-  const earn = renderMoney(svc?.amount ?? svc?.amount_for_vendor ?? null);
+  // "Vais receber" é o que FICA para o técnico (amount_for_vendor, já sem a
+  // comissão da Piquet) — não o amount, que é o total pago pelo cliente. Usar
+  // amount inflacionava o valor; sem fallback para amount para não voltar a
+  // mostrar um número maior do que o técnico realmente recebe.
+  const earn = renderMoney(svc?.amount_for_vendor ?? null);
   const duration = svc?.service_type?.time;
   const category = svc?.service_type?.operation_area?.name;
 

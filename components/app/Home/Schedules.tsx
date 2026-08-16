@@ -75,22 +75,25 @@ const Schedules = () => {
             <View className="w-11 h-11 rounded-xl items-center justify-center mr-3 bg-brand_soft">
               <CalendarIcon color={Colors.brand} />
             </View>
+            {/* Nome ocupa a linha toda (o preço saiu para baixo, senão apertava
+                e o nome cortava). Por baixo: quando à esquerda, valor à direita. */}
             <View className="flex-1">
               <CustomText color="secondary" boldness="semiBold" size="medium" numberOfLines={1}>
                 {next.service_type?.name ?? t("schedules.agenda")}
               </CustomText>
-              {/* Meta = dia + hora (o "quando"). */}
-              {metaLine ? (
-                <CustomText color="muted" size="small" numberOfLines={1} classes="mt-0.5">
-                  {metaLine}
-                </CustomText>
-              ) : null}
+              <View className="flex-row items-center justify-between mt-0.5">
+                {metaLine ? (
+                  <CustomText color="muted" size="small" numberOfLines={1} classes="flex-1">
+                    {metaLine}
+                  </CustomText>
+                ) : <View className="flex-1" />}
+                {price ? (
+                  <CustomText color="brand" boldness="bolder" size="medium" classes="ml-2">
+                    {price}
+                  </CustomText>
+                ) : null}
+              </View>
             </View>
-            {price ? (
-              <CustomText color="brand" boldness="bolder" size="medium" classes="ml-2">
-                {price}
-              </CustomText>
-            ) : null}
             <Feather name="chevron-right" size={20} color={Colors.muted} style={{ marginLeft: 6 }} />
           </TouchOpacity>
         )}
