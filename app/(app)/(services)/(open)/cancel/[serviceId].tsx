@@ -1,14 +1,12 @@
 import { Colors } from '@/constants/Colors'
 import { MaterialIcons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router'
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView, View } from 'react-native';
 import BackHeader from '@/components/app/BackHeader'
-import { Picker, PickerIOS } from '@react-native-picker/picker'
 import { useApi } from '@/contexts/ApiContext'
 import { API_ROUTES } from '@/constants/ApiRoutes'
-import { useSession } from '@/contexts/SessionContext'
 import useEcho from '@/hooks/echo'
 import CustomTouchableOpacity from "@/components/CustomTouchableOpacity"
 import { CustomText } from "@/components/CustomText"
@@ -17,19 +15,9 @@ import { useDialog } from "@/contexts/DialogContext"
 import { useTranslation } from "react-i18next"
 import { renderMoney } from "@/utils/money"
 
-interface VendorsInterface {
-  distance: number,
-  id: number,
-  name: string,
-  // nif: string,
-  rate: number,
-  rating: number
-}
-
 const CancelService = () => {
   const { t } = useTranslation();
   const { api } = useApi();
-  const { vendorData } = useSession();
   const echo = useEcho();
   const { openService, setOpenService } = useService();
   const { openDialog } = useDialog();
@@ -37,53 +25,90 @@ const CancelService = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { serviceId } = useLocalSearchParams();
 
-  const handleCancelService = () => {
-    // Reforça a penalização no ponto de não-retorno.
-    const penalty = renderMoney(
-      Math.round((openService?.amount_for_vendor ?? openService?.amount ?? 0) * 0.1)
-    );
-    openDialog({
-      title: t('services.cancel.title'),
-      subtitle: t('services.cancel.confirm_penalty', { amount: penalty }),
-      successButtonText: t('services.cancel.confirm'),
-      cancelButtonText: t('services.cancel.cancel'),
-      onSuccess() {
-        setIsLoading(true);
-        api.post(API_ROUTES.POST_CANCEL_SERVICE(serviceId as string))
-          .then(() => {
-            openDialog({
-              title: t('services.wait_accept.canceled.title'),
-              subtitle: t('services.wait_accept.canceled.subtitle'),
-              closeAfterMSeconds: 3000,
-              closeOnClickOutside: false,
-              onClose: () => {
-                setOpenService(null);
-                return router.navigate('/(app)/(tabs)/home');
-              }
-            })
-          })
-          .catch(() => {
-            openDialog({
-              title: t('services.cancel.error.title'),
-              subtitle: t('services.cancel.error.subtitle'),
-              closeAfterMSeconds: 3000,
-              closeOnClickOutside: true,
-            });
-          })
-          .finally(() => {
-            setIsLoading(false);
-          });
-      },
-    })
-  }
+  // Detalhe completo do serviço: é aqui que vêm o agendamento (para saber a
+  // antecedência) e o `amount_for_vendor`. O `openService` do contexto pode ser
+  // o payload magro, sem estes campos.
+  const [details, setDetails] = useState<any>(null);
 
-  // Regra: cancelar com menos de 24h de antecedência tem penalização de 10% do
-  // valor do serviço. O modelo do serviço aberto ainda não expõe a hora
-  // agendada no cliente, por isso mostramos sempre a regra e o valor (a
-  // aplicação do desconto é decidida no backend consoante a antecedência).
+  useEffect(() => {
+    if (!serviceId) return;
+    let cancelled = false;
+    api.get(API_ROUTES.GET_SERVICE_DETAILS(String(serviceId)))
+      .then(({ data }) => { if (!cancelled) setDetails(data?.data?.service ?? null); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [serviceId]);
+
+  const svc: any = details ?? openService;
+
+  /**
+   * Regra: cancelar com menos de 24h de antecedência tem penalização de 10% do
+   * valor do serviço (quem a aplica é o backend).
+   *
+   * `null` = não sabemos a antecedência (serviço sem agendamento ou detalhe
+   * ainda por carregar). Nesse caso enunciamos a regra na condicional, em vez
+   * de afirmar que a penalização se aplica.
+   */
   const LATE_CANCEL_RATE = 0.1;
-  const amountForVendor = openService?.amount_for_vendor ?? openService?.amount ?? 0;
-  const penaltyCents = Math.round(amountForVendor * LATE_CANCEL_RATE);
+  const LATE_WINDOW_MS = 24 * 60 * 60 * 1000;
+
+  const isLate: boolean | null = useMemo(() => {
+    const day = String(svc?.schedule?.scheduled_day ?? '').split('T')[0];
+    const time = String(svc?.schedule?.scheduled_time?.start ?? '').slice(0, 5);
+    const [y, m, d] = day.split('-').map(Number);
+    if (!y || !m || !d) return null;
+    const [hh, mm] = time.split(':').map(Number);
+    const start = new Date(y, m - 1, d, Number.isFinite(hh) ? hh : 0, Number.isFinite(mm) ? mm : 0);
+    if (isNaN(start.getTime())) return null;
+    return start.getTime() - Date.now() < LATE_WINDOW_MS;
+  }, [svc]);
+
+  // SÓ a parte do técnico. Sem recurso ao `amount` (total pago pelo cliente):
+  // cair nele inflacionava a penalização mostrada em ~33%.
+  const amountForVendor: number | null =
+    typeof svc?.amount_for_vendor === 'number' ? svc.amount_for_vendor : null;
+  const penaltyCents = amountForVendor === null ? null : Math.round(amountForVendor * LATE_CANCEL_RATE);
+  const penaltyLabel = penaltyCents === null ? null : renderMoney(penaltyCents);
+
+  const penaltyBody = () => {
+    if (!penaltyLabel) return t('services.cancel.penalty.body_no_amount');
+    if (isLate) return t('services.cancel.penalty.body_now', { amount: penaltyLabel });
+    return t('services.cancel.penalty.body', { amount: penaltyLabel });
+  };
+
+  /**
+   * Executa o cancelamento. Já não abre um diálogo a repetir a penalização: o
+   * ecrã inteiro é a confirmação e o botão diz "Confirmar cancelamento" —
+   * perguntar outra vez a mesma coisa treinava o técnico a carregar sem ler.
+   */
+  const handleCancelService = () => {
+    if (isLoading) return;
+    setIsLoading(true);
+    api.post(API_ROUTES.POST_CANCEL_SERVICE(serviceId as string))
+      .then(() => {
+        openDialog({
+          title: t('services.wait_accept.canceled.title'),
+          subtitle: t('services.wait_accept.canceled.subtitle'),
+          closeAfterMSeconds: 3000,
+          closeOnClickOutside: false,
+          onClose: () => {
+            setOpenService(null);
+            return router.navigate('/(app)/(tabs)/home');
+          }
+        })
+      })
+      .catch(() => {
+        openDialog({
+          title: t('services.cancel.error.title'),
+          subtitle: t('services.cancel.error.subtitle'),
+          closeAfterMSeconds: 3000,
+          closeOnClickOutside: true,
+        });
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-strongest">
@@ -99,20 +124,58 @@ const CancelService = () => {
         otherClasses="p-5"
       />
 
-      <View className="bg-primary p-5 flex-1 rounded-t-3xl space-y-4">
-        <View className="flex-1 justify-center items-center">
-          <ScrollView className="w-full flex-grow-0">
-            <View className="items-center">
-              <MaterialIcons name="cancel" size={90} color={Colors.secondary} />
-            </View>
-
-            <CustomText color="secondary" boldness="medium" size="large" numberOfLines={3} classes="text-center mt-4">
-              {t('services.cancel.you_are_about_to')}
-            </CustomText>
-
-            {/* Penalização por cancelamento tardio (< 24h): 10% do valor. */}
+      <View className="bg-primary p-5 flex-1 rounded-t-3xl">
+        {/* Conteúdo centrado no espaço disponível: o bloco é curto e, encostado
+            ao topo, deixava um vazio grande até aos botões. Centrado, a
+            respiração fica repartida em cima e em baixo. */}
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingBottom: 16 }}
+        >
+          {/* Ícone menor e vermelho, dentro de um círculo suave: comunica
+              "atenção, é destrutivo" sem o bloco branco de 90px a dominar. */}
+          <View className="items-center">
             <View
-              className="mt-5 rounded-2xl p-4"
+              className="items-center justify-center rounded-full"
+              style={{ width: 72, height: 72, backgroundColor: 'rgba(237, 73, 73, 0.14)' }}
+            >
+              <MaterialIcons name="close" size={36} color={Colors.error} />
+            </View>
+          </View>
+
+          <CustomText color="secondary" boldness="bolder" size="title" classes="text-center mt-4">
+            {t('services.cancel.heading')}
+          </CustomText>
+          <CustomText color="muted" size="medium" numberOfLines={2} classes="text-center mt-1.5">
+            {t('services.cancel.already_accepted')}
+          </CustomText>
+
+          {/* O alarme vermelho só aparece quando a penalização é mesmo possível.
+              Faltando mais de 24h não há penalização nenhuma — mostrar o aviso
+              a toda a hora assustava sem motivo e gastava a credibilidade do
+              alerta para quando ele conta. */}
+          {isLate === false ? (
+            <View
+              className="mt-6 rounded-2xl p-4"
+              style={{
+                backgroundColor: 'rgba(35, 230, 158, 0.10)',
+                borderWidth: 1,
+                borderColor: Colors.success,
+              }}
+            >
+              <View className="flex-row items-center">
+                <MaterialIcons name="check-circle" size={20} color={Colors.success} />
+                <CustomText color="secondary" boldness="semiBold" numberOfLines={2} classes="ml-2 flex-1">
+                  {t('services.cancel.no_penalty.title')}
+                </CustomText>
+              </View>
+              <CustomText color="secondary" boldness="regular" numberOfLines={3} classes="mt-1.5">
+                {t('services.cancel.no_penalty.body')}
+              </CustomText>
+            </View>
+          ) : (
+            <View
+              className="mt-6 rounded-2xl p-4"
               style={{
                 backgroundColor: 'rgba(237, 73, 73, 0.14)',
                 borderWidth: 1,
@@ -121,44 +184,39 @@ const CancelService = () => {
             >
               <View className="flex-row items-center">
                 <MaterialIcons name="warning" size={20} color={Colors.error} />
-                <CustomText color="secondary" boldness="semiBold" numberOfLines={1} classes="ml-2">
+                <CustomText color="secondary" boldness="semiBold" numberOfLines={2} classes="ml-2 flex-1">
                   {t('services.cancel.penalty.title')}
                 </CustomText>
               </View>
-              <CustomText color="secondary" boldness="regular" numberOfLines={3} classes="mt-1">
-                {t('services.cancel.penalty.body', { amount: renderMoney(penaltyCents) })}
+              <CustomText color="secondary" boldness="regular" numberOfLines={4} classes="mt-1.5">
+                {penaltyBody()}
               </CustomText>
             </View>
+          )}
+        </ScrollView>
 
-          </ScrollView>
-        </View>
-        
-        <View>
-          <View>
-            <CustomTouchableOpacity
-              size="large"
-              type="secondary"
-              textColor="primary"
-              textBoldness="semiBold"
-              text={t('services.cancel.confirm_cancellation')}
-              onPress={handleCancelService}
-              disabled={isLoading}
-            />
-          </View>
-          {/* <CustomTouchableOpacity
+        {/* A ação segura ("Manter serviço") é a que fica em destaque; cancelar
+            é destrutivo e com custo, por isso vive em texto vermelho e não num
+            botão cheio a convidar ao toque. */}
+        <View style={{ gap: 10 }}>
+          <CustomTouchableOpacity
             size="large"
-            type="primary_outline"
-            textColor="support_secondary"
+            type="secondary"
+            textColor="primary"
             textBoldness="semiBold"
-            text="Help"
+            text={t('services.cancel.keep_service')}
+            onPress={() => router.back()}
             disabled={isLoading}
-            // onPress={openService}
-            Icon={() => (
-              <View className="w-6 h-6">
-                <ChatIcon color={Colors.primary} />
-              </View>
-            )}
-          /> */}
+          />
+          <CustomTouchableOpacity
+            size="large"
+            type="danger_outline"
+            textColor="error"
+            textBoldness="semiBold"
+            text={isLoading ? t('services.cancel.canceling') : t('services.cancel.cancel_service')}
+            onPress={handleCancelService}
+            disabled={isLoading}
+          />
         </View>
       </View>
 

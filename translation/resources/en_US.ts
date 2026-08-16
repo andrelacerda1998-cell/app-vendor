@@ -272,14 +272,25 @@ export default {
     "cancel": {
       "title": "Cancel service",
       "subtitle": "Do you really want to cancel this service?",
-      "confirm_penalty": "If there are less than 24 hours left, 10% of the value is deducted: {{amount}}. Do you really want to cancel?",
+      "confirm_penalty": "Less than 24 hours before the start, a {{amount}} penalty applies. Do you want to continue?",
       "confirm": "Yes",
       "cancel": "No",
       "you_are_about_to": "You've already accepted this service. Do you really want to cancel it?",
+      "heading": "Cancel this service?",
+      "already_accepted": "You've accepted this service and the client has been notified.",
+      "keep_service": "Keep the service",
+      "cancel_service": "Confirm cancellation",
       "confirm_cancellation": "Confirm",
+      "canceling": "Cancelling...",
+      "no_penalty": {
+        "title": "No penalty",
+        "body": "There are more than 24 hours until the service starts."
+      },
       "penalty": {
-        "title": "Cancelling with less than 24 hours",
-        "body": "If you cancel less than 24 hours in advance, 10% of the service value is deducted: {{amount}}."
+        "title": "Late cancellation penalty",
+        "body": "Less than 24 hours before the start, a penalty of 10% of the service value applies, in this case {{amount}}.",
+        "body_now": "There are less than 24 hours until the start, so a 10% penalty of the service value applies: {{amount}}.",
+        "body_no_amount": "Less than 24 hours before the start, a penalty of 10% of the service value applies."
       },
       "error": {
         "title": "Couldn't cancel the service",
@@ -361,7 +372,7 @@ export default {
       "pending": "Request waiting for your reply",
       "status": {
         "header": "Job",
-        "estimated_duration": "Estimated duration: {{value}}",
+        "estimated_duration": "Estimated time: {{value}}",
         "steps": {
           "accepted": "Accepted",
           "on_the_way": "On the way",
@@ -393,7 +404,7 @@ export default {
           "value": "{{value}} minutes"
         },
         "distance": "Distance",
-        "value_to_receive": "You'll get",
+        "value_to_receive": "Amount to receive",
         "confirm_it_was_finished": "Confirm it's complete",
         "finish": "Finish",
         "chat": "Chat"
@@ -421,7 +432,7 @@ export default {
         "time_accounting": "Working time",
         "distance": "Distance",
         "estimated_value": "Estimated value",
-        "value_to_receive": "You'll get",
+        "value_to_receive": "Amount to receive",
         "location": "Location",
         "refuse": "Decline",
         "accept": "Accept",
@@ -1551,7 +1562,6 @@ export default {
     "today_count_other": "{{count}} services today",
     "next_at": "Next at {{time}}",
     "next_service": "Next service",
-    "to_receive": "to receive",
     "pending_requests_card_one": "You have {{count}} request awaiting a reply.",
     "pending_requests_card_other": "You have {{count}} requests awaiting a reply.",
     "requests_list": "Requests list",

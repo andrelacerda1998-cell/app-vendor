@@ -1,6 +1,6 @@
 import { Colors } from '@/constants/Colors';
-import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import React, { useEffect, useState } from 'react';
+import { Feather, Ionicons } from '@expo/vector-icons';
+import React, { useEffect, useMemo, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScrollView, View, TouchableOpacity } from 'react-native';
 import BackHeader from '@/components/app/BackHeader';
@@ -21,7 +21,8 @@ import { useTranslation } from "react-i18next";
 import { renderMoney } from "@/utils/money";
 import ServiceExtras, { ServiceExtrasActions, type ExtrasSheet } from "@/components/services/ServiceExtras";
 import ServicePhotos from "@/components/services/ServicePhotos";
-import { Card, HeroCard, IconTile, ErrorState, SkeletonList } from "@/components/ui";
+import { Card, ErrorState, SkeletonList } from "@/components/ui";
+import { formatEstimatedDuration } from "@/utils/serviceDetails";
 import { useNavChooser } from "@/hooks/useNavChooser";
 import { track, AnalyticsEvent } from "@/utils/analytics";
 
@@ -128,14 +129,34 @@ const Status = () => {
   const [routeService, setRouteService] = useState<any>(null);
   const [loadingRouteService, setLoadingRouteService] = useState(false);
 
-  // O serviço aberto ganha sempre ao que veio do URL: é o que os sockets e o
-  // resto da app mantêm a par. Só quando não é este serviço é que usamos a cópia.
-  const svc: any =
-    openService && String(openService.id) === String(serviceId) ? openService : routeService;
+  const liveService: any =
+    openService && String(openService.id) === String(serviceId) ? openService : null;
+
+  /**
+   * Os dois lados completam-se, por isso juntam-se em vez de um substituir o
+   * outro: `openService` é o que os sockets mantêm a par (estado, a caminho),
+   * mas vem de um payload magro — sem agendamento, morada nem valor. Escolher
+   * só um deles fazia a hora e o "Vais receber" desaparecerem assim que o
+   * socket atualizava. Só os campos preenchidos do "vivo" é que se sobrepõem,
+   * para um `null` do payload magro não apagar o detalhe já carregado.
+   */
+  const svc: any = useMemo(() => {
+    if (!liveService && !routeService) return null;
+    const merged: any = { ...(routeService ?? {}) };
+    Object.entries(liveService ?? {}).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) merged[key] = value;
+    });
+    return merged;
+  }, [liveService, routeService]);
+
   const serviceTypeId = svc?.service_type?.id;
 
+  // Vai sempre buscar o detalhe completo deste serviço (não depende de `svc`
+  // estar preenchido: o payload magro do contexto já o preenchia e impedia o
+  // pedido, deixando o ecrã sem morada, hora nem valor).
   useEffect(() => {
-    if (!serviceId || svc) return;
+    if (!serviceId) return;
+    if (routeService && String(routeService.id) === String(serviceId)) return;
     let cancelled = false;
     setLoadingRouteService(true);
     api
@@ -148,7 +169,7 @@ const Status = () => {
         if (!cancelled) setLoadingRouteService(false);
       });
     return () => { cancelled = true; };
-  }, [serviceId, svc]);
+  }, [serviceId, routeService]);
 
   const desc = (text: string) => {
     if (text[0] !== "<") return text;
@@ -349,33 +370,42 @@ const Status = () => {
   // amount inflacionava o valor; sem fallback para amount para não voltar a
   // mostrar um número maior do que o técnico realmente recebe.
   const earn = renderMoney(svc?.amount_for_vendor ?? null);
-  const duration = svc?.service_type?.time;
+  // "~45 min" / "~1h30" — o helper já trata da unidade; a chave i18n antiga
+  // imprimia só o número ("Duração estimada: 45"), sem dizer de quê.
+  const durationLabel = formatEstimatedDuration(svc?.service_type?.time);
   const category = svc?.service_type?.operation_area?.name;
 
-  const statusPill =
-    status === ServiceStatus.SCHEDULED
-      ? { label: t('agenda.scheduled'), color: Colors.brand }
-      : status === ServiceStatus.FINISHED
-      ? { label: t('services.service.status.steps.completed'), color: Colors.success }
-      : status === ServiceStatus.ARRIVED
-      ? { label: t('services.service.status.steps.in_progress'), color: Colors.destination }
-      : onTheWay
-      ? { label: t('services.service.status.steps.on_the_way'), color: Colors.destination }
-      : { label: t('services.service.status.steps.accepted'), color: Colors.success };
-
+  // Dia + hora do serviço. A hora vem do agendamento (`schedule`), porque
+  // `scheduled_at` traz só o dia — usá-lo sozinho dava sempre "00:00".
   const whenLabel = (() => {
-    const iso = svc?.scheduled_at || svc?.created_at;
+    const iso = svc?.schedule?.scheduled_day || svc?.scheduled_at || svc?.created_at;
     if (!iso) return null;
-    const d = new Date(iso);
+    const d = new Date(String(iso).split('T')[0]);
     if (isNaN(d.getTime())) return null;
+
+    const start = String(svc?.schedule?.scheduled_time?.start ?? '').slice(0, 5);
+    const time = start || new Date(iso).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+
     const today = new Date(); today.setHours(0, 0, 0, 0);
     const day = new Date(d); day.setHours(0, 0, 0, 0);
-    const time = d.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
-    if (day.getTime() === today.getTime()) return `${t('schedules.date_label.today')}, ${time}`;
+    const diff = Math.round((day.getTime() - today.getTime()) / 86400000);
+    if (diff === 0) return `${t('schedules.date_label.today')}, ${time}`;
+    if (diff === 1) return `${t('schedules.date_label.tomorrow')}, ${time}`;
     return `${d.toLocaleDateString('pt-PT', { day: '2-digit', month: 'short' })}, ${time}`;
   })();
 
-  const goToMap = () => router.push(`/(app)/(services)/(open)/progress/${svc?.id}`);
+
+  // Morada do cliente: rua + número (e complemento, se houver). O backend
+  // devolve-a em `address` via formatVendorAddress().
+  const addressLine = [
+    [svc?.address?.street_name, svc?.address?.street_number].filter(Boolean).join(', ')
+      || svc?.address?.city
+      || svc?.address?.name,
+    svc?.address?.additional_info,
+  ]
+    .filter(Boolean)
+    .join(' · ');
+
 
   /**
    * Navegação turn-by-turn na app de mapas do telemóvel (só Apple/Google/Waze,
@@ -448,45 +478,56 @@ const Status = () => {
         otherClasses="px-5 py-4"
       />
       <ScrollView className="flex-1 px-5" contentContainerStyle={{ paddingBottom: 24 }}>
-        {/* Cabeçalho: serviço + categoria + estado + meta */}
+        {/* Cabeçalho: serviço + valor à direita, meta por baixo.
+            O valor vive aqui (e já não a meio do ecrã, num cartão à parte):
+            equilibra o cabeçalho, que antes tinha tudo encostado à esquerda, e
+            junta num só bloco o resumo do serviço — o quê, quando e quanto. */}
         <Card>
-          <View className="flex-row items-center">
-            <IconTile size={52}>
-              <MaterialCommunityIcons name="pipe-wrench" size={24} color={Colors.brand} />
-            </IconTile>
-            <View className="flex-1 ml-3">
+          <View className="flex-row items-start">
+            <View className="flex-1 pr-3">
               <CustomText color="secondary" boldness="bolder" size="medium" numberOfLines={2}>
                 {svc?.service_type?.name}
               </CustomText>
               {!!category && (
-                <CustomText color="muted" size="small" numberOfLines={1}>{category}</CustomText>
+                <CustomText color="muted" size="small" numberOfLines={1} classes="mt-0.5">{category}</CustomText>
               )}
             </View>
-            <View className="rounded-full px-3 py-1.5 ml-2" style={{ backgroundColor: `${statusPill.color}22` }}>
-              <CustomText size="extraSmall" boldness="bold" color="secondary" style={{ color: statusPill.color }}>
-                {statusPill.label}
-              </CustomText>
-            </View>
+            {earn ? (
+              <View className="items-end">
+                <CustomText color="muted" size="extraSmall">
+                  {t('services.service.status.value_to_receive')}
+                </CustomText>
+                <CustomText color="brand" boldness="bolder" size="large" classes="mt-0.5">
+                  {earn}
+                </CustomText>
+              </View>
+            ) : null}
           </View>
 
           <View className="h-px my-4" style={{ backgroundColor: Colors.line }} />
 
-          {!!whenLabel && (
-            <View className="flex-row items-center mb-2">
-              <Feather name="calendar" size={15} color={Colors.muted} />
-              <CustomText color="secondary" size="small" classes="ml-2.5">{whenLabel}</CustomText>
-            </View>
-          )}
-          {!!duration && (
-            <View className="flex-row items-center mb-2">
-              <Feather name="clock" size={15} color={Colors.muted} />
-              <CustomText color="secondary" size="small" classes="ml-2.5">
-                {t('services.service.status.estimated_duration', { value: duration })}
-              </CustomText>
-            </View>
-          )}
+          {/* Meta numa linha só: quando · estado · duração. Antes cada item
+              ocupava a sua linha, o que empilhava tudo à esquerda. */}
+          <View className="flex-row items-center flex-wrap" style={{ rowGap: 8 }}>
+            {!!whenLabel && (
+              <View className="flex-row items-center mr-3">
+                <Feather name="calendar" size={15} color={Colors.muted} />
+                <CustomText color="secondary" size="small" classes="ml-2">{whenLabel}</CustomText>
+              </View>
+            )}
+            {!!durationLabel && (
+              <View className="flex-row items-center mr-3">
+                <Feather name="clock" size={15} color={Colors.muted} />
+                <CustomText color="secondary" size="small" classes="ml-2">
+                  {t('services.service.status.estimated_duration', { value: durationLabel })}
+                </CustomText>
+              </View>
+            )}
+            {/* Sem selo de estado: o passo ativo do stepper logo a seguir já
+                diz em que ponto está o serviço — repeti-lo era ruído. */}
+          </View>
           {svc?.is_immediate && (
-            <View className="flex-row items-center">
+            <View className="flex-row items-center mt-2">
               <Ionicons name="flash" size={15} color={Colors.danger} />
               <CustomText size="small" color="danger" classes="ml-2.5">
                 {t('services.service.status.immediate')}
@@ -508,13 +549,15 @@ const Status = () => {
           <CustomText color="secondary" boldness="bolder" size="large" numberOfLines={1} classes="mt-0.5">
             {svc?.customer?.name}
           </CustomText>
-          <View className="flex-row items-start mt-1">
-            <Feather name="map-pin" size={14} color={Colors.muted} style={{ marginTop: 2 }} />
-            <CustomText color="muted" size="small" numberOfLines={2} classes="ml-1.5 flex-1">
-              {svc?.address?.name}
-              {svc?.address?.additional_info ? ` · ${svc?.address?.additional_info}` : ''}
-            </CustomText>
-          </View>
+          {/* Só com morada a sério — o pin sozinho não dizia nada. */}
+          {!!addressLine && (
+            <View className="flex-row items-start mt-1">
+              <Feather name="map-pin" size={14} color={Colors.muted} style={{ marginTop: 2 }} />
+              <CustomText color="muted" size="small" numberOfLines={2} classes="ml-1.5 flex-1">
+                {addressLine}
+              </CustomText>
+            </View>
+          )}
 
           {/* Observações do cliente. Vinham do detalhe do agendamento, que
               deixou de existir — sem isto perdia-se o que o cliente escreveu. */}
@@ -534,32 +577,6 @@ const Status = () => {
               a olhar para o problema certo. */}
           <CustomerPhotos photos={svc?.customer_photos} />
 
-          {/* Pré-visualização do mapa */}
-          <TouchableOpacity
-            activeOpacity={0.85}
-            onPress={goToMap}
-            className="rounded-xl overflow-hidden mt-3 justify-center items-center"
-            style={{ height: 130, backgroundColor: Colors.card_high }}
-          >
-            <View className="items-center">
-              <View
-                className="items-center justify-center rounded-full"
-                style={{ width: 44, height: 44, backgroundColor: 'rgba(250,187,91,0.22)' }}
-              >
-                <Ionicons name="location" size={22} color={Colors.brand} />
-              </View>
-            </View>
-            <View
-              className="absolute rounded-full flex-row items-center px-3 py-1.5"
-              style={{ right: 10, bottom: 10, backgroundColor: 'rgba(0,0,0,0.55)' }}
-            >
-              <Feather name="navigation" size={12} color={Colors.brand} />
-              <CustomText size="extraSmall" color="secondary" boldness="semiBold" classes="ml-1.5">
-                {t('services.service.status.open_map')}
-              </CustomText>
-            </View>
-          </TouchableOpacity>
-
           <View className="flex-row mt-3" style={{ gap: 10 }}>
             {/* Navegar: abre o Maps/Waze do telemóvel com o destino já preenchido. */}
             <TouchableOpacity
@@ -569,7 +586,7 @@ const Status = () => {
             >
               <Feather name="navigation" size={18} color={Colors.brand} />
               <CustomText size="small" color="brand" boldness="bold" classes="mt-1">
-                {t('services.service.status.navigate')}
+                {t('services.service.status.open_map')}
               </CustomText>
             </TouchableOpacity>
             {/* Sem opção de ligar: o contacto com o cliente passa só pelo chat,
@@ -601,17 +618,7 @@ const Status = () => {
 
         </Card>
 
-        {/* Valor a receber */}
-        {earn ? (
-          <HeroCard className="flex-row items-center justify-between" style={{ marginTop: 12 }}>
-            <CustomText color="secondary" boldness="semiBold" size="medium">
-              {t('services.service.status.value_to_receive')}
-            </CustomText>
-            <CustomText color="secondary" boldness="bolder" size="subtitle">
-              {earn}
-            </CustomText>
-          </HeroCard>
-        ) : null}
+        {/* O valor a receber subiu para o cabeçalho — ver comentário lá. */}
 
         {/* Incluído / Não incluído */}
         <View className="bg-card border rounded-2xl p-4 mt-3" style={{ borderColor: Colors.line }}>

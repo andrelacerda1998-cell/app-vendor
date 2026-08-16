@@ -272,14 +272,25 @@ export default {
         "cancel": {
             "title": "Cancelar serviço",
             "subtitle": "Queres mesmo cancelar este serviço?",
-            "confirm_penalty": "Se faltarem menos de 24 horas, é retirado 10% do valor: {{amount}}. Queres mesmo cancelar?",
+            "confirm_penalty": "A menos de 24 horas do início, é aplicada uma penalização de {{amount}}. Pretendes continuar?",
             "confirm": "Sim",
             "cancel": "Não",
             "you_are_about_to": "Este serviço já foi aceite por ti. Queres mesmo cancelá-lo?",
+            "heading": "Cancelar este serviço?",
+            "already_accepted": "Já aceitaste este serviço e o cliente foi notificado.",
+            "keep_service": "Manter o serviço",
+            "cancel_service": "Confirmar cancelamento",
             "confirm_cancellation": "Confirmar",
+            "canceling": "A cancelar...",
+            "no_penalty": {
+                "title": "Sem penalização",
+                "body": "Faltam mais de 24 horas para o início do serviço."
+            },
             "penalty": {
-                "title": "Cancelamento com menos de 24 horas",
-                "body": "Se cancelares com menos de 24 horas de antecedência, é retirado 10% do valor do serviço: {{amount}}."
+                "title": "Penalização por cancelamento tardio",
+                "body": "A menos de 24 horas do início, é aplicada uma penalização de 10% do valor do serviço, neste caso será de {{amount}}.",
+                "body_now": "Faltam menos de 24 horas para o início, por isso é aplicada uma penalização de 10% do valor do serviço: {{amount}}.",
+                "body_no_amount": "A menos de 24 horas do início, é aplicada uma penalização de 10% do valor do serviço."
             },
             "error": {
                 "title": "Não foi possível cancelar o serviço",
@@ -361,7 +372,7 @@ export default {
             "pending": "Pedido à espera da tua resposta",
             "status": {
                 "header": "Serviço",
-                "estimated_duration": "Duração estimada: {{value}}",
+                "estimated_duration": "Tempo estimado: {{value}}",
                 "steps": {
                     "accepted": "Aceite",
                     "on_the_way": "A caminho",
@@ -393,7 +404,7 @@ export default {
                     "value": "{{value}} minutos"
                 },
                 "distance": "Distância",
-                "value_to_receive": "Vais receber",
+                "value_to_receive": "Valor a receber",
                 "confirm_it_was_finished": "Confirmar que está concluído",
                 "finish": "Finalizar",
                 "chat": "Chat"
@@ -421,7 +432,7 @@ export default {
                 "time_accounting": "Tempo de trabalho",
                 "distance": "Distância",
                 "estimated_value": "Valor estimado",
-                "value_to_receive": "Vais receber",
+                "value_to_receive": "Valor a receber",
                 "location": "Localização",
                 "refuse": "Recusar",
                 "accept": "Aceitar",
@@ -1551,7 +1562,6 @@ export default {
       "today_count_other": "{{count}} serviços hoje",
       "next_at": "Próximo às {{time}}",
       "next_service": "Próximo serviço",
-      "to_receive": "a receber",
       "pending_requests_card_one": "Tens {{count}} pedido à espera de resposta.",
       "pending_requests_card_other": "Tens {{count}} pedidos à espera de resposta.",
       "requests_list": "Lista de pedidos",

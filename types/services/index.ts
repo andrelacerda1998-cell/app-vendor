@@ -74,6 +74,8 @@ export interface AdressInterface {
   address: string;
   additional_info: string | null;
   street_name: string | null;
+  /** Número da porta (formatVendorAddress). */
+  street_number?: string | null;
   city: string;
   postal_code: string;
   country: string;
