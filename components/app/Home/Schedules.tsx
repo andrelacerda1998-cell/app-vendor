@@ -1,7 +1,6 @@
-import { View, StyleSheet } from "react-native";
+import { View } from "react-native";
 import React from "react";
 import { router } from "expo-router";
-import { LinearGradient } from "expo-linear-gradient";
 import { CustomText } from "@/components/CustomText";
 import TouchOpacity from "@/components/TouchOpacity";
 import { Colors } from "@/constants/Colors";
@@ -16,11 +15,6 @@ export const schedulesSection = {
   all: "all",
   today: "today",
 }
-
-// Contorno e brilho âmbar ténues: dão calor ao cartão e destacam-no dos cartões
-// planos, sem gritar. Mesma família do brilho do topo da Home.
-const BRAND_BORDER = "rgba(250,187,91,0.28)";
-const GRADIENT = ["rgba(250,187,91,0.12)", "rgba(250,187,91,0.02)"] as const;
 
 const hhmm = (t?: string) => (t ? String(t).slice(0, 5) : "");
 
@@ -76,110 +70,68 @@ const Schedules = () => {
   })();
   const upcomingPrice = upcoming ? renderMoney(upcoming.amount_for_vendor ?? null) : false;
 
-  // Ícone em quadro âmbar suave — arredondado e com um leve anel âmbar.
-  const IconTile = () => (
-    <View
-      className="w-12 h-12 rounded-2xl items-center justify-center mr-3 bg-brand_soft"
-      style={{ borderWidth: 1, borderColor: BRAND_BORDER }}
+  // Cartão plano, igual aos restantes do ecrã: ícone + (título / quando) à
+  // esquerda, valor à direita. Sem gradientes nem glow — a consistência com os
+  // outros cartões é o que o faz parecer arrumado.
+  const Row = ({ title, when, value }: { title: string; when: string; value: string | false }) => (
+    <TouchOpacity
+      onPress={goToSchedules}
+      bgColor="card"
+      rounded="2xl"
+      border
+      borderColor="line"
+      otherClasses="flex-row items-center p-5"
     >
-      <Feather name="calendar" size={20} color={Colors.brand} />
-    </View>
-  );
-
-  // Valor como "stat": rótulo pequeno por cima, montante âmbar em destaque.
-  const MoneyStat = ({ value }: { value: string }) => (
-    <View className="items-end mr-1.5">
-      <CustomText color="muted" size="extraSmall" classes="mb-0.5">
-        {t("schedules.to_receive")}
-      </CustomText>
-      <CustomText color="brand" boldness="bolder" size="medium">
-        {value}
-      </CustomText>
-    </View>
+      <View className="w-12 h-12 rounded-2xl items-center justify-center bg-brand_soft">
+        <Feather name="calendar" size={22} color={Colors.brand} />
+      </View>
+      <View className="flex-1 ml-3.5">
+        <CustomText color="secondary" boldness="bold" size="medium" numberOfLines={1}>
+          {title}
+        </CustomText>
+        {when ? (
+          <CustomText color="brand" size="small" boldness="bold" classes="mt-1" numberOfLines={1}>
+            {when}
+          </CustomText>
+        ) : null}
+      </View>
+      {value ? (
+        <CustomText color="brand" boldness="bolder" size="large" classes="ml-3">
+          {value}
+        </CustomText>
+      ) : null}
+    </TouchOpacity>
   );
 
   return (
     <View className="px-5">
       <SectionHeader title={t("schedules.section_title")} />
-      <View>
-        {hasToday ? (
-          // HOJE: nº de serviços + hora do próximo + total do dia.
-          <TouchOpacity
-            onPress={goToSchedules}
-            bgColor="card"
-            rounded="2xl"
-            otherClasses="overflow-hidden"
-            style={{ borderWidth: 1, borderColor: BRAND_BORDER }}
-          >
-            <LinearGradient colors={GRADIENT} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
-            <View className="flex-row items-center p-4">
-              <IconTile />
-              <View className="flex-1">
-                <CustomText color="secondary" boldness="bold" size="medium" numberOfLines={1}>
-                  {t("schedules.today_count", { count: todayList.length })}
-                </CustomText>
-                {nextStart ? (
-                  <View className="flex-row items-center mt-1">
-                    <Feather name="clock" size={14} color={Colors.brand} />
-                    <CustomText color="secondary" size="small" boldness="semiBold" classes="ml-1.5" numberOfLines={1}>
-                      {t("schedules.next_at", { time: nextStart })}
-                    </CustomText>
-                  </View>
-                ) : null}
-              </View>
-              {todayTotal ? <MoneyStat value={todayTotal} /> : null}
-              <Feather name="chevron-right" size={20} color={Colors.muted} />
-            </View>
-          </TouchOpacity>
-        ) : upcoming ? (
-          // Nada hoje, mas há um serviço num próximo dia.
-          <TouchOpacity
-            onPress={goToSchedules}
-            bgColor="card"
-            rounded="2xl"
-            otherClasses="overflow-hidden"
-            style={{ borderWidth: 1, borderColor: BRAND_BORDER }}
-          >
-            <LinearGradient colors={GRADIENT} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
-            <View className="flex-row items-center p-4">
-              <IconTile />
-              <View className="flex-1">
-                <CustomText color="secondary" boldness="bold" size="medium" numberOfLines={1}>
-                  {t("schedules.next_service")}
-                </CustomText>
-                {upcomingWhen ? (
-                  <View className="flex-row items-center mt-1">
-                    <Feather name="clock" size={14} color={Colors.brand} />
-                    <CustomText color="secondary" size="small" boldness="semiBold" classes="ml-1.5" numberOfLines={1}>
-                      {upcomingWhen}
-                    </CustomText>
-                  </View>
-                ) : null}
-              </View>
-              {upcomingPrice ? <MoneyStat value={upcomingPrice} /> : null}
-              <Feather name="chevron-right" size={20} color={Colors.muted} />
-            </View>
-          </TouchOpacity>
-        ) : (
-          // Estado vazio: ilustração + texto centrados, cartão neutro (sem
-          // brilho — não há nada a celebrar) mas na mesma tocável.
-          <TouchOpacity
-            onPress={goToSchedules}
-            bgColor="card"
-            rounded="2xl"
-            border
-            borderColor="line"
-            otherClasses="flex-row items-center justify-center p-5"
-          >
-            <View className="mr-3">
-              <AgendaFree color={Colors.muted} accent={Colors.success} size={40} />
-            </View>
-            <CustomText color="secondary" boldness="semiBold" size="medium">
-              {t("schedules.empty")}
-            </CustomText>
-          </TouchOpacity>
-        )}
-      </View>
+      {hasToday ? (
+        <Row
+          title={t("schedules.today_count", { count: todayList.length })}
+          when={nextStart ? t("schedules.next_at", { time: nextStart }) : ""}
+          value={todayTotal}
+        />
+      ) : upcoming ? (
+        <Row title={t("schedules.next_service")} when={upcomingWhen} value={upcomingPrice} />
+      ) : (
+        // Estado vazio: ilustração + texto centrados, cartão tocável.
+        <TouchOpacity
+          onPress={goToSchedules}
+          bgColor="card"
+          rounded="2xl"
+          border
+          borderColor="line"
+          otherClasses="flex-row items-center justify-center p-5"
+        >
+          <View className="mr-3">
+            <AgendaFree color={Colors.muted} accent={Colors.success} size={40} />
+          </View>
+          <CustomText color="secondary" boldness="semiBold" size="medium">
+            {t("schedules.empty")}
+          </CustomText>
+        </TouchOpacity>
+      )}
     </View>
   );
 }
