@@ -25,12 +25,37 @@ const pickValue = <T,>(...values: Array<T | null | undefined>) =>
   values.find((value) => value !== undefined && value !== null);
 
 const mergeOpenServiceData = (service: OpenServiceInterface, fallback?: Partial<ServiceInterface> | Partial<OpenServiceInterface> | null): OpenServiceInterface => {
+  // Nunca fundir serviços diferentes: um fallback de outro id iria ressuscitar
+  // campos (morada, valor) do serviço errado.
+  if (
+    fallback &&
+    (fallback as any)?.id != null &&
+    (service as any)?.id != null &&
+    String((fallback as any).id) !== String((service as any).id)
+  ) {
+    fallback = null;
+  }
+
   const fallbackCustomer = fallback?.customer as any;
   const fallbackAddress = fallback?.address as any;
   const fallbackVendor = (fallback as any)?.vendor;
 
+  // Só os campos que o payload novo traz mesmo preenchidos se sobrepõem.
+  const definedEntries = Object.fromEntries(
+    Object.entries(service as any).filter(([, v]) => v !== undefined && v !== null)
+  );
+
   return {
-    ...service,
+    // O nível de topo também herda o fallback. Sem isto, os campos que o
+    // payload magro dos sockets nem traz (schedule, amount_for_vendor,
+    // customer_notes, customer_photos…) eram apagados a cada atualização —
+    // a hora e o "Valor a receber" desapareciam do ecrã ao vivo.
+    ...((fallback as any) || {}),
+    ...definedEntries,
+    // `status` e `on_the_way_at` são o que o socket vem mesmo dizer: ganham
+    // sempre, mesmo quando o novo valor é null (ex.: estado reposto).
+    status: (service as any).status ?? (fallback as any)?.status ?? null,
+    on_the_way_at: (service as any).on_the_way_at ?? (fallback as any)?.on_the_way_at ?? null,
     customer: {
       ...(fallbackCustomer || {}),
       ...(service.customer || {}),

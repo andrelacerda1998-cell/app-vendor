@@ -38,6 +38,27 @@ export function ApiProvider({ children }: PropsWithChildren) {
     // expirar ao mesmo tempo chamam refresh em paralelo; o 1º faz blacklist do token e o 2º falha
     // com o token já invalidado → signOut indevido.
     const refreshPromiseRef = useRef<Promise<string | undefined> | null>(null);
+
+    // Disjuntor de sessão expirada. Quando o refresh falha de vez, o utilizador
+    // já viu UM diálogo e o signOut já correu — mas os ecrãs continuavam a
+    // disparar pedidos, e cada um falhava e mostrava o seu próprio erro (a
+    // "metralhadora de 401s"). Com a flag ligada, os pedidos novos são cortados
+    // à entrada com uma rejeição em forma de 401 — a forma que os ecrãs já
+    // tratam como "ignorar em silêncio". Um Cancel do axios não servia: não tem
+    // `response.status`, e os catch genéricos mostravam diálogo na mesma.
+    const sessionExpiredRef = useRef(false);
+
+    const sessionExpiredRejection = () =>
+        Promise.reject({
+            isSessionExpired: true,
+            response: { status: 401 },
+            message: 'session expired',
+        });
+
+    useEffect(() => {
+        // Sessão nova (login ou refresh bem-sucedido) rearma o disjuntor.
+        if (session) sessionExpiredRef.current = false;
+    }, [session]);
     useEffect(() => {
         const instance = axios.create({
             baseURL: API_BASE_URL,
@@ -45,6 +66,10 @@ export function ApiProvider({ children }: PropsWithChildren) {
         });
 
         instance.interceptors.request.use(async (config) => {
+            if (sessionExpiredRef.current) {
+                return sessionExpiredRejection();
+            }
+
             let token = session;
 
             if (token) {
@@ -62,6 +87,7 @@ export function ApiProvider({ children }: PropsWithChildren) {
                     }
                 } catch (e) {
                     console.error("Failed to decode token:", e);
+                    sessionExpiredRef.current = true;
                     signOut();
                     openDialog({
                         icon: <XIcon color={Colors.primary} />,
@@ -117,6 +143,10 @@ export function ApiProvider({ children }: PropsWithChildren) {
                 return undefined;
             } catch (error) {
                 console.error("Failed to refresh token:", error);
+                // Liga o disjuntor ANTES do signOut: os pedidos em voo e os que
+                // os ecrãs disparem entretanto morrem em silêncio; só este
+                // diálogo comunica a expiração.
+                sessionExpiredRef.current = true;
                 signOut();
                 openDialog({
                     icon: <XIcon color={Colors.primary} />,
@@ -136,6 +166,12 @@ export function ApiProvider({ children }: PropsWithChildren) {
 
     const handleError = async (error: any, apiInstance: AxiosInstance) => {
         const originalRequest = error.config;
+
+        // Disjuntor ligado: os pedidos em voo que ainda falhem convergem todos
+        // para a mesma rejeição silenciosa — nada de erros um a um.
+        if (sessionExpiredRef.current) {
+            return sessionExpiredRejection();
+        }
 
         // Check if the session is still valid
         if (!session) {

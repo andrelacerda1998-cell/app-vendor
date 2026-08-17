@@ -112,6 +112,16 @@ export function NotificationObserverHandler() {
 
       // Notificações de vendor: levam o técnico direto ao sítio certo.
       if (open_type === 'request') {
+        // Com o id, abre o ecrã full-screen do pedido (countdown + aceitar/
+        // recusar) — o momento dos 60 segundos não se gasta numa lista. O
+        // próprio ecrã carrega os pendentes e fecha-se se o pedido já expirou.
+        if (open_id) {
+          router.push({
+            pathname: '/(app)/(modals)/incoming-request/[serviceId]',
+            params: { serviceId: String(open_id) },
+          });
+          return;
+        }
         router.push(REQUESTS_ROUTE);
         return;
       }

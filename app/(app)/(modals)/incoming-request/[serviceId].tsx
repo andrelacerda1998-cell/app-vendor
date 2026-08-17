@@ -39,7 +39,7 @@ import {
 const IncomingRequestScreen = () => {
   const { t } = useTranslation();
   const { serviceId } = useLocalSearchParams<{ serviceId: string }>();
-  const { pendingServices } = useService();
+  const { pendingServices, pendingServicesLoading, getPendingServices } = useService();
   const { accept, refuse, submitting } = useRequestActions();
 
   const item = useMemo(
@@ -68,10 +68,23 @@ const IncomingRequestScreen = () => {
     return () => Vibration.cancel();
   }, []);
 
-  // Fecha sozinho se o pedido desaparecer da lista (aceite/recusado noutro sítio).
+  // Aberto por push com a app fria, a lista de pedidos ainda não carregou —
+  // fechar logo por `!item` matava o ecrã antes de haver dados. Pede a lista
+  // e só desiste quando ela chegou mesmo e o pedido não está lá.
+  const requestedRef = useRef(false);
   useEffect(() => {
-    if (!item) close();
-  }, [item, close]);
+    if (item || requestedRef.current) return;
+    requestedRef.current = true;
+    getPendingServices();
+  }, [item, getPendingServices]);
+
+  // Fecha sozinho quando a lista JÁ carregou e o pedido não está lá
+  // (aceite/recusado noutro sítio, ou expirado antes de a app abrir).
+  // `pendingServicesLoading` começa a true, por isso nunca fecha antes de
+  // a primeira resposta chegar.
+  useEffect(() => {
+    if (!item && !pendingServicesLoading) close();
+  }, [item, pendingServicesLoading, close]);
 
   // Relógio de 1s + vibração nos últimos 10 segundos.
   useEffect(() => {
