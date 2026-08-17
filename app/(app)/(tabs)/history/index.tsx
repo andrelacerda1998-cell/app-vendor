@@ -103,9 +103,20 @@ const Earnings = () => {
         <CustomText size="subtitle" color="secondary" boldness="bolder">
           {t('tabs.earnings')}
         </CustomText>
-        {/* Histórico de pagamentos recebidos (não os dados de pagamento) */}
-        <TouchableOpacity onPress={() => router.push('/(app)/(pages)/(payouts)/payouts')} activeOpacity={0.7}>
-          <Feather name="file-text" size={22} color={Colors.secondary} />
+        {/* Histórico de pagamentos recebidos (não os dados de pagamento).
+            Com rótulo: o ícone sozinho só se descobria por acaso. */}
+        <TouchableOpacity
+          onPress={() => router.push('/(app)/(pages)/(payouts)/payouts')}
+          activeOpacity={0.7}
+          className="flex-row items-center rounded-full border px-3 py-1.5"
+          style={{ borderColor: Colors.line, backgroundColor: Colors.card }}
+          accessibilityRole="button"
+          accessibilityLabel={t('payouts.title')}
+        >
+          <Feather name="file-text" size={15} color={Colors.brand} />
+          <CustomText size="extraSmall" color="secondary" boldness="semiBold" classes="ml-1.5">
+            {t('payouts.title')}
+          </CustomText>
         </TouchableOpacity>
       </View>
 

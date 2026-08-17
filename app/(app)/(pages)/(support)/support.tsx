@@ -16,6 +16,7 @@ import { useApi } from '@/contexts/ApiContext';
 import { useDialog } from '@/contexts/DialogContext';
 import { API_ROUTES } from '@/constants/ApiRoutes';
 import CheckMark from '@/assets/icons/check-mark';
+import { ErrorState } from '@/components/ui';
 import XIcon from '@/assets/icons/x';
 
 interface Ticket {
@@ -51,12 +52,19 @@ const Support = () => {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [openFaq, setOpenFaq] = useState<string | null>(null);
+  const [ticketsFailed, setTicketsFailed] = useState(false);
 
   const loadTickets = async () => {
     try {
       const r = await api.get(API_ROUTES.VENDOR_SUPPORT_TICKETS);
       setTickets(r?.data?.data?.tickets ?? []);
-    } catch { /* silencioso */ }
+      setTicketsFailed(false);
+    } catch {
+      // Falhar em silêncio fazia a lista parecer vazia — como se o técnico
+      // nunca tivesse contactado o suporte. Regra da app: erro nunca se
+      // disfarça de "não tens nada".
+      setTicketsFailed(true);
+    }
   };
 
   useEffect(() => { loadTickets(); }, []);
@@ -194,7 +202,16 @@ const Support = () => {
           })}
         </View>
 
-        {/* Tickets anteriores */}
+        {/* Tickets anteriores — a falha de carregamento aparece, com retry. */}
+        {ticketsFailed && tickets.length === 0 && (
+          <View className="mt-6">
+            <ErrorState
+              title={t('support.tickets_error_title')}
+              subtitle={t('support.tickets_error_subtitle')}
+              onRetry={loadTickets}
+            />
+          </View>
+        )}
         {tickets.length > 0 && (
           <>
             <CustomText size="medium" color="secondary" boldness="bold" classes="mt-6 mb-3">

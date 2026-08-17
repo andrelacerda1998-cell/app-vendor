@@ -49,10 +49,11 @@ const UserProfile = () => {
             </View>
           ) : (
             <View className="absolute z-10 rounded-full overflow-hidden w-full h-full">
-              {vendorData?.avatar?.src ? (
+              {/* O avatar vive em user.avatar (como no Perfil); `vendorData.avatar`
+                  não existe — além do erro de tipo, o avatar nunca aparecia aqui. */}
+              {vendorData?.user?.avatar?.src ? (
                 <Image
-                  src={vendorData?.avatar?.src}
-                  source={{ uri: vendorData?.avatar?.src }}
+                  source={{ uri: vendorData.user.avatar.src }}
                   className="w-full h-full object-cover object-center"
                 />
               ) : (

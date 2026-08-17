@@ -14,6 +14,7 @@ import CustomTouchableOpacity from '@/components/CustomTouchableOpacity';
 import { Card, SectionHeader } from '@/components/ui';
 import { Colors } from '@/constants/Colors';
 import { API_ROUTES } from '@/constants/ApiRoutes';
+import { formatEuro } from '@/utils/services';
 import { useApi } from '@/contexts/ApiContext';
 import { useDialog } from '@/contexts/DialogContext';
 import { useSession } from '@/contexts/SessionContext';
@@ -26,7 +27,6 @@ const RATE_MAX = 50;
 const MARKET_MIN = 14;
 const MARKET_MAX = 22;
 
-const formatEuro = (v: number) => `${(Number(v) || 0).toFixed(2).replace('.', ',')} €`;
 
 const HourlyRate = () => {
   const { t } = useTranslation();

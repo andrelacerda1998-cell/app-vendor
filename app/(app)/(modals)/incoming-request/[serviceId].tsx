@@ -10,6 +10,7 @@ import TouchOpacity from "@/components/TouchOpacity";
 import SlideToAccept from "@/components/Buttons/SlideToAccept";
 import ServiceCard from "@/components/app/ServiceCard";
 import { useService } from "@/contexts/ServiceContext";
+import { renderMoney } from "@/utils/money";
 import useRequestActions from "@/hooks/useRequestActions";
 import {
   URGENT_THRESHOLD_MS,
@@ -114,7 +115,9 @@ const IncomingRequestScreen = () => {
 
   if (!item) return null;
 
-  const priceLabel = `${(Number(item.amount_for_vendor ?? 0) / 100).toFixed(2)}€`;
+  // renderMoney, como no resto da app — o toFixed manual dava "30.00€"
+  // (ponto e sem espaço) no meio de ecrãs que mostram "30,00 €".
+  const priceLabel = renderMoney(item.amount_for_vendor ?? null) || '';
   const countdownLabel = remaining
     ? `${remaining.minutes}:${String(remaining.seconds).padStart(2, '0')}`
     : '0:00';

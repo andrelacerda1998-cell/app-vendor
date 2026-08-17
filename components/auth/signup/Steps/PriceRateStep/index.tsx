@@ -1,6 +1,7 @@
 import { SignUpData } from '@/app/(auth)/signup';
 import { CustomText } from '@/components/CustomText';
 import { Colors } from '@/constants/Colors';
+import { formatEuro } from '@/utils/services';
 import RateSlider from '@/components/ui/RateSlider';
 import { Feather } from '@expo/vector-icons';
 import React from 'react';
@@ -14,7 +15,6 @@ const RATE_MAX = 50;
 const MARKET_MIN = 14;
 const MARKET_MAX = 22;
 
-const formatEuro = (v: number) => `${(Number(v) || 0).toFixed(2).replace('.', ',')} €`;
 
 const PriceRateStep = ({
   control,

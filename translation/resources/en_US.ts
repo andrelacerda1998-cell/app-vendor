@@ -1163,6 +1163,8 @@ export default {
     "sent_title": "Request sent",
     "sent_subtitle": "The Piquet team will reply shortly.",
     "my_tickets": "My requests",
+    "tickets_error_title": "Couldn't load your requests",
+    "tickets_error_subtitle": "Check your connection and try again. The requests you've already sent are still saved.",
     "reply_from_piquet": "Reply from Piquet",
     "header_title": "Need help?",
     "header_subtitle": "We're available every day, 8am–10pm.",

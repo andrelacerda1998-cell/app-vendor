@@ -1,4 +1,4 @@
-import { FlatList, SafeAreaView, View, Vibration, TouchableOpacity } from "react-native";
+import { FlatList, RefreshControl, SafeAreaView, View, Vibration, TouchableOpacity } from "react-native";
 import TouchOpacity from "@/components/TouchOpacity";
 import {router} from "expo-router";
 import ArrowIcon from "@/assets/icons/arrow";
@@ -25,6 +25,7 @@ import {useDialog} from "@/contexts/DialogContext";
 import CheckMark from "@/assets/icons/check-mark";
 import {EmptyState, ErrorState, SkeletonList} from "@/components/ui";
 import {useIsOnline} from "@/hooks/useIsOnline";
+import {renderMoney} from "@/utils/money";
 
 interface FilterOptionObject {
   id: number;
@@ -50,6 +51,12 @@ const Requests = () => {
   const { openDialog } = useDialog();
 
   const [selectedFilter, setSelectedFilter] = useState<FilterOption>("all");
+  const [refreshingList, setRefreshingList] = useState(false);
+
+  const refreshList = async () => {
+    setRefreshingList(true);
+    try { await getPendingServices(); } finally { setRefreshingList(false); }
+  };
   const [services, setServices] = useState<ServiceRequestedInterface[]>();
   const [selected, setSelected] = useState<AcceptRejectType>({id: null, service_id: null, accepted: false});
   const [ hoursOfService, setHoursOfService] = useState<any>({});
@@ -326,6 +333,15 @@ const Requests = () => {
         <FlatList
           data={services}
           extraData={{ hoursOfService }}
+          // Pull-to-refresh: sem isto, um pedido que chegasse com o socket
+          // perdido só aparecia fechando e reabrindo o ecrã.
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshingList}
+              onRefresh={refreshList}
+              tintColor={Colors.brand}
+            />
+          }
           ListEmptyComponent={
             // Ecrã de receita: a lista vazia SÓ pode aparecer depois de sabermos
             // que a chamada correu bem. A carregar -> esqueleto; a falhar ->
@@ -359,9 +375,7 @@ const Requests = () => {
             const remaining = remainingMap[String(item?.service_id)];
             const scheduleFor = item.schedule ? `${item.schedule.scheduled_day}` : null;
             // Sem valor conhecido mostra-se "—" em vez de "NaN€"/"0€".
-            const priceLabel = item.amount_for_vendor != null
-              ? (item.amount_for_vendor / 100) + "€"
-              : "—";
+            const priceLabel = renderMoney(item.amount_for_vendor ?? null) || "—";
 
             return <View className="mb-4">
               <TouchableOpacity

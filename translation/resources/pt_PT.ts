@@ -1163,6 +1163,8 @@ export default {
         "sent_title": "Pedido enviado",
         "sent_subtitle": "A equipa Piquet vai responder em breve.",
         "my_tickets": "Os meus pedidos",
+        "tickets_error_title": "Não foi possível carregar os teus pedidos",
+        "tickets_error_subtitle": "Verifica a ligação e tenta outra vez. Os pedidos que já enviaste continuam guardados.",
         "reply_from_piquet": "Resposta da Piquet",
         "header_title": "Precisas de ajuda?",
         "header_subtitle": "Estamos disponíveis todos os dias, 8h–22h.",
