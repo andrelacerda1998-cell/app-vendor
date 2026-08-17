@@ -78,7 +78,7 @@ export function ApiProvider({ children }: PropsWithChildren) {
                     const now = Math.floor(Date.now() / 1000);
 
                     if (date && date < now) {
-                        token = await refreshToken();
+                        token = (await refreshToken()) ?? null;
                         if (!token) {
                             // O refresh falhou — refreshToken() já tratou o signOut/diálogo.
                             // Não enviar "Bearer undefined": abortar o pedido de forma limpa.

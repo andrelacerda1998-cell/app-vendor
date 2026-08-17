@@ -17,6 +17,7 @@ import { API_ROUTES } from '@/constants/ApiRoutes';
 import { renderMoney } from '@/utils/money';
 import { Card, HeroCard, IconTile, EmptyState, ErrorState, SkeletonBlock, SkeletonList } from '@/components/ui';
 import { useIsOnline } from '@/hooks/useIsOnline';
+import { formatShortDate as shortDate, formatLongDate as longDate } from '@/utils/date';
 
 interface WeekRow { week_start: string; week_end: string; earnings: number; services: number }
 interface CompletedRow { id: number; service_type: string | null; amount_for_vendor: number; completed_at: string | null }
@@ -34,18 +35,6 @@ interface Stats {
   completed_this_week: CompletedRow[];
 }
 
-const shortDate = (iso?: string | null) => {
-  if (!iso) return '';
-  const d = new Date(iso);
-  return isNaN(d.getTime()) ? '' : d.toLocaleDateString('pt-PT', { day: 'numeric', month: 'short' });
-};
-
-const longDate = (iso?: string | null) => {
-  if (!iso) return '';
-  const d = new Date(iso);
-  if (isNaN(d.getTime())) return '';
-  return d.toLocaleDateString('pt-PT', { day: 'numeric', month: 'short', weekday: 'long' });
-};
 
 /** PT50 0000 0000 0000 0000 0000 0 → "PT5000 •••• 0154" */
 const maskIban = (iban?: string | null) => {

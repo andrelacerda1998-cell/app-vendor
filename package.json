@@ -10,6 +10,8 @@
     "web": "expo start --web",
     "test": "jest",
     "test:watch": "jest --watchAll",
+    "typecheck": "tsc --noEmit",
+    "check": "tsc --noEmit && jest --ci",
     "lint": "expo lint",
     "build-local:android": "npx expo prebuild && cd android && ./gradlew assembleRelease && cd app/build/outputs/apk/release && open .",
     "build-local:ios:production": "APP_ENV=production yarn prebuild:ios",

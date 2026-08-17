@@ -18,7 +18,7 @@ import LogoutIcon from "@/assets/icons/logout";
 import ToolIcon from "@/assets/icons/tool";
 import UserAvatarIcon from "@/assets/icons/user-avatar";
 import ReceiveRequestsCard from "@/components/app/Profile/ReceiveRequestsCard";
-import { Card, SectionHeader, ListCard } from "@/components/ui";
+import { Card, SectionHeader, ListCard, StatusPill } from "@/components/ui";
 import { useSchedule } from '@/contexts/ScheduleContext';
 import { useService } from '@/contexts/ServiceContext';
 
@@ -241,14 +241,11 @@ const Profile = () => {
               <CustomText color="secondary" boldness="bold" size="medium">
                 {t('account_status.title')}
               </CustomText>
-              <View
-                className="self-start rounded-full px-2.5 py-1 mt-1.5"
-                style={{ backgroundColor: `${statusColor}22` }}
-              >
-                <CustomText size="extraSmall" boldness="bold" color="secondary" style={{ color: statusColor }}>
-                  {approved ? t('profile.status.approved') : t('profile.status.pending')}
-                </CustomText>
-              </View>
+              <StatusPill
+                classes="mt-1.5"
+                color={statusColor}
+                label={approved ? t('profile.status.approved') : t('profile.status.pending')}
+              />
             </View>
             <Feather name="chevron-right" size={20} color={Colors.muted} />
           </Card>

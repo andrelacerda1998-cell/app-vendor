@@ -106,7 +106,8 @@ export function NotificationObserverHandler() {
       }
 
       if (deep_link) {
-        router.push(deep_link);
+        // Vem do backoffice como string livre — fora do universo de rotas tipadas.
+        router.push(deep_link as Parameters<typeof router.push>[0]);
         return;
       }
 

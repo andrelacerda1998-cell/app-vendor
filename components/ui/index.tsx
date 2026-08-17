@@ -106,6 +106,30 @@ export const HeroCard = ({
   </LinearGradient>
 );
 
+/**
+ * Pílula de estado: texto colorido sobre wash da mesma cor (`cor` + alfa 22).
+ * O padrão repetia-se à mão em meia dúzia de ecrãs (Perfil, Agenda, Suporte,
+ * estado do serviço…) com pequenas variações — mesmo estado, aspetos diferentes.
+ */
+export const StatusPill = ({
+  label,
+  color,
+  classes = '',
+}: {
+  label: string;
+  color: string;
+  classes?: string;
+}) => (
+  <View
+    className={`self-start rounded-full px-2.5 py-1 ${classes}`}
+    style={{ backgroundColor: `${color}22` }}
+  >
+    <CustomText size="extraSmall" boldness="bold" color="secondary" style={{ color }}>
+      {label}
+    </CustomText>
+  </View>
+);
+
 /** Ícone dentro de um quadrado tingido — usado em listas e cabeçalhos. */
 export const IconTile = ({
   children,

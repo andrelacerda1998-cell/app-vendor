@@ -53,7 +53,10 @@ const ServiceProposalBottomSheet = () => {
 
     if (parts.length > 0) return parts.join(", ");
     if (pendingService?.address?.name) return pendingService.address.name;
-    if (pendingService?.customer?.address) return pendingService.customer.address;
+    // `customer.address` tanto chega como string ('Cidade, Estado') como objeto.
+    if (typeof pendingService?.customer?.address === 'string' && pendingService.customer.address) {
+      return pendingService.customer.address;
+    }
     return "—";
   })();
 

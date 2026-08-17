@@ -16,8 +16,9 @@ import { useApi } from '@/contexts/ApiContext';
 import { useDialog } from '@/contexts/DialogContext';
 import { API_ROUTES } from '@/constants/ApiRoutes';
 import CheckMark from '@/assets/icons/check-mark';
-import { ErrorState } from '@/components/ui';
+import { ErrorState, StatusPill } from '@/components/ui';
 import XIcon from '@/assets/icons/x';
+import { formatMediumDate as fmtDate } from '@/utils/date';
 
 interface Ticket {
   id: number;
@@ -34,11 +35,6 @@ const STATUS_COLORS: Record<string, string> = {
   closed: '#9A9AA1',
 };
 
-const fmtDate = (iso?: string | null) => {
-  if (!iso) return '';
-  const d = new Date(iso);
-  return isNaN(d.getTime()) ? '' : d.toLocaleDateString('pt-PT', { day: '2-digit', month: 'short', year: 'numeric' });
-};
 
 const FAQ_KEYS = ['payments', 'auto_accept', 'hourly_rate', 'missed_request'] as const;
 
@@ -228,14 +224,10 @@ const Support = () => {
                     <CustomText color="secondary" boldness="bold" size="medium" numberOfLines={1} classes="flex-1 pr-3">
                       {ticket.subject}
                     </CustomText>
-                    <View
-                      className="rounded-full px-2.5 py-1"
-                      style={{ backgroundColor: `${STATUS_COLORS[ticket.status]}22` }}
-                    >
-                      <CustomText size="extraSmall" boldness="bold" color="secondary">
-                        {statusLabel(ticket.status)}
-                      </CustomText>
-                    </View>
+                    <StatusPill
+                      color={STATUS_COLORS[ticket.status]}
+                      label={statusLabel(ticket.status)}
+                    />
                   </View>
                   <CustomText color="muted" size="extraSmall" classes="mt-0.5">
                     {fmtDate(ticket.created_at)}

@@ -35,7 +35,9 @@ export default ({config}: ConfigContext):ExpoConfig => {
             enabled: environment !== "development",
             checkAutomatically: "ON_LOAD",
             fallbackToCacheTimeout: 0,
-            channel: updateChannel,
+            // `channel` não está no tipo ExpoConfig.updates mas o EAS lê-o do
+            // manifesto; o spread evita o excess-property check sem mudar o output.
+            ...({ channel: updateChannel } as Record<string, unknown>),
         },
         ios: {
             appleTeamId: "Z7V222283F",

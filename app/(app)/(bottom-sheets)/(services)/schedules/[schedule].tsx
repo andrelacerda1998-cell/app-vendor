@@ -361,7 +361,7 @@ const ServiceSchedulesBottomSheet = () => {
               .filter(Boolean)
               .join(" ");
 
-            const priceLabel = renderMoney(item.amount_for_vendor);
+            const priceLabel = renderMoney(item.amount_for_vendor ?? null);
 
             return (
               <View className="mb-4">

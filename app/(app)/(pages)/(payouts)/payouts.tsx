@@ -22,17 +22,11 @@ import { Colors } from '@/constants/Colors';
 import { useApi } from '@/contexts/ApiContext';
 import { API_ROUTES } from '@/constants/ApiRoutes';
 import { PaymentHistoryInterface } from '@/types/wallet';
+import { formatFullDate as fmtDate } from '@/utils/date';
 
 /** `deposit` entra na carteira; `withdraw` sai (transferência para o banco). */
 const isCredit = (type: string) => type !== 'withdraw';
 
-const fmtDate = (iso?: string | null) => {
-  if (!iso) return '';
-  const d = new Date(iso);
-  return isNaN(d.getTime())
-    ? ''
-    : d.toLocaleDateString('pt-PT', { day: '2-digit', month: 'long', year: 'numeric' });
-};
 
 const Payouts = () => {
   const { t } = useTranslation();

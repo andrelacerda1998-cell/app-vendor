@@ -38,7 +38,7 @@ if (!TaskManager.isTaskDefined(LOCATION_TASK_NAME)) {
             return;
         }
         if (data) {
-            const { locations } = data;
+            const { locations } = data as { locations?: unknown };
             if (Array.isArray(locations) && locations.length > 0) {
                 try {
                     const token = await SecureStore.getItemAsync('session');

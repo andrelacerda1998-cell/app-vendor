@@ -21,6 +21,16 @@ import { useDialog } from "@/contexts/DialogContext";
 import CheckMark from "@/assets/icons/check-mark";
 import { StatusBar } from "expo-status-bar";
 
+/**
+ * Nome do ficheiro, venha de onde vier: ImagePickerAsset traz `fileName`,
+ * DocumentPickerAsset traz `name`, e na web pode vir um `File` embrulhado.
+ * O cast é local — o resto do ecrã continua com o tipo de união estrito.
+ */
+const assetName = (a: unknown): string | null => {
+    const any = a as { fileName?: string | null; name?: string | null; file?: { name?: string | null } } | null;
+    return any?.fileName ?? any?.name ?? any?.file?.name ?? null;
+};
+
 export default function Documents(){
     const { t } = useTranslation();
     const {vendorData, fetchAndSaveUserData} = useSession();
@@ -136,12 +146,14 @@ export default function Documents(){
     const handleSubmit = () => {
         setLoadingSubmit(true);
         const form = new FormData();
-        form.set('type', documentType)
+        form.set('type', String(documentType ?? ''))
+        // O objeto-ficheiro {uri,name,type} é o formato do FormData do React
+        // Native; o tipo DOM só conhece Blob/string, daí o cast.
         form.set('document', {
             uri: asset?.uri,
-            name: asset?.fileName ?? 'Image',
+            name: assetName(asset) ?? 'Image',
             type: asset?.mimeType
-        })
+        } as unknown as Blob)
         api.post(API_ROUTES.POST_DOCUMENTS, form, {
             headers: {
                 'Content-Type': 'multipart/form-data',
@@ -395,7 +407,7 @@ const ConfirmAssetPopup = ({
                 >
                     <View className="flex-1">
                         <CustomText color="secondary" numberOfLines={3} classes="text-center px-5">
-                            {asset?.fileName || asset?.file?.name || asset?.name || ""}
+                            {assetName(asset) || ""}
                         </CustomText>
                     </View>
 

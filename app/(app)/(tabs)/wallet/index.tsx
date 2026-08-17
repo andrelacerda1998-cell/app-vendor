@@ -14,7 +14,7 @@ import { Colors } from '@/constants/Colors';
 import { useSchedule } from '@/contexts/ScheduleContext';
 import { useSession } from '@/contexts/SessionContext';
 import { renderMoney } from '@/utils/money';
-import { Card, EmptyState, ErrorState, SkeletonList } from '@/components/ui';
+import { Card, EmptyState, ErrorState, SkeletonList, StatusPill } from '@/components/ui';
 import { useIsOnline } from '@/hooks/useIsOnline';
 import { formatStreetLine } from '@/utils/serviceDetails';
 
@@ -258,14 +258,7 @@ const Agenda = () => {
                             {/* A etiqueta só aparece quando diz algo novo: num ecrã
                                 chamado Agenda, "Agendado" em todos os cartões é ruído. */}
                             {ui.label ? (
-                              <View
-                                className="self-start rounded-full px-2.5 py-0.5 mt-1.5"
-                                style={{ backgroundColor: `${ui.accent}22` }}
-                              >
-                                <CustomText size="extraSmall" boldness="bold" color="secondary" style={{ color: ui.accent }}>
-                                  {ui.label}
-                                </CustomText>
-                              </View>
+                              <StatusPill classes="mt-1.5" color={ui.accent} label={ui.label} />
                             ) : null}
                           </View>
 
