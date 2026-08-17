@@ -1307,6 +1307,10 @@ export default {
     "services": "Services",
     "rating": "Rating"
   },
+  "home_banners": {
+    "more_one": "{{count}} more notice",
+    "more_other": "{{count}} more notices"
+  },
   "home_today": {
     "title": "TODAY",
     "service": "service",

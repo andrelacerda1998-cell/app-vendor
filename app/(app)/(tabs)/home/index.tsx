@@ -34,6 +34,7 @@ import AutoAcceptCard from "@/components/app/Home/AutoAcceptCard";
 import NotificationsDisabledBanner from "@/components/NotificationsDisabledBanner";
 import DocumentExpiryBanner from "@/components/DocumentExpiryBanner";
 import { useDepartureReminders } from "@/hooks/useDepartureReminders";
+import { useNotificationPermission } from "@/contexts/NotificationsContext";
 
 const Home = () => {
   const insets = useSafeAreaInsets();
@@ -56,6 +57,10 @@ const Home = () => {
 
   // Agenda o aviso "está na hora de sair" (30 min antes de cada serviço).
   useDepartureReminders();
+
+  const { permissionDenied: notificationsDenied } = useNotificationPermission();
+  // Avisos para lá dos 2 primeiros ficam recolhidos atrás de "mais N avisos".
+  const [showAllBanners, setShowAllBanners] = useState(false);
 
   const handleRequestGeolocationPermission = async () => {
     setGeoLoading(true);
@@ -270,52 +275,112 @@ const Home = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ flexGrow: 1, paddingTop: 16, paddingBottom: tabBarContentPadding(insets.bottom), gap: 16 }}
       >
-        {session && !isLoadingUserData && (
-          <View className="px-5" style={{ gap: 10 }}>
-            <DocumentsValidating />
-            {permissionsChecked && !locationPermission.background && (
-              <GeolocationPermissionBanner
-                onRequestPermission={handleRequestGeolocationPermission}
-                isLoading={geoLoading}
-                hasPermission={locationPermission.background}
-              />
-            )}
-            {(
-              !vendorData?.at_user ||
-              !vendorData?.company_address ||
-              !vendorData?.iban ||
-              (vendorData?.missing_documents?.length ?? 0) > 0 ||
-              vendorData?.user?.phone_number_verified_at === null ||
-              vendorData?.user?.email_verified_at === null
-            ) && (
-                <View>
-                  <CompleteYourProfile />
-                </View>
-            )}
-            {vendorData?.at_user && vendorData?.at_valid === false && (
-              <TouchableOpacity
-                onPress={() => router.push('/(app)/(modals)/(profile)/edit-at-user')}
-                className="flex-row justify-between items-center bg-[#DA4040] p-3 rounded-xl mt-2"
-              >
-                <View className="w-[10%]">
-                  <View className="w-7 h-7">
-                    <AttentionIcon color={Colors.secondary} />
+        {/* AVISOS, por ordem de impacto, no máximo 2 à vista.
+            Num dia mau (documentos + localização + notificações + AT + perfil)
+            os banners empilhados ocupavam o ecrã inteiro e o técnico deixava
+            de ver a agenda. Os restantes ficam atrás de "mais N avisos". */}
+        {session && !isLoadingUserData && (() => {
+          const banners: { key: string; node: React.ReactNode }[] = [];
+
+          // 1) AT inválida — bloqueia ir online: é o mais grave.
+          if (vendorData?.at_user && vendorData?.at_valid === false) {
+            banners.push({ key: 'at', node: (
+              <View className="px-5">
+                <TouchableOpacity
+                  onPress={() => router.push('/(app)/(modals)/(profile)/edit-at-user')}
+                  className="flex-row justify-between items-center bg-[#DA4040] p-3 rounded-xl"
+                >
+                  <View className="w-[10%]">
+                    <View className="w-7 h-7">
+                      <AttentionIcon color={Colors.secondary} />
+                    </View>
                   </View>
-                </View>
-                <View className="w-[90%]">
-                  <CustomText color="secondary">
-                    {t('profile.edit.at_invalid.banner')}
-                  </CustomText>
-                </View>
-              </TouchableOpacity>
-            )}
-          </View>
-        )}
+                  <View className="w-[90%]">
+                    <CustomText color="secondary">
+                      {t('profile.edit.at_invalid.banner')}
+                    </CustomText>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            )});
+          }
 
-        {/* Documento a expirar: aparece antes de o técnico ficar bloqueado. */}
-        <DocumentExpiryBanner />
+          // 2) Perfil incompleto — sem isto não recebe serviços.
+          if (
+            !vendorData?.at_user ||
+            !vendorData?.company_address ||
+            !vendorData?.iban ||
+            (vendorData?.missing_documents?.length ?? 0) > 0 ||
+            vendorData?.user?.phone_number_verified_at === null ||
+            vendorData?.user?.email_verified_at === null
+          ) {
+            banners.push({ key: 'profile', node: (
+              <View className="px-5"><CompleteYourProfile /></View>
+            )});
+          }
 
-        <NotificationsDisabledBanner />
+          // 3) Documento a expirar — vai bloquear em breve.
+          if (((vendorData as any)?.expiring_documents?.length ?? 0) > 0) {
+            banners.push({ key: 'doc_expiry', node: <DocumentExpiryBanner /> });
+          }
+
+          // 4) Localização — sem ela não fica online.
+          if (permissionsChecked && !locationPermission.background) {
+            banners.push({ key: 'geo', node: (
+              <View className="px-5">
+                <GeolocationPermissionBanner
+                  onRequestPermission={handleRequestGeolocationPermission}
+                  isLoading={geoLoading}
+                  hasPermission={locationPermission.background}
+                />
+              </View>
+            )});
+          }
+
+          // 5) Notificações desligadas — perde pedidos sem dar por isso.
+          if (notificationsDenied) {
+            banners.push({ key: 'notif', node: <NotificationsDisabledBanner /> });
+          }
+
+          // 6) Documentos em validação — informativo.
+          if (
+            (vendorData?.pending_documents?.length ?? 0) > 0 &&
+            (vendorData?.missing_documents?.length ?? 0) === 0
+          ) {
+            banners.push({ key: 'docs_validating', node: (
+              <View className="px-5"><DocumentsValidating /></View>
+            )});
+          }
+
+          if (banners.length === 0) return null;
+
+          const visible = showAllBanners ? banners : banners.slice(0, 2);
+          const hiddenCount = banners.length - visible.length;
+
+          return (
+            <View style={{ gap: 10 }}>
+              {visible.map((b) => <View key={b.key}>{b.node}</View>)}
+              {hiddenCount > 0 && (
+                <TouchableOpacity
+                  onPress={() => setShowAllBanners(true)}
+                  activeOpacity={0.7}
+                  className="px-5"
+                  accessibilityRole="button"
+                >
+                  <View
+                    className="flex-row items-center justify-center rounded-xl border py-2.5"
+                    style={{ borderColor: Colors.line, backgroundColor: Colors.card }}
+                  >
+                    <Feather name="chevron-down" size={16} color={Colors.muted} />
+                    <CustomText color="muted" size="small" boldness="semiBold" classes="ml-1.5">
+                      {t('home_banners.more', { count: hiddenCount })}
+                    </CustomText>
+                  </View>
+                </TouchableOpacity>
+              )}
+            </View>
+          );
+        })()}
 
         {openService && <OpenService />}
 

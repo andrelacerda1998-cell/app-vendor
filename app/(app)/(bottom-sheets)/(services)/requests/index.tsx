@@ -10,7 +10,6 @@ import {useTranslation} from "react-i18next";
 import AcceptReject, {AcceptRejectType} from "@/components/Buttons/AcceptReject";
 import {API_ROUTES} from "@/constants/ApiRoutes";
 import {useApi} from "@/contexts/ApiContext";
-import {useSchedule} from "@/contexts/ScheduleContext";
 import {useSession} from '@/contexts/SessionContext';
 import {
   URGENT_THRESHOLD_MS,
@@ -21,11 +20,10 @@ import {
 } from "@/utils/requestTiming";
 import {useService} from "@/contexts/ServiceContext";
 import {ServiceRequestedInterface} from "@/types/services";
-import {useDialog} from "@/contexts/DialogContext";
-import CheckMark from "@/assets/icons/check-mark";
 import {EmptyState, ErrorState, SkeletonList} from "@/components/ui";
 import {useIsOnline} from "@/hooks/useIsOnline";
 import {renderMoney} from "@/utils/money";
+import useRequestActions from "@/hooks/useRequestActions";
 
 interface FilterOptionObject {
   id: number;
@@ -41,24 +39,34 @@ const Requests = () => {
   const {
     operationAreas,
     pendingServices,
-    setPendingServices,
     getPendingServices,
     pendingServicesLoading,
     pendingServicesFailed,
   } = useService();
   const isOnline = useIsOnline();
-  const { setPendingScheduleServices, fetchScheduledServices } = useSchedule();
-  const { openDialog } = useDialog();
 
   const [selectedFilter, setSelectedFilter] = useState<FilterOption>("all");
   const [refreshingList, setRefreshingList] = useState(false);
+
+  /**
+   * Aceitar/recusar via hook partilhado (o mesmo do ecrã full-screen).
+   * Antes: um estado `selected` disparava um useEffect que fazia o POST —
+   * ação-por-efeito, com corrida entre toques duplos e reset do estado.
+   * Agora o toque chama o handler diretamente, com guarda `submitting`.
+   */
+  const { accept, refuse, submitting } = useRequestActions();
+
+  const onDecision = ({ id, service_id, accepted }: AcceptRejectType) => {
+    if (submitting || !service_id) return;
+    if (accepted) accept({ scheduleId: id, serviceId: service_id });
+    else refuse(service_id);
+  };
 
   const refreshList = async () => {
     setRefreshingList(true);
     try { await getPendingServices(); } finally { setRefreshingList(false); }
   };
   const [services, setServices] = useState<ServiceRequestedInterface[]>();
-  const [selected, setSelected] = useState<AcceptRejectType>({id: null, service_id: null, accepted: false});
   const [ hoursOfService, setHoursOfService] = useState<any>({});
 
   //the below state will be used to handle the remaining time to accept service for each item of the services flatlist
@@ -70,81 +78,6 @@ const Requests = () => {
   // Guarda os ids já vibrados para não repetir a vibração a cada tick.
   const vibratedRef = useRef<Record<string, boolean>>({});
 
-  useEffect(() => {
-    if (!selected.id && !selected.service_id) return;
-
-    // Refuse (works for both immediate and scheduled)
-    if (!selected.accepted && selected.service_id) {
-      const refusedServiceId = Number(selected.service_id);
-      api.post(API_ROUTES.POST_REFUSE_SERVICE(selected.service_id as string)).then(() => {
-        setPendingServices((prev) => (prev ?? []).filter(s => s.service_id !== refusedServiceId));
-        setPendingScheduleServices((prev) => (prev ?? []).filter(s => s.service_id !== refusedServiceId));
-        setSelected({id: null, service_id: null, accepted: false});
-      }).catch((error) => {
-        openDialog({
-          title: t('errors.service_refuse.title'),
-          subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('errors.service_refuse.subtitle'),
-          closeAfterMSeconds: 3000,
-          closeOnClickOutside: true,
-        });
-        getPendingServices();
-      });
-      return;
-    }
-
-    // Accept - scheduled service (has schedule_id)
-    if (selected.accepted && selected.id) {
-      const acceptedScheduleId = Number(selected.id);
-      api.post(API_ROUTES.VENDOR_ACCEPT_SCHEDULED_SERVICE, {
-        schedule_id: selected.id
-      }).then(() => {
-        setPendingServices((prev) => (prev ?? []).filter(s => s.schedule_id !== acceptedScheduleId));
-        setPendingScheduleServices((prev) => (prev ?? []).filter(s => s.id !== acceptedScheduleId));
-        fetchScheduledServices(String(selected.id));
-        setSelected({id: null, service_id: null, accepted: false});
-        openDialog({
-          icon: <CheckMark color={Colors.primary} />,
-          title: t("services.service.channel.accepted.title"),
-          subtitle: t("services.service.channel.accepted.subtitle"),
-          closeAfterMSeconds: 3000,
-          closeOnClickOutside: true,
-        });
-      }).catch((error) => {
-        openDialog({
-          title: t('errors.service_accept.title'),
-          subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('errors.service_accept.subtitle'),
-          closeAfterMSeconds: 3000,
-          closeOnClickOutside: true,
-        });
-        getPendingServices();
-      });
-      return;
-    }
-
-    // Accept - immediate service (no schedule_id, only service_id)
-    if (selected.accepted && !selected.id && selected.service_id) {
-      const acceptedServiceId = Number(selected.service_id);
-      api.post(API_ROUTES.VENDOR_ACCEPT_SERVICE_BY_ID(selected.service_id as string)).then(() => {
-        setPendingServices((prev) => (prev ?? []).filter(s => s.service_id !== acceptedServiceId));
-        setSelected({id: null, service_id: null, accepted: false});
-        openDialog({
-          icon: <CheckMark color={Colors.primary} />,
-          title: t("services.service.channel.accepted.title"),
-          subtitle: t("services.service.channel.accepted.subtitle"),
-          closeAfterMSeconds: 3000,
-          closeOnClickOutside: true,
-        });
-      }).catch((error) => {
-        openDialog({
-          title: t('errors.service_accept.title'),
-          subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('errors.service_accept.subtitle'),
-          closeAfterMSeconds: 3000,
-          closeOnClickOutside: true,
-        });
-        getPendingServices();
-      });
-    }
-  }, [selected]);
 
   const FILTERS = useMemo<FilterOption[]>(() => {
     if (!operationAreas || operationAreas.length === 0) return ["all"];
@@ -400,8 +333,8 @@ const Requests = () => {
                 <AcceptReject
                   id={item.schedule_id}
                   serviceId={item.service_id}
-                  setSelected={setSelected}
-                  disabled={remaining === null}
+                  setSelected={onDecision}
+                  disabled={submitting || remaining === null}
                 />
               </ServiceCard>
               </TouchableOpacity>
