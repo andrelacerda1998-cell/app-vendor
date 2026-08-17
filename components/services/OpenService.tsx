@@ -76,7 +76,9 @@ const OpenService = () => {
         live: false,
       };
 
-  const price = renderMoney(svc?.amount ?? svc?.amount_for_vendor ?? null);
+  // SÓ a parte do técnico. O fallback para `amount` (total pago pelo cliente)
+  // mostrava aqui um valor ~33% acima do que o técnico realmente recebe.
+  const price = renderMoney(svc?.amount_for_vendor ?? null);
 
   // Serviço já concluído sai da Home: o trabalho do técnico acabou e o valor
   // passa a estar nos Ganhos, em "Por receber", até o serviço fechar. A

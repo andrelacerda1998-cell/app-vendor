@@ -33,24 +33,6 @@ interface FilterOptionObject {
 
 type FilterOption = "all" | FilterOptionObject;
 
-interface VendorsInterface {
-  distance: number,
-  id: number,
-  name: string,
-  // nif: string,
-  rate: number,
-  rating: number
-}
-
-interface VendorsInterface {
-  distance: number,
-  id: number,
-  name: string,
-  // nif: string,
-  rate: number,
-  rating: number
-}
-
 const Requests = () => {
   const { t } = useTranslation();
   const {  vendorData }  = useSession();

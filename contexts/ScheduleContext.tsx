@@ -143,7 +143,9 @@ export const ScheduleProvider: React.FC<{ children: ReactNode }> = ({ children }
               name: schedule.customer.name,
               address: schedule.address.name,
             },
-            amount_for_vendor: schedule.amount_for_vendor ?? schedule.amount ?? null,
+            // SEM fallback para `amount`: nos payloads de pedidos esse campo é o
+            // TOTAL pago pelo cliente — cair nele inflacionava o valor ~33%.
+            amount_for_vendor: schedule.amount_for_vendor ?? null,
             schedule: {
               scheduled_day: scheduledDay,
               date_label: dateLabel,
@@ -383,7 +385,8 @@ export const ScheduleProvider: React.FC<{ children: ReactNode }> = ({ children }
           name: data.customer.name,
           address: data.address.name,
         },
-        amount_for_vendor: data.amount_for_vendor ?? data.amount ?? null,
+        // Ver nota acima: `amount` aqui é o total do cliente, nunca fallback.
+        amount_for_vendor: data.amount_for_vendor ?? null,
         schedule: {
           scheduled_day: scheduledDay,
           date_label: dateLabel,

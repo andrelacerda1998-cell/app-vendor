@@ -620,7 +620,10 @@ const Status = () => {
 
         {/* O valor a receber subiu para o cabeçalho — ver comentário lá. */}
 
-        {/* Incluído / Não incluído */}
+        {/* Incluído / Não incluído — só quando o catálogo tem mesmo conteúdo.
+            Com ambos vazios, o cartão dizia "Sem informação" duas vezes:
+            um bloco inteiro a comunicar ausência de conteúdo. */}
+        {((servicesDetail?.includes?.length ?? 0) > 0 || (servicesDetail?.excludes?.length ?? 0) > 0) && (
         <View className="bg-card border rounded-2xl p-4 mt-3" style={{ borderColor: Colors.line }}>
           <CustomText color="muted" boldness="bold" size="extraSmall">{t('services.includes')}</CustomText>
           <View className="mt-2">
@@ -656,6 +659,7 @@ const Status = () => {
             )}
           </View>
         </View>
+        )}
         {/* Fotos e extras só fazem sentido com o serviço a decorrer: antes de
             chegar ao local não há nada para fotografar nem para acrescentar. */}
         {status === ServiceStatus.ARRIVED && (
