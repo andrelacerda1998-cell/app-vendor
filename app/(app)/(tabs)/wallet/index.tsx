@@ -244,7 +244,9 @@ const Agenda = () => {
                           />
 
                           <View className="flex-1">
-                            <CustomText color="secondary" boldness="bold" size="medium" numberOfLines={1}>
+                            {/* Duas linhas: a uma, "Reparar uma torneira a…"
+                                cortava o que interessa. */}
+                            <CustomText color="secondary" boldness="bold" size="medium" numberOfLines={2}>
                               {serviceName}
                             </CustomText>
                             {street ? (
