@@ -50,6 +50,15 @@ const CompleteYourProfile = () => {
       })
     : t('complete_profile.subtitle');
 
+  /**
+   * Procura recente na zona do técnico (últimos 7 dias), vinda do backend.
+   * "Faltam 3 passos" é uma tarefa; "houve 12 pedidos na tua zona" é o que ele
+   * está a perder por não a fazer — a mesma alavanca já usada na
+   * auto-aceitação. Só aparece com número real: sem zonas escolhidas ou sem
+   * procura, o backend manda 0/null e não se inventa nada.
+   */
+  const zoneRequests = vendorData?.zone_recent_requests ?? 0;
+
   return (
     <TouchableOpacity
       activeOpacity={0.9}
@@ -81,6 +90,18 @@ const CompleteYourProfile = () => {
           </View>
           <Feather name="chevron-right" size={22} color={Colors.brand} />
         </View>
+
+        {zoneRequests > 0 && (
+          <View
+            className="flex-row items-center px-4 py-2.5"
+            style={{ borderTopWidth: 1, borderTopColor: 'rgba(250,187,91,0.28)' }}
+          >
+            <Feather name="trending-up" size={15} color={Colors.brand} />
+            <CustomText size="small" color="secondary" boldness="semiBold" classes="ml-2 flex-1" numberOfLines={2}>
+              {t('complete_profile.zone_demand', { count: zoneRequests })}
+            </CustomText>
+          </View>
+        )}
       </LinearGradient>
     </TouchableOpacity>
   )

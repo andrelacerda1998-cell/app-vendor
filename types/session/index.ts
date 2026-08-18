@@ -25,6 +25,11 @@ export interface VendorDataInterface {
   nif: string | null;
   company_address: string | null;
   at_user: string | null;
+  /**
+   * Pedidos criados na zona do técnico nos últimos 7 dias. Só vem preenchido
+   * para quem ainda não pode aceitar serviços — para os aprovados é `null`.
+   */
+  zone_recent_requests?: number | null;
   at_valid: boolean;
 }
 

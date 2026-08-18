@@ -1419,6 +1419,8 @@ export default {
       "title": "Tax authority access",
       "subtitle": "Create a tax portal login just for invoices and enter it here."
     },
+    "zone_demand_one": "{{count}} request in your area this week",
+    "zone_demand_other": "{{count}} requests in your area this week",
     "missing_one": "1 step left before you can receive requests.",
     "missing_many": "{{count}} steps left before you can receive requests.",
     "missing": {

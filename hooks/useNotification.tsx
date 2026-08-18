@@ -18,7 +18,7 @@ interface CampaignPayload {
    * app/Notifications/Vendor/*): 'service' abre o serviço em curso,
    * 'request' abre a lista de pedidos.
    */
-  open_type?: 'service' | 'request' | string | null;
+  open_type?: 'service' | 'request' | 'complete_profile' | string | null;
   open_id?: number | string | null;
 }
 
@@ -124,6 +124,13 @@ export function NotificationObserverHandler() {
           return;
         }
         router.push(REQUESTS_ROUTE);
+        return;
+      }
+
+      // Lembrete de perfil incompleto (vendors:remind-incomplete-profile):
+      // abre o wizard diretamente, que é o único sítio onde a ação acontece.
+      if (open_type === 'complete_profile') {
+        router.push('/(app)/(complete-profile)/CompleteProfile');
         return;
       }
 

@@ -1419,7 +1419,9 @@ export default {
             "title": "Acesso à AT",
             "subtitle": "Cria um acesso nas Finanças só para faturas e escreve-o aqui."
         },
-        "missing_one": "Falta 1 passo para começares a receber pedidos.",
+        "zone_demand_one": "{{count}} pedido na tua zona esta semana",
+            "zone_demand_other": "{{count}} pedidos na tua zona esta semana",
+            "missing_one": "Falta 1 passo para começares a receber pedidos.",
         "missing_many": "Faltam {{count}} passos para começares a receber pedidos.",
         "missing": {
             "documents": "documentos",
