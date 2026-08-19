@@ -17,6 +17,7 @@ import { renderMoney } from '@/utils/money';
 import { Card, EmptyState, ErrorState, SkeletonList, StatusPill } from '@/components/ui';
 import { useIsOnline } from '@/hooks/useIsOnline';
 import { formatStreetLine } from '@/utils/serviceDetails';
+import { formatDistanceKm } from '@/utils/requestTiming';
 import { ServiceStatus } from '@/types/services';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -287,6 +288,9 @@ const Agenda = () => {
                     // A RUA, não a cidade: `customer.address` é "Cidade, Estado"
                     // e o técnico já sabe em que cidade trabalha.
                     const street = formatStreetLine(item?.address_details, item?.customer?.address);
+                    // "a 9 km" ao lado da rua: é o que diz ao técnico se
+                    // consegue encadear este serviço com o anterior.
+                    const distanceLabel = formatDistanceKm(item?.distance);
 
                     return (
                       <TouchableOpacity
@@ -327,11 +331,13 @@ const Agenda = () => {
                             <CustomText color="secondary" boldness="bold" size="medium" numberOfLines={2}>
                               {serviceName}
                             </CustomText>
-                            {street ? (
+                            {(street || distanceLabel) ? (
                               <View className="flex-row items-center mt-0.5">
                                 <Feather name="map-pin" size={12} color={Colors.muted} />
-                                <CustomText color="muted" size="small" numberOfLines={1} classes="ml-1.5 flex-1">
-                                  {street}
+                                {/* Duas linhas: com a rua E a distância, uma só
+                                    cortava a morada a meio ("Alameda dos Oce…"). */}
+                                <CustomText color="muted" size="small" numberOfLines={2} classes="ml-1.5 flex-1">
+                                  {[street, distanceLabel].filter(Boolean).join(' · ')}
                                 </CustomText>
                               </View>
                             ) : null}

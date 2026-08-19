@@ -160,6 +160,10 @@ export const ScheduleProvider: React.FC<{ children: ReactNode }> = ({ children }
               time: schedule.service_type.time ?? null,
             },
             address_details: schedule.address_details ?? null,
+            // Distância vendor→serviço (km). Vinha do backend e era descartada
+            // aqui — sem ela o técnico aceita e planeia o dia sem saber se
+            // consegue chegar do serviço anterior a tempo.
+            distance: schedule.distance ?? null,
             customer_notes: schedule.customer_notes ?? null,
             customer_photos: schedule.customer_photos ?? null,
             service_id: schedule.service_id ?? schedule.id,
