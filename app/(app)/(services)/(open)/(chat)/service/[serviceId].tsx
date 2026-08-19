@@ -24,9 +24,19 @@ interface Message {
     isCustomer: boolean;
     message: string;
     time: string;
+    /** Lida pelo destinatário. Só relevante nas mensagens que EU enviei. */
+    is_read?: boolean;
 }
 
-const VendorMessage = ({message, time}: { message: string, time: string }) => {
+/**
+ * A minha mensagem, com indicação de entrega/leitura.
+ *
+ * Sem isto o técnico escrevia ao cliente e ficava sem saber se tinha sido
+ * lido — à porta fechada, com o cliente ausente, isso é aflitivo. O visto
+ * duplo a âmbar diz "leu"; o simples, "enviado".
+ */
+const VendorMessage = ({message, time, isRead}: { message: string, time: string, isRead?: boolean }) => {
+    const { t } = useTranslation();
     return (
         <View className="space-y-2 self-end mb-5">
             <View className="bg-gray_light p-6 w-full rounded-3xl rounded-br-none">
@@ -34,14 +44,18 @@ const VendorMessage = ({message, time}: { message: string, time: string }) => {
                     {message}
                 </CustomText>
             </View>
-            <CustomText
-                size="extraSmall"
-                color="gray_light"
-                boldness="regular"
-                classes="text-right"
-            >
-                {time}
-            </CustomText>
+            <View className="flex-row items-center justify-end">
+                <CustomText size="extraSmall" color="gray_light" boldness="regular">
+                    {time}
+                </CustomText>
+                <Ionicons
+                    name={isRead ? 'checkmark-done' : 'checkmark'}
+                    size={14}
+                    color={isRead ? Colors.brand : Colors.gray_light}
+                    style={{ marginLeft: 4 }}
+                    accessibilityLabel={isRead ? t('chat.read') : t('chat.sent')}
+                />
+            </View>
         </View>
     )
 }
@@ -173,12 +187,13 @@ const Service = () => {
                 const data = res.data.data.messages;
                 if (!vendorData) return;
 
-                const messagesToSave = data.map((message: { from: number; date: string; message: string }) => ({
+                const messagesToSave = data.map((message: { from: number; date: string; message: string; is_read?: boolean }) => ({
                     ...message,
                     isVendor: message.from === vendorData?.user?.id,
                     isCustomer: message.from !== vendorData?.user?.id,
                     message: message.message,
                     time: message.date,
+                    is_read: message.is_read,
                 }));
 
                 setMessages(messagesToSave);
@@ -384,6 +399,7 @@ const Service = () => {
                                                         key={`vendor-${index}`}
                                                         message={message.message}
                                                         time={formatIsoToTime(message.time)}
+                                                        isRead={message.is_read}
                                                     />
                                                 );
                                             }

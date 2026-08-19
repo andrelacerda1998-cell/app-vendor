@@ -480,6 +480,8 @@ export default {
     }
   },
   "chat": {
+    "read": "Read",
+    "sent": "Sent",
     "send": "Send message",
     "title": "Chat",
     "dates": {

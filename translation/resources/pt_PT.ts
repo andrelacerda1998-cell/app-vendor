@@ -480,6 +480,8 @@ export default {
         }
     },
     "chat": {
+        "read": "Lida",
+        "sent": "Enviada",
         "send": "Enviar mensagem",
         "title": "Conversa",
         "dates": {
