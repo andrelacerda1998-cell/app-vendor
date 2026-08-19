@@ -19,6 +19,7 @@ import { useIsOnline } from '@/hooks/useIsOnline';
 import { formatStreetLine } from '@/utils/serviceDetails';
 import { formatDistanceKm } from '@/utils/requestTiming';
 import { ServiceStatus } from '@/types/services';
+import useUnavailableDays from '@/hooks/useUnavailableDays';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const WEEKDAY_LETTERS = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
@@ -49,6 +50,8 @@ const Agenda = () => {
   const isOnline = useIsOnline();
   const [refreshing, setRefreshing] = useState(false);
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
+  // Indisponibilidade pontual: toque longo num dia da fita marca/desmarca.
+  const unavailable = useUnavailableDays();
 
   const onRefresh = async () => {
     if (!vendorData) return;
@@ -151,6 +154,7 @@ const Agenda = () => {
             const k = keyOf(d);
             const hasItems = (groups[k]?.length ?? 0) > 0;
             const isSelected = selectedDay === k;
+            const isOff = unavailable.isUnavailable(k);
             return (
               <TouchableOpacity
                 key={k}
@@ -163,23 +167,36 @@ const Agenda = () => {
                   month: 'long',
                 })}
                 onPress={() => setSelectedDay(isSelected ? null : k)}
+                onLongPress={() => unavailable.toggle(k)}
+                delayLongPress={400}
+                accessibilityHint={t('agenda.unavailable_hint')}
                 className="flex-1 items-center rounded-2xl border py-2.5"
                 style={{
-                  borderColor: isSelected ? Colors.brand : Colors.line,
-                  backgroundColor: isSelected ? 'rgba(250,187,91,0.12)' : Colors.card,
+                  borderColor: isOff ? Colors.danger : isSelected ? Colors.brand : Colors.line,
+                  backgroundColor: isOff
+                    ? 'rgba(255,90,95,0.10)'
+                    : isSelected ? 'rgba(250,187,91,0.12)' : Colors.card,
                 }}
               >
                 <CustomText size="extraSmall" color="muted">
                   {WEEKDAY_LETTERS[d.getDay()]}
                 </CustomText>
-                <CustomText size="medium" color="secondary" boldness="bolder" classes="mt-0.5">
+                <CustomText
+                  size="medium"
+                  color={isOff ? 'muted' : 'secondary'}
+                  boldness="bolder"
+                  classes="mt-0.5"
+                  style={isOff ? { textDecorationLine: 'line-through' } : undefined}
+                >
                   {d.getDate()}
                 </CustomText>
+                {/* Indisponível manda no ponto: o âmbar de "tens serviços"
+                    perde o sentido num dia em que não vais trabalhar. */}
                 <View
                   className="rounded-full mt-1"
                   style={{
                     width: 5, height: 5,
-                    backgroundColor: hasItems ? Colors.brand : 'transparent',
+                    backgroundColor: isOff ? Colors.danger : hasItems ? Colors.brand : 'transparent',
                   }}
                 />
               </TouchableOpacity>

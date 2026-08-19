@@ -1282,6 +1282,8 @@ export default {
         "scheduled": "Agendado",
         "open_service_hint": "Abre o estado do serviço, com a morada, o que está incluído e o chat com o cliente.",
         "overdue_title": "Em atraso",
+      "unavailable_hint": "Toque longo para marcares o dia como indisponível",
+      "unavailable_legend": "Toque longo num dia para o marcares como indisponível",
       "overdue_hint": "A hora já passou. Conclui o serviço ou fala com o suporte.",
       "free_day_title": "Dia livre",
         "free_day": "Não tens serviços agendados para este dia."
