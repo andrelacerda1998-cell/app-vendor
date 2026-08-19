@@ -51,9 +51,23 @@ const Schedules = () => {
     return upcoming ?? starts[0] ?? null;
   })();
 
-  // Sem nada hoje, mostramos o próximo serviço futuro (para não esconder um
-  // agendamento de amanhã), ou o estado vazio.
-  const upcoming = !hasToday && list.length > 0 ? list[0] : null;
+  /**
+   * Sem nada hoje, mostramos o próximo serviço FUTURO.
+   *
+   * O `list` passou a incluir agendamentos passados (a Agenda mostra-os em
+   * "Em atraso"), por isso é preciso filtrar: sem isto, a Home anunciava como
+   * "Próximo serviço" uma data que já tinha passado.
+   */
+  const upcoming = (() => {
+    if (hasToday) return null;
+    const todayKey = new Date().toISOString().slice(0, 10);
+    const future = list
+      .filter((s) => String(s?.schedule?.scheduled_day ?? '').split('T')[0] >= todayKey)
+      .sort((a, b) =>
+        String(a?.schedule?.scheduled_day).localeCompare(String(b?.schedule?.scheduled_day))
+      );
+    return future[0] ?? null;
+  })();
 
   const upcomingWhen = (() => {
     if (!upcoming) return '';

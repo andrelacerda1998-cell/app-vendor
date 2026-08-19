@@ -17,6 +17,7 @@ import { renderMoney } from '@/utils/money';
 import { Card, EmptyState, ErrorState, SkeletonList, StatusPill } from '@/components/ui';
 import { useIsOnline } from '@/hooks/useIsOnline';
 import { formatStreetLine } from '@/utils/serviceDetails';
+import { ServiceStatus } from '@/types/services';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const WEEKDAY_LETTERS = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
@@ -86,6 +87,31 @@ const Agenda = () => {
 
   const dayTotal = (items: any[]) =>
     items.reduce((s: number, i: any) => s + (Number(i?.amount_for_vendor) || 0), 0);
+
+  /**
+   * EM ATRASO: agendamentos cuja hora já passou e que não foram concluídos.
+   *
+   * Antes desapareciam simplesmente — a Agenda só olha para os próximos 7
+   * dias. Um técnico que faltasse, ou se esquecesse de concluir, não tinha
+   * como saber: nem "em atraso", nem "não compareceste". Ficava a acumular
+   * faltas em silêncio, com a reputação a degradar-se sem aviso.
+   */
+  const overdue = useMemo(() => {
+    const now = Date.now();
+    return (scheduledServicesData ?? [])
+      .filter((s: any) => {
+        if (s?.status === ServiceStatus.FINISHED || s?.status === ServiceStatus.CLOSED) return false;
+        const day = parseDay(s?.schedule?.scheduled_day);
+        if (!day) return false;
+        const [hh, mm] = hhmm(s?.schedule?.scheduled_time?.start).split(':').map(Number);
+        const start = new Date(day);
+        start.setHours(Number.isFinite(hh) ? hh : 23, Number.isFinite(mm) ? mm : 59, 0, 0);
+        return start.getTime() < now;
+      })
+      .sort((a: any, b: any) =>
+        String(b?.schedule?.scheduled_day).localeCompare(String(a?.schedule?.scheduled_day))
+      );
+  }, [scheduledServicesData]);
 
   const visibleKeys = (selectedDay ? [selectedDay] : Object.keys(groups)).sort();
 
@@ -166,6 +192,58 @@ const Agenda = () => {
         contentContainerStyle={{ paddingBottom: tabBarContentPadding(insets.bottom) }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.brand} />}
       >
+        {/* EM ATRASO primeiro: é o que exige ação e o que ninguém lhe mostrava. */}
+        {overdue.length > 0 && (
+          <View className="mb-6">
+            <View className="flex-row items-center mb-3">
+              <Feather name="alert-triangle" size={16} color={Colors.warning} />
+              <CustomText size="medium" color="secondary" boldness="bold" classes="ml-2">
+                {t('agenda.overdue_title')}
+              </CustomText>
+            </View>
+            <View style={{ gap: 10 }}>
+              {overdue.map((item: any, i: number) => (
+                <TouchableOpacity
+                  key={`overdue-${item?.service_id ?? i}`}
+                  activeOpacity={0.85}
+                  accessibilityRole="button"
+                  onPress={() => router.push(`/(app)/(services)/(open)/status/${item?.service_id}`)}
+                >
+                  <Card
+                    className="flex-row items-center"
+                    style={{ borderColor: Colors.warning }}
+                  >
+                    <View className="items-center" style={{ width: 52 }}>
+                      <CustomText color="secondary" boldness="bolder" size="medium">
+                        {hhmm(item?.schedule?.scheduled_time?.start) || '--:--'}
+                      </CustomText>
+                      <CustomText color="muted" size="extraSmall" classes="mt-0.5">
+                        {(() => {
+                          const d = parseDay(item?.schedule?.scheduled_day);
+                          return d ? d.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit' }) : '';
+                        })()}
+                      </CustomText>
+                    </View>
+                    <View
+                      className="self-stretch mx-3"
+                      style={{ width: 2, borderRadius: 1, backgroundColor: Colors.warning }}
+                    />
+                    <View className="flex-1">
+                      <CustomText color="secondary" boldness="bold" size="medium" numberOfLines={2}>
+                        {item?.service_type?.name ?? '—'}
+                      </CustomText>
+                      <CustomText color="muted" size="small" classes="mt-0.5" numberOfLines={2}>
+                        {t('agenda.overdue_hint')}
+                      </CustomText>
+                    </View>
+                    <Feather name="chevron-right" size={18} color={Colors.muted} />
+                  </Card>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+        )}
+
         {/* Ordem importa: a carregar e o erro vêm ANTES do vazio, senão uma
             falha de rede lê-se como "não tens nada marcado". */}
         {scheduledServicesLoading && (scheduledServicesData?.length ?? 0) === 0 ? (

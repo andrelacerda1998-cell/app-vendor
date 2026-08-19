@@ -1273,7 +1273,9 @@ export default {
         "empty_title": "Agenda livre",
         "scheduled": "Agendado",
         "open_service_hint": "Abre o estado do serviço, com a morada, o que está incluído e o chat com o cliente.",
-        "free_day_title": "Dia livre",
+        "overdue_title": "Em atraso",
+      "overdue_hint": "A hora já passou. Conclui o serviço ou fala com o suporte.",
+      "free_day_title": "Dia livre",
         "free_day": "Não tens serviços agendados para este dia."
     },
     "earnings": {

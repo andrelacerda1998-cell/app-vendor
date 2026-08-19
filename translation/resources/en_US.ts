@@ -1273,6 +1273,8 @@ export default {
     "empty_title": "Free agenda",
     "scheduled": "Scheduled",
     "open_service_hint": "Opens the service status, with the address, what's included and the customer chat.",
+    "overdue_title": "Overdue",
+    "overdue_hint": "The time has passed. Finish the service or contact support.",
     "free_day_title": "Free day",
     "free_day": "You have no services scheduled for this day."
   },
