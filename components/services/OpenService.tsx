@@ -80,6 +80,22 @@ const OpenService = () => {
   // mostrava aqui um valor ~33% acima do que o técnico realmente recebe.
   const price = renderMoney(svc?.amount_for_vendor ?? null);
 
+  /**
+   * Serviço esquecido em execução.
+   *
+   * Sem o toque em "Concluir serviço" o serviço nunca fecha: o técnico não é
+   * pago e a app não lhe dizia nada — encontrámos um parado há 70h e outro há
+   * 480h, ambos a mostrar o cartão verde normal, como se estivesse tudo bem.
+   * A partir de 3h o cartão muda de tom e diz há quanto tempo está parado.
+   */
+  const inProgressSince = svc?.status === ServiceStatus.ARRIVED
+    ? new Date(svc?.updated_at ?? svc?.on_the_way_at ?? Date.now()).getTime()
+    : null;
+  const hoursStuck = inProgressSince
+    ? Math.floor((Date.now() - inProgressSince) / 3600000)
+    : 0;
+  const isStuck = hoursStuck >= 3;
+
   // Serviço já concluído sai da Home: o trabalho do técnico acabou e o valor
   // passa a estar nos Ganhos, em "Por receber", até o serviço fechar. A
   // avaliação do cliente é despoletada pelo socket de fecho, não por aqui.
@@ -94,11 +110,17 @@ const OpenService = () => {
         onPress={() => router.navigate(`/(app)/(services)/(open)/status/${svc?.id}`)}
       >
         <LinearGradient
-          colors={['rgba(250,187,91,0.30)', 'rgba(250,187,91,0.08)']}
+          colors={isStuck
+            ? ['rgba(233,162,59,0.34)', 'rgba(233,162,59,0.10)']
+            : ['rgba(250,187,91,0.30)', 'rgba(250,187,91,0.08)']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={[
-            { borderRadius: 18, borderWidth: 1.5, borderColor: 'rgba(250,187,91,0.55)' },
+            {
+              borderRadius: 18,
+              borderWidth: 1.5,
+              borderColor: isStuck ? Colors.warning : 'rgba(250,187,91,0.55)',
+            },
             cardShadow,
           ]}
         >
@@ -132,6 +154,24 @@ const OpenService = () => {
 
               <Feather name="chevron-right" size={22} color={Colors.brand} />
             </View>
+
+            {/* Há quanto tempo está parado + o que fazer. Sem isto, o técnico
+                não tinha como saber que o serviço ficou por fechar — e é isso
+                que o impede de ser pago. */}
+            {isStuck && (
+              <View
+                className="flex-row items-center mt-3 pt-3"
+                style={{ borderTopWidth: 1, borderTopColor: 'rgba(233,162,59,0.4)' }}
+              >
+                <Feather name="alert-triangle" size={15} color={Colors.warning} />
+                <CustomText size="small" color="secondary" boldness="semiBold" classes="ml-2 flex-1" numberOfLines={2}>
+                  {t(hoursStuck >= 24 ? 'services.service.status.stuck.days' : 'services.service.status.stuck.hours', {
+                    hours: hoursStuck,
+                    days: Math.floor(hoursStuck / 24),
+                  })}
+                </CustomText>
+              </View>
+            )}
           </View>
         </LinearGradient>
       </TouchableOpacity>

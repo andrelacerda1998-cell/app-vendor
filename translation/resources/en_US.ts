@@ -373,6 +373,10 @@ export default {
       "status": {
         "header": "Job",
         "estimated_duration": "Estimated time: {{value}}",
+        "stuck": {
+          "hours": "In progress for {{hours}}h — finish it to get paid.",
+          "days": "In progress for {{days}} days — finish it to get paid."
+        },
         "steps": {
           "accepted": "Accepted",
           "on_the_way": "On the way",

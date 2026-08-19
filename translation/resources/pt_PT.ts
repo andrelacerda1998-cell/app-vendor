@@ -373,6 +373,10 @@ export default {
             "status": {
                 "header": "Serviço",
                 "estimated_duration": "Tempo estimado: {{value}}",
+                "stuck": {
+                    "hours": "Em execução há {{hours}}h — conclui para receberes.",
+                    "days": "Em execução há {{days}} dias — conclui para receberes."
+                },
                 "steps": {
                     "accepted": "Aceite",
                     "on_the_way": "A caminho",
