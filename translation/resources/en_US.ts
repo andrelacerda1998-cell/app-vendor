@@ -409,6 +409,12 @@ export default {
         },
         "distance": "Distance",
         "value_to_receive": "Amount to receive",
+        "breakdown": {
+          "title": "How it's calculated",
+          "client_paid": "The client paid",
+          "commission": "Piquet commission",
+          "you_get": "You get"
+        },
         "confirm_it_was_finished": "Confirm it's complete",
         "finish": "Finish",
         "chat": "Chat"
