@@ -93,6 +93,29 @@ const Agenda = () => {
     items.reduce((s: number, i: any) => s + (Number(i?.amount_for_vendor) || 0), 0);
 
   /**
+   * Resumo do dia: paragens, janela horária e quilómetros somados.
+   *
+   * É o que falta para o técnico planear — ver o dia como uma sequência, e
+   * não como cartões soltos. NÃO se desenhou um mapa de rota a bordo de
+   * propósito: o Google Maps e o Waze fazem multi-paragem com trânsito e
+   * recálculo, e a app já os abre pelo seletor de navegação. Duplicar isso
+   * seria pior e mais caro (waypoints da Directions API) do que dar aqui a
+   * informação de decisão e deixar a navegação a quem a faz melhor.
+   */
+  const daySummary = (items: any[]) => {
+    const km = items.reduce((sum: number, i: any) => {
+      const d = Number(i?.distance);
+      return Number.isFinite(d) && d > 0 ? sum + d : sum;
+    }, 0);
+    const starts = items
+      .map((i: any) => hhmm(i?.schedule?.scheduled_time?.start))
+      .filter(Boolean)
+      .sort();
+    const window = starts.length > 1 ? `${starts[0]}–${starts[starts.length - 1]}` : starts[0] ?? '';
+    return { stops: items.length, km, window };
+  };
+
+  /**
    * EM ATRASO: agendamentos cuja hora já passou e que não foram concluídos.
    *
    * Antes desapareciam simplesmente — a Agenda só olha para os próximos 7
@@ -287,7 +310,7 @@ const Agenda = () => {
             return (
               <View key={k} className="mb-6">
                 {/* Cabeçalho do dia + total */}
-                <View className="flex-row items-center justify-between mb-3">
+                <View className="flex-row items-center justify-between mb-1">
                   <CustomText size="medium" color="secondary" boldness="bold">
                     {dayTitle(date)}
                   </CustomText>
@@ -295,6 +318,21 @@ const Agenda = () => {
                     {renderMoney(dayTotal(items)) || '0,00 €'}
                   </CustomText>
                 </View>
+                {/* Só com 2+ paragens: para um serviço só, a informação já
+                    está toda no cartão e isto seria repetição. */}
+                {items.length > 1 && (() => {
+                  const sum = daySummary(items);
+                  return (
+                    <CustomText size="extraSmall" color="muted" classes="mb-3" numberOfLines={1}>
+                      {[
+                        t('agenda.day_stops', { count: sum.stops }),
+                        sum.window,
+                        sum.km > 0 ? `${sum.km.toFixed(1)} km` : null,
+                      ].filter(Boolean).join(' · ')}
+                    </CustomText>
+                  );
+                })()}
+                {items.length <= 1 && <View className="mb-2" />}
 
                 <View style={{ gap: 10 }}>
                   {items.map((item: any, i: number) => {

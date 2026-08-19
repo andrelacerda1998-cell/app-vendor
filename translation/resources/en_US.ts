@@ -1282,6 +1282,8 @@ export default {
     "scheduled": "Scheduled",
     "open_service_hint": "Opens the service status, with the address, what's included and the customer chat.",
     "overdue_title": "Overdue",
+    "day_stops_one": "{{count}} stop",
+    "day_stops_other": "{{count}} stops",
     "unavailable_hint": "Long press to mark the day as unavailable",
     "unavailable_legend": "Long press a day to mark it as unavailable",
     "overdue_hint": "The time has passed. Finish the service or contact support.",
