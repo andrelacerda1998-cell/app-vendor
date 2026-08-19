@@ -9,6 +9,8 @@ import { API_ROUTES } from '@/constants/ApiRoutes'
 import { renderMoney } from '@/utils/money'
 import { useTranslation } from 'react-i18next'
 import { Card } from '@/components/ui'
+import { useSession } from '@/contexts/SessionContext'
+import { Feather as FeatherIcon } from '@expo/vector-icons'
 
 interface Stats {
   this_week_earnings: number;
@@ -58,6 +60,7 @@ const Divider = () => <View style={{ width: 1, height: 32, backgroundColor: Colo
 const WeekStats = () => {
   const { t } = useTranslation();
   const { api } = useApi();
+  const { vendorData } = useSession();
   const [stats, setStats] = useState<Stats | null>(null);
 
   useEffect(() => {
@@ -72,13 +75,28 @@ const WeekStats = () => {
   const services = String(stats?.this_week_services ?? 0);
   const rating = stats?.rating != null ? stats.rating.toFixed(1) : '—';
 
+  /**
+   * Semana a zero num técnico já aprovado.
+   *
+   * Três zeros na cara — 0,00 € · 0 serviços · — de avaliação — sem dizer
+   * porquê, lê-se como "isto não funciona". Quem está pronto e sem trabalho
+   * precisa de contexto, não de um boletim de notas vazio. A procura na zona
+   * (zone_recent_requests) diz-lhe que há mercado; o resto é a app explicar
+   * o que falta do lado dele.
+   */
+  const approved = !!vendorData?.can_accept_service;
+  const emptyWeek = !stats?.this_week_earnings && !stats?.this_week_services;
+  const zoneRequests = vendorData?.zone_recent_requests ?? 0;
+  const explain = approved && emptyWeek;
+
   return (
     <TouchableOpacity
       activeOpacity={0.85}
       // rota "history" = separador Ganhos (nome legado)
       onPress={() => router.push('/(app)/(tabs)/history')}
     >
-      <Card className="flex-row items-center" padded={false} style={{ paddingVertical: 18 }}>
+      <Card padded={false} style={{ paddingVertical: 18 }}>
+      <View className="flex-row items-center">
       <StatItem
         value={earnings}
         label={t('home_stats.this_week')}
@@ -92,6 +110,21 @@ const WeekStats = () => {
       />
       <Divider />
       <StatItem value={rating} label={t('home_stats.rating')} star />
+      </View>
+
+      {explain && (
+        <View
+          className="flex-row items-center mx-4 mt-4 pt-3"
+          style={{ borderTopWidth: 1, borderTopColor: Colors.line }}
+        >
+          <FeatherIcon name="info" size={14} color={Colors.muted} />
+          <CustomText color="muted" size="small" classes="ml-2 flex-1" numberOfLines={3}>
+            {zoneRequests > 0
+              ? t('home_stats.empty_with_demand', { count: zoneRequests })
+              : t('home_stats.empty_ready')}
+          </CustomText>
+        </View>
+      )}
       </Card>
     </TouchableOpacity>
   )

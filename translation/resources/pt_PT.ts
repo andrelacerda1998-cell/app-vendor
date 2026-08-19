@@ -1314,6 +1314,9 @@ export default {
         "finish_account": "Vamos concluir a tua conta."
     },
     "home_stats": {
+        "empty_ready": "Estás pronto e visível na tua zona. Fica online para receberes pedidos.",
+        "empty_with_demand_one": "Houve {{count}} pedido na tua zona esta semana. Fica online para não perderes os próximos.",
+        "empty_with_demand_other": "Houve {{count}} pedidos na tua zona esta semana. Fica online para não perderes os próximos.",
         "this_week": "Esta semana",
         "service": "Serviço",
         "services": "Serviços",

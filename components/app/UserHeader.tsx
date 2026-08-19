@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Animated, Image, TouchableWithoutFeedback, View } from 'react-native';
+import { Animated, Image, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { Colors } from '@/constants/Colors'
 import { Entypo, Feather, MaterialIcons, Octicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
@@ -11,6 +11,7 @@ import { useSession } from '@/contexts/SessionContext'
 import { CustomText } from '../CustomText'
 import NotificationIcon from "@/assets/icons/notification"
 import { useTranslation } from "react-i18next"
+import useVendorOnlineStatus from "@/hooks/useVendorOnlineStatus"
 
 const UserHeader = () => {
   const { t } = useTranslation();
@@ -25,6 +26,16 @@ const UserHeader = () => {
   const [isLoadingRequest, setIsLoadingRequest] = useState(false);
 
   const [notifications, setNotifications] = useState<number>(0);
+
+  /**
+   * Online/offline no cabeçalho da Home.
+   *
+   * O interruptor que decide se o técnico recebe pedidos — o estado mais
+   * importante da app — vivia escondido no Perfil, a três toques. Os Ganhos
+   * chegavam a dizer "fica online para receberes pedidos" sem dizer onde.
+   * A lógica é a mesma do Perfil (hook partilhado), não uma segunda cópia.
+   */
+  const online = useVendorOnlineStatus();
 
   useEffect(() => {
     if (vendorData?.user?.notifications !== undefined) {
@@ -91,6 +102,31 @@ const UserHeader = () => {
               : t('user_header.finish_account')}
           </CustomText>
         </View>
+
+        {/* Estado online/offline — tocável, sempre à vista. */}
+        <TouchableOpacity
+          onPress={online.toggle}
+          disabled={online.disabled}
+          activeOpacity={0.8}
+          className="flex-row items-center rounded-full px-3 py-1.5 mr-3"
+          style={{
+            backgroundColor: online.isOnline ? 'rgba(35,230,158,0.14)' : Colors.card,
+            borderWidth: 1,
+            borderColor: online.isOnline ? 'rgba(35,230,158,0.45)' : Colors.line,
+            opacity: online.disabled ? 0.5 : 1,
+          }}
+          accessibilityRole="switch"
+          accessibilityState={{ checked: online.isOnline, disabled: online.disabled }}
+          accessibilityLabel={t('session.status.receive_requests')}
+        >
+          <View
+            className="rounded-full mr-1.5"
+            style={{ width: 8, height: 8, backgroundColor: online.isOnline ? Colors.success : Colors.danger }}
+          />
+          <CustomText size="extraSmall" boldness="bold" color="secondary">
+            {online.isOnline ? t('session.status.online') : t('session.status.offline')}
+          </CustomText>
+        </TouchableOpacity>
 
         <TouchOpacity
           onPress={handlePressNotification}

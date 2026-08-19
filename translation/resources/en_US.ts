@@ -1314,6 +1314,9 @@ export default {
     "finish_account": "Let's finish your account."
   },
   "home_stats": {
+    "empty_ready": "You're ready and visible in your area. Go online to receive requests.",
+    "empty_with_demand_one": "There was {{count}} request in your area this week. Go online so you don't miss the next ones.",
+    "empty_with_demand_other": "There were {{count}} requests in your area this week. Go online so you don't miss the next ones.",
     "this_week": "This week",
     "service": "Service",
     "services": "Services",
