@@ -538,15 +538,18 @@ const Status = () => {
           )}
         </Card>
 
-        {/* Stepper de estado + contagem do tempo (só com o serviço a decorrer) */}
+        {/* Com o serviço a decorrer, o tempo restante vem ANTES do stepper: é a
+            pergunta que o técnico tem naquele momento; o estado ele já sabe. */}
+        {status === ServiceStatus.ARRIVED && (
+          <ServiceCountdown
+            startedAt={svc?.arrived_at}
+            estimatedMinutes={svc?.service_type?.time}
+          />
+        )}
+
+        {/* Stepper de estado */}
         <Card className="mt-3">
           <Stepper steps={steps} currentRank={currentRank} />
-          {status === ServiceStatus.ARRIVED && (
-            <ServiceCountdown
-              startedAt={svc?.arrived_at}
-              estimatedMinutes={svc?.service_type?.time}
-            />
-          )}
         </Card>
 
         {/* Cliente + mapa + ações */}
