@@ -72,13 +72,42 @@ const Agenda = () => {
     [today]
   );
 
+  /**
+   * EM ATRASO: agendamentos cuja hora já passou e que não foram concluídos.
+   *
+   * Antes desapareciam simplesmente — a Agenda só olha para os próximos 7
+   * dias. Um técnico que faltasse, ou se esquecesse de concluir, não tinha
+   * como saber: nem "em atraso", nem "não compareceste". Ficava a acumular
+   * faltas em silêncio, com a reputação a degradar-se sem aviso.
+   */
+  const overdue = useMemo(() => {
+    const now = Date.now();
+    return (scheduledServicesData ?? [])
+      .filter((s: any) => {
+        if (s?.status === ServiceStatus.FINISHED || s?.status === ServiceStatus.CLOSED) return false;
+        const day = parseDay(s?.schedule?.scheduled_day);
+        if (!day) return false;
+        const [hh, mm] = hhmm(s?.schedule?.scheduled_time?.start).split(':').map(Number);
+        const start = new Date(day);
+        start.setHours(Number.isFinite(hh) ? hh : 23, Number.isFinite(mm) ? mm : 59, 0, 0);
+        return start.getTime() < now;
+      })
+      .sort((a: any, b: any) =>
+        String(b?.schedule?.scheduled_day).localeCompare(String(a?.schedule?.scheduled_day))
+      );
+  }, [scheduledServicesData]);
+
   // Agrupa por dia (janela de 7 dias)
   const groups = useMemo(() => {
     const limit = new Date(today.getTime() + 7 * DAY_MS);
     const map: Record<string, any[]> = {};
+    // Um serviço de HOJE cuja hora já passou entra em "Em atraso"; sem esta
+    // exclusão aparecia também em "Hoje" — o mesmo cartão duas vezes no ecrã.
+    const overdueIds = new Set(overdue.map((o: any) => String(o?.service_id)));
     (scheduledServicesData ?? []).forEach((s: any) => {
       const day = parseDay(s?.schedule?.scheduled_day);
       if (!day || day < today || day >= limit) return;
+      if (overdueIds.has(String(s?.service_id))) return;
       (map[keyOf(day)] = map[keyOf(day)] || []).push(s);
     });
     Object.values(map).forEach((items) =>
@@ -115,30 +144,6 @@ const Agenda = () => {
     return { stops: items.length, km, window };
   };
 
-  /**
-   * EM ATRASO: agendamentos cuja hora já passou e que não foram concluídos.
-   *
-   * Antes desapareciam simplesmente — a Agenda só olha para os próximos 7
-   * dias. Um técnico que faltasse, ou se esquecesse de concluir, não tinha
-   * como saber: nem "em atraso", nem "não compareceste". Ficava a acumular
-   * faltas em silêncio, com a reputação a degradar-se sem aviso.
-   */
-  const overdue = useMemo(() => {
-    const now = Date.now();
-    return (scheduledServicesData ?? [])
-      .filter((s: any) => {
-        if (s?.status === ServiceStatus.FINISHED || s?.status === ServiceStatus.CLOSED) return false;
-        const day = parseDay(s?.schedule?.scheduled_day);
-        if (!day) return false;
-        const [hh, mm] = hhmm(s?.schedule?.scheduled_time?.start).split(':').map(Number);
-        const start = new Date(day);
-        start.setHours(Number.isFinite(hh) ? hh : 23, Number.isFinite(mm) ? mm : 59, 0, 0);
-        return start.getTime() < now;
-      })
-      .sort((a: any, b: any) =>
-        String(b?.schedule?.scheduled_day).localeCompare(String(a?.schedule?.scheduled_day))
-      );
-  }, [scheduledServicesData]);
 
   const visibleKeys = (selectedDay ? [selectedDay] : Object.keys(groups)).sort();
 
