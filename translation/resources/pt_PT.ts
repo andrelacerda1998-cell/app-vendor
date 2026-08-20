@@ -373,6 +373,10 @@ export default {
             "status": {
                 "header": "Serviço",
                 "estimated_duration": "Tempo estimado: {{value}}",
+                "countdown": {
+                    "left": "Tempo restante",
+                    "over": "Tempo estimado excedido em"
+                },
                 "stuck": {
                     "hours": "Em execução há {{hours}}h — conclui para receberes.",
                     "days": "Em execução há {{days}} dias — conclui para receberes."
@@ -409,12 +413,6 @@ export default {
                 },
                 "distance": "Distância",
                 "value_to_receive": "Valor a receber",
-                "breakdown": {
-                    "title": "Como se calcula",
-                    "client_paid": "O cliente pagou",
-                    "commission": "Comissão Piquet",
-                    "you_get": "Recebes"
-                },
                 "confirm_it_was_finished": "Confirmar que está concluído",
                 "finish": "Finalizar",
                 "chat": "Chat"

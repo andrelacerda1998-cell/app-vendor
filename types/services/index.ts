@@ -42,10 +42,6 @@ export interface ServiceInterface {
   service_area: OperationArea,
   amount: number,
   amount_for_vendor: number,
-  /** Total pago pelo cliente (com IVA) — para a decomposição do valor. */
-  amount_total?: number | null,
-  /** Comissão da Piquet = amount_total − amount_for_vendor. */
-  commission_amount?: number | null,
   customer: UserInterface,
   rating_by_vendor: number,
   created_at: string,

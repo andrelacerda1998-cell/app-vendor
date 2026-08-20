@@ -373,6 +373,10 @@ export default {
       "status": {
         "header": "Job",
         "estimated_duration": "Estimated time: {{value}}",
+        "countdown": {
+          "left": "Time remaining",
+          "over": "Over the estimate by"
+        },
         "stuck": {
           "hours": "In progress for {{hours}}h — finish it to get paid.",
           "days": "In progress for {{days}} days — finish it to get paid."
@@ -409,12 +413,6 @@ export default {
         },
         "distance": "Distance",
         "value_to_receive": "Amount to receive",
-        "breakdown": {
-          "title": "How it's calculated",
-          "client_paid": "The client paid",
-          "commission": "Piquet commission",
-          "you_get": "You get"
-        },
         "confirm_it_was_finished": "Confirm it's complete",
         "finish": "Finish",
         "chat": "Chat"

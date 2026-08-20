@@ -21,6 +21,7 @@ import { useTranslation } from "react-i18next";
 import { renderMoney } from "@/utils/money";
 import ServiceExtras, { ServiceExtrasActions, type ExtrasSheet } from "@/components/services/ServiceExtras";
 import ServicePhotos from "@/components/services/ServicePhotos";
+import ServiceCountdown from "@/components/services/ServiceCountdown";
 import { Card, ErrorState, SkeletonList } from "@/components/ui";
 import { formatEstimatedDuration } from "@/utils/serviceDetails";
 import { useNavChooser } from "@/hooks/useNavChooser";
@@ -128,15 +129,6 @@ const Status = () => {
    */
   const [routeService, setRouteService] = useState<any>(null);
   const [loadingRouteService, setLoadingRouteService] = useState(false);
-  /**
-   * Decomposição do valor (fechada por omissão).
-   *
-   * O técnico via "30,00 €" sem saber de onde vinha. Numa relação em que a
-   * plataforma decide sozinha quanto ele recebe, esconder a conta é o que gera
-   * desconfiança — e disputas no suporte ("o cliente pagou 40, porque recebo
-   * 30?"). Mostrar a subtração responde à pergunta antes de ela ser feita.
-   */
-  const [showBreakdown, setShowBreakdown] = useState(false);
 
   const liveService: any =
     openService && String(openService.id) === String(serviceId) ? openService : null;
@@ -379,10 +371,6 @@ const Status = () => {
   // amount inflacionava o valor; sem fallback para amount para não voltar a
   // mostrar um número maior do que o técnico realmente recebe.
   const earn = renderMoney(svc?.amount_for_vendor ?? null);
-  // Decomposição: só se o backend mandar os números. Nunca se calcula a
-  // comissão no cliente — a percentagem é regra de negócio do servidor.
-  const total = renderMoney(svc?.amount_total ?? null);
-  const commission = renderMoney(svc?.commission_amount ?? null);
   // "~45 min" / "~1h30" — o helper já trata da unidade; a chave i18n antiga
   // imprimia só o número ("Duração estimada: 45"), sem dizer de quê.
   const durationLabel = formatEstimatedDuration(svc?.service_type?.time);
@@ -506,67 +494,17 @@ const Status = () => {
               )}
             </View>
             {earn ? (
-              /* Tocável: abre/fecha a decomposição por baixo. */
-              <TouchableOpacity
-                onPress={() => setShowBreakdown((v) => !v)}
-                activeOpacity={0.7}
-                accessibilityRole="button"
-                accessibilityLabel={t('services.service.status.breakdown.title')}
-                className="items-end"
-                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-              >
-                <View className="flex-row items-center">
-                  <CustomText color="muted" size="extraSmall">
-                    {t('services.service.status.value_to_receive')}
-                  </CustomText>
-                  <Feather
-                    name={showBreakdown ? 'chevron-up' : 'info'}
-                    size={12}
-                    color={Colors.muted}
-                    style={{ marginLeft: 4 }}
-                  />
-                </View>
+              <View className="items-end">
+                <CustomText color="muted" size="extraSmall">
+                  {t('services.service.status.value_to_receive')}
+                </CustomText>
                 <CustomText color="brand" boldness="bolder" size="large" classes="mt-0.5">
                   {earn}
                 </CustomText>
-              </TouchableOpacity>
+              </View>
             ) : null}
           </View>
 
-          {/* Decomposição: total do cliente − comissão = o que fica para ti.
-              Sem isto o técnico via só o resultado e não a conta. */}
-          {showBreakdown && !!earn && (
-            <View
-              className="mt-3 rounded-xl p-3"
-              style={{ backgroundColor: Colors.card_high }}
-            >
-              {total ? (
-                <View className="flex-row items-center justify-between">
-                  <CustomText color="muted" size="small">
-                    {t('services.service.status.breakdown.client_paid')}
-                  </CustomText>
-                  <CustomText color="secondary" size="small" boldness="semiBold">{total}</CustomText>
-                </View>
-              ) : null}
-              {commission ? (
-                <View className="flex-row items-center justify-between mt-1.5">
-                  <CustomText color="muted" size="small">
-                    {t('services.service.status.breakdown.commission')}
-                  </CustomText>
-                  <CustomText color="secondary" size="small" boldness="semiBold">−{commission}</CustomText>
-                </View>
-              ) : null}
-              <View
-                className="flex-row items-center justify-between mt-2 pt-2"
-                style={{ borderTopWidth: 1, borderTopColor: Colors.line }}
-              >
-                <CustomText color="secondary" size="small" boldness="bold">
-                  {t('services.service.status.breakdown.you_get')}
-                </CustomText>
-                <CustomText color="brand" size="small" boldness="bolder">{earn}</CustomText>
-              </View>
-            </View>
-          )}
 
           <View className="h-px my-4" style={{ backgroundColor: Colors.line }} />
 
@@ -600,9 +538,15 @@ const Status = () => {
           )}
         </Card>
 
-        {/* Stepper de estado */}
+        {/* Stepper de estado + contagem do tempo (só com o serviço a decorrer) */}
         <Card className="mt-3">
           <Stepper steps={steps} currentRank={currentRank} />
+          {status === ServiceStatus.ARRIVED && (
+            <ServiceCountdown
+              startedAt={svc?.arrived_at}
+              estimatedMinutes={svc?.service_type?.time}
+            />
+          )}
         </Card>
 
         {/* Cliente + mapa + ações */}
