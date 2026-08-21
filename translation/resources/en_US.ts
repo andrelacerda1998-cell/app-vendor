@@ -376,7 +376,8 @@ export default {
         "countdown": {
           "left": "Time remaining",
           "over": "Over by",
-          "of_estimate": "of ~{{value}} min estimated"
+          "of_estimate": "of ~{{value}} min estimated",
+          "need_more_time": "Need more time?"
         },
         "stuck": {
           "hours": "In progress for {{hours}}h — finish it to get paid.",

@@ -376,7 +376,8 @@ export default {
                 "countdown": {
                     "left": "Tempo restante",
                     "over": "Tempo excedido em",
-                    "of_estimate": "de ~{{value}} min estimados"
+                    "of_estimate": "de ~{{value}} min estimados",
+                    "need_more_time": "Precisas de mais tempo?"
                 },
                 "stuck": {
                     "hours": "Em execução há {{hours}}h — conclui para receberes.",

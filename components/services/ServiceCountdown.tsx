@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { CustomText } from '@/components/CustomText';
@@ -22,13 +22,21 @@ import { cardShadow } from '@/components/ui';
  * `startedAt` é o `arrived_at` (início da execução). Sem ele — ou sem duração
  * no catálogo — não se mostra nada: contar a partir de um palpite seria pior
  * do que não contar.
+ *
+ * A partir dos últimos 10 minutos — e enquanto estiver excedido — o cartão
+ * passa a abrir o pedido de tempo extra. Não se acrescentou um botão: o
+ * "Tempo extra" já vive no rodapé fixo, sempre à vista, e um segundo botão
+ * igual a poucos centímetros criaria a dúvida "são o mesmo?". Em vez disso, a
+ * área que já está a chamar a atenção passa a ser acionável.
  */
 const ServiceCountdown = ({
   startedAt,
   estimatedMinutes,
+  onRequestExtraTime,
 }: {
   startedAt?: string | null;
   estimatedMinutes?: number | null;
+  onRequestExtraTime?: () => void;
 }) => {
   const { t } = useTranslation();
   const [now, setNow] = useState(() => Date.now());
@@ -87,10 +95,23 @@ const ServiceCountdown = ({
   const color = over ? Colors.warning : soon ? Colors.brand : Colors.success;
   const progress = Math.min(1, elapsedMs / totalMs);
 
+  // Últimos 10 min OU já excedido: é quando pedir tempo extra faz sentido.
+  // Excedido conta — é aí que ele mais precisa, não menos.
+  const canAskExtra = !!onRequestExtraTime && (soon || over);
+  const Wrapper: any = canAskExtra ? TouchableOpacity : View;
+
   return (
-    <View
+    <Wrapper
       className="rounded-2xl border p-4 mt-3"
       style={[{ backgroundColor: `${color}14`, borderColor: `${color}66` }, cardShadow]}
+      {...(canAskExtra
+        ? {
+            onPress: onRequestExtraTime,
+            activeOpacity: 0.85,
+            accessibilityRole: 'button',
+            accessibilityLabel: t('services.service.status.countdown.need_more_time'),
+          }
+        : {})}
     >
       <View className="flex-row items-center">
         <Feather name={over ? 'alert-circle' : 'clock'} size={14} color={color} />
@@ -131,10 +152,23 @@ const ServiceCountdown = ({
         <View style={{ width: `${progress * 100}%`, height: '100%', backgroundColor: color }} />
       </View>
 
-      <CustomText size="extraSmall" color="muted" classes="mt-2" numberOfLines={1}>
-        {t('services.service.status.countdown.of_estimate', { value: minutes })}
-      </CustomText>
-    </View>
+      <View className="flex-row items-center justify-between mt-2">
+        <CustomText size="extraSmall" color="muted" numberOfLines={1} classes="flex-1 pr-2">
+          {t('services.service.status.countdown.of_estimate', { value: minutes })}
+        </CustomText>
+
+        {/* Só nos últimos minutos: até lá seria ruído a sugerir um problema
+            que ainda não existe. */}
+        {canAskExtra && (
+          <View className="flex-row items-center">
+            <CustomText size="extraSmall" boldness="bold" color="secondary" style={{ color }}>
+              {t('services.service.status.countdown.need_more_time')}
+            </CustomText>
+            <Feather name="chevron-right" size={14} color={color} style={{ marginLeft: 2 }} />
+          </View>
+        )}
+      </View>
+    </Wrapper>
   );
 };
 

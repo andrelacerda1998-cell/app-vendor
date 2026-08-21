@@ -544,6 +544,8 @@ const Status = () => {
           <ServiceCountdown
             startedAt={svc?.arrived_at}
             estimatedMinutes={svc?.service_type?.time}
+            // Mesma folha do botão do rodapé — um só caminho para a ação.
+            onRequestExtraTime={() => setExtrasSheet('time')}
           />
         )}
 
