@@ -1609,6 +1609,11 @@ export default {
     "incoming_request_window_scheduled": "You have 20 minutes to accept.",
     "services_count_one": "scheduled service",
     "services_count_other": "scheduled services",
-    "customer_notes": "Client notes"
+    "customer_notes": "Client notes",
+    // Ongoing service sticky notification (useOngoingServiceNotification).
+    "ongoing_service": {
+      "title_fallback": "Service in progress",
+      "ends_at": "ends at {{time}}"
+    }
   }
 };

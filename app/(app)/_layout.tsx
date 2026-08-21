@@ -14,6 +14,7 @@ import {useTranslation} from "react-i18next";
 import {useAppStateStatus} from "@/contexts/AppStateStatusContext";
 import Echo from "laravel-echo";
 import {useSchedule} from "@/contexts/ScheduleContext";
+import useOngoingServiceNotification from "@/hooks/useOngoingServiceNotification";
 
 export default function AppLayout() {
     const { t } = useTranslation();
@@ -24,6 +25,10 @@ export default function AppLayout() {
     const { api } = useApi();
     const { appStateStatus } = useAppStateStatus();
     const { setPendingScheduleServices, fetchPendingScheduledService, fetchScheduledServices, getScheduledServices, getPendingScheduleService } = useSchedule();
+
+    // Notificação fixa do serviço em curso — aqui e não na Home para
+    // continuar visível enquanto o técnico navega pela app.
+    useOngoingServiceNotification();
 
     // Prevents re-running the full refresh cycle when vendorData updates mid-cycle
     // (e.g. fetchAndSaveUserData() causes vendorData to change, which would re-trigger this effect)

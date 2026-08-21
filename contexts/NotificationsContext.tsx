@@ -21,6 +21,16 @@ import { Colors } from "@/constants/Colors";
  */
 export const REQUESTS_CHANNEL_ID = 'requests';
 
+/**
+ * Canal do serviço a decorrer — a notificação fixa com o cliente, o serviço e
+ * a hora de fim.
+ *
+ * Importância LOW de propósito: é informação de consulta, não um alerta. Com
+ * importância alta faria som e vibração de cada vez que fosse atualizada, o
+ * que num serviço de 45 minutos seria insuportável.
+ */
+export const ONGOING_CHANNEL_ID = 'ongoing_service';
+
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
         shouldShowAlert: true,
@@ -115,6 +125,17 @@ export function NotificationsProvider({ children }: PropsWithChildren){
             .catch(() => {
                 // Canal já existente ou API indisponível: o `default` cobre o caso.
             });
+
+            // Serviço a decorrer: silencioso e sem vibração — ver ONGOING_CHANNEL_ID.
+            await Notifications.setNotificationChannelAsync(ONGOING_CHANNEL_ID, {
+                name: 'Serviço a decorrer',
+                description: 'Mostra o serviço em curso enquanto trabalhas.',
+                importance: Notifications.AndroidImportance.LOW,
+                enableVibrate: false,
+                sound: null,
+                lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
+            })
+            .catch(() => {});
         }
 
         if (Device.isDevice) {
