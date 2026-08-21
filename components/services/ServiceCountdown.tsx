@@ -37,13 +37,23 @@ const ServiceCountdown = ({
   const minutes = Number(estimatedMinutes);
   const valid = Number.isFinite(start) && Number.isFinite(minutes) && minutes > 0;
 
-  // 15s chega para um contador em minutos e é barato; 1s só faria o telemóvel
-  // trabalhar para mostrar o mesmo número.
+  // Calculado antes do efeito porque decide a cadência do tick (ver abaixo).
+  // Segundos só abaixo de uma hora — acima disso não acrescentam nada.
+  const absDiffMs = valid ? Math.abs(minutes * 60000 - Math.max(0, now - start)) : 0;
+  const showsSeconds = absDiffMs < 3600000;
+
+  /**
+   * Ao segundo enquanto há segundos à vista (abaixo de 1h); de 30 em 30 acima
+   * disso, onde só mudam as horas e os minutos. Um intervalo maior no primeiro
+   * caso fazia o contador saltar e parecer avariado; ao segundo no segundo
+   * caso seria trabalho para não mostrar diferença nenhuma.
+   * Só este componente volta a desenhar-se — o estado é local.
+   */
   useEffect(() => {
     if (!valid) return;
-    const id = setInterval(() => setNow(Date.now()), 15000);
+    const id = setInterval(() => setNow(Date.now()), showsSeconds ? 1000 : 30000);
     return () => clearInterval(id);
-  }, [valid]);
+  }, [valid, showsSeconds]);
 
   if (!valid) return null;
 
@@ -52,11 +62,25 @@ const ServiceCountdown = ({
   const diffMs = totalMs - elapsedMs;
   const over = diffMs < 0;
 
-  const totalMin = Math.max(0, Math.round(Math.abs(diffMs) / 60000));
-  const h = Math.floor(totalMin / 60);
-  const m = totalMin % 60;
-  const value = h > 0 ? `${h}h${String(m).padStart(2, '0')}` : String(m);
-  const unit = h > 0 ? '' : 'min';
+  // Segundos INTEIROS por defeito (floor), não arredondados: com arredondamento
+  // o contador começava em 45:00 e saltava logo para 44:59 — parecia perder um
+  // segundo de imediato.
+  const totalSec = Math.max(0, Math.floor(Math.abs(diffMs) / 1000));
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const sec = totalSec % 60;
+  const pad = (n: number) => String(n).padStart(2, '0');
+  /**
+   * Os segundos só aparecem abaixo de uma hora.
+   *
+   * "19:24" por baixo de "TEMPO RESTANTE" lê-se como duração e os segundos a
+   * correr dão a noção do tempo a escoar. Mas num serviço esquecido — vimos um
+   * com 16 horas de excesso — "15:58:22" é um número enorme onde os segundos
+   * não dizem nada a ninguém. A partir de uma hora mostra-se "16h" e "1h05".
+   */
+  const value = h > 0
+    ? (m > 0 ? `${h}h${pad(m)}` : `${h}h`)
+    : `${m}:${pad(sec)}`;
 
   // Últimos 10 minutos: âmbar, para dar tempo de reagir antes de exceder.
   const soon = !over && diffMs <= 10 * 60000;
@@ -84,16 +108,19 @@ const ServiceCountdown = ({
         </CustomText>
       </View>
 
-      {/* O número é o herói: é a resposta à única pergunta que ele tem agora. */}
+      {/* O número é o herói: é a resposta à única pergunta que ele tem agora.
+          `tabular-nums` fixa a largura dos dígitos — sem isso o texto dança
+          da esquerda para a direita a cada segundo, porque o "1" é mais
+          estreito que os outros algarismos. */}
       <View className="flex-row items-baseline mt-1.5">
-        <CustomText size="headline" boldness="bolder" color="secondary" style={{ color }}>
+        <CustomText
+          size="headline"
+          boldness="bolder"
+          color="secondary"
+          style={{ color, fontVariant: ['tabular-nums'] }}
+        >
           {value}
         </CustomText>
-        {!!unit && (
-          <CustomText size="medium" boldness="bold" color="secondary" classes="ml-1.5" style={{ color }}>
-            {unit}
-          </CustomText>
-        )}
       </View>
 
       {/* Barra: mostra de relance a parte do tempo já gasta. */}
