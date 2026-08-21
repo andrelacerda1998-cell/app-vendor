@@ -36,6 +36,14 @@ export default function AppLayout() {
       screenOptions={{
         header: () => null,
         tabBarHideOnKeyboard: Platform.OS === "ios" ? true : false,
+        /**
+         * Sem isto, o contentor do ecrã usa o tema CLARO por omissão do React
+         * Navigation (fundo quase branco). Nos separadores em que a tab bar é
+         * `position: absolute` ela tapava-o; nos Ganhos, que a tem em fluxo
+         * normal, o `overflow: hidden` dos cantos arredondados deixava esse
+         * fundo espreitar — via-se um contorno claro à volta da barra.
+         */
+        sceneStyle: { backgroundColor: Colors.bg },
       }}
     >
       <Tabs.Screen
