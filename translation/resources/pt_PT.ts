@@ -1610,10 +1610,11 @@ export default {
       "services_count_one": "serviço agendado",
       "services_count_other": "serviços agendados",
       "customer_notes": "Observações do cliente",
-      // Notificação fixa do serviço em curso (useOngoingServiceNotification).
-      "ongoing_service": {
+    },
+    // Notificação fixa do serviço em curso (useOngoingServiceNotification).
+    "ongoing_service": {
         "title_fallback": "Serviço a decorrer",
-        "ends_at": "termina às {{time}}"
-      },
+        "ends_at": "Termina às {{time}}",
+        "started_at": "Em curso desde as {{time}}"
     }
 };
