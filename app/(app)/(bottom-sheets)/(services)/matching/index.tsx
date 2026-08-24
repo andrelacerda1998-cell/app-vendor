@@ -54,21 +54,24 @@ const MatchingInvitations = () => {
   }, [accept, openDialog, t]);
 
   return (
-    <SafeAreaView className="flex-1" style={{ backgroundColor: Colors.bg }}>
-      <View className="flex-row items-center px-5 py-4">
-        <TouchOpacity onPress={() => router.back()} className="mr-3">
-          <ArrowIcon color={Colors.secondary} position="left" size="40%" />
-        </TouchOpacity>
-        <CustomText size="large" boldness="bolder" color="secondary">
-          {t('matching.invitation.list_title')}
-        </CustomText>
-      </View>
-
-      {loading ? (
-        <View className="px-5">
-          <SkeletonList />
+    <SafeAreaView className="flex-1 bg-bg">
+      {/* Envolver em flex-1 e replicar o cabeçalho de 3 partes do ecrã de
+          pedidos: sem este wrapper o conteúdo era empurrado para o meio do
+          ecrã, com um vazio enorme por cima do primeiro cartão. */}
+      <View className="flex-1 bg-bg p-5">
+        <View className="flex-row items-center justify-between mb-6">
+          <TouchOpacity onPress={() => router.back()} otherClasses="h-10 w-10" itemsCenter>
+            <ArrowIcon color={Colors.secondary} position="left" size="40%" />
+          </TouchOpacity>
+          <CustomText color="secondary" boldness="semiBold" classes="text-xl">
+            {t('matching.invitation.list_title')}
+          </CustomText>
+          <View className="h-10 w-10" />
         </View>
-      ) : failed ? (
+
+        {loading ? (
+          <SkeletonList />
+        ) : failed ? (
         <ErrorState
           title={t('matching.invitation.error_title')}
           subtitle={t('matching.invitation.error_subtitle')}
@@ -78,7 +81,9 @@ const MatchingInvitations = () => {
         <FlatList
           data={invitations}
           keyExtractor={(item) => String(item.candidate_id)}
-          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 32 }}
+          // `flexGrow` e não `flex`: sem ele o conteúdo era empurrado para o
+          // fundo do ecrã e a lista aparecia com um vazio enorme por cima.
+          contentContainerStyle={{ paddingBottom: 32 }}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.brand} />}
           ListEmptyComponent={
             <EmptyState
@@ -95,7 +100,8 @@ const MatchingInvitations = () => {
             />
           )}
         />
-      )}
+        )}
+      </View>
     </SafeAreaView>
   );
 };
