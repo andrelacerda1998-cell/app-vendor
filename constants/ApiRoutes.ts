@@ -57,6 +57,15 @@ export const API_ROUTES = {
     VENDOR_GET_OPEN_SERVICES: `${API_BASE_URL}/vendor/services/`,
     VENDOR_GET_PENDING_SERVICE: `${API_BASE_URL}/vendor/services/pending`,
     VENDOR_GET_PENDING_ALL_SERVICES: `${API_BASE_URL}/vendor/services/pending/all`,
+
+    // Convites de seleção de profissional (backend: docs/matching.md).
+    // Aceitar aqui é dizer "estou disponível", NÃO é ficar com o serviço:
+    // quem decide é o cliente, de entre quem aceitou.
+    VENDOR_MATCHING_INVITATIONS: `${API_BASE_URL}/vendor/services/matching`,
+    VENDOR_MATCHING_ACCEPT: (candidateId: number | string) =>
+        `${API_BASE_URL}/vendor/services/matching/${candidateId}/accept`,
+    VENDOR_MATCHING_DECLINE: (candidateId: number | string) =>
+        `${API_BASE_URL}/vendor/services/matching/${candidateId}/decline`,
     VENDOR_UPDATE_PAYMENT: `${API_BASE_URL}/vendor/settings/update/payment`,
     VENDOR_UPDATE_PRICE_RATE: `${API_BASE_URL}/vendor/settings/price-rate`,
     VENDOR_GET_SCHEDULES: `${API_BASE_URL}/vendor/schedule/schedules`,

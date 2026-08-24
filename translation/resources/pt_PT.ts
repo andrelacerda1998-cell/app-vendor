@@ -1612,6 +1612,31 @@ export default {
       "customer_notes": "Observações do cliente",
     },
     // Notificação fixa do serviço em curso (useOngoingServiceNotification).
+    // Convites de seleção de profissional. O copy existe sobretudo para uma
+    // coisa: deixar claro que aceitar é candidatar-se, não é ficar com o
+    // serviço. Sem isso, o técnico assume o que já conhece dos pedidos.
+    "matching": {
+      "invitation": {
+        "home_card_one": "Tens {{count}} convite à espera de resposta.",
+        "home_card_other": "Tens {{count}} convites à espera de resposta.",
+        "home_card_hint": "O cliente escolhe entre quem se disponibilizar.",
+        "list_title": "Convites",
+        "fallback_title": "Pedido de serviço",
+        "window": "para responder",
+        "you_receive": "Recebes",
+        "explainer": "O cliente vai escolher entre os profissionais que se disponibilizarem. Dizer que sim não bloqueia a tua agenda — podes responder a mais do que um pedido.",
+        "accept": "Estou disponível",
+        "decline": "Agora não",
+        "accepted_title": "Estás na lista",
+        "accepted_subtitle": "O cliente vai escolher entre quem se disponibilizou. Avisamos-te assim que houver decisão.",
+        "too_late_title": "Este pedido já fechou",
+        "too_late_subtitle": "Outro profissional respondeu primeiro. Aparecem novos pedidos ao longo do dia.",
+        "empty_title": "Sem convites neste momento",
+        "empty_subtitle": "Quando um cliente procurar um serviço teu, aparece aqui. Mantém as notificações ligadas para não perderes nenhum.",
+        "error_title": "Não foi possível carregar os convites",
+        "error_subtitle": "Verifica a ligação à internet e tenta outra vez."
+      }
+    },
     "ongoing_service": {
         "title_fallback": "Serviço a decorrer",
         "ends_at": "Termina às {{time}}",

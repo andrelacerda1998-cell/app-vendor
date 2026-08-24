@@ -1612,6 +1612,30 @@ export default {
     "customer_notes": "Client notes"
   },
     // Ongoing service sticky notification (useOngoingServiceNotification).
+    // Professional-selection invitations. The copy exists mainly to make one
+    // thing clear: accepting is applying, not winning the job.
+    "matching": {
+      "invitation": {
+        "home_card_one": "You have {{count}} invitation waiting for a reply.",
+        "home_card_other": "You have {{count}} invitations waiting for a reply.",
+        "home_card_hint": "The client chooses among those who make themselves available.",
+        "list_title": "Invitations",
+        "fallback_title": "Service request",
+        "window": "to reply",
+        "you_receive": "You get",
+        "explainer": "The client will choose between the professionals who make themselves available. Saying yes does not block your calendar \u2014 you can reply to more than one request.",
+        "accept": "I'm available",
+        "decline": "Not now",
+        "accepted_title": "You're on the list",
+        "accepted_subtitle": "The client will choose between those who made themselves available. We'll let you know as soon as there's a decision.",
+        "too_late_title": "This request is closed",
+        "too_late_subtitle": "Another professional replied first. New requests come in throughout the day.",
+        "empty_title": "No invitations right now",
+        "empty_subtitle": "When a client looks for one of your services, it shows up here. Keep notifications on so you don't miss any.",
+        "error_title": "Couldn't load invitations",
+        "error_subtitle": "Check your internet connection and try again."
+      }
+    },
     "ongoing_service": {
         "title_fallback": "Service in progress",
         "ends_at": "Ends at {{time}}",

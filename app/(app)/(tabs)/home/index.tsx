@@ -29,6 +29,7 @@ import GeolocationPermissionBanner from "@/components/warnings/GeolocationPermis
 import AttentionIcon from "@/assets/icons/attention";
 import WeekStats from "@/components/app/Home/WeekStats";
 import PendingRequestsCard from "@/components/app/Home/PendingRequestsCard";
+import MatchingInvitationsCard from "@/components/app/Home/MatchingInvitationsCard";
 import HomeShortcuts from "@/components/app/Home/HomeShortcuts";
 import AutoAcceptCard from "@/components/app/Home/AutoAcceptCard";
 import NotificationsDisabledBanner from "@/components/NotificationsDisabledBanner";
@@ -391,6 +392,7 @@ const Home = () => {
         <AutoAcceptCard />
 
         <PendingRequestsCard />
+        <MatchingInvitationsCard />
 
         <Schedules />
 
