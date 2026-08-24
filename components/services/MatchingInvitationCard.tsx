@@ -104,81 +104,93 @@ const MatchingInvitationCard = ({
       className="rounded-2xl border p-5 mb-3"
       style={{ borderColor: Colors.line, backgroundColor: Colors.card }}
     >
-      <View className="flex-row items-start justify-between mb-3">
-        <View className="flex-1 pr-3">
-          <CustomText size="medium" boldness="bold" color="secondary">
-            {invitation.service_type?.name ?? t('matching.invitation.fallback_title')}
-          </CustomText>
-          <View className="flex-row items-center mt-1">
-            <Feather name="map-pin" size={12} color={Colors.muted} />
-            <CustomText size="small" color="secondary" classes="ml-1.5" style={{ color: Colors.muted }}>
-              {invitation.address?.city ?? '—'}
-              {invitation.distance ? ` · ${invitation.distance.toFixed(1)} km` : ''}
+      {/* O contador vive numa pílula própria e discreta: é contexto, não é a
+          oferta. Só ganha a cor da marca no último minuto, quando passa a ser
+          uma decisão a tomar já. */}
+      {!!countdown && (
+        <View className="flex-row items-center mb-4">
+          <View
+            className="flex-row items-center rounded-full px-2.5 py-1"
+            style={{ backgroundColor: urgent ? Colors.brand_soft : Colors.card_high }}
+          >
+            <Feather name="clock" size={11} color={urgent ? Colors.brand : Colors.muted} />
+            <CustomText
+              size="extraSmall"
+              boldness="bold"
+              color="secondary"
+              classes="ml-1.5"
+              style={{ color: urgent ? Colors.brand : Colors.muted, fontVariant: ['tabular-nums'] }}
+            >
+              {countdown} {t('matching.invitation.window')}
             </CustomText>
           </View>
         </View>
+      )}
 
-        {!!countdown && (
-          <View className="items-end">
-            <CustomText
-              size="medium"
-              boldness="bolder"
-              color="secondary"
-              style={{ color: urgent ? Colors.brand : Colors.secondary, fontVariant: ['tabular-nums'] }}
-            >
-              {countdown}
-            </CustomText>
-            <CustomText size="extraSmall" color="secondary" style={{ color: Colors.muted }}>
-              {t('matching.invitation.window')}
-            </CustomText>
-          </View>
-        )}
+      <CustomText size="medium" boldness="bolder" color="secondary">
+        {invitation.service_type?.name ?? t('matching.invitation.fallback_title')}
+      </CustomText>
+      <View className="flex-row items-center mt-1.5 mb-5">
+        <Feather name="map-pin" size={12} color={Colors.muted} />
+        <CustomText size="small" color="secondary" classes="ml-1.5" style={{ color: Colors.muted }}>
+          {invitation.address?.city ?? '—'}
+          {invitation.distance ? ` · ${invitation.distance.toFixed(1)} km` : ''}
+        </CustomText>
       </View>
 
       {/* QUANDO — a pergunta que decide se ele pode sequer aceitar. Antes não
           aparecia de todo: o payload trazia schedule a null porque a linha de
           agenda ainda não existe durante a seleção. */}
-      {(when || durationMinutes) && (
-        <View
-          className="flex-row items-center rounded-xl px-3 py-2.5 mb-3"
-          style={{ backgroundColor: Colors.card_high }}
-        >
-          <Feather name={when ? 'calendar' : 'clock'} size={14} color={Colors.secondary} />
-          <CustomText size="small" boldness="bold" color="secondary" classes="ml-2 flex-1">
-            {when ?? t('matching.invitation.immediate')}
-          </CustomText>
-          {!!durationMinutes && (
-            <CustomText size="extraSmall" color="secondary" style={{ color: Colors.muted }}>
-              {t('matching.invitation.duration', { minutes: durationMinutes })}
-            </CustomText>
-          )}
-        </View>
-      )}
+      {/* Quando e quanto, um por cima do outro e separados por uma linha fina:
+          são as duas respostas que ele procura, e caixas dentro de caixas só
+          lhes tiravam peso. */}
+      <View className="border-t" style={{ borderColor: Colors.line }}>
+        {(when || durationMinutes) && (
+          <View className="flex-row items-center justify-between py-3.5">
+            <View className="flex-row items-center flex-1 pr-3">
+              <Feather name={when ? 'calendar' : 'zap'} size={14} color={Colors.muted} />
+              <CustomText size="small" boldness="bold" color="secondary" classes="ml-2">
+                {when ?? t('matching.invitation.immediate')}
+              </CustomText>
+            </View>
+            {!!durationMinutes && (
+              <CustomText size="extraSmall" color="secondary" style={{ color: Colors.muted }}>
+                {t('matching.invitation.duration', { minutes: durationMinutes })}
+              </CustomText>
+            )}
+          </View>
+        )}
 
-      <View className="mb-4">
-        <CustomText size="extraSmall" color="secondary" style={{ color: Colors.muted, letterSpacing: 1 }}>
-          {t('matching.invitation.you_receive').toUpperCase()}
-        </CustomText>
-        <CustomText size="large" boldness="bolder" color="secondary" style={{ color: Colors.brand }}>
-          {earn}
-        </CustomText>
+        <View
+          className="flex-row items-center justify-between py-3.5 border-t"
+          style={{ borderColor: Colors.line }}
+        >
+          <CustomText size="small" color="secondary" style={{ color: Colors.muted }}>
+            {t('matching.invitation.you_receive')}
+          </CustomText>
+          <CustomText size="large" boldness="bolder" color="secondary" style={{ color: Colors.brand }}>
+            {earn}
+          </CustomText>
+        </View>
       </View>
 
       {/* O aviso que impede o mal-entendido. Discreto de propósito: tem de ser
           lido, mas não pode pesar mais do que a proposta em si — antes ocupava
           três linhas realçadas e dominava o cartão. */}
-      <View className="flex-row mb-4">
-        <Feather name="info" size={13} color={Colors.muted} style={{ marginTop: 2 }} />
-        <CustomText size="extraSmall" color="secondary" classes="ml-2 flex-1" style={{ color: Colors.muted }}>
-          {t('matching.invitation.explainer')}
-        </CustomText>
-      </View>
+      <CustomText
+        size="extraSmall"
+        color="secondary"
+        classes="mt-4 mb-5"
+        style={{ color: Colors.muted, lineHeight: 17 }}
+      >
+        {t('matching.invitation.explainer')}
+      </CustomText>
 
       <View className="flex-row">
         <TouchableOpacity
           onPress={onDecline}
           disabled={busy}
-          className="flex-1 rounded-xl py-3 items-center mr-2 border"
+          className="flex-1 rounded-2xl py-3.5 items-center mr-2.5 border"
           style={{ borderColor: Colors.line, opacity: busy ? 0.5 : 1 }}
         >
           <CustomText boldness="bold" color="secondary" style={{ color: Colors.muted }}>
@@ -189,7 +201,7 @@ const MatchingInvitationCard = ({
         <TouchableOpacity
           onPress={onAccept}
           disabled={busy}
-          className="flex-[1.4] rounded-xl py-3 items-center"
+          className="flex-[1.4] rounded-2xl py-3.5 items-center"
           style={{ backgroundColor: Colors.brand, opacity: busy ? 0.5 : 1 }}
         >
           <CustomText boldness="bolder" color="secondary" style={{ color: Colors.on_brand }}>
