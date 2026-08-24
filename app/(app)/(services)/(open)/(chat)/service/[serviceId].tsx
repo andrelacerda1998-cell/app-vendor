@@ -1,23 +1,19 @@
 import {Colors} from '@/constants/Colors';
 import {Ionicons} from '@expo/vector-icons';
-import {router} from 'expo-router';
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {FlatList, KeyboardAvoidingView, Platform, ScrollView, StatusBar, Text, TextInput, View} from 'react-native';
+import { FlatList, ScrollView, TextInput, View } from 'react-native';
 import BackHeader from '@/components/app/BackHeader';
 import {useSession} from '@/contexts/SessionContext';
 import {CustomText} from "@/components/CustomText";
-import ClipIcon from "@/assets/icons/clip";
 import CustomTouchableOpacity from "@/components/CustomTouchableOpacity";
 import {useApi} from "@/contexts/ApiContext";
 import {API_ROUTES} from "@/constants/ApiRoutes";
 import useEcho from "@/hooks/echo";
 import {RSA} from "react-native-rsa-native";
 import {useService} from "@/contexts/ServiceContext";
-import CheckMark from "@/assets/icons/check-mark";
 import {useDialog} from "@/contexts/DialogContext";
 import XIcon from "@/assets/icons/x";
-import {ServiceStatus} from "@/types/services";
 import { useTranslation } from "react-i18next";
 import { useAppStateStatus } from "@/contexts/AppStateStatusContext";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
@@ -28,9 +24,19 @@ interface Message {
     isCustomer: boolean;
     message: string;
     time: string;
+    /** Lida pelo destinatário. Só relevante nas mensagens que EU enviei. */
+    is_read?: boolean;
 }
 
-const VendorMessage = ({message, time}: { message: string, time: string }) => {
+/**
+ * A minha mensagem, com indicação de entrega/leitura.
+ *
+ * Sem isto o técnico escrevia ao cliente e ficava sem saber se tinha sido
+ * lido — à porta fechada, com o cliente ausente, isso é aflitivo. O visto
+ * duplo a âmbar diz "leu"; o simples, "enviado".
+ */
+const VendorMessage = ({message, time, isRead}: { message: string, time: string, isRead?: boolean }) => {
+    const { t } = useTranslation();
     return (
         <View className="space-y-2 self-end mb-5">
             <View className="bg-gray_light p-6 w-full rounded-3xl rounded-br-none">
@@ -38,14 +44,18 @@ const VendorMessage = ({message, time}: { message: string, time: string }) => {
                     {message}
                 </CustomText>
             </View>
-            <CustomText
-                size="extraSmall"
-                color="gray_light"
-                boldness="regular"
-                classes="text-right"
-            >
-                {time}
-            </CustomText>
+            <View className="flex-row items-center justify-end">
+                <CustomText size="extraSmall" color="gray_light" boldness="regular">
+                    {time}
+                </CustomText>
+                <Ionicons
+                    name={isRead ? 'checkmark-done' : 'checkmark'}
+                    size={14}
+                    color={isRead ? Colors.brand : Colors.gray_light}
+                    style={{ marginLeft: 4 }}
+                    accessibilityLabel={isRead ? t('chat.read') : t('chat.sent')}
+                />
+            </View>
         </View>
     )
 }
@@ -71,74 +81,24 @@ const CustomerMessage = ({message, time}: { message: string, time: string }) => 
         </View>
     )
 }
-
-// const HeaderRightItem = () => {
-//   const [showPopUp, setShowPopUp] = useState(false);
-
-//   // const goToMakePayment = () => {
-//   //   router.push('/(app)/(pages)/(services)/(open)/(payment)/start/1');
-//   // };
-
-//   return (
-//     <View className="relative">
-//       <CustomTouchableOpacity
-//         size="small"
-//         type="transparent"
-//         classes="p-0"
-//         onPress={() => setShowPopUp(prev=>!prev)}
-//       >
-//         <Entypo name="dots-three-vertical" size={24} color={Colors.secondary} />
-//       </CustomTouchableOpacity>
-//       {showPopUp && (
-//         <View className="w-44 bg-support_secondary rounded-md absolute top-10 right-0 p-2">
-//           <CustomTouchableOpacity
-//             size="small"
-//             type="transparent"
-//             onPress={() => {
-//               setShowPopUp(prev=>!prev);
-//               // goToMakePayment();
-//             }}
-//             classes="p-0 mb-2"
-//           >
-//             <View className="w-full h-full rounded-md border border-secondary">
-//               <CustomText size="small" color="secondary" boldness="regular" classes="p-3">
-//                 Make payment
-//               </CustomText>
-//             </View>
-//           </CustomTouchableOpacity>
-//           <CustomTouchableOpacity
-//             size="small"
-//             type="transparent"
-//             onPress={() => setShowPopUp(prev=>!prev)}
-//             classes="p-0"
-//           >
-//             <View className="w-full h-full rounded-md border border-secondary">
-//               <CustomText size="small" color="secondary" boldness="regular" classes="p-3">
-//                 Help
-//               </CustomText>
-//             </View>
-//           </CustomTouchableOpacity>
-//         </View>
-//       )}
-//     </View>
-//   )
-// }
-
 const Service = () => {
     const {t} = useTranslation();
     const {api} = useApi();
     const echo = useEcho();
     const {vendorData} = useSession();
-    const {openService, setOpenService, clearUnreadMessages} = useService();
+    const {openService, clearUnreadMessages} = useService();
     const serviceId = openService?.id;
     const [message, setMessage] = useState('');
     const [publicKey, setPublicKey] = useState<string>();
+    // Sem chave pública as mensagens não podem ser cifradas. Antes o campo e o
+    // botão de enviar ficavam ativos e não acontecia nada ao carregar — o técnico
+    // pensava que tinha avisado o cliente.
+    const [keyError, setKeyError] = useState(false);
     const {openDialog} = useDialog();
     const [messages, setMessages] = useState<Message[]>([]);
     const [groupedMessages, setGroupedMessages] = useState<{ date: string, messages: Message[] }[]>([]);
     const [sendingMessage, setSendingMessage] = useState(false);
     const [loadingMessages, setLoadingMessages] = useState(true);
-    const [loadingArrivedAtDestination, setLoadingArrivedAtDestination] = useState(false);
     const { appStateStatus } = useAppStateStatus();
 
     function formatDateToISO(date: Date): string {
@@ -153,11 +113,14 @@ const Service = () => {
         return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}000Z`;
     }
 
-    const handleSendMessage = async () => {
+    // [preset] permite enviar uma resposta rápida (sem passar pelo campo de
+    // texto); sem preset, envia o que está escrito.
+    const handleSendMessage = async (preset?: string) => {
         if (!publicKey) return;
+        const messageToSend = (preset ?? message).trim();
+        if (!messageToSend || sendingMessage) return;
         setSendingMessage(true);
-        const messageToSend = message;
-        setMessage('');
+        if (preset === undefined) setMessage('');
 
         const now = new Date(Date.now());
         const formattedDate = formatDateToISO(now);
@@ -174,10 +137,10 @@ const Service = () => {
         api.post(API_ROUTES.POST_MESSAGE(`${serviceId}`), {
             "message": signedData,
         })
-            .then(() => setMessage(''))
+            .then(() => { if (preset === undefined) setMessage(''); })
             .catch((error) => {
                 console.error(error)
-                setMessage(messageToSend);
+                if (preset === undefined) setMessage(messageToSend);
             })
             .finally(() => setSendingMessage(false));
     };
@@ -224,12 +187,13 @@ const Service = () => {
                 const data = res.data.data.messages;
                 if (!vendorData) return;
 
-                const messagesToSave = data.map((message: { from: number; date: string; message: string }) => ({
+                const messagesToSave = data.map((message: { from: number; date: string; message: string; is_read?: boolean }) => ({
                     ...message,
                     isVendor: message.from === vendorData?.user?.id,
                     isCustomer: message.from !== vendorData?.user?.id,
                     message: message.message,
                     time: message.date,
+                    is_read: message.is_read,
                 }));
 
                 setMessages(messagesToSave);
@@ -237,8 +201,8 @@ const Service = () => {
             .catch((error) => {
                 openDialog({
                     icon: <XIcon color={Colors.primary}/>,
-                    title: t('errors.title'),
-                    subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('errors.occurred_an_error'),
+                    title: t('errors.chat_load.title'),
+                    subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('errors.chat_load.subtitle'),
                     closeAfterMSeconds: 2000,
                     closeOnClickOutside: true,
                 })
@@ -254,52 +218,24 @@ const Service = () => {
         return `${hours}:${minutes}`;
     }
 
-    const handleArrivedAtDestination = () => {
-        setLoadingArrivedAtDestination(true);
-        api.post(API_ROUTES.POST_ARRIVED_AT_DESTINATION_SERVICE(`${serviceId}`))
-            .then(({data}) => {
-                setOpenService(data.data.service);
-                openDialog({
-                    icon: <CheckMark color={Colors.primary}/>,
-                    title: t('chat.arrived_at_destination.title'),
-                    subtitle: t('chat.arrived_at_destination.subtitle'),
-                    closeAfterMSeconds: 2000,
-                    closeOnClickOutside: true,
-                })
-            })
-            .catch(() => {
-                openDialog({
-                    icon: <XIcon color={Colors.primary}/>,
-                    title: t('errors.title'),
-                    subtitle: t('errors.occurred_an_error'),
-                    closeAfterMSeconds: 2000,
-                    closeOnClickOutside: true,
-                })
-            })
-            .finally(() => setLoadingArrivedAtDestination(false));
-    }
-
     // Clear unread messages when chat is opened
     useEffect(() => {
         clearUnreadMessages();
     }, []);
 
-    useEffect(() => {
-        api.get(API_ROUTES.GET_SERVICE_PUBLIC_KEY(`${serviceId}`))
+    const fetchPublicKey = useCallback(() => {
+        return api.get(API_ROUTES.GET_SERVICE_PUBLIC_KEY(`${serviceId}`))
             .then((res) => {
-                // console.log({res})
                 setPublicKey(res.data.data.public_key);
+                setKeyError(false);
             })
-            .catch((error) => {
-                openDialog({
-                    icon: <XIcon color={Colors.primary}/>,
-                    title: t('errors.title'),
-                    subtitle: t('errors.occurred_an_error'),
-                    closeAfterMSeconds: 2000,
-                    closeOnClickOutside: true,
-                })
-            })
-            // .catch((error) => console.log(error.data.message, 'error data message'));
+            .catch(() => {
+                setKeyError(true);
+            });
+    }, [api, serviceId]);
+
+    useEffect(() => {
+        fetchPublicKey();
         subscribeToMessagesChannel();
     }, [echo]);
 
@@ -316,7 +252,6 @@ const Service = () => {
     const formatMessages = (messagesToFormat: Message[]) => {
         const newGroupedMessages = messagesToFormat
             .reduce((acc: { date: string, messages: Message[] }[], message: Message) => {
-                // console.log({message}, 'message is over here')
                 const date = message.time.split('T')[0];
                 const existingGroup = acc.find(group => group.date === date);
 
@@ -391,32 +326,10 @@ const Service = () => {
                             </View>
                         )}
                     />
-                    {openService?.status === ServiceStatus.ACCEPTED && (
-                        <View className="flex-row justify-between items-center">
-                            <CustomTouchableOpacity
-                                size="medium"
-                                text={t('chat.actions.service_status')}
-                                type="secondary_outline"
-                                textColor="secondary"
-                                textBoldness="medium"
-                                classes="w-[48%] h-full"
-                                onPress={() => router.navigate(`/(app)/(services)/(open)/status/${openService?.id}`)}
-                                disabled={loadingArrivedAtDestination}
-                            />
-                            <CustomTouchableOpacity
-                                size="medium"
-                                text={t('chat.actions.arrived_at_destination')}
-                                type="support_primary"
-                                textColor="strongest"
-                                textBoldness="medium"
-                                classes="w-[48%]"
-                                textClasses="text-center"
-                                textNumberOfLines={2}
-                                onPress={handleArrivedAtDestination}
-                                disabled={loadingArrivedAtDestination}
-                            />
-                        </View>
-                    )}
+                    {/* O chat é só conversa. "Estado do serviço" e "Cheguei ao
+                        destino" viviam aqui como atalhos, mas duplicavam o que o
+                        ecrã de Estado já faz (lá o CTA principal marca a chegada)
+                        e enchiam o topo da conversa. */}
                 </View>
                 <View className="flex-1 px-5 overflow-hidden">
                     {loadingMessages ? (
@@ -486,6 +399,7 @@ const Service = () => {
                                                         key={`vendor-${index}`}
                                                         message={message.message}
                                                         time={formatIsoToTime(message.time)}
+                                                        isRead={message.is_read}
                                                     />
                                                 );
                                             }
@@ -510,6 +424,55 @@ const Service = () => {
                             {t('chat.no_messages')}
                         </CustomText>
                     )}
+                    {/* Chave em falta: dizer porque não dá para enviar, em vez de
+                        deixar o técnico a carregar num botão que não faz nada. */}
+                    {keyError && (
+                        <View
+                            className="flex-row items-center rounded-2xl border p-3 mb-3"
+                            style={{ borderColor: Colors.danger, backgroundColor: 'rgba(255,90,95,0.10)' }}
+                        >
+                            <Ionicons name="warning-outline" size={20} color={Colors.danger} />
+                            <CustomText color="secondary" size="small" classes="flex-1 ml-2" numberOfLines={3}>
+                                {t('chat.key_error')}
+                            </CustomText>
+                            <CustomTouchableOpacity
+                                size="small"
+                                type="transparent"
+                                classes="pl-2"
+                                textColor="danger"
+                                textBoldness="bold"
+                                textSize="small"
+                                text={t('general.try_again')}
+                                onPress={() => { setKeyError(false); fetchPublicKey(); }}
+                            />
+                        </View>
+                    )}
+
+                    {/* Respostas rápidas — na rua/a conduzir, um toque resolve. */}
+                    <ScrollView
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        className="flex-grow-0 mt-4"
+                        contentContainerStyle={{ paddingHorizontal: 2 }}
+                    >
+                        {[
+                            t('chat.quick_replies.on_the_way'),
+                            t('chat.quick_replies.arrived'),
+                            t('chat.quick_replies.delay'),
+                        ].map((reply) => (
+                            <CustomTouchableOpacity
+                                key={reply}
+                                size="small"
+                                type="transparent"
+                                classes="mr-2 px-4 py-2 rounded-full bg-strongest"
+                                textColor="secondary"
+                                textBoldness="medium"
+                                text={reply}
+                                disabled={sendingMessage || !publicKey}
+                                onPress={() => handleSendMessage(reply)}
+                            />
+                        ))}
+                    </ScrollView>
                     <View className="my-6 flex-row items-center">
                         <KeyboardAwareScrollView bottomOffset={40}>
                             <View className="flex-1">
@@ -521,16 +484,21 @@ const Service = () => {
                                     onChangeText={setMessage}
                                 />
                                 <View className="w-14 absolute right-0 h-full flex-1 items-center justify-center">
+                                    {/* `p-0` anulava o padding do componente e deixava a área
+                                        de toque nos 24×24 do ícone — o hitSlop repõe-na. */}
                                     <CustomTouchableOpacity
                                         size="small"
                                         type="transparent"
                                         classes="p-0 z-10"
+                                        hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                                        accessibilityRole="button"
+                                        accessibilityLabel={t('chat.send')}
                                         onPress={() => {
                                             if (message.trim() !== '') {
                                                 handleSendMessage();
                                             }
                                         }}
-                                        disabled={sendingMessage || loadingArrivedAtDestination}
+                                        disabled={sendingMessage || !publicKey}
                                     >
                                         {message !== '' && (
                                             <Ionicons name="send" size={24} color={Colors.secondary}/>

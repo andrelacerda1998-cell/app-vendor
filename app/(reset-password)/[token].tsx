@@ -9,16 +9,28 @@ import { Colors } from '@/constants/Colors'
 import { useApi } from "@/contexts/ApiContext"
 import { useDialog } from "@/contexts/DialogContext"
 import { useSession } from "@/contexts/SessionContext"
-import { commonPasswords } from "@/utils"
-import { Feather, FontAwesome6 } from '@expo/vector-icons'
+import { Feather } from '@expo/vector-icons';
 import axios from "axios"
 import { router, useLocalSearchParams } from "expo-router"
-import React, { useEffect, useState } from 'react'
-import { Control, Controller, FieldErrors, FieldValues, set, useForm } from 'react-hook-form'
+import React, { useState } from 'react'
+import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from "react-i18next"
-import { Pressable, TextInput, TouchableWithoutFeedback, View } from 'react-native'
+import { TouchableWithoutFeedback, View } from 'react-native';
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller"
 import { SafeAreaView } from "react-native-safe-area-context"
+
+/**
+ * Mesmo mínimo do registo e do backend (`Password::min(8)->uncompromised()`
+ * no ResetPasswordRequest): só comprimento, sem regras de composição.
+ */
+const PASSWORD_MIN_LENGTH = 8;
+
+/**
+ * A regra `uncompromised` só é verificável no servidor — a app não a consegue
+ * antecipar. Quando o 422 vem por esse motivo, mostramos a nossa mensagem.
+ */
+const isBreachedPasswordMessage = (message: string) =>
+  /fuga|comprometid|violaç|breach|compromis/i.test(message ?? '');
 
 const ResetPassword = () => {
   const { t } = useTranslation();
@@ -30,25 +42,11 @@ const ResetPassword = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [resetPasswordError, setResetPasswordError] = useState<string | null>(null);
 
-  const wrongPassword = {
-    MINIMUM: t('general.password_min_length'),
-    UPPERCASE: t('general.password_uppercase'),
-    LOWERCASE: t('general.password_lowercase'),
-    NUMBER: t('general.password_number'),
-    SPECIAL_CHAR: t('general.password_special_character'),
-    COMMON: t('general.password_common'),
-    MATCH: t('general.password_match'),
-  }
-  const [passwordErrors, setPasswordErrors] = useState({
-    MINIMUM: true,
-    UPPERCASE: true,
-    LOWERCASE: true,
-    NUMBER: true,
-    SPECIAL_CHAR: true,
-    COMMON: true,
-    MATCH: true,
-  });
+  // Espelho local do que está escrito, só para o feedback ao vivo do comprimento.
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+
+  const isLongEnough = password.length >= PASSWORD_MIN_LENGTH;
 
   const { control, handleSubmit, setValue, formState: { errors, isValid }, setError } = useForm({
     mode: 'onChange',
@@ -58,32 +56,19 @@ const ResetPassword = () => {
     }
   });
 
-  const validatePassword = () => {
+  const validateLength = () => {
     if (setResetPasswordError) setResetPasswordError(null);
-    const password = control._formValues.password;
-    const password_confirmation = control._formValues.password_confirmation;
-    const errors = {
-      MINIMUM: password.length < 8,
-      UPPERCASE: !/[A-Z]/.test(password),
-      LOWERCASE: !/[a-z]/.test(password),
-      NUMBER: !/[0-9]/.test(password),
-      SPECIAL_CHAR: !/[!@?#$%^&*_/-]/.test(password),
-      COMMON: commonPasswords.includes(password),
-      MATCH: password !== password_confirmation,
-    };
-
-    setPasswordErrors(errors);
-
-    if (Object.values(errors).some(error => error)) {
-      return false;
-    }
-
-    return true;
+    return (control._formValues.password ?? '').length >= PASSWORD_MIN_LENGTH
+      ? true
+      : t('general.password_length_requirement');
   };
 
-  useEffect(() => {
-    validatePassword();
-  }, []);
+  const validateMatch = () => {
+    if (setResetPasswordError) setResetPasswordError(null);
+    return control._formValues.password === control._formValues.password_confirmation
+      ? true
+      : t('general.password_match');
+  };
 
   const goBack = () => {
     if (router.canGoBack()) {
@@ -120,7 +105,14 @@ const ResetPassword = () => {
     } catch(error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 422) {
-          setResetPasswordError(t('auth.reset_password.errors.password_used_before'));
+          // O 422 pode agora vir também da regra `uncompromised` — distinguimos
+          // pela mensagem do servidor para não culpar o técnico do motivo errado.
+          const serverMessage: string = error.response?.data?.errors?.password?.[0] ?? '';
+          setResetPasswordError(
+            isBreachedPasswordMessage(serverMessage)
+              ? t('general.password_uncompromised')
+              : t('auth.reset_password.errors.password_used_before')
+          );
         } else if (error.response?.status === 404) {
           setResetPasswordError(t('auth.reset_password.errors.token_invalid'));
         } else if (error.response?.status === 500) {
@@ -164,7 +156,7 @@ const ResetPassword = () => {
             defaultValue=""
             rules={{
               required: t('general.password_required'),
-              validate: () => validatePassword()
+              validate: validateLength
             }}
             render={({ field }) => (
               <View className="mt-2 justify-center" removeClippedSubviews={true}>
@@ -173,6 +165,7 @@ const ResetPassword = () => {
                   size="large"
                   onChangeText={(value: string) => {
                     const filteredValue = value.replace(/\s/g, '');
+                    setPassword(filteredValue);
                     field.onChange(filteredValue);
                   }}
                   textContentType="password"
@@ -187,6 +180,9 @@ const ResetPassword = () => {
                     <View className="w-12 h-full items-center justify-center">
                       <TouchableWithoutFeedback
                         onPress={() => setShowPassword(prev => !prev)}
+                          accessibilityRole="button"
+                          accessibilityLabel={t('general.toggle_password_visibility')}
+                          accessibilityState={{ expanded: showPassword }}
                       >
                         <View className="w-full h-full items-center justify-center">
                           <Feather name={showPassword ? 'eye' : 'eye-off'} size={24} color={Colors.secondary} />
@@ -220,7 +216,7 @@ const ResetPassword = () => {
             defaultValue=""
             rules={{
               required: t('general.confirm_password_required'),
-              validate: () => validatePassword()
+              validate: validateMatch
             }}
             render={({ field }) => (
               <View className="mt-2 justify-center" removeClippedSubviews={true}>
@@ -245,29 +241,22 @@ const ResetPassword = () => {
           />
         </View>
 
-        <View className="mt-4 space-y-2">
-          {
-            Object.keys(passwordErrors).map((key) => (
-              <View key={key} className="flex flex-row space-x-2">
-                <View className="mt-1">
-                  {
-                    passwordErrors[key as keyof typeof passwordErrors] ? (
-                      <View className="w-3 h-3">
-                        <XIcon color={Colors.error} />
-                      </View>
-                    ) : (
-                      <View className="w-4 h-4">
-                        <CheckMark color={Colors.success} />
-                      </View>
-                    )
-                  }
-                </View>
-                <CustomText color="gray_medium" size="small" numberOfLines={5}>
-                  {wrongPassword[key as keyof typeof wrongPassword]}
-                </CustomText>
+        {/* Uma única linha, com feedback ao vivo. Tudo o resto é validado no servidor. */}
+        <View className="mt-6">
+          <View className="flex flex-row gap-2 items-center">
+            {isLongEnough ? (
+              <View className="w-4 h-4">
+                <CheckMark color={Colors.success} />
               </View>
-            ))
-          }
+            ) : (
+              <View className="w-3 h-3">
+                <XIcon color={Colors.error} />
+              </View>
+            )}
+            <CustomText color={isLongEnough ? 'secondary' : 'gray_medium'} size="small" numberOfLines={2}>
+              {t('general.password_length_requirement')}
+            </CustomText>
+          </View>
         </View>
       </KeyboardAwareScrollView>
 

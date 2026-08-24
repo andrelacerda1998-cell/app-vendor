@@ -1,16 +1,12 @@
 import {CustomText} from '@/components/CustomText'
 import CustomTextInput from '@/components/CustomTextInput'
-import DatePicker from '@/components/DatePicker'
-import {ThemedText} from '@/components/ThemedText'
-import {Colors} from '@/constants/Colors'
-import {Picker} from '@react-native-picker/picker'
-import React, {useState} from 'react'
-import {Control, Controller, FieldErrors, FieldValues, useForm, UseFormHandleSubmit} from 'react-hook-form'
-import {Platform, TextInput, View} from 'react-native'
-import {ScrollView} from 'react-native'
+import React from 'react';
+import { Controller, FieldErrors, FieldValues } from 'react-hook-form';
+import { View } from 'react-native';
 import {useActionSheet} from "@expo/react-native-action-sheet";
-import TouchOpacity from "@/components/TouchOpacity";
 import { useTranslation } from "react-i18next"
+
+type GenderOption = { id: number; name: string };
 
 const PersonalInformationStep = ({
     control,
@@ -19,12 +15,12 @@ const PersonalInformationStep = ({
 }: {
     control: any,
     errors: FieldErrors<FieldValues>,
-    availableGenders: [],
+    availableGenders: GenderOption[],
 }) => {
     const { t } = useTranslation();
     const {showActionSheetWithOptions} = useActionSheet();
 
-    const handlePressIosPicker = (field) => {
+    const handlePressIosPicker = (field: { onChange: (value: number) => void }) => {
         let options: string[] = [];
 
         if (availableGenders === null) {
@@ -79,7 +75,7 @@ const PersonalInformationStep = ({
             <CustomText size="title" color="secondary" boldness="bold" numberOfLines={3}>
                 {t('auth.sign_up.personal_information.title')}
             </CustomText>
-            <CustomText color="gray_medium" numberOfLines={3} classes="mt-2">
+            <CustomText color="muted" numberOfLines={3} classes="mt-2">
                 {t('auth.sign_up.personal_information.subtitle')}
             </CustomText>
 
@@ -129,7 +125,7 @@ const PersonalInformationStep = ({
                 {errors.name && errors.name.message && (
                     <CustomText
                         size="small"
-                        color="error"
+                        color="danger"
                         classes="mt-1"
                     >
                         {errors.name.message as string}
@@ -175,7 +171,7 @@ const PersonalInformationStep = ({
                 {errors.phone_number && errors.phone_number.message && (
                     <CustomText
                         size="small"
-                        color="error"
+                        color="danger"
                         classes="mt-1"
                     >
                         {errors.phone_number.message as string}
@@ -218,7 +214,7 @@ const PersonalInformationStep = ({
                 {errors.email && errors.email.message && (
                     <CustomText
                         size="small"
-                        color="error"
+                        color="danger"
                         classes="mt-1"
                     >
                         {errors.email.message as string}
@@ -297,7 +293,7 @@ const PersonalInformationStep = ({
                 {errors.gender_id && errors.gender_id.message && (
                     <CustomText
                         size="small"
-                        color="error"
+                        color="danger"
                         classes="mt-1"
                     >
                         {errors.gender_id.message as string}
@@ -346,7 +342,7 @@ const PersonalInformationStep = ({
                 {errors.date_birthday && errors.date_birthday.message && (
                     <CustomText
                         size="small"
-                        color="error"
+                        color="danger"
                         classes="mt-1"
                     >
                         {errors.date_birthday.message as string}

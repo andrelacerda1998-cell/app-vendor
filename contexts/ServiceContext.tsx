@@ -25,12 +25,37 @@ const pickValue = <T,>(...values: Array<T | null | undefined>) =>
   values.find((value) => value !== undefined && value !== null);
 
 const mergeOpenServiceData = (service: OpenServiceInterface, fallback?: Partial<ServiceInterface> | Partial<OpenServiceInterface> | null): OpenServiceInterface => {
+  // Nunca fundir serviços diferentes: um fallback de outro id iria ressuscitar
+  // campos (morada, valor) do serviço errado.
+  if (
+    fallback &&
+    (fallback as any)?.id != null &&
+    (service as any)?.id != null &&
+    String((fallback as any).id) !== String((service as any).id)
+  ) {
+    fallback = null;
+  }
+
   const fallbackCustomer = fallback?.customer as any;
   const fallbackAddress = fallback?.address as any;
   const fallbackVendor = (fallback as any)?.vendor;
 
+  // Só os campos que o payload novo traz mesmo preenchidos se sobrepõem.
+  const definedEntries = Object.fromEntries(
+    Object.entries(service as any).filter(([, v]) => v !== undefined && v !== null)
+  );
+
   return {
-    ...service,
+    // O nível de topo também herda o fallback. Sem isto, os campos que o
+    // payload magro dos sockets nem traz (schedule, amount_for_vendor,
+    // customer_notes, customer_photos…) eram apagados a cada atualização —
+    // a hora e o "Valor a receber" desapareciam do ecrã ao vivo.
+    ...((fallback as any) || {}),
+    ...definedEntries,
+    // `status` e `on_the_way_at` são o que o socket vem mesmo dizer: ganham
+    // sempre, mesmo quando o novo valor é null (ex.: estado reposto).
+    status: (service as any).status ?? (fallback as any)?.status ?? null,
+    on_the_way_at: (service as any).on_the_way_at ?? (fallback as any)?.on_the_way_at ?? null,
     customer: {
       ...(fallbackCustomer || {}),
       ...(service.customer || {}),
@@ -91,6 +116,13 @@ interface ServiceContextProps {
   getOpenService: () => Promise<void>;
   getPendingService: () => Promise<void>;
   getPendingServices: () => void;
+  /**
+   * Estado da última ida buscar os pedidos pendentes. É o ecrã de receita: uma
+   * falha de rede não pode aparecer como "não tens pedidos". Continua a NÃO
+   * rejeitar (há muitos chamadores que ignoram a promise) — lê-se por aqui.
+   */
+  pendingServicesLoading: boolean;
+  pendingServicesFailed: boolean;
   pendingServices: ServiceRequestedInterface[] | [];
   setPendingServices: React.Dispatch<React.SetStateAction<ServiceRequestedInterface[] | []>>;
 
@@ -117,6 +149,8 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
   const [openService, setOpenServiceState] = useState<OpenServiceInterface | null>(null);
   const [pendingService, setPendingService] = useState<ServiceInterface | null>(null);
   const [pendingServices, setPendingServices] = useState<ServiceRequestedInterface[] | []>([]);
+  const [pendingServicesLoading, setPendingServicesLoading] = useState(true);
+  const [pendingServicesFailed, setPendingServicesFailed] = useState(false);
   const [historyServices, setHistoryServices] = useState<ServiceInterface[]>([]);
 
   const [loadingServicesHistory, setLoadingServicesHistory] = useState(true);
@@ -222,11 +256,6 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
     const response = await api.get(API_ROUTES.VENDOR_GET_PENDING_SERVICE);
     const service = response.data.data.service;
 
-    console.log('[ServiceContext] getPendingService response:', {
-      service,
-      schedule_id: service?.schedule_id,
-      schedule: service?.schedule,
-    });
 
     if (openService && service) {
       router.dismissTo('/(app)/(tabs)/home');
@@ -234,7 +263,6 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
 
     if (!pendingService && service) {
       const scheduleId = service.schedule_id ?? service.schedule?.id;
-      console.log('[ServiceContext] Navigating to schedule-proposal with scheduleId:', scheduleId, 'pendingService:', pendingService);
       setTimeout(() => {
         if (scheduleId) {
           router.navigate({
@@ -249,18 +277,15 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
         }
       }, 500);
     } else {
-      console.log('[ServiceContext] Not navigating - pendingService exists:', pendingService);
     }
 
     setPendingService(service || null);
-    console.log('[ServiceContext] setPendingService called with:', service?.id);
   }
 
   const getPendingServices = () => {
-    console.log('[ServiceContext] getPendingServices called');
-    api.get(API_ROUTES.VENDOR_GET_PENDING_ALL_SERVICES).then((response) => {
+    setPendingServicesLoading(true);
+    return api.get(API_ROUTES.VENDOR_GET_PENDING_ALL_SERVICES).then((response) => {
       const { services } = response.data.data;
-      console.log('[ServiceContext] getPendingServices fetched:', services?.length);
 
       const pendingServices: ServiceRequestedInterface[] = services.map((service: any) => {
         return {
@@ -280,17 +305,36 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
           service_type: {
             id: service.service_type.id,
             name: service.service_type.name,
+            // Duração estimada em minutos; ausente em payloads antigos.
+            time: service.service_type.time ?? null,
           },
+          // Morada completa + observações do cliente: o que o profissional
+          // precisa para decidir. Ausentes => null (o cartão omite).
+          address_details: service.address_details ?? null,
+          customer_notes: service.customer_notes ?? null,
+          // Fotos do problema. Payloads antigos não as trazem => [].
+          customer_photos: Array.isArray(service.customer_photos) ? service.customer_photos : [],
           amount_for_vendor: service.amount_for_vendor,
           service_id: service.id,
           schedule_id: service.schedule?.id ?? service.schedule_id ?? null,
           created_at: service.created_timestamp,
+          // `is_immediate` só existe no payload de formatDataForVendor; na lista de
+          // pendentes derivamos com a mesma regra do backend (imediato == sem agendamento).
+          is_immediate: typeof service.is_immediate === 'boolean'
+            ? service.is_immediate
+            : !service.schedule,
+          // Distância em quilómetros (ServiceRequestedData::distance).
+          distance: service.distance ?? null,
         }
       });
 
       setPendingServices(pendingServices);
+      setPendingServicesFailed(false);
     }).catch((error) => {
       console.error('[ServiceContext] Failed to get pending services: ', error.message);
+      setPendingServicesFailed(true);
+    }).finally(() => {
+      setPendingServicesLoading(false);
     })
   }
 
@@ -310,8 +354,8 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
         if (error?.response?.status !== 401) {
           openDialog({
             icon: <XIcon color={Colors.primary} />,
-            title: t('errors.title'),
-            subtitle: t('errors.occurred_an_error'),
+            title: t('errors.service_history.title'),
+            subtitle: t('errors.service_history.subtitle'),
             closeAfterMSeconds: 2000,
             closeOnClickOutside: true,
           });
@@ -351,6 +395,8 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
         getOpenService,
         getPendingService,
         getPendingServices,
+        pendingServicesLoading,
+        pendingServicesFailed,
         pendingServices,
         setPendingServices,
 

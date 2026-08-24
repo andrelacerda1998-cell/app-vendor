@@ -9,9 +9,9 @@ function ProgressBar({ percentage = 0 }: ProgressBarProps) {
   const clampedPercentage = Math.max(0, Math.min(100, percentage));
 
   return (
-    <View className="w-full h-[4px] bg-gray_strong rounded-full overflow-hidden mb-4">
+    <View className="w-full h-[6px] bg-card_high rounded-full overflow-hidden mb-4">
       <View
-        className="h-full bg-support_primary rounded-full"
+        className="h-full bg-brand rounded-full"
         style={{ width: `${clampedPercentage}%` }}
       />
     </View>

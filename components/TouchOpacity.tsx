@@ -1,7 +1,13 @@
 import { Colors } from '@/constants/Colors';
 import React from 'react'
-import { TouchableWithoutFeedback, TouchableOpacity } from 'react-native'
+import { TouchableOpacity } from 'react-native';
 
+/**
+ * @deprecated Não usar em código novo — preferir `CustomTouchableOpacity`
+ * (variantes tipadas, estados disabled/loading coerentes). Este componente
+ * sobrevive apenas nos 12 ecrãs legados; a migração é um passo próprio,
+ * ecrã a ecrã com verificação visual (auditoria 2026-08-17, Fase 3).
+ */
 const TouchOpacity = ({
   children,
   bgColor = null,

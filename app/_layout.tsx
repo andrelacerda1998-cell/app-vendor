@@ -1,3 +1,4 @@
+import React from 'react';
 import {ApiProvider} from '@/contexts/ApiContext';
 import {SessionProvider} from '@/contexts/SessionContext';
 import {Slot} from 'expo-router';
@@ -25,7 +26,7 @@ import {
 import {useCallback, useEffect, useState, useRef} from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import * as SystemUI from 'expo-system-ui';
-import {Linking, Platform, SafeAreaView, Text, TouchableOpacity, View, Image, ImageBackground, Animated } from 'react-native';
+import { Linking, Platform, SafeAreaView, Text, View, Image, Animated } from 'react-native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {ClickOutsideProvider} from 'react-native-click-outside';
 import {StatusBar} from 'expo-status-bar';
@@ -47,6 +48,7 @@ import { CustomText } from "@/components/CustomText";
 import CustomTouchableOpacity from "@/components/CustomTouchableOpacity";
 import { PACKAGE_NAME, APP_STORE_URL } from "@/app.config";
 import { isVersionOutdated } from "@/utils";
+import { ThemeProvider, DarkTheme } from '@react-navigation/native';
 import { Colors } from "@/constants/Colors";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import {ScheduleProvider} from "@/contexts/ScheduleContext";
@@ -254,7 +256,7 @@ export default function Root() {
                 position: 'absolute',
                 width: 260,
                 height: 260,
-                backgroundColor: '#FABB5B',
+                backgroundColor: Colors.brand,
                 borderRadius: 12,
                 }}
             />
@@ -271,7 +273,7 @@ export default function Root() {
                 style={{
                 position: 'absolute',
                 bottom: 30,
-                color: '#FABB5B',
+                color: Colors.brand,
                 fontSize: 14,
                 fontWeight: '600',
                 letterSpacing: 1,
@@ -297,6 +299,26 @@ export default function Root() {
 
 
     // Set up the auth context and render our layout inside of it.
+/**
+ * Tema de navegação escuro.
+ *
+ * Sem isto o React Navigation usa o tema CLARO por omissão, cujo fundo é
+ * quase branco. Nos ecrãs em que a tab bar é `position: absolute` ela tapava-o,
+ * mas nos Ganhos — que a tem em fluxo normal e com cantos arredondados — esse
+ * fundo espreitava por baixo e à volta, como um contorno claro.
+ */
+const navigationTheme = {
+    ...DarkTheme,
+    colors: {
+        ...DarkTheme.colors,
+        background: Colors.bg,
+        card: Colors.bg,
+        border: Colors.line,
+        text: Colors.secondary,
+        primary: Colors.brand,
+    },
+};
+
     return (
         <GestureHandlerRootView style={{ flex: 1, backgroundColor: Colors.primary }}>
             <StatusBar backgroundColor="transparent" style="light" animated/>
@@ -314,7 +336,9 @@ export default function Root() {
                                                          <NotificationObserverHandler />
                                                          <LocationProvider>
                                                              <ForegroundWrapper>
-                                                                 <Slot/>
+                                                                 <ThemeProvider value={navigationTheme}>
+                                                                     <Slot/>
+                                                                 </ThemeProvider>
                                                                  <Dialog/>
                                                              </ForegroundWrapper>
                                                          </LocationProvider>

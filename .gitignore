@@ -49,3 +49,4 @@ android_old
 build
 
 keys/google-services.json
+*.swp

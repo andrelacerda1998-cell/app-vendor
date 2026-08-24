@@ -51,6 +51,13 @@ export interface ServiceInterface {
   address: AdressInterface | null,
   invoice?:string,
   server_time?: string,
+  /** Observações escritas pelo cliente ao abrir o pedido (formatDataForVendor). */
+  customer_notes?: string | null,
+  /**
+   * Fotos que o cliente juntou ao pedir (Service::customerPhotosPayload).
+   * URL assinados e temporários — não guardar nem partilhar fora do ecrã.
+   */
+  customer_photos?: { id: number; url: string }[] | null,
   schedule?: {
     scheduled_day: string;
     date_label: string;
@@ -67,6 +74,8 @@ export interface AdressInterface {
   address: string;
   additional_info: string | null;
   street_name: string | null;
+  /** Número da porta (formatVendorAddress). */
+  street_number?: string | null;
   city: string;
   postal_code: string;
   country: string;
@@ -77,9 +86,15 @@ export interface AdressInterface {
 export interface ServiceTypeInterface {
   id: number;
   name: string;
-  time: number;
-  description: string;
+  /**
+   * Duração estimada em minutos. Opcional porque o endpoint do vendor
+   * (`/vendor/services/operation-areas`) ainda NÃO devolve este campo — só o do cliente.
+   */
+  time?: number | null;
+  description?: string;
   operation_area_id?: OperationArea['id'];
+  /** Preço "desde" (€) do catálogo. Também só devolvido no endpoint do cliente. */
+  starts_from?: number | null;
   suggested_price?: string;
   current_price?: string;
 }
@@ -103,10 +118,42 @@ export interface ServiceRequestedInterface {
   service_type: {
     id: number;
     name: string;
+    /** Duração estimada em minutos (ServiceType::time). Pode não vir no payload. */
+    time?: number | null;
   };
   service_id: number;
   //added to handle the countdown counters
   created_at?: number;
   server_time?: string;
   schedule_id?: number;
+  /** Vem do backend (Service::formatDataForVendor). Quando ausente, derivamos de `schedule`. */
+  is_immediate?: boolean;
+  /** Distância vendor→morada do serviço, em QUILÓMETROS (helpers/distance.php). */
+  distance?: number | null;
+  /**
+   * Morada completa do serviço (ServiceRequestedData::address_details /
+   * Service::formatVendorAddress). Campos individualmente opcionais — omite-se
+   * o que o backend não souber, nunca se inventa.
+   */
+  address_details?: ServiceAddressDetails | null;
+  /** Observações escritas pelo cliente ao abrir o pedido. */
+  customer_notes?: string | null;
+  /**
+   * Fotos que o cliente juntou ao pedir (Service::customerPhotosPayload).
+   * URL assinados e temporários — não guardar nem partilhar fora do ecrã.
+   */
+  customer_photos?: { id: number; url: string }[] | null;
+}
+
+export interface ServiceAddressDetails {
+  name?: string | null;
+  street_name?: string | null;
+  street_number?: string | null;
+  postal_code?: string | null;
+  city?: string | null;
+  state?: string | null;
+  country?: string | null;
+  additional_info?: string | null;
+  latitude?: number | string | null;
+  longitude?: number | string | null;
 }

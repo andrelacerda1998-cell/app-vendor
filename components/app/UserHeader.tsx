@@ -1,20 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Animated, Image, TouchableWithoutFeedback, useAnimatedValue, View } from 'react-native'
-import { ThemedText } from '../ThemedText'
+import { Animated, Image, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { Colors } from '@/constants/Colors'
 import { Entypo, Feather, MaterialIcons, Octicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
 import TouchOpacity from '../TouchOpacity'
 import * as Location from 'expo-location';
-import { Alert } from 'react-native'
 import { useApi } from '@/contexts/ApiContext'
 import { useClickOutside } from 'react-native-click-outside'
-import { API_ROUTES } from '@/constants/ApiRoutes'
 import { useSession } from '@/contexts/SessionContext'
 import { CustomText } from '../CustomText'
-import Notification from '@/assets/icons/notification'
 import NotificationIcon from "@/assets/icons/notification"
 import { useTranslation } from "react-i18next"
+import useVendorOnlineStatus from "@/hooks/useVendorOnlineStatus"
 
 const UserHeader = () => {
   const { t } = useTranslation();
@@ -23,12 +20,22 @@ const UserHeader = () => {
     toggleShowDropdown();
   });
   const { vendorData, setVendorData } = useSession();
-  const [locationConsentStatus, setLocationConsentStatus] = useState<PermissionStatus>();
+  const [locationConsentStatus, setLocationConsentStatus] = useState<Location.PermissionStatus>();
   const rotateAnim = useRef(new Animated.Value(0)).current;
   const [showDropdown, setShowDropdown] = useState(false);
   const [isLoadingRequest, setIsLoadingRequest] = useState(false);
 
   const [notifications, setNotifications] = useState<number>(0);
+
+  /**
+   * Online/offline no cabeçalho da Home.
+   *
+   * O interruptor que decide se o técnico recebe pedidos — o estado mais
+   * importante da app — vivia escondido no Perfil, a três toques. Os Ganhos
+   * chegavam a dizer "fica online para receberes pedidos" sem dizer onde.
+   * A lógica é a mesma do Perfil (hook partilhado), não uma segunda cópia.
+   */
+  const online = useVendorOnlineStatus();
 
   useEffect(() => {
     if (vendorData?.user?.notifications !== undefined) {
@@ -60,70 +67,6 @@ const UserHeader = () => {
     setShowDropdown(prev => !prev);
   }
 
-  // const rotate = rotateAnim.interpolate({
-  //   inputRange: [0, 1],
-  //   outputRange: ['0deg', '-180deg'],
-  // });
-
-  // const manageProfilePress = () => {
-  //   toggleShowDropdown();
-  //   router.navigate("/(app)/profile");
-  // };
-
-  // const goToChangeSkills = () => {
-  //   router.navigate("/(app)/(modals)/(skills)/change-skills");
-  // }
-
-  // const handleSetCurrentLocation = async () => {
-  //   if (locationConsentStatus?.state === "denied"){
-  //       Alert.alert('Location denied');
-  //       return;
-  //   }
-
-  //   let location = await Location.getCurrentPositionAsync({});
-
-  //   updateLocation(location.coords.latitude, location.coords.longitude);
-  // }
-
-  // const updateLocation = (latitude: number, longitude: number) => {
-  //   setIsLoadingRequest(true);
-  //   api.put(API_ROUTES.VENDOR_UPDATE_LOCATION, {
-  //       latitude,
-  //       longitude
-  //   }).then((response)=>{
-  //     const { current_location } = response.data.data;
-  //     const newVendorData = {
-  //       ...vendorData,
-  //       current_location
-  //     }
-  //     setVendorData(newVendorData);
-  //   }).catch(err=>{
-  //       console.log(err);
-  //   }).finally(()=>{
-  //       setIsLoadingRequest(false);
-  //   })
-
-  // }
-
-  // const changeVendorStatus = (newStatus: string) => {
-  //   setIsLoadingRequest(true);
-  //   const newStatusValue = newStatus.at(0)?.toUpperCase() + newStatus.slice(1);
-  //   api.put(API_ROUTES.VENDOR_UPDATE_STATUS, {
-  //     status: newStatusValue
-  //   }).then((data)=>{
-  //     console.log({data}, 'data on changeVendorStatus on vendor user header')
-  //     console.log("Change vendor status");
-  //     const newStatusData = {
-  //       ...vendorData,
-  //       status: newStatusValue as "Online" | "Offline"
-  //     }
-  //     setVendorData(newStatusData);
-  //   }).catch(err=>{
-  //     console.log(err);
-  //   }).finally(()=>{
-  //     setIsLoadingRequest(false);
-  //   })
-  // }
 
   const handlePressNotification = () => {
     router.push('/(app)/(modals)/notifications')
@@ -132,18 +75,70 @@ const UserHeader = () => {
   return (
     <View>
       <View className="flex-row items-center justify-between w-full">
-        {/* <TouchOpacity bgColor="primary" itemsCenter otherClasses="px-6 py-2" rounded="full" onPress={goToChangeSkills}>
-          <ThemedText type="default" className="font-poppins-medium" color={Colors.support_primary}>
-            My skills
-          </ThemedText>
-        </TouchOpacity> */}
+        {/* Avatar → Perfil */}
+        <TouchableWithoutFeedback onPress={() => router.navigate('/(app)/(tabs)/profile')}>
+          <View
+            className="h-11 w-11 rounded-full overflow-hidden items-center justify-center mr-3"
+            style={{ backgroundColor: Colors.brand }}
+          >
+            {vendorData?.user?.avatar?.src ? (
+              <Image source={{ uri: vendorData.user.avatar.src }} className="w-full h-full" />
+            ) : (
+              <CustomText size="medium" boldness="bolder" color="on_brand">
+                {(vendorData?.user?.first_name || vendorData?.username || '?').charAt(0).toUpperCase()}
+              </CustomText>
+            )}
+          </View>
+        </TouchableWithoutFeedback>
 
-        <CustomText size="small" color="gray_medium" numberOfLines={1} classes="w-[80%]">
-          {t('user_header.welcome_back')}
-          <CustomText size="small" color="secondary">{" "}{vendorData?.user?.first_name}</CustomText>
-        </CustomText>
+        <View className="flex-1 pr-4">
+          <CustomText size="large" color="secondary" boldness="bolder" numberOfLines={1}>
+            {t('user_header.hello', { name: vendorData?.user?.first_name ?? '' })}
+          </CustomText>
+          <CustomText size="small" color="muted" boldness="regular" numberOfLines={1} classes="mt-0.5">
+            {(vendorData?.at_user && vendorData?.company_address && vendorData?.iban &&
+              vendorData?.user?.phone_number_verified_at && vendorData?.user?.email_verified_at)
+              ? t('user_header.ready')
+              : t('user_header.finish_account')}
+          </CustomText>
+        </View>
 
-        <TouchOpacity onPress={handlePressNotification} className="w-6 h-6">
+        {/* Estado online/offline — tocável, sempre à vista. */}
+        <TouchableOpacity
+          onPress={online.toggle}
+          disabled={online.disabled}
+          activeOpacity={0.8}
+          className="flex-row items-center rounded-full px-3 py-1.5 mr-3"
+          style={{
+            backgroundColor: online.isOnline ? 'rgba(35,230,158,0.14)' : Colors.card,
+            borderWidth: 1,
+            borderColor: online.isOnline ? 'rgba(35,230,158,0.45)' : Colors.line,
+            opacity: online.disabled ? 0.5 : 1,
+          }}
+          accessibilityRole="switch"
+          accessibilityState={{ checked: online.isOnline, disabled: online.disabled }}
+          accessibilityLabel={t('session.status.receive_requests')}
+        >
+          <View
+            className="rounded-full mr-1.5"
+            style={{ width: 8, height: 8, backgroundColor: online.isOnline ? Colors.success : Colors.danger }}
+          />
+          <CustomText size="extraSmall" boldness="bold" color="secondary">
+            {online.isOnline ? t('session.status.online') : t('session.status.offline')}
+          </CustomText>
+        </TouchableOpacity>
+
+        <TouchOpacity
+          onPress={handlePressNotification}
+          className="w-6 h-6"
+          hitSlop={{ top: 14, bottom: 14, left: 14, right: 14 }}
+          accessibilityRole="button"
+          accessibilityLabel={
+            notifications > 0
+              ? t('session.notifications.title_with_count', { count: notifications })
+              : t('session.notifications.title')
+          }
+        >
           <NotificationIcon color={Colors.secondary} />
           {
               notifications > 0 && (
@@ -164,89 +159,7 @@ const UserHeader = () => {
               )
           }
         </TouchOpacity>
-
-        {/* <View className="flex-row items-center justify-center">
-          <TouchOpacity
-            onPress={() => {
-              if (!showDropdown) {
-                toggleShowDropdown()
-              }
-            }}
-          >
-            <View className="flex-row items-center">
-              <View className="relative">
-                <View className="h-10 w-10 rounded-full overflow-hidden mr-2">
-                  <Image
-                    src="https://r2.erweima.ai/imgcompressed/img/compressed_c5b0073e2f4244f269ef19b63b36acaa.webp"
-                    source={{ uri: 'https://r2.erweima.ai/imgcompressed/img/compressed_c5b0073e2f4244f269ef19b63b36acaa.webp' }}
-                    className="w-full h-full object-cover object-center"
-                  />
-                </View>
-                <View className={`h-3 w-3 rounded-full ${vendorData?.status === "Online" ? "bg-success" : "bg-gray_light"} absolute right-2 bottom-0`}></View>
-              </View>
-
-              <Animated.View
-                style={{
-                  transform: [{ rotate }],
-                }}
-              >
-                <Entypo name="chevron-down" size={24} color="black" />
-              </Animated.View>
-            </View>
-
-          </TouchOpacity>
-        </View> */}
       </View>
-      {/* {
-        showDropdown && (
-          <View className="bg-primary right-0 p-4 shadow-2xl shadow-dark absolute top-10 mt-2 rounded-xl space-y-3 z-[1]" ref={dropDownRef}>
-            <ThemedText color={Colors.gray_medium} type="small">
-              Change status
-            </ThemedText>
-            {vendorData?.status === "Online" ? (
-              <TouchOpacity className="flex-row items-center" onPress={() => changeVendorStatus("Offline")} disabled={isLoadingRequest}>
-                <View className="h-2 w-2 rounded-full bg-gray_light mr-2"></View>
-                <ThemedText color={isLoadingRequest ? Colors.gray_medium : Colors.secondary} type="default">
-                  Offline
-                </ThemedText>
-              </TouchOpacity>
-            ) : (
-              <TouchOpacity className="flex-row items-center" onPress={() => changeVendorStatus("Online")} disabled={isLoadingRequest}>
-                <View className="h-2 w-2 rounded-full bg-success mr-2"></View>
-                <ThemedText color={isLoadingRequest ? Colors.gray_medium : Colors.secondary} type="default">
-                  Online
-                </ThemedText>
-              </TouchOpacity>
-            )}
-
-            <View className="bg-gray_medium w-full h-[1px] rounded-full"></View>
-
-            <TouchOpacity className="flex-row items-center" onPress={manageProfilePress}>
-              <Feather name="user" size={18} color={Colors.secondary}/>
-              <ThemedText color={Colors.secondary} type="default" className="ml-2">
-                Manage Profile
-              </ThemedText>
-            </TouchOpacity>
-            <View className="flex-row items-center">
-              <MaterialIcons name="logout" size={18} color={Colors.error} />
-              <ThemedText color={Colors.error} type="defaultSemiBold" className="ml-2">
-                Log Out
-              </ThemedText>
-            </View>
-          </View>
-        )
-      } */}
-
-      {/* <TouchOpacity bgColor="primary" itemsCenter otherClasses="px-6 py-2 w-1/2 mt-6" rounded="full"
-        onPress={handleSetCurrentLocation}
-      >
-        <ThemedText type="default" className="font-poppins-medium" color={Colors.support_primary}>
-          Change location
-        </ThemedText>
-      </TouchOpacity>
-      <ThemedText color={Colors.primary} className="mt-2">
-        Location: {vendorData?.current_location?.latitude}, {vendorData?.current_location?.longitude}
-      </ThemedText> */}
     </View>
   )
 }

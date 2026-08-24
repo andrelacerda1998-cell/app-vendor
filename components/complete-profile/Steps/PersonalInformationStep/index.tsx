@@ -1,27 +1,21 @@
-import CheckMark from "@/assets/icons/check-mark"
-import XIcon from "@/assets/icons/x"
 import {CustomText} from '@/components/CustomText'
 import CustomTextInput from '@/components/CustomTextInput'
 import CustomTouchableOpacity from "@/components/CustomTouchableOpacity"
 import DatePicker from '@/components/DatePicker'
-import {ThemedText} from '@/components/ThemedText'
 import TouchOpacity from "@/components/TouchOpacity"
 import {API_ROUTES} from "@/constants/ApiRoutes"
 import {Colors} from '@/constants/Colors'
 import {useApi} from "@/contexts/ApiContext"
 import {useDialog} from "@/contexts/DialogContext"
 import {useSession} from "@/contexts/SessionContext"
-import i18n from "@/translation"
 import {VendorDataInterface} from "@/types/session"
 import {validateNIF} from "@/utils"
 import {useActionSheet} from "@expo/react-native-action-sheet"
 import {Picker} from "@react-native-picker/picker"
-import axios from "axios"
 import React, {useEffect, useState} from 'react'
-import {Control, Controller, FieldErrors, FieldValues, useForm, UseFormHandleSubmit} from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form';
 import {useTranslation} from "react-i18next"
-import {Platform, TextInput, View} from 'react-native'
-import {ScrollView} from 'react-native'
+import { Platform, View } from 'react-native';
 import {KeyboardAwareScrollView} from "react-native-keyboard-controller"
 
 const PersonalInformationStep = ({

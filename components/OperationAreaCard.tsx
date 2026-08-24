@@ -1,19 +1,24 @@
-import TouchOpacity from '@/components/TouchOpacity';
-import { Colors } from '@/constants/Colors';
 import React, { useState } from 'react';
 import { View } from 'react-native';
+import { Feather } from "@expo/vector-icons";
+import { useTranslation } from 'react-i18next';
+import TouchOpacity from '@/components/TouchOpacity';
+import { Colors } from '@/constants/Colors';
+import { Card, IconTile } from '@/components/ui';
 import { CustomText } from "./CustomText";
-import { Entypo } from "@expo/vector-icons";
 import ServiceTypeItemSelector from "./services/ServiceTypeItemSelector";
 import { ServiceTypeInterface } from "@/types/services";
 
 type OperationAreaCardProps = {
-  Icon: () => React.JSX.Element;
+  /** Opcional: sem ícone, a linha fica só com o nome da categoria e o contador. */
+  Icon?: () => React.JSX.Element;
   label: string;
   onServiceTypePress: (serviceTypeId: number) => void;
   otherClasses?: string;
   servicesTypes?: ServiceTypeInterface[];
   selectedServicesTypes?: ServiceTypeInterface['id'][];
+  /** Tarifa horária do técnico, para estimar o ganho por serviço. */
+  hourRate?: number | null;
 };
 
 const OperationAreaCard = ({
@@ -23,74 +28,92 @@ const OperationAreaCard = ({
   otherClasses = '',
   servicesTypes,
   selectedServicesTypes,
+  hourRate = null,
   ...props
 }: OperationAreaCardProps) => {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
 
   const servicesSelected = servicesTypes?.filter(serviceType => selectedServicesTypes?.includes(serviceType.id)) || [];
+  const hasSelection = servicesSelected.length > 0;
 
   return (
-    <View className="border border-gray_strong rounded-xl">
+    // Categoria com escolhas feitas: borda âmbar. A distinção não fica dependente
+    // só da cor do contador (quem não distingue bem cores continua a ver a diferença,
+    // reforçada pela etiqueta em texto ao lado).
+    <Card
+      padded={false}
+      style={hasSelection ? { borderColor: Colors.brand, borderTopColor: Colors.brand } : undefined}
+    >
       <TouchOpacity
-        className={`w-full flex flex-row items-center justify-between ${otherClasses}`}
+        otherClasses={`w-full flex-row items-center px-4 py-4 ${otherClasses}`}
         onPress={() => {
           setOpen(prev => !prev);
         }}
         {...props}
       >
-        <View className="w-14 h-14 items-center justify-center">
-          <Icon />
-        </View>
-        <View className="flex-1 pr-3">
+        {Icon && (
+          <IconTile>
+            <Icon />
+          </IconTile>
+        )}
+        <View className={`flex-1 ${Icon ? 'px-3' : 'pr-3'}`}>
           <CustomText
             boldness="semiBold"
             color="secondary"
-            classes="flex-shrink"
+            size="medium"
             numberOfLines={2}
           >
             {label}
           </CustomText>
+          {/* Contador legível ("3 selecionados") em vez de um número solto. */}
+          <CustomText
+            color={hasSelection ? 'brand' : 'muted'}
+            boldness="medium"
+            size="small"
+            classes="mt-1"
+            numberOfLines={1}
+          >
+            {hasSelection
+              ? t('operation_areas.services_types.selected_count', { count: servicesSelected.length })
+              : t('operation_areas.services_types.none_selected')}
+          </CustomText>
         </View>
-        <CustomText
-          color="gray_medium"
-          classes="text-center"
-          boldness="semiBold"
-          size="medium"
-        >
-          {servicesSelected.length}
-        </CustomText>
-        <View className="w-14 h-14 items-center justify-center">
-          {open ? (
-            <Entypo name="chevron-up" size={24} color={Colors.gray_medium} />
-          ) : (
-            <Entypo name="chevron-down" size={24} color={Colors.gray_medium} />
-          )}
-        </View>
+        <Feather
+          name={open ? 'chevron-up' : 'chevron-down'}
+          size={20}
+          color={Colors.muted}
+        />
       </TouchOpacity>
+
       {open && servicesTypes && selectedServicesTypes && (
-        <View className="p-5 pt-2 space-y-4">
-          {servicesTypes.length > 0 ? servicesTypes.map((serviceType) => (
+        <View className="px-4 pb-4">
+          <View style={{ height: 1, backgroundColor: Colors.line }} className="mb-3" />
+          {servicesTypes.length > 0 ? servicesTypes.map((serviceType, index) => (
             <View key={serviceType.id} className="w-full">
+              {index > 0 && (
+                <View style={{ height: 1, backgroundColor: Colors.line }} className="my-3" />
+              )}
               <ServiceTypeItemSelector
                 item={serviceType}
                 isSelected={selectedServicesTypes.includes(serviceType.id)}
                 addServiceType={onServiceTypePress}
-                t={(key: string) => key}
+                hourRate={hourRate}
               />
             </View>
           )) : (
             <CustomText
-              color="gray_medium"
+              color="muted"
               classes="text-center"
-              boldness="semiBold"
+              boldness="medium"
               size="small"
             >
-              No services types available
+              {t('operation_areas.services_types.empty')}
             </CustomText>
           )}
         </View>
       )}
-    </View>
+    </Card>
   );
 };
 

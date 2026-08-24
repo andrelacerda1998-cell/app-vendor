@@ -1,50 +1,44 @@
 import React from 'react'
 import {TouchableOpacity, View} from "react-native"
 import { CustomText } from "./CustomText"
-import AttentionIcon from "@/assets/icons/attention"
+import { Feather } from "@expo/vector-icons"
 import { Colors } from "@/constants/Colors"
 import {useSession} from "@/contexts/SessionContext";
 import {useRouter} from "expo-router";
 import { useTranslation } from "react-i18next"
 
+/**
+ * Aviso de documentos EM VALIDAÇÃO (informativo).
+ * Os documentos em falta são cobertos pelo cartão "Precisa de completar o seu perfil"
+ * (o fluxo de completar perfil começa precisamente nos documentos) — não duplicar.
+ */
 const DocumentsValidating = () => {
   const { t } = useTranslation();
   const { vendorData } = useSession();
   const router = useRouter();
 
-  if (!vendorData?.pending_documents?.length && !vendorData?.missing_documents?.length) {
-      return null;
-  }
+  const hasPending = (vendorData?.pending_documents?.length ?? 0) > 0;
+  const hasMissing = (vendorData?.missing_documents?.length ?? 0) > 0;
 
-  if (vendorData?.pending_documents?.length > 0 && vendorData?.missing_documents?.length <= 0) {
-      return (
-          <TouchableOpacity onPress={()=>router.push('/(app)/(modals)/documents')}  className="mb-2 flex-row justify-between items-center bg-[#6A40DA] p-3 rounded-xl">
-              <View className="w-[10%]">
-                  <View className="w-7 h-7">
-                      <AttentionIcon color={Colors.secondary} />
-                  </View>
-              </View>
-              <View className="w-[90%]">
-                  <CustomText color="secondary">
-                      {t('documents_validating.pending')}
-                  </CustomText>
-              </View>
-          </TouchableOpacity>
-      )
+  if (!hasPending || hasMissing) {
+    return null;
   }
 
   return (
-    <TouchableOpacity onPress={()=>router.push('/(app)/(modals)/documents')} className="mb-2 flex-row justify-between items-center bg-[#6A40DA] p-3 rounded-xl">
-      <View className="w-[10%]">
-        <View className="w-7 h-7">
-          <AttentionIcon color={Colors.secondary} />
-        </View>
+    <TouchableOpacity
+      onPress={() => router.push('/(app)/(modals)/documents')}
+      className="mb-2 flex-row items-center bg-card p-4 rounded-2xl border"
+      style={{ borderColor: Colors.line }}
+    >
+      <View
+        className="w-10 h-10 rounded-full items-center justify-center mr-3"
+        style={{ backgroundColor: 'rgba(233,162,59,0.15)' }}
+      >
+        <Feather name="clock" size={20} color={Colors.warning} />
       </View>
-      <View className="w-[90%]">
-        <CustomText color="secondary">
-          {t('documents_validating.missing')}
-        </CustomText>
-      </View>
+      <CustomText color="muted" size="small" numberOfLines={3} classes="flex-1">
+        {t('documents_validating.pending')}
+      </CustomText>
     </TouchableOpacity>
   )
 }

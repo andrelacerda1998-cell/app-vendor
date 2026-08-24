@@ -1,12 +1,14 @@
 import React from 'react';
 import { View, Text, Dimensions } from 'react-native';
 import { useService } from '@/contexts/ServiceContext';
+import { useTranslation } from 'react-i18next';
  
 
 const { width } = Dimensions.get('window');
 
  
 const FloatingView: React.FC = () => {
+  const { t } = useTranslation();
   const { activeService } = useService();
 
   if (!activeService) return null;
@@ -22,7 +24,7 @@ const FloatingView: React.FC = () => {
         borderWidth: 1
       }}
     >
-       <Text className="text-white font-bold">Serviço ativo</Text>              
+       <Text className="text-white font-bold">{t('services.service.open.in_progress')}</Text>              
     </View>
   );
 };

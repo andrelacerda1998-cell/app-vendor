@@ -2,28 +2,22 @@ import BackHeader from '@/components/app/BackHeader';
 import {CustomText} from "@/components/CustomText";
 import CustomTextInput from "@/components/CustomTextInput";
 import CustomTouchableOpacity from "@/components/CustomTouchableOpacity";
-import DatePicker from '@/components/DatePicker';
-import {ThemedText} from '@/components/ThemedText';
-import TouchOpacity from '@/components/TouchOpacity';
 import {API_ROUTES} from '@/constants/ApiRoutes';
 import {Colors} from '@/constants/Colors';
 import {useApi} from '@/contexts/ApiContext';
 import {useSession} from '@/contexts/SessionContext';
 import {validateNIF} from "@/utils";
-import {Feather, MaterialIcons, Octicons} from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import BottomSheet, {BottomSheetView} from '@gorhom/bottom-sheet';
 import {router} from 'expo-router';
-import React, {useCallback, useEffect, useRef, useState} from 'react'
-import {Control, Controller, useForm} from 'react-hook-form';
-import {View, StatusBar, Image, KeyboardAvoidingView, Platform, Alert, ImageBackground, TouchableOpacity, TouchableWithoutFeedback} from 'react-native';
+import React, { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { View, TouchableWithoutFeedback } from 'react-native';
 import {ScrollView, TextInput} from 'react-native-gesture-handler';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import * as Location from 'expo-location';
 import {useDialog} from "@/contexts/DialogContext";
 import CheckMark from "@/assets/icons/check-mark";
 import XIcon from "@/assets/icons/x";
-import {ImagePickerAsset} from "expo-image-picker/src/ImagePicker.types";
-import * as ImagePicker from 'expo-image-picker';
 import { useTranslation } from "react-i18next";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
@@ -75,16 +69,15 @@ const EditCompanyAddress = () => {
                 })
             })
             .catch(err => {
-                console.log(err?.response?.data)
                 const raw = err?.response?.data?.metadata?.message || err?.response?.data?.message || '';
                 const message = /credenc|credential/i.test(raw)
                     ? t('profile.edit.at_user.wrong_credentials')
-                    : (raw || t('errors.occurred_an_error'));
+                    : (raw || t('errors.at_user_save.subtitle'));
                 setUpdateError(message);
 
                 openDialog({
                     icon: <XIcon color={Colors.primary}/>,
-                    title: t('errors.title'),
+                    title: t('errors.at_user_save.title'),
                     subtitle: message,
                     closeAfterMSeconds: 2000,
                     closeOnClickOutside: true,
@@ -209,6 +202,9 @@ const EditCompanyAddress = () => {
                                             <View className="w-12 h-full items-center justify-center">
                                                 <TouchableWithoutFeedback
                                                     onPress={() => setShowPassword(prev => !prev)}
+                          accessibilityRole="button"
+                          accessibilityLabel={t('general.toggle_password_visibility')}
+                          accessibilityState={{ expanded: showPassword }}
                                                 >
                                                     <View className="w-full h-full items-center justify-center">
                                                         <Feather name={showPassword ? 'eye' : 'eye-off'} size={24} color={Colors.secondary} />

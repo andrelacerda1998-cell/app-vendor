@@ -1,24 +1,29 @@
-import {FlatList, SafeAreaView, ScrollView, View, Text} from "react-native";
+import { FlatList, RefreshControl, SafeAreaView, View, Vibration, TouchableOpacity } from "react-native";
 import TouchOpacity from "@/components/TouchOpacity";
 import {router} from "expo-router";
 import ArrowIcon from "@/assets/icons/arrow";
 import {Colors} from "@/constants/Colors";
 import {CustomText} from "@/components/CustomText";
-import FilterChip from "@/components/app/FilterChip";
 import ServiceCard from "@/components/app/ServiceCard";
-import React, {useEffect, useMemo, useState} from "react";
+import React, {useEffect, useMemo, useRef, useState} from "react";
 import {useTranslation} from "react-i18next";
-import {ScheduledServiceInterface} from "@/types/schedule";
 import AcceptReject, {AcceptRejectType} from "@/components/Buttons/AcceptReject";
 import {API_ROUTES} from "@/constants/ApiRoutes";
 import {useApi} from "@/contexts/ApiContext";
-import {useSchedule} from "@/contexts/ScheduleContext";
 import {useSession} from '@/contexts/SessionContext';
-import {toTimestampMs} from "@/utils";
+import {
+  URGENT_THRESHOLD_MS,
+  remainingFrom,
+  remainingProgress,
+  requestExpiresAt,
+  requestWindowMs,
+} from "@/utils/requestTiming";
 import {useService} from "@/contexts/ServiceContext";
 import {ServiceRequestedInterface} from "@/types/services";
-import {useDialog} from "@/contexts/DialogContext";
-import CheckMark from "@/assets/icons/check-mark";
+import {EmptyState, ErrorState, SkeletonList} from "@/components/ui";
+import {useIsOnline} from "@/hooks/useIsOnline";
+import {renderMoney} from "@/utils/money";
+import useRequestActions from "@/hooks/useRequestActions";
 
 interface FilterOptionObject {
   id: number;
@@ -27,119 +32,52 @@ interface FilterOptionObject {
 
 type FilterOption = "all" | FilterOptionObject;
 
-interface VendorsInterface {
-  distance: number,
-  id: number,
-  name: string,
-  // nif: string,
-  rate: number,
-  rating: number
-}
-
-interface VendorsInterface {
-  distance: number,
-  id: number,
-  name: string,
-  // nif: string,
-  rate: number,
-  rating: number
-}
-
 const Requests = () => {
   const { t } = useTranslation();
   const {  vendorData }  = useSession();
   const { api } = useApi();
-  const { operationAreas, pendingServices, setPendingServices, getPendingServices } = useService();
-  const { setPendingScheduleServices, fetchScheduledServices } = useSchedule();
-  const { openDialog } = useDialog();
+  const {
+    operationAreas,
+    pendingServices,
+    getPendingServices,
+    pendingServicesLoading,
+    pendingServicesFailed,
+  } = useService();
+  const isOnline = useIsOnline();
 
   const [selectedFilter, setSelectedFilter] = useState<FilterOption>("all");
+  const [refreshingList, setRefreshingList] = useState(false);
+
+  /**
+   * Aceitar/recusar via hook partilhado (o mesmo do ecrã full-screen).
+   * Antes: um estado `selected` disparava um useEffect que fazia o POST —
+   * ação-por-efeito, com corrida entre toques duplos e reset do estado.
+   * Agora o toque chama o handler diretamente, com guarda `submitting`.
+   */
+  const { accept, refuse, submitting } = useRequestActions();
+
+  const onDecision = ({ id, service_id, accepted }: AcceptRejectType) => {
+    if (submitting || !service_id) return;
+    if (accepted) accept({ scheduleId: id, serviceId: service_id });
+    else refuse(service_id);
+  };
+
+  const refreshList = async () => {
+    setRefreshingList(true);
+    try { await getPendingServices(); } finally { setRefreshingList(false); }
+  };
   const [services, setServices] = useState<ServiceRequestedInterface[]>();
-  const [selected, setSelected] = useState<AcceptRejectType>({id: null, service_id: null, accepted: false});
   const [ hoursOfService, setHoursOfService] = useState<any>({});
 
   //the below state will be used to handle the remaining time to accept service for each item of the services flatlist
   const [expiresMap, setExpiresMap] = useState<Record<string, number>>({});
+  const [windowMap, setWindowMap] = useState<Record<string, number>>({});
   const [remainingMap, setRemainingMap] = useState<Record<string, {minutes: number; seconds: number} | null>>({});
+  const [progressMap, setProgressMap] = useState<Record<string, number>>({});
+  const [urgentMap, setUrgentMap] = useState<Record<string, boolean>>({});
+  // Guarda os ids já vibrados para não repetir a vibração a cada tick.
+  const vibratedRef = useRef<Record<string, boolean>>({});
 
-  useEffect(() => {
-    if (!selected.id && !selected.service_id) return;
-
-    // Refuse (works for both immediate and scheduled)
-    if (!selected.accepted && selected.service_id) {
-      const refusedServiceId = Number(selected.service_id);
-      api.post(API_ROUTES.POST_REFUSE_SERVICE(selected.service_id as string)).then(() => {
-        setPendingServices((prev) => (prev ?? []).filter(s => s.service_id !== refusedServiceId));
-        setPendingScheduleServices((prev) => (prev ?? []).filter(s => s.service_id !== refusedServiceId));
-        setSelected({id: null, service_id: null, accepted: false});
-      }).catch((error) => {
-        console.log('Error refusing service:', error);
-        openDialog({
-          title: t('errors.title'),
-          subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('errors.occurred_an_error'),
-          closeAfterMSeconds: 3000,
-          closeOnClickOutside: true,
-        });
-        getPendingServices();
-      });
-      return;
-    }
-
-    // Accept - scheduled service (has schedule_id)
-    if (selected.accepted && selected.id) {
-      const acceptedScheduleId = Number(selected.id);
-      api.post(API_ROUTES.VENDOR_ACCEPT_SCHEDULED_SERVICE, {
-        schedule_id: selected.id
-      }).then(() => {
-        setPendingServices((prev) => (prev ?? []).filter(s => s.schedule_id !== acceptedScheduleId));
-        setPendingScheduleServices((prev) => (prev ?? []).filter(s => s.id !== acceptedScheduleId));
-        fetchScheduledServices(String(selected.id));
-        setSelected({id: null, service_id: null, accepted: false});
-        openDialog({
-          icon: <CheckMark color={Colors.primary} />,
-          title: t("services.service.channel.accepted.title"),
-          subtitle: t("services.service.channel.accepted.subtitle"),
-          closeAfterMSeconds: 3000,
-          closeOnClickOutside: true,
-        });
-      }).catch((error) => {
-        console.log('Error accepting scheduled service:', error);
-        openDialog({
-          title: t('errors.title'),
-          subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('errors.occurred_an_error'),
-          closeAfterMSeconds: 3000,
-          closeOnClickOutside: true,
-        });
-        getPendingServices();
-      });
-      return;
-    }
-
-    // Accept - immediate service (no schedule_id, only service_id)
-    if (selected.accepted && !selected.id && selected.service_id) {
-      const acceptedServiceId = Number(selected.service_id);
-      api.post(API_ROUTES.VENDOR_ACCEPT_SERVICE_BY_ID(selected.service_id as string)).then(() => {
-        setPendingServices((prev) => (prev ?? []).filter(s => s.service_id !== acceptedServiceId));
-        setSelected({id: null, service_id: null, accepted: false});
-        openDialog({
-          icon: <CheckMark color={Colors.primary} />,
-          title: t("services.service.channel.accepted.title"),
-          subtitle: t("services.service.channel.accepted.subtitle"),
-          closeAfterMSeconds: 3000,
-          closeOnClickOutside: true,
-        });
-      }).catch((error) => {
-        console.log('Error accepting immediate service:', error);
-        openDialog({
-          title: t('errors.title'),
-          subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('errors.occurred_an_error'),
-          closeAfterMSeconds: 3000,
-          closeOnClickOutside: true,
-        });
-        getPendingServices();
-      });
-    }
-  }, [selected]);
 
   const FILTERS = useMemo<FilterOption[]>(() => {
     if (!operationAreas || operationAreas.length === 0) return ["all"];
@@ -237,53 +175,65 @@ const Requests = () => {
     if (!services) return;
 
     const newMap: Record<string, number> = {};
+    const newWindows: Record<string, number> = {};
 
     services.forEach(item => {
-      if (item.service_id && item.created_at) {
-        const createdAtMs = Number(item.created_at) < 1e12
-          ? Number(item.created_at) * 1000
-          : Number(item.created_at);
-
-        newMap[String(item.service_id)] = createdAtMs + 20 * 60 * 1000; // 20 min
-      }
+      if (!item.service_id) return;
+      // Imediato -> 60s; agendado -> 20min (paridade com a app Flutter).
+      const expiresAt = requestExpiresAt(item);
+      if (!expiresAt) return;
+      newMap[String(item.service_id)] = expiresAt;
+      newWindows[String(item.service_id)] = requestWindowMs(item);
     });
 
     setExpiresMap(newMap);
+    setWindowMap(newWindows);
   }, [services]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setRemainingMap(prev => {
-        const newRemaining: typeof prev = {};
+    const tick = () => {
+      const now = Date.now();
+      const newRemaining: Record<string, {minutes: number; seconds: number} | null> = {};
+      const newProgress: Record<string, number> = {};
+      const newUrgent: Record<string, boolean> = {};
 
-        Object.entries(expiresMap).forEach(([id, expiresAt]) => {
-          if (!expiresAt) {
-            console.warn(`expiresAt missing for id=${id}`);
-            return;
-          }
-          const diff = expiresAt - Date.now();
-          newRemaining[id] = diff <= 0 ? null : {
-            minutes: Math.floor(diff / 1000 / 60),
-            seconds: Math.floor((diff / 1000) % 60),
-          };
-        });
+      Object.entries(expiresMap).forEach(([id, expiresAt]) => {
+        if (!expiresAt) return;
+        const diff = expiresAt - now;
+        newRemaining[id] = remainingFrom(expiresAt, now) ?? null;
+        newProgress[id] = remainingProgress(expiresAt, windowMap[id] ?? 0, now);
+        newUrgent[id] = diff > 0 && diff <= URGENT_THRESHOLD_MS;
 
-        return newRemaining;
+        // Vibração nos últimos 10 segundos (expo-haptics não está instalado).
+        if (newUrgent[id] && !vibratedRef.current[id]) {
+          vibratedRef.current[id] = true;
+          Vibration.vibrate([0, 120, 120, 120]);
+        }
+        if (diff > URGENT_THRESHOLD_MS) {
+          vibratedRef.current[id] = false;
+        }
       });
-    }, 1000);
+
+      setRemainingMap(newRemaining);
+      setProgressMap(newProgress);
+      setUrgentMap(newUrgent);
+    };
+
+    tick();
+    const interval = setInterval(tick, 1000);
 
     return () => clearInterval(interval);
-  }, [expiresMap]);
+  }, [expiresMap, windowMap]);
 
   return (
-    <SafeAreaView className="flex-1 bg-primary">
-      <View className="flex-1 bg-primary p-5">
+    <SafeAreaView className="flex-1 bg-bg">
+      <View className="flex-1 bg-bg p-5">
         <View className="flex-row items-center justify-between mb-6">
           <TouchOpacity onPress={() => router.back()} otherClasses="h-10 w-10" itemsCenter>
             <ArrowIcon color={Colors.secondary} position="left" size="40%" />
           </TouchOpacity>
           <CustomText color="secondary" boldness="semiBold" classes="text-xl">
-            {t("service.list", { defaultValue: "Service list" })}
+            {t("services.list.header")}
           </CustomText>
           <View className="h-10 w-10" />
         </View>
@@ -303,7 +253,7 @@ const Requests = () => {
                 key={filter === "all" ? "all" : `area-${filter.id}`}
                 label={
                   filter === "all"
-                    ? t("schedules.filters.all", { defaultValue: "All" })
+                    ? t("schedules.filters.all")
                     : filter.label
                 }
                 active={selectedFilter === filter}
@@ -316,31 +266,78 @@ const Requests = () => {
         <FlatList
           data={services}
           extraData={{ hoursOfService }}
+          // Pull-to-refresh: sem isto, um pedido que chegasse com o socket
+          // perdido só aparecia fechando e reabrindo o ecrã.
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshingList}
+              onRefresh={refreshList}
+              tintColor={Colors.brand}
+            />
+          }
           ListEmptyComponent={
-            <View className="flex-1 items-center justify-center py-12">
-              <CustomText color="gray_medium" boldness="medium">
-                {t("services.empty", { defaultValue: "You don't have any services yet" })}
-              </CustomText>
-            </View>
+            // Ecrã de receita: a lista vazia SÓ pode aparecer depois de sabermos
+            // que a chamada correu bem. A carregar -> esqueleto; a falhar ->
+            // erro com "Tentar novamente". Nunca um falso "não tens pedidos".
+            pendingServicesLoading ? (
+              <View className="py-4">
+                <SkeletonList rows={3} />
+              </View>
+            ) : pendingServicesFailed ? (
+              <View className="py-4">
+                <ErrorState
+                  icon={isOnline ? 'alert-circle' : 'wifi-off'}
+                  title={t('schedules.requests_error_title')}
+                  subtitle={isOnline
+                    ? t('schedules.requests_error_subtitle')
+                    : t('general.offline_subtitle')}
+                  onRetry={() => getPendingServices()}
+                />
+              </View>
+            ) : (
+              <View className="py-4">
+                <EmptyState
+                  icon="inbox"
+                  title={t('schedules.requests_empty_title')}
+                  subtitle={t('schedules.requests_empty_subtitle')}
+                />
+              </View>
+            )
           }
           renderItem={({item})=> {
             const remaining = remainingMap[String(item?.service_id)];
             const scheduleFor = item.schedule ? `${item.schedule.scheduled_day}` : null;
-            const priceLabel = (item.amount_for_vendor/100) + "€";
+            // Sem valor conhecido mostra-se "—" em vez de "NaN€"/"0€".
+            const priceLabel = renderMoney(item.amount_for_vendor ?? null) || "—";
 
             return <View className="mb-4">
+              <TouchableOpacity
+                activeOpacity={0.9}
+                onPress={() => router.push({
+                  pathname: '/(app)/(modals)/incoming-request/[serviceId]',
+                  params: { serviceId: String(item.service_id) },
+                })}
+              >
               <ServiceCard
                 item={item}
                 scheduleFor={scheduleFor}
                 price={priceLabel}
                 remainingTime={remaining === undefined ? undefined : remaining}
+                progress={progressMap[String(item?.service_id)]}
+                urgent={!!urgentMap[String(item?.service_id)]}
                 key={item.service_id}
               >
                 {remaining === undefined ? null : remaining === null ? (
                   <CustomText color="error" size="small">{t('schedules.times_up')}</CustomText>
                 ) : null}
-                <AcceptReject id={item.schedule_id} serviceId={item.service_id} setSelected={setSelected} />
+                <AcceptReject
+                  id={item.schedule_id}
+                  serviceId={item.service_id}
+                  setSelected={onDecision}
+                  disabled={submitting || remaining === null}
+                />
               </ServiceCard>
+              </TouchableOpacity>
             </View>
           }}
           keyExtractor={(item) => String(item.service_id)}

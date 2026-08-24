@@ -1,15 +1,10 @@
-import { ThemedText } from '@/components/ThemedText';
 import { Colors } from '@/constants/Colors';
-import { AntDesign, Entypo, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Image, SafeAreaView, StatusBar, View } from 'react-native';
-import TouchOpacity from '@/components/TouchOpacity';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Image, View } from 'react-native';
 import { useApi } from '@/contexts/ApiContext';
-import { API_ROUTES } from '@/constants/ApiRoutes';
 import { useDialog } from "@/contexts/DialogContext";
-import XIcon from "@/assets/icons/x";
-import { ServiceInterface } from "@/types/services";
 import DynamicSizingSheet from "@/components/sheets/DynamicSizingSheet";
 import { CustomText } from "@/components/CustomText";
 import { PaymentHistoryInterface } from "@/types/wallet";
@@ -23,7 +18,20 @@ const WalletHistoryBottomSheet = () => {
   const params = useLocalSearchParams();
   const [rate, setRate] = useState(0);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
-  const paymentHistory = JSON.parse(params.history as string) as PaymentHistoryInterface;
+  // Sem parâmetro este ecrã não tem o que mostrar. Antes fazia JSON.parse(undefined)
+  // e rebentava; agora devolve o utilizador à lista de movimentos.
+  const paymentHistory = useMemo<PaymentHistoryInterface | null>(() => {
+    if (typeof params.history !== 'string') return null;
+    try {
+      return JSON.parse(params.history) as PaymentHistoryInterface;
+    } catch {
+      return null;
+    }
+  }, [params.history]);
+
+  useEffect(() => {
+    if (!paymentHistory) router.replace('/(app)/(pages)/(payouts)/payouts');
+  }, [paymentHistory]);
 
   // useEffect(() => {
   //   if (serviceRate !== "null") {
@@ -88,6 +96,9 @@ const WalletHistoryBottomSheet = () => {
       return `${displayHours}:${formattedMinutes}${ampm}`;
     }
   }
+
+  // Enquanto o redirecionamento acima acontece, não há nada para desenhar.
+  if (!paymentHistory) return null;
 
   return (
     <DynamicSizingSheet

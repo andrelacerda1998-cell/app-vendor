@@ -1,16 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  Modal,
-  SafeAreaView,
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Pressable,
-  Platform,
-} from "react-native";
+import { Modal, SafeAreaView, View, Text, TouchableOpacity, Pressable } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import createStyles from "./index.module";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   visible: boolean;
@@ -37,6 +29,7 @@ function formatHM(date: Date) {
 }
 
 const Availability = ({ visible, onClose, onSave, initialStart = "08:00", initialEnd = "19:00" }: Props) => {
+  const { t } = useTranslation();
   const [start, setStart] = useState<Date>(() => parseTimeToDate(initialStart));
   const [end, setEnd] = useState<Date>(() => parseTimeToDate(initialEnd));
   const [pickerFor, setPickerFor] = useState<"start" | "end" | null>(null);
@@ -66,14 +59,12 @@ const Availability = ({ visible, onClose, onSave, initialStart = "08:00", initia
         <View style={styles.bottomSheet}>
           <View style={styles.indicator} />
           <View style={styles.header}>
-            <Text style={styles.title}>Intervalo de Disponibilidade</Text>
-            <Text style={styles.subtitle}>
-              Defina o intervalo horário que quer disponibilizar para agendamento de serviços.
-            </Text>
+            <Text style={styles.title}>{t("schedules.availability_range.title")}</Text>
+            <Text style={styles.subtitle}>{t("schedules.availability_range.subtitle")}</Text>
           </View>
           <View style={styles.rowHeader}>
-            <Text style={styles.smallLabel}>A partir das</Text>
-            <Text style={styles.smallLabel}>Até às</Text>
+            <Text style={styles.smallLabel}>{t("schedules.availability_range.from")}</Text>
+            <Text style={styles.smallLabel}>{t("schedules.availability_range.to")}</Text>
           </View>
           <View style={styles.inlineRow}>
             <TouchableOpacity style={styles.timeInput} onPress={() => setPickerFor("start")}>
@@ -85,19 +76,19 @@ const Availability = ({ visible, onClose, onSave, initialStart = "08:00", initia
           </View>
 
           {!isValid && (
-            <Text style={styles.errorText}>Hora inicial deve ser menor que a final</Text>
+            <Text style={styles.errorText}>{t("schedules.availability_range.invalid")}</Text>
           )}
 
           <View style={styles.footer}>
             <TouchableOpacity style={styles.secondaryBtn} onPress={onClose}>
-              <Text style={styles.secondaryText}>Cancelar</Text>
+              <Text style={styles.secondaryText}>{t("schedules.availability_range.cancel")}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.primaryBtn, !isValid && styles.primaryBtnDisabled]}
               onPress={() => isValid && onSave({ start: formatHM(start), end: formatHM(end) })}
               disabled={!isValid}
             >
-              <Text style={styles.primaryText}>Guardar</Text>
+              <Text style={styles.primaryText}>{t("schedules.availability_range.save")}</Text>
             </TouchableOpacity>
           </View>
         </View>

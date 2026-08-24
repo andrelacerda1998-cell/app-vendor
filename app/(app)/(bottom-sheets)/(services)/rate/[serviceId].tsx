@@ -1,9 +1,9 @@
-import { ThemedText } from '@/components/ThemedText';
+import { CustomText } from '@/components/CustomText';
 import { Colors } from '@/constants/Colors';
-import { AntDesign, Entypo, Feather, MaterialIcons } from '@expo/vector-icons';
+import { AntDesign, Feather } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Image, SafeAreaView, StatusBar, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Image, View } from 'react-native';
 import TouchOpacity from '@/components/TouchOpacity';
 import { useApi } from '@/contexts/ApiContext';
 import { API_ROUTES } from '@/constants/ApiRoutes';
@@ -48,6 +48,10 @@ const RateServiceBottomSheet = () => {
     return null;
   }
 
+  // `service` é um `let` reatribuído no try/catch, por isso o TypeScript perde o
+  // estreitamento dentro de callbacks — fixamos o valor aqui, depois do guarda.
+  const alreadyRated = service.rating_by_vendor !== null;
+
   const handleRate = (value: number) => {
     setRate(value);
   };
@@ -78,8 +82,8 @@ const RateServiceBottomSheet = () => {
       .catch((error) => {
         openDialog({
           icon: <XIcon color={Colors.primary} />,
-          title: t('errors.title'),
-          subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('errors.occurred_an_error'),
+          title: t('errors.service_rate.title'),
+          subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('errors.service_rate.subtitle'),
           closeAfterMSeconds: 2000,
           closeOnClickOutside: true,
         })
@@ -139,45 +143,32 @@ const RateServiceBottomSheet = () => {
 
         <View className="justify-center flex-1 mt-8">
           <View className="mx-auto">
-            <ThemedText type="title" color={Colors.secondary} className="text-center" numberOfLines={1}>
+            <CustomText size="title" boldness="bold" color="secondary" classes="text-center" numberOfLines={1}>
               {service.customer.name}
-            </ThemedText>
-            <ThemedText type="default" color={Colors.gray_medium} className="text-center px-5 mt-2" numberOfLines={3}>
+            </CustomText>
+            <CustomText size="medium" boldness="regular" color="gray_medium" classes="text-center px-5 mt-2" numberOfLines={3}>
               {t('services.rate.subtitle')}
-            </ThemedText>
+            </CustomText>
           </View>
 
+          {/* Cinco botões idênticos e sem nome liam-se como "botão, botão…" num
+              leitor de ecrã. Cada estrela anuncia agora quantas atribui. */}
           <View className="items-center flex-row space-x-2 justify-center mt-8">
-            <TouchOpacity
-              onPress={() => handleRate(1)}
-              disabled={loadingSubmit || service.rating_by_vendor !== null}
-            >
-              <AntDesign name="star" size={40} color={rate >= 1 ? Colors.support_primary : Colors.gray_medium} />
-            </TouchOpacity>
-            <TouchOpacity
-              onPress={() => handleRate(2)}
-              disabled={loadingSubmit || service.rating_by_vendor !== null}
-            >
-              <AntDesign name="star" size={40} color={rate >= 2 ? Colors.support_primary : Colors.gray_medium} />
-            </TouchOpacity>
-            <TouchOpacity
-              onPress={() => handleRate(3)}
-              disabled={loadingSubmit || service.rating_by_vendor !== null}
-            >
-              <AntDesign name="star" size={40} color={rate >= 3 ? Colors.support_primary : Colors.gray_medium} />
-            </TouchOpacity>
-            <TouchOpacity
-              onPress={() => handleRate(4)}
-              disabled={loadingSubmit || service.rating_by_vendor !== null}
-            >
-              <AntDesign name="star" size={40} color={rate >= 4 ? Colors.support_primary : Colors.gray_medium} />
-            </TouchOpacity>
-            <TouchOpacity
-              onPress={() => handleRate(5)}
-              disabled={loadingSubmit || service.rating_by_vendor !== null}
-            >
-              <AntDesign name="star" size={40} color={rate >= 5 ? Colors.support_primary : Colors.gray_medium} />
-            </TouchOpacity>
+            {[1, 2, 3, 4, 5].map((value) => {
+              const disabled = loadingSubmit || alreadyRated;
+              return (
+              <TouchOpacity
+                key={value}
+                onPress={() => handleRate(value)}
+                disabled={disabled}
+                accessibilityRole="radio"
+                accessibilityLabel={t('services.rate.star_label', { count: value })}
+                accessibilityState={{ selected: rate === value, disabled }}
+              >
+                <AntDesign name="star" size={40} color={rate >= value ? Colors.support_primary : Colors.gray_medium} />
+              </TouchOpacity>
+              );
+            })}
           </View>
         </View>
       </View>

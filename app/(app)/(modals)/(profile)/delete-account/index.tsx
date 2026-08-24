@@ -1,25 +1,19 @@
-import CheckMark from "@/assets/icons/check-mark";
-import XIcon from "@/assets/icons/x";
 import BackHeader from '@/components/app/BackHeader';
 import { CustomText } from "@/components/CustomText";
 import CustomTextInput from "@/components/CustomTextInput";
 import CustomTouchableOpacity from "@/components/CustomTouchableOpacity";
-import DatePicker from '@/components/DatePicker';
 import { API_ROUTES } from '@/constants/ApiRoutes';
 import { Colors } from '@/constants/Colors';
 import { useApi } from '@/contexts/ApiContext';
 import { useDialog } from "@/contexts/DialogContext";
 import { useSession } from '@/contexts/SessionContext';
-import { validateNIF } from "@/utils";
-import { Feather } from "@expo/vector-icons";
 import { router } from 'expo-router';
 import React, { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form';
-import { View, KeyboardAvoidingView, Platform, TouchableOpacity, ImageBackground } from 'react-native';
+import { View, KeyboardAvoidingView, Platform } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {ImagePickerAsset} from "expo-image-picker/src/ImagePicker.types";
-import * as ImagePicker from 'expo-image-picker';
 import { useTranslation } from "react-i18next";
 
 const DeleteAccount = () => {
@@ -60,7 +54,7 @@ const DeleteAccount = () => {
               .then((response) => {
                   signOut();
                   router.dismissAll();
-                  router.replace("/(auth)/signin");
+                  router.replace("/(auth)");
               })
               .catch((error) => {
                   if (error?.response?.status === 400){

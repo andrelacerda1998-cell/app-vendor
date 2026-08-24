@@ -1,129 +1,141 @@
 export default {
+    "common": {
+        "close": "Fechar"
+    },
     "auth": {
         "home": {
-            "title": "Comece a ganhar com as suas competências",
-            "subtitle": "Descubra clientes perto de si que procuram exatamente o que oferece.",
-            "access_account": "Aceder à conta",
-            "create_account": "Criar uma conta"
+            "title": "Recebe trabalho perto de ti",
+            "subtitle": "Vês os pedidos de serviço na tua zona, aceitas os que te dão jeito e és pago por cada trabalho concluído.",
+            "access_account": "Entrar",
+            "create_account": "Criar conta"
         },
         "forgot_password": {
-            "header": "Esqueceu a Palavra-passe?",
+            "header": "Esqueceste-te da palavra-passe?",
             "email_sent": {
-                "title": "Verifique o seu email",
-                "subtitle": "Se tiver uma conta com esse email, enviámos um link de recuperação de palavra-passe para o seu email.",
-                "subtitle_when_logged": "Enviámos um link de recuperação de palavra-passe para o seu email.",
-                "check_spam": "Não recebeu o email? Verifique o seu filtro de spam.",
+                "title": "Vê o teu email",
+                "subtitle": "Se tiveres conta com esse email, enviámos-te um link para criares uma nova palavra-passe.",
+                "subtitle_when_logged": "Enviámos-te um link para criares uma nova palavra-passe.",
+                "check_spam": "Não recebeste o email? Vê também na pasta de spam.",
                 "resend_email": "Reenviar email",
-                "already_reset_password": "Já recuperou a palavra-passe"
+                "already_reset_password": "Já criei a nova palavra-passe"
             },
             "email_not_sent": {
-                "title": "Recupere a sua palavra-passe",
-                "subtitle": "Introduza o seu endereço de email abaixo e, se aparecer nos nossos registos, receberá um email para redefinir a sua palavra-passe.",
+                "title": "Recupera a tua palavra-passe",
+                "subtitle": "Escreve o teu email. Se estiver registado, recebes um link para criares uma nova palavra-passe.",
                 "sending_email": "A enviar email...",
                 "send_email": "Enviar email"
             }
         },
         "reset_password": {
-            "title": "Redefinir Palavra-passe",
-            "subtitle": "Introduza a nova palavra-passe abaixo",
-            "button": "Redefinir palavra-passe",
+            "title": "Nova palavra-passe",
+            "subtitle": "Escreve a tua nova palavra-passe",
+            "button": "Guardar palavra-passe",
             "success": {
-                "title": "Palavra-passe redefinida com sucesso",
-                "subtitle": "A sua palavra-passe foi redefinida com sucesso.",
+                "title": "Palavra-passe alterada",
+                "subtitle": "Já podes iniciar sessão com a nova palavra-passe.",
             },
             "errors": {
-                "password_used_before": "Esta palavra-passe já foi utilizada antes. Por favor, escolha uma nova palavra-passe.",
-                "token_invalid": "Token inválido. Por favor, envie um novo email para redefinir a palavra-passe.",
+                "password_used_before": "Já usaste esta palavra-passe. Escolhe uma diferente.",
+                "token_invalid": "Este link já expirou. Pede um novo email para criares a palavra-passe.",
             }
         },
         "sign_in": {
-            "title": "Iniciar Sessão",
-            "subtitle": "Bem-vindo de volta! Por favor, introduza os seus dados.",
-            "forgot_password": "Esqueceu a palavra-passe?",
-            "sign_in": "Iniciar Sessão",
-            "signing_in": "A iniciar sessão..."
+            "title": "Iniciar sessão",
+            "subtitle": "Entra para veres os teus serviços.",
+            "password_placeholder": "A tua palavra-passe",
+            "forgot_password": "Esqueceste-te da palavra-passe?",
+            "sign_in": "Iniciar sessão",
+            "signing_in": "A iniciar sessão...",
+            "no_account": "Ainda não tens conta?"
         },
         "sign_up": {
             "header": "Registo",
+            "step_counter": "Passo {{current}} de {{total}}",
             "verifying_email": "A verificar email...",
-            "signing_up": "A registar...",
+            "signing_up": "A criar conta...",
             "last_step": "Finalizar",
             "continue_sign_up": "Continuar",
             "instructions": {
-                "first_title": "Comece a ganhar com as suas competências",
-                "first_description": "Descubra clientes perto de si que procuram exatamente o que oferece.",
-                "second_title": "Encontre as melhores ofertas",
-                "second_description": "Descubra as melhores ofertas disponíveis para si.",
-                "third_title": "Escolha entre vários clientes",
-                "third_description": "Experimente uma jornada tranquila e agradável com seu cliente."
+                "first_title": "Começa a ganhar com as tuas competências",
+                "first_description": "Encontra clientes perto de ti que procuram exatamente o que sabes fazer.",
+                "second_title": "Escolhe os melhores trabalhos",
+                "second_description": "Vês o valor e a distância antes de aceitares cada pedido.",
+                "third_title": "Trabalha à tua maneira",
+                "third_description": "Defines a tua disponibilidade e o teu valor/hora."
             },
             "personal_information": {
-                "title": "Insira os seus dados pessoais",
-                "subtitle": "Informações pessoais",
+                "title": "Escreve os teus dados pessoais",
+                "subtitle": "Dados pessoais",
                 "gender": "Género",
-                "gender_required": "Deve selecionar o seu género",
-                "gender_placeholder": "Selecione o seu género"
+                "gender_required": "Escolhe o teu género",
+                "gender_placeholder": "Escolhe o teu género"
             },
             "contact_information": {
-                "title": "Queremos saber mais sobre si",
-                "subtitle": "Informações de contacto"
+                "title": "Como falamos contigo?",
+                "subtitle": "Dados de contacto"
             },
             "address_information": {
-                "title": "Queremos saber mais sobre a sua localização",
-                "subtitle": "Informações de morada"
+                "title": "Onde é a tua base?",
+                "subtitle": "Morada"
             },
             "password_information": {
-                "title": "Crie uma palavra-passe",
-                "subtitle": "Informações de segurança"
+                "title": "Cria uma palavra-passe",
+                "subtitle": "É com ela que entras na app. Guarda-a bem."
             },
             "skills_selection": {
-                "title": "Indique as suas competências",
-                "subtitle": "Selecione as competências que possui e que podem ser úteis para os clientes",
-                "no_skills_found": "Nenhuma competência encontrada",
+                "title": "Indica as tuas competências",
+                "subtitle": "Escolhe o que sabes fazer. É com isto que te enviamos pedidos.",
+                "hint": "Toca numa categoria para veres os trabalhos que tem dentro.",
+                "no_skills_found": "Ainda não há competências para mostrar. Verifica a ligação e tenta outra vez.",
                 "error_must_select": {
-                    "title": "Erro",
-                    "subtitle": "Deve selecionar pelo menos uma competência",
+                    "title": "Falta escolher uma competência",
+                    "subtitle": "Escolhe pelo menos uma competência para continuares.",
                 }
             },
             "services_types_selection": {
-                "title": "Selecione as tarefas que pretende realizar.",
-                "subtitle": "Quanto mais opções selecionar, maior o número de trabalhos recebidos.",
-                "no_services_found": "Nenhum serviço encontrado",
+                "title": "Escolhe os trabalhos que queres fazer",
+                "subtitle": "Quantos mais escolheres, mais pedidos recebes.",
+                "no_services_found": "Ainda não há tipos de serviço para mostrar. Verifica a ligação e tenta outra vez.",
                 "loading_services": "A carregar serviços...",
             },
             "documents": {
-                "title": "Carregar os seus ficheiros",
-                "subtitle": "O ficheiro deve ser PDF, JPG, PNG",
-                "documents_permission_required": "Precisamos da sua permissão para aceder aos seus documentos",
-                "no_documents_found": "Nenhum documento encontrado",
-                "camera_permission_required": "Precisamos da sua permissão para aceder à sua câmara",
-                "library_permission_required": "Precisamos da sua permissão para aceder à sua galeria",
+                "title": "Os teus documentos",
+                "subtitle": "PDF ou foto, até 2 MB cada.",
+                "documents_permission_required": "Para escolheres um ficheiro precisamos de acesso aos teus documentos. Podes ativar nas Definições.",
+                "no_documents_found": "Ainda não há documentos para carregar. Verifica a ligação e tenta outra vez.",
+                "camera_permission_required": "Para tirares a foto do documento precisamos de acesso à câmara. Podes ativar nas Definições.",
+                "library_permission_required": "Para escolheres a foto do documento precisamos de acesso à galeria. Podes ativar nas Definições.",
                 "document": {
                     "label": "Documento",
                     "upload": "Carregar"
                 },
-                "information": "Para validação do profissionalismo, precisa carregar todos os documentos",
+                "information": "Precisamos de todos os documentos para validar a tua conta.",
                 select_file: {
-                    title: "Selecionar item",
-                    camera: "Escolher da câmara",
+                    title: "Escolher ficheiro",
+                    camera: "Tirar foto",
                     library: "Escolher da galeria",
                     files: "Escolher ficheiro",
                 },
                 submit: {
                     success: {
-                        title: "Parabéns",
-                        subtitle: "Enviado com sucesso",
+                        title: "Documento enviado",
+                        subtitle: "Vamos analisá-lo e avisamos-te assim que estiver validado.",
                     },
-                    error: "Ocorreu um erro ao enviar. Por favor, tente novamente mais tarde",
-                    "error_file_too_big": "O ficheiro é muito grande. O tamanho máximo permitido é de 2MB.",
+                    error: "Não conseguimos enviar o documento. Verifica a ligação e tenta outra vez.",
+                    "error_file_too_big": "O ficheiro é demasiado grande. O máximo é 2 MB — tira nova foto com menos qualidade ou envia um PDF mais leve.",
                 }
             },
             "price_rate": {
-                "subtitle": "Defina o seu Preço",
-                "information": "Pode alterar o valor sugerido mais tarde, se assim o desejar.",
+                "subtitle": "Recebes 100% do valor técnico. A margem da Piquet é aplicada ao cliente.",
+                "information": "Podes alterar este valor mais tarde no teu perfil.",
+                "your_rate_label": "O teu valor/hora",
+                "market_range": "A maioria dos técnicos cobra {{min}}–{{max}}/h.",
+                "market_within": "Dentro da média da plataforma.",
+                "market_below": "Abaixo da média — podes estar a deixar dinheiro na mesa.",
+                "market_above": "Acima da média — podes receber menos pedidos.",
             },
             "advise": {
-                "agree": "Ao registar-te, estás a concordar com os nossos",
+                "agree": "Ao criares conta, aceitas os nossos",
                 "terms_of_use": "Termos e Condições",
                 "and": "e",
                 "privacy_policy": "Política de Privacidade.",
@@ -132,20 +144,27 @@ export default {
     },
     "session": {
         "notifications": {
+            "title": "Notificações",
+            "title_with_count_one": "Notificações, {{count}} por ler",
+            "title_with_count_other": "Notificações, {{count}} por ler",
             "header": "Notificações",
-            "empty": "Nenhuma notificação encontrada",
+            "empty": "Assim que houver novidades sobre pedidos, pagamentos ou agendamentos, aparecem aqui.",
+            "empty_title": "Sem notificações",
+            "today": "Hoje",
+            "yesterday": "Ontem",
         },
         "sms": {
-            "header": "Verificação de Telefone",
+            "header": "Verificar telefone",
             "pending": {
-                "title": "Está prestes a verificar o seu número de telefone",
-                "subtitle": "Vai receber um código por SMS",
+                "title": "Vamos verificar o teu telefone",
+                "subtitle": "Recebes um código por SMS neste número.",
                 "edit_phone_number": "Alterar número de telefone",
+                    "edit_phone_number_short": "Alterar",
                 "send_sms": "Enviar código",
             },
             "sent": {
-                "title": "Recebeu um código por SMS",
-                "subtitle": "Por favor, introduza o código para verificar o seu número de telefone",
+                "title": "Enviámos-te um código por SMS",
+                "subtitle": "Escreve o código para confirmares o teu número.",
                 "code": "Código",
                 "resend_code": "Reenviar código",
                 "verify": "Verificar",
@@ -155,85 +174,90 @@ export default {
                 "close": "Fechar"
             },
             "error": {
-                "title": "Ocorreu um erro. Por favor, tente novamente mais tarde.",
+                "title": "Não foi possível verificar o telefone",
+                "subtitle": "Verifica a ligação e pede um novo código.",
                 "close": "Fechar",
-                "code_invalid": "Código inválido",
+                "code_invalid": "Código errado. Confirma o SMS ou pede um novo código.",
             },
             "already_sent": {
-                "title": "Código já enviado",
-                "subtitle": "Por favor, verifique o seu telefone",
+                "title": "Já te enviámos o código",
+                "subtitle": "Vê as mensagens do teu telemóvel. Se não chegar, pede um novo código dentro de um minuto.",
             }
         },
         "confirm_email": {
-            "header": "Confirmar Email",
+            "header": "Confirmar email",
             "pending": {
-                "title": "Verificação de email",
-                "subtitle": "Por favor, verifique o seu endereço de email",
-                "received": "Receber um email de validação",
-                "check_later": "Verificar mais tarde",
+                "title": "Confirma o teu email",
+                "subtitle": "Abre o link que te enviámos para confirmares.",
+                "sending": "A enviar…",
+                "check_later": "Confirmar mais tarde",
                 "resend_email": "Reenviar email"
             },
             "sent": {
-                "title": "Verificação de email enviada com sucesso. Por favor, verifique o seu email.",
+                "title": "Email enviado. Abre o link que te enviámos para confirmares o endereço.",
                 "close": "Fechar"
             },
             "verified": {
-                "title": "Email já verificado",
+                "title": "Email já confirmado",
                 "close": "Fechar"
             },
             "error": {
-                "title": "Ocorreu um erro. Por favor, tente novamente mais tarde.",
+                "title": "Não foi possível enviar o email",
+                "subtitle": "Verifica a ligação e tenta outra vez daqui a pouco.",
                 "close": "Fechar"
             }
         },
         "blocked_by_zone": {
-            "header": "Zona bloqueada",
-            "title": "Zona bloqueada",
-            "subtitle": "A sua localização está fora da área de operação do fornecedor.",
-            "description": "Fique atento ao seu email, pois iremos enviar-lhe uma notificação quando a sua localização estiver disponível.",
+            "header": "Zona indisponível",
+            "title": "Ainda não estamos na tua zona",
+            "subtitle": "A tua localização está fora das zonas onde a Piquet opera.",
+            "description": "Avisamos-te por email assim que abrirmos a tua zona. Não precisas de fazer mais nada.",
             "ok": "Ok"
         },
         "logout": {
             "title": "Terminar sessão",
-            "subtitle": "Tem a certeza que pretende terminar sessão?",
+            "subtitle": "Queres mesmo terminar sessão?",
             "cancel": "Não",
             "confirm": "Sim",
             "success": {
                 "title": "Sessão terminada",
-                "subtitle_timeout": "Foi terminada a sessão após um longo período de inatividade. Por favor, inicie sessão novamente.",
-                "subtitle_error": "Ocorreu um erro ao tentar atualizar a sua sessão e foi terminada. Por favor, inicie sessão novamente.",
+                "subtitle_timeout": "Terminámos a tua sessão por inatividade. Inicia sessão outra vez para continuares.",
+                "subtitle_error": "Não conseguimos renovar a tua sessão. Inicia sessão outra vez para continuares.",
             }
         },
         "status": {
             "title": "Estado da conta",
+            "receive_requests": "Receber pedidos de serviço",
             "online": "Online",
             "offline": "Offline"
         }
     },
     "services": {
+        "customer_photos": "Fotografias do cliente",
+        "customer_photo_open": "Ver fotografia {{n}}",
         "title": "Serviço",
         "title_plural": "Serviços",
-        "view_all": "Ver todos",
+        "empty": "Ainda não tens serviços aqui. Aceita um pedido e ele aparece nesta lista.",
         "select_service_type": {
-            "title": "Escolha o seu serviço",
-            "subtitle": "Após selecionar o serviço, o profissional terá 60 segundos para aceitar o seu pedido.",
+            "title": "Escolhe o serviço",
+            "subtitle": "Depois de escolheres, o técnico tem 60 segundos para aceitar o pedido.",
             "based_on": "Serviços baseados em",
-            "no_services_found": "Não há serviços disponíveis para esta área de operação."
+            "no_services_found": "Não há serviços disponíveis nesta zona."
         },
         "includes": "Inclui",
         "excludes": "Não inclui",
         "no_info": "Sem informação",
         "select_vendor": {
-            "title": "Escolha o profissional",
-            "subtitle": "Após selecionar o serviço, o profissional terá 60 segundos para aceitar o seu pedido.",
-            "no_vendors_found": "Não foram encontrados profissionais para este serviço.",
-            "request_professional": "Solicitar profissional"
+            "title": "Escolhe o técnico",
+            "subtitle": "Depois de escolheres, o técnico tem 60 segundos para aceitar o pedido.",
+            "no_vendors_found": "Não há técnicos disponíveis para este serviço.",
+            "request_professional": "Pedir técnico"
         },
         "checkout": {
             "current_location": "Localização atual",
             "resume": {
                 "title": "Resumo",
-                "your_request": "O seu pedido",
+                "your_request": "O teu pedido",
                 "service": "Serviço:",
                 "price": "Preço"
             },
@@ -241,157 +265,205 @@ export default {
                 "title": "Métodos de pagamento",
                 "mb_way": "MB Way",
                 "is_default_method_label": "Método predefinido",
-                "add_new_credit_card": "Adicionar novo cartão de crédito"
+                "add_new_credit_card": "Adicionar cartão de crédito"
             },
             "confirm": "Confirmar e pagar"
         },
         "cancel": {
             "title": "Cancelar serviço",
-            "subtitle": "Tem certeza que deseja cancelar o serviço?",
+            "subtitle": "Queres mesmo cancelar este serviço?",
+            "confirm_penalty": "A menos de 24 horas do início, é aplicada uma penalização de {{amount}}. Pretendes continuar?",
             "confirm": "Sim",
             "cancel": "Não",
-            "you_are_about_to": "Está prestes a cancelar um serviço que já foi aceite, tem a certeza?",
+            "you_are_about_to": "Este serviço já foi aceite por ti. Queres mesmo cancelá-lo?",
+            "heading": "Cancelar este serviço?",
+            "already_accepted": "Já aceitaste este serviço e o cliente foi notificado.",
+            "keep_service": "Manter o serviço",
+            "cancel_service": "Confirmar cancelamento",
             "confirm_cancellation": "Confirmar",
+            "canceling": "A cancelar...",
+            "no_penalty": {
+                "title": "Sem penalização",
+                "body": "Faltam mais de 24 horas para o início do serviço."
+            },
+            "penalty": {
+                "title": "Penalização por cancelamento tardio",
+                "body": "A menos de 24 horas do início, é aplicada uma penalização de 10% do valor do serviço, neste caso será de {{amount}}.",
+                "body_now": "Faltam menos de 24 horas para o início, por isso é aplicada uma penalização de 10% do valor do serviço: {{amount}}.",
+                "body_no_amount": "A menos de 24 horas do início, é aplicada uma penalização de 10% do valor do serviço."
+            },
             "error": {
-                "title": "Erro",
-                "subtitle": "Ocorreu um erro ao tentar cancelar o serviço. Por favor, tente novamente mais tarde.",
+                "title": "Não foi possível cancelar o serviço",
+                "subtitle": "Verifica a ligação e tenta outra vez. O serviço continua marcado.",
             }
         },
         "close": {
-            "title": "O fornecedor está a confirmar que o serviço foi concluído.",
+            "title": "Estás a confirmar que o serviço ficou concluído.",
             "confirm": "Confirmar",
             "help": "Ajuda",
             "confirmation": {
                 "title": "Serviço concluído",
-                "subtitle": "Está prestes a confirmar que o serviço foi concluído. Tem a certeza?",
+                "subtitle": "Estás a confirmar que o serviço ficou concluído. Tens a certeza?",
                 "cancel": "Cancelar",
                 "confirm": "Confirmar"
             }
         },
         "wait_accept": {
             "canceled": {
-                "title": "Serviço Cancelado",
-                "subtitle": "Cancelou o pedido de serviço."
+                "title": "Pedido cancelado",
+                "subtitle": "O cliente cancelou este pedido."
             },
             "pending": {
                 "cancel": "Cancelar",
-                "professional_requested": "Profissional solicitado",
-                "professional_has": "Tu tens",
+                "professional_requested": "Pedido enviado ao técnico",
+                "professional_has": "Tens",
                 "to_accept": "para aceitar o serviço",
                 "distance": "Distância",
                 "estimated_value": "Valor estimado"
             },
             "refused": {
-                "title": "O profissional recusou o trabalho",
-                "subtitle": "Lamentamos, mas o profissional solicitado não aceitou o trabalho. Tente outro.",
-                "try_again": "Tentar novamente",
+                "title": "Recusaste o pedido",
+                "subtitle": "Este pedido deixou de estar disponível. Mantém-te online para receberes o próximo.",
+                "try_again": "Ver pedidos",
                 "confirmation": {
-                    "title": "Recusar serviço",
-                    "subtitle": "Tem a certeza que pretende recusar o serviço?",
+                    "title": "Recusar pedido",
+                    "subtitle": "Queres mesmo recusar este pedido?",
                     "cancel": "Cancelar",
-                    "confirm": "Confirmar"
+                    "confirm": "Recusar"
                 }
             },
             "timeout": {
-                "title": "Não aceitou o trabalho a tempo",
-                "subtitle": "Não aceitou o trabalho a tempo. O seu estado será definido como offline.",
-                "try_again": "Tentar novamente"
+                "title": "O tempo para responder terminou",
+                "subtitle": "Não respondeste a tempo e ficaste offline. Fica online outra vez para receberes novos pedidos.",
+                "try_again": "Ficar online"
             },
             "success": {
-                "title": "O profissional aceitou o trabalho",
-                "subtitle": "O profissional estará no seu local em breve",
+                "title": "Aceitaste o serviço",
+                "subtitle": "Segue para a morada do cliente. Avisa-o quando estiveres a caminho.",
                 "close": "Fechar"
             },
             "closed": {
                 "title": "Serviço encerrado",
-                "subtitle": "O serviço foi encerrado. Pode verificar os detalhes no seu histórico.",
+                "subtitle": "Este serviço já foi encerrado. Vê os detalhes no teu histórico.",
                 "close": "Fechar"
             }
         },
         "list": {
-            "header": "Lista de Serviços",
+            "header": "Lista de pedidos",
             "filter_all": "Todos"
         },
         "history": {
-            "header": "Histórico de Serviços",
-            "load_more": "Carregar mais"
+            "header": "Histórico de serviços",
+            "load_more": "Ver mais"
         },
         "service": {
-            "no_description": "<p>Descrição do serviço não disponível</p>",
-            "no_price": "Nenhum preço fornecido",
-            "no_type": "Nenhum tipo fornecido",
-            "no_area": "Nenhuma área fornecida",
+            "no_description": "Sem descrição do serviço",
+            "no_price": "Sem valor definido",
+            "no_type": "Sem tipo de serviço",
+            "no_area": "Sem zona definida",
             "open": {
                 "in_progress": "Serviço em curso",
-                "finished": "Confirmar se o serviço foi concluído",
-                "no_distance": "Distância não disponível",
+                "finished": "Confirma que o serviço ficou concluído",
+                "no_distance": "Distância indisponível",
                 "cancel": "Cancelar",
                 "status": "Estado do serviço",
-                "arrived": "Chegou ao destino",
+                "arrived": "Chegaste ao destino",
             },
-            "pending": "Serviço à espera de aceitação pelo fornecedor",
+            "pending": "Pedido à espera da tua resposta",
             "status": {
-                "header": "Estado do serviço",
+                "header": "Serviço",
+                "estimated_duration": "Tempo estimado: {{value}}",
+                "countdown": {
+                    "left": "Tempo restante",
+                    "over": "Tempo excedido em",
+                    "of_estimate": "de ~{{value}} min estimados",
+                    "need_more_time": "Precisas de mais tempo?"
+                },
+                "stuck": {
+                    "hours": "Em execução há {{hours}}h — conclui para receberes.",
+                    "days": "Em execução há {{days}} dias — conclui para receberes."
+                },
+                "steps": {
+                    "accepted": "Aceite",
+                    "on_the_way": "A caminho",
+                    "arrived": "Cheguei",
+                    "in_progress": "Em execução",
+                    "completed": "Concluído"
+                },
+                "on_my_way": "Estou a caminho",
+                "start_service": "Iniciar serviço",
+                "finish_service": "Concluir serviço",
+                "immediate": "Serviço imediato",
+                "open_map": "Abrir mapa",
+                "navigate_with": "Navegar com",
+                "nav_apps": {
+                    "apple_maps": "Apple Maps",
+                    "google_maps": "Google Maps",
+                    "waze": "Waze"
+                },
+                "navigate": "Navegar",
                 "close": {
                     "title": "Serviço concluído",
-                    "subtitle": "Está prestes a confirmar que o serviço foi concluído. Tem a certeza?",
+                    "subtitle": "Estás a confirmar que o serviço ficou concluído. Tens a certeza?",
                     "cancel": "Cancelar",
                     "confirm": "Confirmar"
                 },
-                "time_accounting": "Contabilização de tempo",
+                "time_accounting": "Tempo de trabalho",
                 "time": {
                     "label": "Tempo",
                     "value": "{{value}} minutos"
                 },
                 "distance": "Distância",
                 "value_to_receive": "Valor a receber",
-                "confirm_it_was_finished": "Confirmar que foi concluído",
+                "confirm_it_was_finished": "Confirmar que está concluído",
                 "finish": "Finalizar",
-                "chat": "Conversa"
+                "chat": "Chat"
             },
             "channel": {
                 "accepted": {
                     "title": "Serviço aceite",
-                    "subtitle": "Parabéns, tem um novo serviço"
+                    "subtitle": "Já está na tua agenda. Vê os detalhes e a morada."
                 },
                 "canceled": {
                     "title": "Serviço cancelado",
-                    "subtitle": "O profissional cancelou o trabalho"
+                    "subtitle": "O cliente cancelou este serviço."
                 },
                 "timedout": {
-                    "title": "Serviço expirou",
-                    "subtitle": "O profissional não aceitou o trabalho a tempo"
+                    "title": "O pedido expirou",
+                    "subtitle": "Não respondeste a tempo. Mantém-te online para receberes o próximo."
                 },
                 "refused": {
-                    "title": "Serviço recusado",
-                    "subtitle": "O profissional recusou o trabalho"
+                    "title": "Pedido recusado",
+                    "subtitle": "Recusaste este pedido. Continuas a receber novos pedidos na tua zona."
                 }
             },
             "proposal": {
-                "title": "Recebeu uma proposta de trabalho",
-                "time_accounting": "Contabilização de tempo",
+                "title": "Novo pedido para ti",
+                "time_accounting": "Tempo de trabalho",
                 "distance": "Distância",
+                "estimated_value": "Valor estimado",
                 "value_to_receive": "Valor a receber",
                 "location": "Localização",
                 "refuse": "Recusar",
-                "accept": "Aceitar"
+                "accept": "Aceitar",
+                "slide_to_accept": "Desliza para aceitar"
             },
             "finish": {
-                "title": "Parabéns",
-                "subtitle": "O seu serviço foi concluído. Agora, o cliente deve confirmar o fim do serviço.",
+                "title": "Serviço concluído",
+                "subtitle": "Falta o cliente confirmar. Assim que confirmar, o valor entra nos teus ganhos.",
                 "confirmation": {
                     "title": "Finalizar serviço",
-                    "subtitle": "Tem a certeza que pretende finalizar o serviço?",
+                    "subtitle": "Queres mesmo dar este serviço por concluído?",
                     "confirm": "Finalizar",
                     "cancel": "Cancelar"
                 }
             },
             "history": {
-                "header": "Histórico de Serviço",
-                "no_history": "Nenhum histórico de serviço encontrado",
+                "header": "Histórico do serviço",
+                "no_history": "Ainda não tens serviços no histórico. Os que concluíres aparecem aqui.",
                 "labels": {
                     "km": "Km",
-                    "kilometers": "Kilómetros",
+                    "kilometers": "Quilómetros",
                     "received_value": "Valor recebido",
                     "date": "Data",
                 },
@@ -399,13 +471,18 @@ export default {
                 "rate_service": "Avaliar serviço",
             }
         },
-        "no_services_found": "Nenhum serviço encontrado",
+        "no_services_found": "Ainda não há serviços para mostrar aqui.",
         "rate": {
-            "subtitle": "Avalie a sua experiência com este serviço",
+            "star_label_one": "{{count}} estrela",
+            "star_label_other": "{{count}} estrelas",
+            "subtitle": "Avalia a tua experiência com este cliente",
             "send": "Enviar"
         }
     },
     "chat": {
+        "read": "Lida",
+        "sent": "Enviada",
+        "send": "Enviar mensagem",
         "title": "Conversa",
         "dates": {
             "today": "Hoje",
@@ -418,68 +495,100 @@ export default {
             "friday": "Sexta-feira",
             "saturday": "Sábado"
         },
-        "no_messages": "Inicie uma conversa",
-        "input_placeholder": "Escreva uma mensagem",
+        "key_error": "Não foi possível ligar à conversa em segurança. Verifica a ligação e tenta outra vez.",
+        "no_messages": "Ainda não há mensagens. Escreve ao cliente para combinares os detalhes.",
+        "input_placeholder": "Escreve uma mensagem",
+        "quick_replies": {
+            "on_the_way": "Estou a caminho 🚗",
+            "arrived": "Cheguei ✅",
+            "delay": "Atraso-me 10 min ⏱️"
+        },
         "arrived_at_destination": {
-            "title": "Chegou ao destino",
-            "subtitle": "Você chegou ao seu destino"
+            "title": "Chegada registada",
+            "subtitle": "Avisámos o cliente de que já chegaste."
         },
         "actions": {
-            "service_status": "Estado do serviço",
-            "arrived_at_destination": "Cheguei ao destino",
             "arrived": "Cheguei",
         }
     },
     "profile": {
         "edit": {
-            "header": "Editar Perfil",
+            "header": "Editar perfil",
             "title": "Editar",
             "success": {
-                "title": "Parabéns",
-                "subtitle": "O seu perfil foi atualizado"
+                "title": "Perfil atualizado",
+                "subtitle": "Guardámos as tuas alterações."
             },
             "save": {
                 "title": "Guardar alterações",
-                "subtitle": "Tem a certeza que pretende guardar as alterações?",
+                "subtitle": "Queres guardar as alterações que fizeste?",
                 "confirm": "Sim",
                 "cancel": "Não",
                 "loading": "A guardar..."
             },
+            "partial_save": {
+                "title": "Perfil guardado, IBAN não",
+                "subtitle": "Guardámos o teu nome, telefone e foto, mas não conseguimos guardar o IBAN. Confirma o IBAN e tenta outra vez."
+            },
             "change_address": "Alterar morada",
-            "reset_password": "Redefinir palavra-passe",
-            "sending_reset_email": "A enviar e-mail...",
-            "send_reset_email": "Enviar email para redefinir palavra-passe",
+            "reset_password": "Alterar palavra-passe",
+            "sending_reset_email": "A enviar email...",
+            "send_reset_email": "Enviar email para alterar a palavra-passe",
             "saving_changes": "A guardar alterações...",
             "save_changes": "Guardar alterações",
             "updating_location": "A atualizar localização...",
             "update_location": "Definir localização atual",
             "update_location_success": {
-                "title": "Parabéns",
-                "subtitle": "A sua localização foi atualizada"
+                "title": "Localização atualizada",
+                "subtitle": "Passas a receber pedidos a partir desta localização."
             },
             "update_location_denied": {
-                "title": "Permissão de localização negada",
-                "subtitle": "Por favor, ative as permissões de localização nas suas definições"
+                "title": "Sem acesso à localização",
+                "subtitle": "Ativa a localização nas Definições do telemóvel para continuares."
             },
             "at_user": {
                 "update": {
-                    "title": "Utilizador AT atualizado",
-                    "subtitle": "O seu utilizador AT foi atualizado com sucesso",
+                    "title": "Dados da AT atualizados",
+                    "subtitle": "Já podemos emitir as faturas dos teus serviços.",
                 },
-                "wrong_credentials": "As credenciais AT estão incorretas. Confirme que utilizou a palavra-passe do sub-utilizador AT — e não o código de acesso telefónico.",
+                "wrong_credentials": "Os dados da AT não estão certos. Confirma que usaste a palavra-passe do subutilizador — não é o código de acesso telefónico.",
             },
             "at_invalid": {
-                "banner": "As suas credenciais AT são inválidas. Clique para atualizar.",
-                "go_online_blocked": "As suas credenciais AT são inválidas. Atualize-as antes de ficar disponível para receber serviços."
+                "banner": "Os teus dados da AT não estão a funcionar. Toca para os atualizares.",
+                "go_online_blocked": "Sem dados válidos da AT não podes ficar online. Atualiza-os para voltares a receber serviços."
             }
         },
         "update_address": {
-            "header": "Alterar Morada",
+            "header": "Alterar morada",
             "updating_address": "A atualizar morada...",
             "update_address": "Atualizar morada",
-            "update_address_subtitle": "Tem a certeza que pretende atualizar a sua morada?",
+            "update_address_subtitle": "Queres guardar esta morada?",
             "cancel_update": "Cancelar",
             "confirm_update": "Confirmar"
+        },
+        "status": {
+            "approved": "Conta aprovada",
+            "pending": "Conta em análise"
+        },
+        "values": {
+            "services_active_one": "{{count}} ativo",
+            "services_active_other": "{{count}} ativos",
+            "days_active_one": "{{count}} dia ativo",
+            "days_active_other": "{{count}} dias ativos"
+        },
+        "sections": {
+            "activity": "A minha atividade",
+            "account": "Conta"
+        },
+        "metrics": {
+            "acceptance": "Aceitação"
+        },
+        "activity": {
+            "price_rate": "Valor/hora",
+            "availability": "Disponibilidade",
+            "reviews": "Avaliações",
+            "documents": "Documentos",
+            "support": "Suporte"
         },
         "my_profile": {
             "title": "Perfil",
@@ -501,34 +610,34 @@ export default {
         "payments": {
             "title": "Pagamentos",
             "default_method": "Método predefinido",
-            "no_payment_methods": "Sem Métodos de Pagamento",
+            "no_payment_methods": "Ainda não tens método de pagamento. Adiciona um para receberes os teus ganhos.",
             "iban": "IBAN",
-            "empty_iban": "Sem IBAN",
-            "price_rate": "Preço/hora",
-            "empty_price_rate": "Sem preço/hora",
-            "company_name": "Nome da empresa",
-            "empty_company_name": "Sem nome da empresa",
+            "empty_iban": "Adiciona o teu IBAN para receberes",
+            "price_rate": "Valor/hora",
+            "empty_price_rate": "Define o teu valor/hora",
+            "company_name": "Denominação fiscal",
+            "empty_company_name": "Adiciona a tua denominação fiscal",
             "nif": "NIF",
-            "empty_nif": "Sem NIF",
-            "company_address": "Morada da empresa",
-            "empty_company_address": "Sem morada da empresa",
-            "at_user": "Utilizador AT",
-            "empty_at_user": "Sem utilizador AT",
+            "empty_nif": "Adiciona o teu NIF",
+            "company_address": "Morada de faturação",
+            "empty_company_address": "Adiciona a tua morada de faturação",
+            "at_user": "Subutilizador AT",
+            "empty_at_user": "Adiciona o teu subutilizador AT",
             "edit_payment_method": {
-                "header": "Método de Pagamento",
+                "header": "Método de pagamento",
                 "loading": "A carregar...",
                 "delete_payment_method": "Eliminar método de pagamento",
                 "set_as_default": "Definir como predefinido",
                 "expiration_date": "Data de validade",
                 "delete_payment_method_confirmation": {
                     "title": "Eliminar método de pagamento",
-                    "subtitle": "Tem a certeza que pretende eliminar este método de pagamento?",
+                    "subtitle": "Queres mesmo eliminar este método de pagamento?",
                     "cancel": "Cancelar",
                     "confirm": "Eliminar"
                 },
                 "set_as_default_confirmation": {
-                    "title": "Definir método de pagamento como predefinido",
-                    "subtitle": "Tem a certeza que pretende definir este método de pagamento como predefinido?",
+                    "title": "Definir como predefinido",
+                    "subtitle": "Queres usar este método de pagamento por omissão?",
                     "cancel": "Cancelar",
                     "confirm": "Definir como predefinido"
                 }
@@ -537,47 +646,47 @@ export default {
                 "title": "Adicionar método de pagamento",
                 "invalid_card_number": "Número de cartão inválido",
                 "success": {
-                    "title": "Parabéns",
-                    "subtitle": "O seu método de pagamento foi adicionado"
+                    "title": "Método de pagamento adicionado",
+                    "subtitle": "Já podes usá-lo."
                 },
                 "saving": "A guardar método de pagamento...",
-                "save": "Guardar cartão de crédito"
+                "save": "Guardar cartão"
             },
             "information": {
                 "name": {
                     "label": "Nome no cartão",
                     "placeholder": "Nome no cartão",
-                    "required": "Deve inserir o nome no cartão",
-                    "min_length": "O nome no cartão deve ter pelo menos 3 caracteres",
-                    "max_length": "O nome no cartão deve ter no máximo 50 caracteres",
-                    "first_and_last_name": "O nome no cartão deve conter pelo menos o primeiro e último nome"
+                    "required": "Escreve o nome que está no cartão",
+                    "min_length": "O nome no cartão tem de ter pelo menos 3 caracteres",
+                    "max_length": "O nome no cartão não pode ter mais de 50 caracteres",
+                    "first_and_last_name": "Escreve o primeiro e o último nome como estão no cartão"
                 },
                 "card_number": {
                     "label": "Número do cartão",
                     "placeholder": "1234 5678 9012 3456",
-                    "required": "Deve inserir o número do cartão",
+                    "required": "Escreve o número do cartão",
                     "invalid": "Número de cartão inválido"
                 },
                 "expire_date": {
                     "label": "Data de validade",
                     "placeholder": "MM/AA",
-                    "required": "Deve inserir a data de validade",
+                    "required": "Escreve a data de validade",
                     "invalid": "Data de validade inválida",
-                    "invalid_month": "Mês da data de validade inválido",
-                    "year_in_the_future": "O ano da data de validade deve ser no futuro"
+                    "invalid_month": "Mês inválido na data de validade",
+                    "year_in_the_future": "O ano da validade tem de ser no futuro"
                 },
                 "cvc": {
                     "label": "CVC",
                     "placeholder": "123",
-                    "required": "Deve inserir o CVC",
+                    "required": "Escreve o CVC",
                     "invalid": "CVC inválido"
                 }
             }
         },
         "settings": {
             "title": "Definições",
-            "user_management_locations": "Gestão de localizações do utilizador",
-            "payment_settings": "Definições de Pagamento",
+            "user_management_locations": "As minhas zonas de trabalho",
+            "payment_settings": "Definições de pagamento",
             "documents": "Documentos",
             "delete_account": "Eliminar conta",
             "help": "Ajuda",
@@ -589,195 +698,689 @@ export default {
         }
     },
     "errors": {
-        "title": "Erro",
-        "server_error": "Erro de servidor. Por favor, tente novamente mais tarde",
-        "email_or_phone_in_use": "Este email ou telemóvel já está em uso",
-        "network_error": "Erro de rede. Verifique a sua ligação e tente novamente",
-        "user_not_found": "Utilizador não encontrado",
-        "occurred_an_error": "Ocorreu um erro, por favor tente novamente",
-        "wait_before_trying_again": "Por favor, aguarde antes de tentar novamente",
-        "address_invalid": "Por favor, verifique as suas informações. Esta é uma morada inválida",
-        "invalid_email_or_password": "Email ou palavra-passe inválidos",
-        "account_under_verification": "A sua conta está a ser verificada. Por favor, aguarde até que a verificação seja concluída.",
+        "title": "Não foi possível concluir",
+        "server_error": "O nosso servidor não respondeu. Tenta outra vez daqui a pouco.",
+        "email_or_phone_in_use": "Já existe uma conta com este email ou telemóvel. Inicia sessão ou usa outros dados.",
+        "network_error": "Sem ligação à internet. Liga-te ao Wi-Fi ou aos dados móveis e tenta outra vez.",
+        "user_not_found": "Não encontrámos nenhuma conta com estes dados. Confirma o email.",
+        "occurred_an_error": "Não conseguimos concluir. Verifica a ligação e tenta outra vez.",
+        "wait_before_trying_again": "Espera um pouco antes de tentares outra vez.",
+        "address_invalid": "Esta morada não é válida. Confirma a rua, o número e o código postal.",
+        "invalid_email_or_password": "Email ou palavra-passe errados. Confirma os dados e tenta outra vez.",
+        "network": "Sem ligação à internet. Verifica a ligação e tenta outra vez.",
+        "account_under_verification": "A tua conta ainda está em análise. Avisamos-te assim que estiver aprovada.",
         "need_update": {
             "title": "Atualização necessária",
-            "subtitle": "A versão atual do aplicativo não é suportada. Por favor, atualize para a versão mais recente.",
+            "subtitle": "Esta versão da aplicação já não é suportada. Atualiza para continuares a receber pedidos.",
             "button": "Atualizar agora"
+        },
+        "service_accept": {
+            "title": "Não foi possível aceitar o pedido",
+            "subtitle": "Verifica a ligação e tenta outra vez. Se o pedido já tiver expirado, aparece outro em breve."
+        },
+        "service_refuse": {
+            "title": "Não foi possível recusar o pedido",
+            "subtitle": "Verifica a ligação e tenta outra vez."
+        },
+        "service_status": {
+            "title": "Não foi possível atualizar o estado",
+            "subtitle": "Verifica a ligação e tenta outra vez. O serviço continua ativo."
+        },
+        "service_finish": {
+            "title": "Não foi possível finalizar o serviço",
+            "subtitle": "Verifica a ligação e tenta outra vez. O serviço fica aberto até conseguires."
+        },
+        "service_details": {
+            "title": "Não foi possível carregar os detalhes",
+            "subtitle": "Verifica a ligação e volta a abrir o serviço."
+        },
+        "service_rate": {
+            "title": "Não foi possível enviar a avaliação",
+            "subtitle": "Verifica a ligação e tenta outra vez."
+        },
+        "service_history": {
+            "title": "Não foi possível carregar o histórico",
+            "subtitle": "Verifica a ligação e tenta outra vez. Os teus serviços continuam guardados."
+        },
+        "chat_load": {
+            "title": "Não foi possível carregar a conversa",
+            "subtitle": "Verifica a ligação e volta a abrir o chat. Não perdeste nenhuma mensagem."
+        },
+        "chat_arrived": {
+            "title": "Não foi possível avisar que chegaste",
+            "subtitle": "Verifica a ligação e toca outra vez em «Cheguei»."
+        },
+        "status_update": {
+            "title": "Não foi possível mudar o teu estado",
+            "subtitle": "Verifica a ligação e tenta outra vez."
+        },
+        "status_load": {
+            "title": "Não foi possível saber se estás online",
+            "subtitle": "Verifica a ligação e volta a abrir o Início."
+        },
+        "go_online_blocked": {
+            "title": "Ainda não podes ficar online"
+        },
+        "profile_save": {
+            "title": "Não foi possível guardar o perfil",
+            "subtitle": "Verifica a ligação e tenta outra vez. As tuas alterações continuam aqui."
+        },
+        "reset_password_email": {
+            "title": "Não foi possível enviar o email",
+            "subtitle": "Verifica a ligação e tenta outra vez daqui a pouco."
+        },
+        "address_load": {
+            "title": "Não foi possível carregar a morada",
+            "subtitle": "Verifica a ligação e volta a abrir este ecrã."
+        },
+        "address_save": {
+            "title": "Não foi possível guardar a morada",
+            "subtitle": "Confirma a rua, o número e o código postal e tenta outra vez."
+        },
+        "payment_save": {
+            "title": "Não foi possível guardar os dados de pagamento",
+            "subtitle": "Confirma o IBAN e o NIF, verifica a ligação e tenta outra vez."
+        },
+        "at_user_save": {
+            "title": "Não foi possível guardar os dados da AT",
+            "subtitle": "Confirma o subutilizador e a palavra-passe do Portal das Finanças e tenta outra vez."
+        },
+        "documents_submit": {
+            "title": "Não foi possível enviar o documento",
+            "subtitle": "Verifica a ligação e tenta outra vez. Cada ficheiro tem de ter menos de 2 MB."
+        },
+        "documents_pick": {
+            "title": "Não foi possível abrir o ficheiro",
+            "subtitle": "Escolhe outro ficheiro ou tira uma nova foto."
+        },
+        "documents_permission": {
+            "title": "Falta uma permissão"
+        },
+        "hourly_rate_save": {
+            "title": "Não foi possível guardar o valor/hora",
+            "subtitle": "Verifica a ligação e tenta outra vez. O valor anterior mantém-se."
+        },
+        "support_send": {
+            "title": "Não foi possível enviar o pedido de suporte",
+            "subtitle": "Verifica a ligação e tenta outra vez. Copia a mensagem para não a perderes."
+        },
+        "areas_save": {
+            "title": "Não foi possível guardar os tipos de serviço",
+            "subtitle": "Verifica a ligação e tenta outra vez."
+        },
+        "genders_load": {
+            "title": "Não foi possível carregar as opções",
+            "subtitle": "Verifica a ligação e volta a abrir este passo."
         }
     },
     "general": {
+        "toggle_password_visibility": "Mostrar ou esconder a palavra-passe",
+        "back": "Voltar",
+        "try_again": "Tentar outra vez",
+        "loading": "A carregar...",
+        "continue": "Continuar",
+        "offline_title": "Estás sem internet",
+        "offline_subtitle": "Liga-te ao Wi-Fi ou aos dados móveis e tenta outra vez.",
         "email": "Email",
         "email_placeholder": "email@exemplo.com",
-        "email_required": "Deve inserir o seu email",
-        "email_invalid": "Endereço de email inválido",
+        "email_required": "Escreve o teu email",
+        "email_invalid": "Este email não é válido",
         "username": "Nome de utilizador",
         "username_placeholder": "Nome de utilizador",
-        "username_required": "Deve inserir o seu nome de utilizador",
+        "username_required": "Escolhe um nome de utilizador",
         "username_invalid": "Nome de utilizador inválido",
-        "username_min_length": "O nome de utilizador deve ter pelo menos 2 caracteres",
-        "username_max_length": "O nome de utilizador deve ter no máximo 30 caracteres",
-        "username_invalid_characters": "O nome de utilizador contém caracteres inválidos",
-        "username_cannot_be_only_numbers": "O nome de utilizador não pode conter apenas números",
-        "username_cannot_be_empty_or_only_spaces": "O nome de utilizador não pode estar vazio ou conter apenas espaços",
-        "username_cannot_contain_spaces": "O nome de utilizador não pode conter espaços",
-        "username_not_allowed": "Nome de utilizador não permitido",
+        "username_min_length": "O nome de utilizador tem de ter pelo menos 2 caracteres",
+        "username_max_length": "O nome de utilizador não pode ter mais de 30 caracteres",
+        "username_invalid_characters": "O nome de utilizador tem caracteres que não podemos aceitar",
+        "username_cannot_be_only_numbers": "O nome de utilizador não pode ser só números",
+        "username_cannot_be_empty_or_only_spaces": "O nome de utilizador não pode ficar vazio",
+        "username_cannot_contain_spaces": "O nome de utilizador não pode ter espaços",
+        "username_not_allowed": "Este nome de utilizador não está disponível",
         "password": "Palavra-passe",
-        "password_placeholder": "Password12345@",
-        "password_required": "Deve inserir a sua palavra-passe",
+        "password_placeholder": "",
+        "password_required": "Escreve a tua palavra-passe",
         "password_invalid": "Palavra-passe inválida",
-        "password_min_length": "A palavra-passe deve ter pelo menos 8 caracteres",
-        "password_uppercase": "A palavra-passe deve conter pelo menos uma letra maiúscula",
-        "password_lowercase": "A palavra-passe deve conter pelo menos uma letra minúscula",
-        "password_number": "A palavra-passe deve conter pelo menos um número",
-        "password_special_character": "A palavra-passe deve conter pelo menos um caractere especial (!@?#$%^&*_/-)",
-        "password_common": "A palavra-passe não deve conter palavras comuns ou sequências facilmente adivinháveis",
-        "password_match": "As palavras-passe devem coincidir",
+        "password_min_length": "A palavra-passe tem de ter pelo menos 8 caracteres",
+        "password_length_requirement": "Pelo menos 8 caracteres",
+        "password_uncompromised": "Esta palavra-passe apareceu em fugas de dados conhecidas. Escolhe outra.",
+        "password_match": "As palavras-passe têm de ser iguais",
         "confirm_password": "Confirmar palavra-passe",
-        "confirm_password_placeholder": "Password12345@",
-        "confirm_password_required": "Deve confirmar a sua palavra-passe",
+        "confirm_password_placeholder": "",
+        "confirm_password_required": "Escreve a palavra-passe outra vez",
         "address": "Morada",
         "no_address": "Sem morada",
         "address_name": "Nome da morada (opcional)",
         "address_name_placeholder": "Nome da morada",
-        "address_name_min_length": "O nome da morada deve ter pelo menos 3 caracteres",
-        "address_name_max_length": "O nome da morada deve ter no máximo 50 caracteres",
+        "address_name_min_length": "O nome da morada tem de ter pelo menos 3 caracteres",
+        "address_name_max_length": "O nome da morada não pode ter mais de 50 caracteres",
         "street_name": "Nome da rua",
         "street_name_placeholder": "Nome da rua",
-        "street_name_required": "Deve inserir o nome da sua rua",
+        "street_name_required": "Escreve o nome da rua",
+        "street_number_required": "Escreve o número da porta",
         "street_number": "Número da porta/edifício",
         "street_number_placeholder": "Número da porta/edifício",
         "locality": "Distrito",
         "locality_placeholder": "Distrito",
-        "locality_required": "Deve inserir a sua distrito",
+        "locality_required": "Escreve o teu distrito",
         "city": "Cidade",
         "city_placeholder": "Cidade",
-        "city_required": "Deve inserir a sua cidade",
+        "city_required": "Escreve a tua cidade",
         "postal_code": "Código postal",
         "postal_code_placeholder": "Código postal",
-        "postal_code_required": "Deve inserir o seu código postal",
-        "postal_code_invalid_format": "O código postal deve estar no formato 1234-567",
+        "postal_code_required": "Escreve o teu código postal",
+        "postal_code_invalid_format": "O código postal tem de estar no formato 1234-567",
         "country": "País",
         "country_placeholder": "País",
-        "avatar": "Avatar",
+        "avatar": "Fotografia",
         "full_name": "Nome completo",
         "full_name_placeholder": "Primeiro e último nome",
-        "full_name_required": "Deve inserir o seu primeiro e último nome",
-        "full_name_min_length": "O nome completo deve ter pelo menos 2 caracteres",
-        "full_name_max_length": "O nome completo deve ter no máximo 50 caracteres",
-        "full_name_invalid_characters": "O nome completo contém caracteres inválidos",
-        "full_name_cannot_be_only_spaces": "O nome completo não pode estar vazio ou conter apenas espaços",
-        "full_name_first_and_last_name": "O nome completo deve conter o primeiro e último nome",
+        "full_name_required": "Escreve o teu primeiro e último nome",
+        "full_name_min_length": "O nome completo tem de ter pelo menos 2 caracteres",
+        "full_name_max_length": "O nome completo não pode ter mais de 50 caracteres",
+        "full_name_invalid_characters": "O nome completo tem caracteres que não podemos aceitar",
+        "full_name_cannot_be_only_spaces": "O nome completo não pode ficar vazio",
+        "full_name_first_and_last_name": "Escreve o primeiro e o último nome",
         "birth_date": "Data de nascimento",
-        "birth_date_required": "Deve inserir a sua data de nascimento",
-        "birth_date_placeholder": "Selecione a sua data de nascimento",
+        "birth_date_required": "Escolhe a tua data de nascimento",
+        "birth_date_placeholder": "Escolhe a tua data de nascimento",
         "birth_date_invalid": "Data de nascimento inválida",
-        "birth_date_min_age": "Deve ter pelo menos 18 anos",
+        "birth_date_min_age": "Tens de ter pelo menos 18 anos",
         "birth_date_max_age": "A data de nascimento não pode ser anterior a 1900",
         "birth_date_not_in_future": "A data de nascimento não pode ser no futuro",
         "nif": "NIF",
         "nif_placeholder": "NIF",
-        "nif_required": "Deve inserir o seu NIF",
+        "nif_required": "Escreve o teu NIF",
         "nif_invalid": "NIF inválido",
-        "nif_min_length": "O NIF deve ter 9 caracteres",
+        "nif_min_length": "O NIF tem 9 dígitos",
         "phone_number": "Número de telefone",
-        "no_phone_number": "Nenhum telefone registado",
+        "no_phone_number": "Sem telefone registado",
         "phone_number_placeholder": "+351 919919919",
-        "phone_number_required": "Deve inserir o seu número de telefone",
-        "phone_number_invalid_portuguese": "Número de telefone português inválido",
+        "phone_number_required": "Escreve o teu número de telefone",
+        "phone_number_invalid_portuguese": "Este número de telefone português não é válido",
         "ios_picker": {
             "cancel": "Cancelar",
-            "choose_an_option": "Escolha uma opção"
+            "choose_an_option": "Escolhe uma opção"
         },
-        "company_name": "Denominação fiscal",
-        "company_name_required": "Deve inserir o seu nome",
-        "company_name_placeholder": "Denominação fiscal",
-        "company_address": "Morada da empresa",
-        "company_address_change": "Alterar morada da empresa",
-        "at_user": "Sub-Utilizador AT",
-        "at_user_change": "Alterar sub-utilizador AT",
-        "at_user_required": "Deve inserir o seu utilizador AT",
+        "company_name": "Nome nas faturas",
+        "company_name_required": "Escreve a tua denominação fiscal",
+        "company_name_placeholder": "O teu nome ou o da empresa",
+        "company_address": "Morada de faturação",
+        "company_address_change": "Alterar morada de faturação",
+        "at_user": "Utilizador",
+        "at_user_change": "Alterar subutilizador AT",
+        "at_user_required": "Escreve o teu subutilizador AT",
         "at_user_placeholder": "Ex.: 123456789/1",
-        "at_user_invalid": "Sub-utilizador AT inválido",
-        "at_password": "Palavra-passe do sub-utilizador AT",
-        "at_password_required": "Deve inserir a sua palavra-passe do sub-utilizador AT",
-        "at_password_placeholder": "Palavra-passe do sub-utilizador AT",
-        "at_password_helper": "Utilize a palavra-passe do sub-utilizador AT (definida no Portal das Finanças). Não é o código de acesso telefónico.",
+        "at_user_invalid": "Subutilizador AT inválido",
+        "at_password": "Palavra-passe",
+        "at_password_required": "Escreve a palavra-passe do subutilizador AT",
+        "at_password_placeholder": "",
+        "at_password_helper": "Usa a palavra-passe do subutilizador que criaste no Portal das Finanças. Não é o código de acesso telefónico.",
         "iban": "IBAN",
-        "iban_required": "Deve inserir o seu IBAN",
+        "iban_required": "Escreve o teu IBAN",
         "iban_placeholder": "IBAN",
         "iban_invalid": "IBAN inválido",
-        "iban_max_length": "O IBAN deve ter 25 caracteres",
-        "iban_min_length": "O IBAN deve ter 25 caracteres",
+        "iban_max_length": "O IBAN tem 25 caracteres",
+        "iban_min_length": "O IBAN tem 25 caracteres",
         "price_rate": {
-            "title": "Valor horário",
-            "label": "Taxa de preço",
-            "placeholder": "Preço por hora",
-            "required": "Deve inserir a taxa de preço",
-            "invalid": "Taxa de preço inválida",
-            "min_value": "A taxa de preço deve ser pelo menos 1",
-            "max_value": "A taxa de preço deve ser menor ou igual a 999.999",
-            "must_be_number": "A taxa de preço deve ser um número"
+            "title": "Valor/hora",
+            "label": "Valor/hora",
+            "placeholder": "Valor/hora",
+            "required": "Escreve o teu valor/hora",
+            "invalid": "Valor/hora inválido",
+            "min_value": "O valor/hora tem de ser pelo menos 1",
+            "max_value": "O valor/hora não pode ser maior do que 999.999",
+            "must_be_number": "O valor/hora tem de ser um número"
         },
-        "phone_verification_required": "Verificação de telefone necessária",
-        "email_verification_required": "Verificação de email necessária",
-        "blocked_by_zone": "Zona bloqueada",
-        "company_address_required": "Deve inserir a morada da empresa",
+        "phone_verification_required": "Falta verificar o teu telefone",
+        "email_verification_required": "Falta confirmar o teu email",
+        "blocked_by_zone": "Zona indisponível",
+        "company_address_required": "Escreve a morada de faturação",
         "yes": "Sim",
         "no": "Não",
+        "cancel": "Cancelar",
     },
     "wallet": {
         "balance": {
             "name": "Saldo"
         },
         "service": {
-            "no_price_provided": "Nenhum preço fornecido",
+            "no_price_provided": "Sem valor definido",
         }
     },
     "delete_account": {
-        "header": "Apagar conta",
-        "submit": "Apagar conta",
-        "submit_loading": "A apagar conta...",
+        "header": "Eliminar conta",
+        "submit": "Eliminar conta",
+        "submit_loading": "A eliminar conta...",
+    },
+    "my_services": {
+        "duration": "Duração prevista: {{value}}",
+        "earnings_title": "Quanto ganhas",
+        "hour_rate_label": "O teu valor/hora",
+        "hour_rate_value": "{{value}}/hora",
+        "change_rate": "Alterar",
+        "earnings_hint": "O valor por serviço é calculado com o teu valor/hora e a duração do trabalho. Deslocações e horários fora do normal podem aumentar o valor.",
     },
     "home": {
-        "my_areas": "As minhas áreas",
-        "my_areas_empty": "Nenhuma área encontrada",
-        "my_areas_change": "Alterar áreas",
+        "my_areas": "As minhas zonas",
+        "my_areas_empty": "Ainda não escolheste zonas. Escolhe onde trabalhas para começares a receber pedidos.",
+        "my_areas_change": "Alterar zonas",
+        "shortcuts": {
+            "title": "Atalhos",
+            "history": "Histórico",
+            "support": "Suporte"
+        }
     },
     "payments": {
-        "no_payments_found": "Nenhum pagamento encontrado",
-        "load_more": "Carregar mais"
+        "no_payments_found": "Ainda não tens pagamentos. Conclui o primeiro serviço para começares a receber.",
+        "load_more": "Ver mais"
+    },
+    "hourly_rate": {
+        "title": "Valor/hora",
+        "your_rate_label": "O teu valor/hora",
+        "earnings_title": "Quanto recebes",
+        "simulation": {
+            "one_hour": "Serviço de 1h",
+            "two_hours": "Serviço de 2h",
+            "two_hours_thirty": "Serviço de 2h30"
+        },
+        "margin_note": "Recebes 100% do valor técnico. A margem da Piquet é aplicada ao preço do cliente, não é retirada a ti.",
+        "save": "Guardar",
+        "saving": "A guardar...",
+        "saved_title": "Valor/hora atualizado",
+        "saved_subtitle": "O teu novo valor/hora já está ativo."
+    },
+    "service_extras": {
+        "title": "EXTRAS DO SERVIÇO",
+        "extra_time": "Tempo extra",
+        "parts": "Peças/materiais",
+        "add_time_title": "Adicionar tempo extra",
+        "add_time_hint": "O cliente tem de aprovar antes de o tempo contar para o serviço.",
+        "add_part_title": "Adicionar peça/material",
+        "add_part_hint": "O cliente tem de aceitar o custo antes de a peça entrar no valor do serviço.",
+        "part_label": "O que precisas",
+        "value_label": "Custo da peça",
+        "part_placeholder": "ex.: Torneira monocomando",
+        "value_placeholder": "Valor (€)",
+        "ask_client": "Pedir ao cliente",
+        "time_label": "+{{minutes}} min",
+        "waiting": "{{item}} à espera da aprovação do cliente…",
+        "approved": "{{item}} aprovado pelo cliente",
+        "rejected": "{{item}} recusado pelo cliente",
+        "rejected_reason": "Motivo: {{reason}}",
+        "withdraw": "Retirar",
+        "error_load": "Não conseguimos carregar os extras. Verifica a ligação e tenta outra vez.",
+        "error_add_time": "Não conseguimos enviar o pedido de tempo extra. Tenta outra vez.",
+        "error_add_part": "Não conseguimos enviar o pedido da peça. Tenta outra vez.",
+        "error_invalid_part": "Preenche a descrição e um valor válido para a peça.",
+        "error_withdraw": "Não conseguimos retirar o pedido. Tenta outra vez."
+    },
+    "service_photos": {
+        "recommended": "Recomendado",
+        "title": "Fotos do trabalho",
+        "hint": "Fotografa o antes e o depois — protege-te em caso de reclamação.",
+        "before": "ANTES",
+        "after": "DEPOIS",
+        "add": "Juntar",
+        "add_before": "Foto de antes",
+        "add_after": "Foto de depois",
+        "camera": "Câmara",
+        "library": "Galeria",
+        "none": "Sem fotos.",
+        "close_preview": "Toca para fechar",
+        "permission_denied_title": "Falta uma permissão",
+        "camera_permission_required": "Para tirares a foto do trabalho precisamos de acesso à câmara. Podes ativar nas Definições.",
+        "library_permission_required": "Para escolheres a foto do trabalho precisamos de acesso à galeria. Podes ativar nas Definições.",
+        "error_title": "Não deu para juntar a foto",
+        "error_file_too_big": "Esta foto é demasiado grande (o limite é 10 MB). Tira outra ou escolhe uma mais pequena.",
+        "error_load_title": "Não conseguimos carregar as fotos",
+        "error_load_subtitle": "Verifica a ligação e tenta outra vez. Podes continuar o serviço à mesma."
+    },
+    "account_status": {
+        "title": "Estado da conta",
+        "approved_label": "Conta aprovada",
+        "approved_message": "Conta aprovada. Já podes ficar online e receber serviços.",
+        "review_label": "Conta em análise",
+        "review_message": "A tua conta está em análise. Avisamos-te assim que estiver aprovada.",
+        "onboarding_label": "Falta completar o registo",
+        "onboarding_message": "Falta enviar os documentos e completar o perfil para começares.",
+        "steps_title": "Próximos passos",
+        "step_create_account": "Criar conta",
+        "step_submit_documents": "Enviar documentos",
+        "step_review": "Análise da Piquet",
+        "step_at_user": "Subutilizador AT",
+        "step_approved": "Conta aprovada",
+        "see_documents": "Ver documentos"
+    },
+    "auto_acceptance": {
+        "title": "Auto-Aceitação",
+        "state": {
+            "on_title": "Auto-Aceitação ativa",
+            "on_subtitle": "Os serviços agendados dentro da tua disponibilidade são aceites automaticamente.",
+            "off_title": "Auto-Aceitação desativada",
+            "off_subtitle": "Ativa-a para não perderes pedidos agendados."
+        },
+        "how_it_works": {
+            "title": "Como funciona",
+            "availability": "Só os serviços agendados dentro da tua disponibilidade são aceites automaticamente.",
+            "notification": "Recebes uma notificação a confirmar cada aceitação.",
+            "customer": "O cliente recebe confirmação imediata.",
+            "responsibility": "Ficas responsável por realizar os serviços aceites automaticamente."
+        },
+        "warning": "Cancelar um serviço depois de aceite pode gerar penalização."
+    },
+    "history": {
+        "title": "Histórico",
+        "error_title": "Não foi possível carregar o histórico",
+        "error_subtitle": "Verifica a ligação à internet e tenta outra vez. Os teus serviços continuam guardados.",
+        "filters": {
+            "all": "Todos",
+            "completed": "Concluídos",
+            "cancelled": "Cancelados",
+            "lost": "Recusados"
+        },
+        "earned_summary": "Ganhaste com {{count}} serviços",
+        "lost_summary": "Recusaste ou deixaste expirar {{count}} pedidos",
+        "lost_hint": "Estes valores nunca foram teus — são o que poderias ter ganho se tivesses aceite a tempo.",
+        "empty": {
+            "all_title": "Sem histórico",
+            "all": "Os serviços que fizeres aparecem aqui. Fica online para receberes o primeiro pedido.",
+            "completed_title": "Sem serviços concluídos",
+            "completed": "Assim que concluíres um serviço, ele aparece aqui com o valor que ganhaste.",
+            "cancelled_title": "Sem cancelamentos",
+            "cancelled": "Ótimo — ainda não cancelaste nenhum serviço.",
+            "lost_title": "Não recusaste nenhum pedido",
+            "lost": "Continua a responder aos pedidos a tempo para manteres a tua taxa de aceitação alta."
+        }
+    },
+    "my_documents": {
+        "title": "Documentos",
+        "error_title": "Não foi possível carregar os documentos",
+        "error_subtitle": "Verifica a ligação à internet e tenta outra vez. Nada do que já enviaste se perdeu.",
+        "empty": "Ainda não enviaste documentos. Envia-os para a Piquet validar a tua conta.",
+        "valid_until": "Válido até {{date}}",
+        "submit_or_replace": "Enviar ou substituir documentos",
+        "status": {
+            "approved": "Aprovado",
+            "pending": "Em análise",
+            "declined": "Rejeitado — envia outro",
+            "expired": "Expirado — envia um novo",
+            "expiring": "Expira em {{days}} dias"
+        }
+    },
+    "notification_settings": {
+        "title": "Notificações",
+        "subtitle": "Escolhe as notificações que queres receber.",
+        "items": {
+            "new_requests": { "title": "Novos pedidos", "subtitle": "Quando há um serviço para ti" },
+            "schedule_reminders": { "title": "Lembretes de agendamentos", "subtitle": "Antes de cada serviço agendado" },
+            "messages": { "title": "Mensagens", "subtitle": "Mensagens dos clientes" },
+            "payments": { "title": "Pagamentos", "subtitle": "Quando recebes um pagamento" },
+            "news": { "title": "Novidades Piquet", "subtitle": "Novidades e dicas da plataforma" }
+        }
+    },
+    "document_expiry": {
+        "expiring_title_one": "O teu {{name}} expira amanhã",
+        "expiring_title_other": "O teu {{name}} expira em {{count}} dias",
+        "expiring_subtitle": "Renova-o para continuares a aceitar pedidos. Toca para enviar o novo documento.",
+        "expired_title": "O teu {{name}} expirou",
+        "expired_subtitle": "Não podes aceitar pedidos até enviares um documento válido."
+    },
+    "notifications_disabled": {
+        "title": "Notificações desligadas",
+        "subtitle": "Sem elas não te avisamos quando entra um pedido. Toca para as ativar nas Definições."
+    },
+    "onboarding_success": {
+        "title": "Registo concluído!",
+        "subtitle": "Obrigado. A partir de agora, a bola está do nosso lado.",
+        "title_pending": "Estás quase!",
+        "subtitle_pending": "Guardámos o teu progresso. Faltam alguns passos para começares a receber pedidos.",
+        "missing_generic": "Ainda faltam alguns passos. Completa-os no início para ficares aprovado.",
+        "steps": {
+            "review": {
+                "title": "A Piquet analisa a tua conta",
+                "subtitle": "Validamos os teus documentos e dados em 24 a 48 horas úteis."
+            },
+            "notify": {
+                "title": "Avisamos-te por notificação",
+                "subtitle": "Recebes um aviso assim que a conta estiver aprovada. Mantém as notificações ligadas."
+            },
+            "start": {
+                "title": "Ficas online e começas a receber pedidos",
+                "subtitle": "Com a conta aprovada, ativa 'Receber pedidos' no Perfil e é só começar."
+            }
+        },
+        "missing_docs_one": "Falta-te {{count}} documento. Envia-o já para não atrasar a aprovação.",
+        "missing_docs_other": "Faltam-te {{count}} documentos. Envia-os já para não atrasar a aprovação.",
+        "cta": "Ir para o início"
+    },
+    "payouts": {
+        "title": "Movimentos",
+        "empty_title": "Ainda não tens movimentos",
+        "empty_subtitle": "Assim que concluíres o primeiro serviço, o valor aparece aqui e segue para a tua conta bancária.",
+        "error_title": "Não foi possível carregar os movimentos",
+        "error_subtitle": "Verifica a ligação à internet e tenta outra vez.",
+        "type_earning": "Serviço concluído",
+        "type_transfer": "Transferência para a tua conta",
+        "pending": "por confirmar",
+        "load_more": "Ver mais"
+    },
+    "support": {
+        "title": "Suporte",
+        "new_ticket": "Novo pedido de suporte",
+        "new_ticket_hint": "A equipa Piquet responde o mais depressa possível.",
+        "subject_placeholder": "Assunto",
+        "message_placeholder": "Descreve o problema ou a tua questão…",
+        "send": "Enviar pedido",
+        "sending": "A enviar…",
+        "sent_title": "Pedido enviado",
+        "sent_subtitle": "A equipa Piquet vai responder em breve.",
+        "my_tickets": "Os meus pedidos",
+        "tickets_error_title": "Não foi possível carregar os teus pedidos",
+        "tickets_error_subtitle": "Verifica a ligação e tenta outra vez. Os pedidos que já enviaste continuam guardados.",
+        "reply_from_piquet": "Resposta da Piquet",
+        "header_title": "Precisas de ajuda?",
+        "header_subtitle": "Estamos disponíveis todos os dias, 8h–22h.",
+        "faq": {
+            "title": "Perguntas frequentes",
+            "items": {
+                "payments": {
+                    "q": "Como recebo pagamentos?",
+                    "a": "Os pagamentos são acumulados semanalmente e pagos à segunda-feira para o teu IBAN."
+                },
+                "auto_accept": {
+                    "q": "O que é a Auto-Aceitação?",
+                    "a": "Aceita automaticamente serviços agendados dentro da tua disponibilidade."
+                },
+                "hourly_rate": {
+                    "q": "Como funciona o valor/hora?",
+                    "a": "Defines o teu valor/hora; recebes valor/hora × duração do serviço, com acréscimos em horário especial."
+                },
+                "missed_request": {
+                    "q": "Porque perdi um pedido?",
+                    "a": "Pedidos imediatos expiram em 60 segundos e agendados em 20 minutos sem resposta."
+                }
+            }
+        },
+        "status": {
+            "open": "Aberto",
+            "answered": "Respondido",
+            "closed": "Fechado"
+        }
+    },
+    "reviews": {
+        "title": "Avaliações",
+        "error_title": "Não foi possível carregar as avaliações",
+        "error_subtitle": "Verifica a ligação à internet e tenta outra vez.",
+        "total_one": "{{count}} avaliação",
+        "total_other": "{{count}} avaliações",
+        "empty": "Ainda não tens avaliações. Conclui um serviço para o cliente te poder avaliar.",
+        "empty_title": "Ainda sem avaliações",
+        "empty_subtitle": "Conclui o teu primeiro serviço para começares a receber avaliações.",
+        "distribution": "Avaliações por estrelas"
+    },
+    "documents_help": {
+        "intro": "Envia os três documentos para a Piquet validar a tua conta. Em cada um tens o link oficial de como o obter.",
+        "required": " · obrigatório",
+        "not_submitted": "Por enviar",
+        "submit": "Enviar",
+        "replace": "Substituir",
+        "how_to_get": "Como obter este documento",
+        "hints": {
+            "citizen_card": "Documento de identificação válido (frente e verso).",
+            "criminal_record": "Certificado de registo criminal (válido 90 dias).",
+            "activity": "Comprovativo de início de atividade nas Finanças."
+        },
+        "at": {
+            "section": "Autoridade Tributária",
+            "title": "Subutilizador AT",
+            "configured": "Configurado",
+            "description": "Cria um subutilizador no Portal das Finanças com permissão para comunicar faturas e séries, e indica aqui os dados — é com ele que a Piquet comunica os teus serviços à AT.",
+            "user_label": "Subutilizador AT",
+            "user_placeholder": "ex.: 123456789/1",
+            "password_label": "Palavra-passe",
+            "password_saved": "Palavra-passe guardada ••••••••",
+            "change": "Alterar",
+            "save": "Guardar",
+            "saved": "Dados da AT guardados."
+        }
+    },
+    "settings_screen": {
+        "notifications": "Notificações",
+        "permissions": "Permissões",
+        "about": "Sobre",
+        "items": {
+            "new_requests": "Novos pedidos",
+            "messages": "Mensagens de clientes",
+            "payments": "Pagamentos",
+            "schedule_reminders": "Lembretes de agendamentos"
+        },
+        "permission_items": {
+            "location": {
+                "title": "Localização",
+                "subtitle": "Serve para navegares até ao cliente."
+            },
+            "notifications": {
+                "title": "Notificações",
+                "subtitle": "Para receberes pedidos em tempo real."
+            }
+        }
+    },
+    "tabs": {
+        "home": "Início",
+        "agenda": "Agenda",
+        "earnings": "Ganhos",
+        "profile": "Perfil"
+    },
+    "agenda": {
+        "subtitle": "Serviços agendados para os próximos 7 dias",
+        "error_title": "Não foi possível carregar a agenda",
+        "error_subtitle": "Verifica a ligação à internet e tenta outra vez. Os serviços que aceitaste continuam marcados.",
+        "total_upcoming": "A receber nos próximos 7 dias",
+        "estimated_end": "conclusão prevista",
+        "empty": "Os serviços que aceitares aparecem aqui, organizados por dia. Fica online para receberes pedidos.",
+        "empty_title": "Agenda livre",
+        "scheduled": "Agendado",
+        "open_service_hint": "Abre o estado do serviço, com a morada, o que está incluído e o chat com o cliente.",
+        "overdue_title": "Em atraso",
+      "day_stops_one": "{{count}} paragem",
+      "day_stops_other": "{{count}} paragens",
+      "unavailable_hint": "Toque longo para marcares o dia como indisponível",
+      "unavailable_legend": "Toque longo num dia para o marcares como indisponível",
+      "overdue_hint": "A hora já passou. Conclui o serviço ou fala com o suporte.",
+      "free_day_title": "Dia livre",
+        "free_day": "Não tens serviços agendados para este dia."
+    },
+    "earnings": {
+        "this_week": "Ganhos desta semana",
+        "error_title": "Não foi possível carregar os teus ganhos",
+        "error_subtitle": "Verifica a ligação à internet e tenta outra vez. Não perdeste nenhum ganho — só não os conseguimos mostrar agora.",
+        "this_week_short": "Esta semana",
+        "services_completed_one": "{{count}} serviço concluído",
+        "services_completed_other": "{{count}} serviços concluídos",
+        "next_payment": "Próximo pagamento",
+        "next_payment_hint": "Os pagamentos são feitos às segundas-feiras",
+        "last_4_weeks": "ÚLTIMAS 4 SEMANAS",
+        "last_4_weeks_title": "Últimas 4 semanas",
+        "total_paid": "Já pago no total: {{value}}",
+        "total_earned": "Total ganho até hoje: {{value}}",
+        "pending_payment_title": "Por receber",
+        "pending_payment_subtitle_one": "{{count}} serviço concluído à espera de pagamento.",
+        "pending_payment_subtitle_other": "{{count}} serviços concluídos à espera de pagamento.",
+        "next_payment_on": "No dia {{date}}",
+        "to_iban": "Para o IBAN {{iban}}",
+        "week_services": "Serviços desta semana",
+        "completed_title": "Concluídos esta semana",
+        "completed_empty": "Os serviços que concluíres esta semana aparecem aqui. Fica online para receberes pedidos.",
+        "completed_empty_title": "Ainda sem serviços"
     },
     "user_header": {
-        "welcome_back": "Bem-vindo de volta,"
+        "welcome_back": "Bem-vindo de volta,",
+        "hello": "Olá, {{name}} 👋",
+        "ready": "Pronto para receber serviços.",
+        "finish_account": "Vamos concluir a tua conta."
+    },
+    "home_stats": {
+        "empty_ready": "Estás pronto e visível na tua zona. Fica online para receberes pedidos.",
+        "empty_with_demand_one": "Houve {{count}} pedido na tua zona esta semana. Fica online para não perderes os próximos.",
+        "empty_with_demand_other": "Houve {{count}} pedidos na tua zona esta semana. Fica online para não perderes os próximos.",
+        "this_week": "Esta semana",
+        "service": "Serviço",
+        "services": "Serviços",
+        "rating": "Avaliação"
+    },
+    "home_banners": {
+        "more_one": "Mais {{count}} aviso",
+        "more_other": "Mais {{count}} avisos"
+    },
+    "home_today": {
+        "title": "HOJE",
+        "service": "serviço",
+        "services": "serviços",
+        "summary": "{{label}} · {{amount}} a ganhar",
+        "next_stop": "Próxima paragem às {{time}}"
+    },
+    "departure_reminder": {
+        "title": "Está na hora de sair 🚗",
+        "body": "Sai agora para chegares a horas: {{service}} às {{time}}.",
+        "fallback_service": "o teu serviço"
+    },
+    "auto_accept_lost": {
+        "week": "Esta semana passaram-te ao lado {{amount}} em pedidos a que não respondeste."
     },
     "documents_validating": {
-        "pending": "Os seus documentos ainda estão a ser validados, por favor aguarde",
+        "pending": "Estamos a validar os teus documentos. Avisamos-te assim que estiver pronto.",
         "missing": "Documentos em falta"
     },
     "operation_areas": {
-        "update_skills": "Atualizar habilidades",
-        "update_services_types": "Atualizar tipos de serviços",
+        "header": "Zonas e serviços",
+        "update_skills": "Atualizar competências",
+        "update_services_types": "Atualizar tipos de serviço",
         "services_types": {
-            "header": "Tipos de serviços",
+            "header": "Tipos de serviço",
+            "subheader": "Escolhe o que executas",
+            "empty": "Ainda não há tipos de serviço para escolher. Verifica a ligação e tenta outra vez.",
+            "none_selected": "Nenhum selecionado",
+            "selected_count_one": "{{count}} selecionado",
+            "selected_count_other": "{{count}} selecionados",
         },
         "update": {
-            "title": "Atualizar áreas de operação",
-            "subtitle": "Tem a certeza que pretende atualizar as suas áreas de operação?",
+            "title": "Atualizar zonas de trabalho",
+            "subtitle": "Queres guardar as zonas que escolheste?",
             "cancel": "Cancelar",
             "confirm": "Confirmar",
         }
     },
     "documents": {
         "header": "Documentos",
-        "pending_documents": "Documentos pendentes",
+        "pending_documents": "Documentos em análise",
         "missing_documents": "Documentos em falta",
         "optional_documents": "Documentos opcionais",
-        "no_documents_found": "Nenhum documento encontrado",
+        "no_documents_found": "Ainda não há documentos para mostrar. Verifica a ligação e tenta outra vez.",
         "reason_for_denial": "Motivo da recusa do último envio",
         "select_file": {
-            "title": "Selecionar ficheiro",
-            "subtitle": "Escolha um ficheiro do seu dispositivo",
-            "choose_from_library": "Escolher da biblioteca",
+            "title": "Escolher ficheiro",
+            "subtitle": "Escolhe um ficheiro do teu telemóvel",
+            "choose_from_library": "Escolher da galeria",
             "choose_from_files": "Escolher dos ficheiros",
             "cancel": "Cancelar",
             "confirm": "Confirmar"
@@ -787,83 +1390,166 @@ export default {
         "foreground_service": {
             "active": {
                 "title": "Localização ativa",
-                "body": "A sua localização está a ser partilhada com o aplicativo",
+                "body": "Estás a partilhar a tua localização com a Piquet",
             },
             "permission": {
                 "title": "Permissão de localização",
-                "subtitle": "Precisamos da sua permissão para aceder à sua localização, mesmo quando o aplicativo estiver em segundo plano.",
-                "android_subtitle": "Para ficar online no Android, precisa de permitir a localização em segundo plano nas definições da aplicação.",
+                "subtitle": "Precisamos de aceder à tua localização, mesmo com a aplicação em segundo plano, para te enviar pedidos perto de ti.",
+                "android_subtitle": "Para ficares online no Android, tens de permitir a localização em segundo plano nas definições da aplicação.",
                 "error": {
-                    "title": "Erro ao iniciar o serviço de localização",
-                    "subtitle": "O aplicativo precisa de permissão para aceder à sua localização, mesmo quando em segundo plano.",
+                    "title": "Não foi possível ativar a localização",
+                    "subtitle": "Ativa a localização «Sempre» nas Definições do telemóvel e tenta outra vez.",
                 }
             },
             "tracking": {
                 "error": {
-                    "title": "Erro ao iniciar o rastreamento",
-                    "subtitle": "O aplicativo precisa de permissão para aceder à sua localização, mesmo quando em segundo plano.",
+                    "title": "Não foi possível iniciar o seguimento",
+                    "subtitle": "Ativa a localização «Sempre» nas Definições do telemóvel e tenta outra vez.",
                 }
             }
         }
     },
     "geolocation": {
-        "permission_title": "Ative a sua localização",
-        "permission_description": "Precisa da localização ativa para ficar online e receber pedidos perto de si.",
+        "permission_title": "Ativa a tua localização",
+        "permission_description": "Precisas da localização ativa para ficares online e receberes pedidos perto de ti.",
         "permission_button": "Ativar",
         "settings_dialog_cancel": "Agora não",
         "settings_dialog_confirm": "Abrir Definições",
     },
+    "address": {
+        "search_empty": "Não encontrámos essa morada. Escreve-a nos campos em baixo.",
+        "search_failed": "Não conseguimos procurar agora. Escreve a morada em baixo."
+    },
     "complete_profile": {
-        "notice": "Precisa de completar o seu perfil",
-        "header": "Completar o seu perfil",
+        "later": "Faço isto mais tarde",
+        "contacts": {
+            "title": "Confirma os teus contactos",
+            "subtitle": "Confirma o telemóvel e o email para começares a receber pedidos.",
+            "verified": "Confirmado",
+            "sending": "A enviar…",
+            "verifying": "A confirmar…",
+            "checking": "A verificar…",
+            "phone_send": "Enviar código por SMS",
+            "phone_verify": "Confirmar telemóvel",
+            "email_send": "Enviar link de confirmação",
+            "email_sent": "Enviámos um link para o teu email. Abre-o para confirmar.",
+            "email_not_yet": "Ainda não confirmámos. Abre o link e tenta outra vez.",
+            "email_check": "Já confirmei"
+        },
+        "billing": {
+            "title": "Acesso à AT",
+            "subtitle": "Cria um acesso nas Finanças só para faturas e escreve-o aqui."
+        },
+        "zone_demand_one": "{{count}} pedido na tua zona esta semana",
+            "zone_demand_other": "{{count}} pedidos na tua zona esta semana",
+            "missing_one": "Falta 1 passo para começares a receber pedidos.",
+        "missing_many": "Faltam {{count}} passos para começares a receber pedidos.",
+        "missing": {
+            "documents": "documentos",
+            "phone": "confirmar o telemóvel",
+            "email": "confirmar o email",
+            "at_user": "subutilizador AT",
+            "company_address": "morada de faturação",
+            "iban": "IBAN"
+        },
+        "notice": "Completa o teu perfil",
+        "subtitle": "Enquanto não estiver completo não recebes pedidos.",
+        "header": "Completar o teu perfil",
         "at_user": {
-            "title": "Dados de Autenticação",
-            "subtitle": "Para facilitar a faturação indique os dados de sub-utilizador na AT com permissão de comunicar séries (permissão WSE).",
+            "warning": {
+                "title": "Não é o teu acesso pessoal das Finanças."
+            },
+            "how_to": {
+                "toggle": "Como crio este acesso?",
+                "steps": {
+                    "portal": "Entra no Portal das Finanças.",
+                    "menu": "Procura Gestão de Utilizadores.",
+                    "new": "Cria um utilizador. Fica com o formato NIF/número.",
+                    "permissions": "Marca as permissões WFA e WSE. São estas que nos deixam emitir as faturas.",
+                    "password": "Escolhe uma palavra-passe de 8 a 14 caracteres. Guarda-a: só a vês uma vez."
+                },
+                "open_portal": "Abrir o Portal das Finanças"
+            }
+        },
+        "iban": {
+            "title": "Como te pagamos",
+            "subtitle": "Todas as segundas transferimos o que ganhaste na semana anterior.",
+            "address_section": "Morada de faturação",
+            "address_edit": "Editar",
+            "address_manual": "Não encontras? Introduz o código postal e a cidade"
         },
         "survey": {
-            "title": "Onde prestas serviços?",
-            "subtitle": "Seleciona os concelhos onde estás disponível",
+            "title": "Onde queres trabalhar?",
+            "subtitle": "Escolhe pelo menos 3 concelhos. Nos que já estão ativos passas a receber os pedidos dessa zona; nos que ainda vão abrir, a tua escolha ajuda a Piquet a decidir onde abrir a seguir.",
             "submit": "Continuar",
             "skip": "Saltar",
-            "zones_selected_one": "1 zona selecionada",
-            "zones_selected_other": "{{count}} zonas selecionadas",
+            "progress_min": "{{count}} de 3 mínimas",
+            "zones_selected_one": "1 zona escolhida",
+            "zones_selected_other": "{{count}} zonas escolhidas",
             "district_available": "DISPONÍVEL",
             "district_coming_soon": "EM BREVE",
             "city_active": "Ativa",
             "city_coming_soon": "Em breve",
+        },
+        "documents": {
+            "submitted": "Enviado",
+            "replace": "Substituir",
+            "later": "Enviar documentos mais tarde",
+            "permission_denied_title": "Falta uma permissão",
+            "help": {
+                "criminal_record": "Pedir no portal da Justiça",
+                "activity_declaration": "Obter no Portal das Finanças"
+            }
         }
     },
     "schedules": {
       "availability": "Disponibilidade",
       "service_zone": "Zona de serviço",
+      "day_off": "Folga",
       "edit": "editar",
       "settings_schedule": "Definições de agendamento",
       "repeat": "Repetir",
       "auto_acceptance": "Auto-Aceitação",
+      "auto_accept_on": "Ativa — aceitas serviços na tua disponibilidade.",
+      "auto_accept_off": "Desativada — respondes a cada pedido.",
+      "auto_accept_enable": "Ativar",
       "availability_schedule": "Disponibilidade de agendamento",
-      "continue": "Continue",
+      "continue": "Guardar",
       "calendar": {
-        "blocks_hourly": "Blocos horários",
+        "blocks_hourly": "Horários disponíveis",
+        "save": "Guardar"
+      },
+      "availability_range": {
+        "title": "Intervalo de disponibilidade",
+        "subtitle": "Escolhe o horário em que aceitas serviços agendados.",
+        "from": "A partir das",
+        "to": "Até às",
+        "invalid": "A hora inicial tem de ser anterior à hora final",
+        "cancel": "Cancelar",
         "save": "Guardar"
       },
       "address": {
         "address": "Morada",
-        "insert_address": "Insira os dados da sua localização",
+        "insert_address": "Ainda não definiste a tua zona de serviço",
+        "locating": "A obter a tua localização…",
+        "locate_failed": "Não foi possível obter a localização. Define a morada à mão.",
+        "detected": "Detetada pelo GPS",
+        "use_current": "Usar a localização atual",
         "street": "Rua",
         "placeholder_street": "Ex: Avenida da Liberdade",
         "number": "Número",
-        "postal_code": "Código Postal",
+        "postal_code": "Código postal",
         "city": "Cidade",
         "placeholder_city": "Ex: Lisboa",
         "cancel": "Cancelar",
         "save": "Guardar",
       },
       "confirmation": {
-        "repeat_title": "Alterar definição de repetição",
-        "enable_repeat_subtitle": "Ao ativar a função de REPETIR agenda, a disponibilidade desta semana será replicada para todas as semanas futuras substuindo possíveis blocos horários adicionados manualmente. Quer continuar?",
-        "disable_repeat_subtitle": "Ao desabilitar a função REPETIR, todos os blocos horários NÃO AGENDADOS, a partir da próxima semana serão excluidos. Quer continuar?",
-        "auto_accept_title": "Alterar definição de auto-aceitação",
-        "auto_accept_subtitle": "Ao ativar a função AUTO-ACEITAÇÃO, todos os pedidos de agendamento de serviço para os seus blocos livres serão aceites automaticamente. Quer continuar?",
+        "repeat_title": "Alterar a repetição da agenda",
+        "enable_repeat_subtitle": "Ao ativares a repetição, a disponibilidade desta semana passa a repetir-se em todas as semanas seguintes e substitui os horários que tenhas adicionado à mão. Queres continuar?",
+        "disable_repeat_subtitle": "Ao desativares a repetição, todos os horários ainda sem serviço marcado, a partir da próxima semana, são apagados. Queres continuar?",
+        "auto_accept_title": "Ativar a Auto-Aceitação?",
+        "auto_accept_subtitle": "Os pedidos agendados nos teus horários livres passam a ser aceites automaticamente.",
       },
       "days": {
         "Mo": "Segunda-feira",
@@ -877,7 +1563,7 @@ export default {
       "schedule_for": "Agendado para",
       "customer": "Cliente",
       "new_schedule_of": "Novo agendamento de",
-      "go_destination": "Vá para o destino",
+      "go_destination": "Ir para o destino",
       "date_label": {
         "today": "Hoje",
         "tomorrow": "Amanhã",
@@ -901,9 +1587,59 @@ export default {
       "service_immediate": "Serviço imediato",
       "times_up": "O tempo terminou",
       "remaining_time": "Tempo restante",
-      "empty": "Ainda nao tem servicos agendados",
+      "empty": "Agenda livre",
+      "section_title": "A tua agenda",
+      "today_count_one": "{{count}} serviço hoje",
+      "today_count_other": "{{count}} serviços hoje",
+      "next_at": "Próximo às {{time}}",
+      "next_service": "Próximo serviço",
+      "day_total": "Valores a receber",
+      "pending_requests_card_one": "Tens {{count}} pedido à espera de resposta.",
+      "pending_requests_card_other": "Tens {{count}} pedidos à espera de resposta.",
       "requests_list": "Lista de pedidos",
+      "requests_error_title": "Não foi possível carregar os pedidos",
+      "requests_error_subtitle": "Verifica a ligação à internet e tenta outra vez. Pode haver pedidos à tua espera.",
+      "requests_empty_title": "Sem pedidos por responder",
+      "requests_empty_subtitle": "Os novos pedidos na tua zona aparecem aqui para aceitares ou recusares. Mantém as notificações ligadas para não os perderes.",
+      "to_accept": "para aceitar",
+      "you_receive": "Recebes",
+      "close": "Fechar",
+      "incoming_request_title": "Novo pedido recebido",
+      "incoming_request_window_immediate": "Tens 60 segundos para aceitar.",
+      "incoming_request_window_scheduled": "Tens 20 minutos para aceitar.",
       "services_count_one": "serviço agendado",
       "services_count_other": "serviços agendados",
+      "customer_notes": "Observações do cliente",
+    },
+    // Notificação fixa do serviço em curso (useOngoingServiceNotification).
+    // Convites de seleção de profissional. O copy existe sobretudo para uma
+    // coisa: deixar claro que aceitar é candidatar-se, não é ficar com o
+    // serviço. Sem isso, o técnico assume o que já conhece dos pedidos.
+    "matching": {
+      "invitation": {
+        "home_card_one": "Tens {{count}} convite à espera de resposta.",
+        "home_card_other": "Tens {{count}} convites à espera de resposta.",
+        "home_card_hint": "O cliente escolhe entre quem se disponibilizar.",
+        "list_title": "Convites",
+        "fallback_title": "Pedido de serviço",
+        "window": "para responder",
+        "you_receive": "Recebes",
+        "explainer": "O cliente vai escolher entre os profissionais que se disponibilizarem. Dizer que sim não bloqueia a tua agenda — podes responder a mais do que um pedido.",
+        "accept": "Estou disponível",
+        "decline": "Agora não",
+        "accepted_title": "Estás na lista",
+        "accepted_subtitle": "O cliente vai escolher entre quem se disponibilizou. Avisamos-te assim que houver decisão.",
+        "too_late_title": "Este pedido já fechou",
+        "too_late_subtitle": "Outro profissional respondeu primeiro. Aparecem novos pedidos ao longo do dia.",
+        "empty_title": "Sem convites neste momento",
+        "empty_subtitle": "Quando um cliente procurar um serviço teu, aparece aqui. Mantém as notificações ligadas para não perderes nenhum.",
+        "error_title": "Não foi possível carregar os convites",
+        "error_subtitle": "Verifica a ligação à internet e tenta outra vez."
+      }
+    },
+    "ongoing_service": {
+        "title_fallback": "Serviço a decorrer",
+        "ends_at": "Termina às {{time}}",
+        "started_at": "Em curso desde as {{time}}"
     }
 };

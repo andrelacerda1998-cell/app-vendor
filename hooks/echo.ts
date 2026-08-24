@@ -56,16 +56,12 @@ const useEcho = () => {
                 };
             },
         });
-        // console.log('Preparing');
         PusherClient.connection.bind('state_change', (states: any) => {
-            console.log("Channels current state is " + states.current);
         });
         PusherClient.connection.bind('connected', () => {
-            console.log('Websocket connected');
         });
 
         PusherClient.connection.bind('disconnected', () => {
-            console.log('WebSocket disconnected.');
         });
 
         PusherClient.connection.bind('error', (error: any) => {

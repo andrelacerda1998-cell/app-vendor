@@ -16,6 +16,7 @@ type CustomTouchableOpacityType =
   "gray_strong_outline" |
   "transparent" |
   "danger" |
+  "danger_outline" |
   "strongest" |
   "success";
 type CustomTouchableOpacitySize = "large" | "medium" | "small";
@@ -77,6 +78,7 @@ const CustomTouchableOpacity = forwardRef<any, CustomTouchableOpacityProps>(({
       case "support_primary_outline":
       case "support_secondary_outline":
       case "gray_strong_outline":
+      case "danger_outline":
       case "transparent":
         return "transparent";
       default:
@@ -118,6 +120,8 @@ const CustomTouchableOpacity = forwardRef<any, CustomTouchableOpacityProps>(({
         return Colors.support_secondary;
       case "gray_strong_outline":
         return Colors.gray_strong;
+      case "danger_outline":
+        return Colors.error;
       default:
         return "transparent";
     }

@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import {View, Text, Platform, Pressable, Alert} from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { Entypo } from '@expo/vector-icons';
+import { View, Platform } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import TouchOpacity from './TouchOpacity';
 import { CustomFontSize, CustomText, CustomTextBoldness } from "./CustomText";

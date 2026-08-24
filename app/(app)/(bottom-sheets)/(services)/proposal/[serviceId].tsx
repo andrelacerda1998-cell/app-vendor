@@ -1,10 +1,9 @@
-import { ThemedText } from '@/components/ThemedText';
 import { Colors } from '@/constants/Colors';
-import { AntDesign, MaterialIcons } from '@expo/vector-icons';
+import { AntDesign, MaterialIcons, Feather } from '@expo/vector-icons';
+import CustomerPhotos from "@/components/app/CustomerPhotos";
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { BackHandler, SafeAreaView, StatusBar, View } from 'react-native';
-import TouchOpacity from '@/components/TouchOpacity';
+import React, { useEffect, useState } from 'react';
+import { BackHandler, View } from 'react-native';
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useApi } from '@/contexts/ApiContext';
 import { API_ROUTES } from '@/constants/ApiRoutes';
@@ -54,7 +53,10 @@ const ServiceProposalBottomSheet = () => {
 
     if (parts.length > 0) return parts.join(", ");
     if (pendingService?.address?.name) return pendingService.address.name;
-    if (pendingService?.customer?.address) return pendingService.customer.address;
+    // `customer.address` tanto chega como string ('Cidade, Estado') como objeto.
+    if (typeof pendingService?.customer?.address === 'string' && pendingService.customer.address) {
+      return pendingService.customer.address;
+    }
     return "—";
   })();
 
@@ -83,7 +85,6 @@ const ServiceProposalBottomSheet = () => {
           closeAfterMSeconds: 3000,
           closeOnClickOutside: true,
         })
-        // console.log({data}, 'data before setting open service')
         if (data.data.service) {
           setOpenService(data.data.service);
           setPendingService(null);
@@ -96,8 +97,8 @@ const ServiceProposalBottomSheet = () => {
       .catch((error: any) => {
         openDialog({
           icon: <XIcon color={Colors.primary} />,
-          title: t('errors.title'),
-          subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('errors.occurred_an_error'),
+          title: t('errors.service_accept.title'),
+          subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('errors.service_accept.subtitle'),
           closeAfterMSeconds: 2000,
           closeOnClickOutside: true,
         })
@@ -136,8 +137,8 @@ const ServiceProposalBottomSheet = () => {
       .catch((error: any) => {
         openDialog({
           icon: <XIcon color={Colors.primary} />,
-          title: t('errors.title'),
-          subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('errors.occurred_an_error'),
+          title: t('errors.service_refuse.title'),
+          subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('errors.service_refuse.subtitle'),
           closeAfterMSeconds: 2000,
           closeOnClickOutside: true,
         })
@@ -229,6 +230,29 @@ const ServiceProposalBottomSheet = () => {
             value={renderMoney(pendingService?.amount_for_vendor || null) || t('services.service.no_price')}
           />
         </View>
+
+        {/* Descrição e fotos do cliente: é aqui, ANTES de aceitar, que valem —
+            dão ao técnico o "o que é isto?" para decidir se vai e o que leva na
+            carrinha. Antes só apareciam depois de aceitar (ecrã de estado). Só
+            se mostram quando existem mesmo. */}
+        {!!pendingService?.customer_notes && (
+          <View
+            className="mt-4 rounded-2xl p-3 border flex-row"
+            style={{ backgroundColor: Colors.card_high, borderColor: Colors.line }}
+          >
+            <Feather name="message-square" size={16} color={Colors.brand} style={{ marginTop: 2 }} />
+            <View className="flex-1 ml-2">
+              <CustomText color="muted" size="extraSmall" boldness="bold">
+                {t('schedules.customer_notes', { defaultValue: 'Observações do cliente' }).toUpperCase()}
+              </CustomText>
+              <CustomText color="secondary" size="small" numberOfLines={5} classes="mt-1">
+                {pendingService.customer_notes}
+              </CustomText>
+            </View>
+          </View>
+        )}
+
+        <CustomerPhotos photos={pendingService?.customer_photos} />
       </View>
       <View className="flex-row justify-between p-5">
         <View className="w-[47%]">

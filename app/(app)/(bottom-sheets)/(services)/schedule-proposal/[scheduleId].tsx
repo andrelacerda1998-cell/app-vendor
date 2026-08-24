@@ -10,6 +10,8 @@ import { useSchedule } from "@/contexts/ScheduleContext";
 import { useService } from "@/contexts/ServiceContext";
 import DynamicSizingSheet from "@/components/sheets/DynamicSizingSheet";
 import { CustomText } from "@/components/CustomText";
+import { Feather } from "@expo/vector-icons";
+import CustomerPhotos from "@/components/app/CustomerPhotos";
 import CustomTouchableOpacity from "@/components/CustomTouchableOpacity";
 import Timer from "@/components/Timer";
 import CheckMark from "@/assets/icons/check-mark";
@@ -44,7 +46,6 @@ const ScheduleProposalBottomSheet = () => {
   const [didFetchPendingServices, setDidFetchPendingServices] = useState(false);
 
   useEffect(() => {
-    console.log('[ScheduleProposal] useEffect called with scheduleId:', scheduleId);
     if (scheduleId) {
       fetchPendingScheduledService(String(scheduleId));
     }
@@ -77,10 +78,6 @@ const ScheduleProposalBottomSheet = () => {
     || t("services.service.no_type");
 
   const resolvedServiceId = useMemo(() => {
-    console.log('[ScheduleProposal] Resolving serviceId:', {
-      pendingScheduleServiceId: pendingSchedule?.service_id,
-      socketServiceId,
-    });
     // Check for valid service_id (not undefined, not null, and > 0)
     if (pendingSchedule?.service_id && pendingSchedule.service_id > 0) {
       return pendingSchedule.service_id;
@@ -101,10 +98,8 @@ const ScheduleProposalBottomSheet = () => {
 
   const removePendingSchedule = () => {
     if (!scheduleId) return;
-    console.log('[ScheduleProposal] Removing schedule:', scheduleId);
     setPendingScheduleServices((prev) => {
       const filtered = (prev ?? []).filter((schedule) => String(schedule.id) !== String(scheduleId));
-      console.log('[ScheduleProposal] Remaining schedules:', filtered.map(s => s.id));
       return filtered;
     });
   };
@@ -132,8 +127,8 @@ const ScheduleProposalBottomSheet = () => {
       .catch((error: any) => {
         openDialog({
           icon: <XIcon color={Colors.primary} />,
-          title: t("errors.title"),
-          subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t("errors.occurred_an_error"),
+          title: t("errors.service_accept.title"),
+          subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t("errors.service_accept.subtitle"),
           closeAfterMSeconds: 2000,
           closeOnClickOutside: true,
         });
@@ -145,11 +140,8 @@ const ScheduleProposalBottomSheet = () => {
 
   const onRefuseSchedule = () => {
     const serviceRef = resolvedServiceId;
-    console.log('[ScheduleProposal] onRefuseSchedule called with serviceRef:', serviceRef);
-    console.log('[ScheduleProposal] pendingSchedule:', pendingSchedule);
 
     if (!serviceRef) {
-      console.log('[ScheduleProposal] No serviceRef, cannot refuse via API');
       // Still remove from pending list and close
       removePendingSchedule();
       onClose();
@@ -172,8 +164,8 @@ const ScheduleProposalBottomSheet = () => {
       .catch((error: any) => {
         openDialog({
           icon: <XIcon color={Colors.primary} />,
-          title: t("errors.title"),
-          subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t("errors.occurred_an_error"),
+          title: t("errors.service_refuse.title"),
+          subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t("errors.service_refuse.subtitle"),
           closeAfterMSeconds: 2000,
           closeOnClickOutside: true,
         });
@@ -224,7 +216,7 @@ const ScheduleProposalBottomSheet = () => {
           <View className="items-center justify-center flex-1 py-8">
             <ActivityIndicator size="large" color={Colors.support_primary} />
             <CustomText color="gray_medium" className="text-center mt-4">
-              {t("common.loading", { defaultValue: "A carregar..." })}
+              {t("general.loading")}
             </CustomText>
           </View>
         ) : (
@@ -261,6 +253,27 @@ const ScheduleProposalBottomSheet = () => {
                 value={pendingSchedule?.customer_address || "—"}
               />
             </View>
+
+            {/* Descrição e fotos do cliente, ANTES de aceitar — o mesmo que no
+                pedido imediato. Só aparecem quando existem mesmo. */}
+            {!!pendingSchedule?.customer_notes && (
+              <View
+                className="mt-4 rounded-2xl p-3 border flex-row"
+                style={{ backgroundColor: Colors.card_high, borderColor: Colors.line }}
+              >
+                <Feather name="message-square" size={16} color={Colors.brand} style={{ marginTop: 2 }} />
+                <View className="flex-1 ml-2">
+                  <CustomText color="muted" size="extraSmall" boldness="bold">
+                    {t('schedules.customer_notes', { defaultValue: 'Observações do cliente' }).toUpperCase()}
+                  </CustomText>
+                  <CustomText color="secondary" size="small" numberOfLines={5} classes="mt-1">
+                    {pendingSchedule.customer_notes}
+                  </CustomText>
+                </View>
+              </View>
+            )}
+
+            <CustomerPhotos photos={pendingSchedule?.customer_photos} />
           </>
         )}
       </View>

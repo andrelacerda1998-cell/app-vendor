@@ -1,7 +1,6 @@
 import { Text, View } from 'react-native';
 import { Redirect, SplashScreen, Stack } from 'expo-router';
 import { useSession } from '@/contexts/SessionContext';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function AppLayout() {
     const { session, isLoading } = useSession();
@@ -33,12 +32,6 @@ export default function AppLayout() {
             />
             <Stack.Screen
                 name="signup/index"
-                options={{
-                    animation: "fade_from_bottom"
-                }}
-            />
-            <Stack.Screen
-                name="signin/index"
                 options={{
                     animation: "fade_from_bottom"
                 }}

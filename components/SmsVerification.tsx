@@ -1,21 +1,14 @@
-import { ThemedText } from '@/components/ThemedText'
 import { Colors } from '@/constants/Colors'
-import { Entypo, FontAwesome6, MaterialCommunityIcons } from '@expo/vector-icons'
+import { Feather, FontAwesome6 } from '@expo/vector-icons';
 import { router } from 'expo-router'
-import { StatusBar } from 'expo-status-bar'
 import { useEffect, useState } from 'react'
-import { SafeAreaView } from "react-native-safe-area-context";
-import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native'
-import TouchOpacity from '@/components/TouchOpacity'
-import BackHeader from '@/components/app/BackHeader'
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { useApi } from '@/contexts/ApiContext'
 import { API_ROUTES } from '@/constants/ApiRoutes'
 import { useSession } from '@/contexts/SessionContext'
 import { useTranslation } from "react-i18next"
 import CustomTouchableOpacity from "@/components/CustomTouchableOpacity"
 import { CustomText } from "@/components/CustomText"
-import { Controller, useForm } from "react-hook-form"
-import CustomTextInput from "@/components/CustomTextInput"
 import { OtpInput } from "react-native-otp-entry";
 import { useDialog } from "@/contexts/DialogContext"
 import XIcon from "@/assets/icons/x"
@@ -30,8 +23,11 @@ enum Status {
 
 const SmsVerification = ({
   onNext,
+  onSkip,
 }: {
   onNext: (data: VendorDataInterface) => void;
+  /** Ausente fora do onboarding (ex.: a partir do perfil), onde nao ha passo a saltar. */
+  onSkip?: () => void;
 }) => {
   const { api } = useApi();
   const { t } = useTranslation();
@@ -53,13 +49,6 @@ const SmsVerification = ({
       return () => clearInterval(intervalId);
     }
   }, [timer, loading, status]);
-
-  const { control, handleSubmit, formState: { errors, isLoading, isValid },getValues, setError, reset } = useForm({
-    mode: 'onChange',
-    defaultValues: {
-      phone_number: vendorData?.user?.phone_number || "",
-    },
-  });
 
   const sendCode = () => {
     setLoading(true);
@@ -140,85 +129,56 @@ const SmsVerification = ({
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   };
 
+  /**
+   * Fazia `router.replace` para o separador Perfil antes de abrir a edicao:
+   * isso deitava fora a pilha do onboarding, e depois de mudar o numero o
+   * tecnico ficava no Perfil sem forma de voltar ao passo. Um push simples
+   * empilha por cima e o voltar traz de volta a este ecra.
+   */
   const goToEditProfile = () => {
-    router.replace("/(app)/(tabs)/profile");
     router.push("/(app)/(modals)/(profile)/edit-profile");
   }
 
   return (
-    <ScrollView contentContainerStyle={{
-        flexGrow: 1,
-        width: "100%",
-        justifyContent: "center",
-        backgroundColor: Colors.primary,
-        borderTopStartRadius: 30,
-        borderTopEndRadius: 30,
-      }}>
+    // Era um bottom sheet: tinha fundo proprio (Colors.primary, mais claro que
+    // o do ecra) e cantos de 30, o que desenhava um cartao por cima do titulo
+    // no meio do onboarding. Agora e so o conteudo do passo.
+    <ScrollView
+      contentContainerStyle={{ flexGrow: 1 }}
+      showsVerticalScrollIndicator={false}
+    >
         {status === Status.PENDING && (
           <View className="flex-1 justify-between">
             <View className="flex-1">
               <View>
-                <CustomText color="secondary" boldness="semiBold" size="large" numberOfLines={3}>
+                {/* `title` como nos outros passos — este vinha um degrau abaixo. */}
+                <CustomText color="secondary" boldness="bold" size="title" numberOfLines={2}>
                   {t('session.sms.pending.title')}
                 </CustomText>
-                <CustomText color="gray_strong" boldness="semiBold" numberOfLines={3}>
+                <CustomText color="muted" classes="mt-2" numberOfLines={3}>
                   {t('session.sms.pending.subtitle')}
-                </CustomText>   
-              </View>
-              <View className="mt-8">
-                <CustomText color="secondary" boldness="semiBold" numberOfLines={1}>
-                    {t('general.phone_number')}
                 </CustomText>
-                <Controller
-                    control={control}
-                    name="phone_number"
-                    rules={{
-                      required: t('general.phone_number_required'),
-                      pattern: {
-                        value: /^\+351\d{9}$/,
-                        message: t('general.phone_number_invalid_portuguese'),
-                      },
-                    }}
-                    render={({field}) => (
-                      <View className="mt-2 justify-center">
-                        <CustomTextInput
-                          {...field}
-                          size="large"
-                          onChangeText={(value: string) => {
-                              const newValue = value.replace(/^\+351-?|\D/g, '').trim();
-                              field.onChange(newValue ? `+351${newValue}` : '');
-                          }}
-                          placeholder={t('general.phone_number_placeholder')}
-                          keyboardType="phone-pad"
-                          textContentType="telephoneNumber"
-                          error={errors.phone_number && errors.phone_number.message}
-                          displayErrorIcon={true}
-                          success={!errors.phone_number && field.value !== "+351"}
-                          displaySuccessIcon={true}
-                          disabled
-                        />
-                      </View>
-                    )}
-                />
-                {errors.phone_number && errors.phone_number.message && (
-                    <CustomText
-                        size="small"
-                        color="error"
-                        classes="mt-1"
-                    >
-                        {errors.phone_number.message as string}
-                    </CustomText>
-                )}
               </View>
-              <View className="mt-4">
+              {/* O numero vem do registo e nao se edita aqui: mostra-se, nao se
+                  formulariza. Antes era rotulo + caixa desativada + link, tres
+                  elementos para uma linha de texto -- e a caixa exibia um visto
+                  VERDE num numero que ainda nao foi verificado, que e
+                  exatamente o que este passo vai fazer a seguir. */}
+              <View
+                className="flex-row items-center rounded-2xl border mt-7 px-4"
+                style={{ borderColor: Colors.line, backgroundColor: Colors.card, minHeight: 60 }}
+              >
+                <Feather name="smartphone" size={18} color={Colors.muted} />
+                <CustomText color="secondary" size="medium" boldness="semiBold" classes="flex-1 ml-3" numberOfLines={1}>
+                  {vendorData?.user?.phone_number}
+                </CustomText>
                 <CustomTouchableOpacity
                   type="transparent"
-                  size="large"
-                  text={t('session.sms.pending.edit_phone_number')}
-                  textSize="medium"
-                  textColor="secondary"
-                  textBoldness="regular"
-                  className="p-0"
+                  size="small"
+                  text={t('session.sms.pending.edit_phone_number_short')}
+                  textSize="small"
+                  textColor="support_primary"
+                  textBoldness="bold"
                   onPress={goToEditProfile}
                   disabled={loading}
                 />
@@ -226,15 +186,30 @@ const SmsVerification = ({
             </View>
             <View className="mt-4">
               <CustomTouchableOpacity
-                type="secondary"
+                type="support_primary"
                 size="large"
                 text={t('session.sms.pending.send_sms')}
                 textSize="medium"
-                textColor="primary"
+                textColor="on_brand"
                 textBoldness="semiBold"
                 onPress={sendCode}
                 disabled={loading}
               />
+              {/* O SMS pode nao chegar (rede fraca, numero de outro pais a ser
+                  corrigido). Sem saida, o registo trancava aqui. */}
+              {!!onSkip && (
+                <CustomTouchableOpacity
+                  type="transparent"
+                  size="large"
+                  text={t('complete_profile.later')}
+                  textSize="medium"
+                  textColor="muted"
+                  textBoldness="regular"
+                  onPress={onSkip}
+                  disabled={loading}
+                  classes="self-center mt-1"
+                />
+              )}
             </View>
           </View>
         )}
@@ -242,15 +217,15 @@ const SmsVerification = ({
           <View className="flex-1 justify-between">
             <View className="flex-1">
               <View>
-                <CustomText color="secondary" boldness="semiBold" size="large" numberOfLines={3}>
+                <CustomText color="secondary" boldness="bold" size="title" numberOfLines={2}>
                   {t('session.sms.sent.title')}
                 </CustomText>
-                <CustomText color="gray_strong" boldness="semiBold" numberOfLines={3}>
+                <CustomText color="muted" classes="mt-2" numberOfLines={3}>
                   {t('session.sms.sent.subtitle')}
                 </CustomText>
               </View>
-              <View className="w-full my-8">
-                <CustomText color="gray_strong" boldness="semiBold" numberOfLines={1}>
+              <View className="w-full mt-7">
+                <CustomText color="secondary" boldness="semiBold" numberOfLines={1}>
                   {t('session.sms.sent.code')}
                 </CustomText>
 
@@ -273,7 +248,7 @@ const SmsVerification = ({
                             // onBlur={() => console.log("Blurred")}
                             onTextChange={text => {
                                 setCode(text)
-                                if (errors) setCodeError(null);
+                                setCodeError(null);
                             }}
                             // onFilled={(text) => console.log(`OTP is ${text}`)}
                             textInputProps={{
@@ -302,34 +277,51 @@ const SmsVerification = ({
                   </CustomText>
                 )}
 
-                <View className="flex-row items-center justify-between w-full mt-8">
+                {/* Enquanto o contador corre, reenviar esta desativado — a cor
+                    da marca so aparece quando o toque faz mesmo alguma coisa. */}
+                <View className="flex-row items-center justify-between w-full mt-6">
                   <CustomTouchableOpacity
                     type="transparent"
-                    size="large"
+                    size="small"
                     text={t('session.sms.sent.resend_code')}
-                    textSize="medium"
-                    textColor="secondary"
-                    textBoldness="regular"
-                    className="p-0"
+                    textSize="small"
+                    textColor={timer > 0 ? 'muted' : 'support_primary'}
+                    textBoldness="bold"
                     onPress={resendCode}
                     disabled={loading || timer > 0}
+                    classes="self-start"
                   />
-                  <CustomText color="gray_strong" boldness="semiBold" numberOfLines={3}>
+                  <CustomText color="muted" size="small" numberOfLines={1}>
                     {formatTime(timer)}
                   </CustomText>
                 </View>
               </View>
             </View>
-            <CustomTouchableOpacity
-              type="secondary"
-              size="large"
-              text={t('session.sms.sent.verify')}
-              textSize="medium"
-              textColor="primary"
-              textBoldness="semiBold"
-              onPress={verify}
-              disabled={loading || codeError !== null || code.length < 6}
-            />
+            <View>
+              <CustomTouchableOpacity
+                type="support_primary"
+                size="large"
+                text={t('session.sms.sent.verify')}
+                textSize="medium"
+                textColor="on_brand"
+                textBoldness="semiBold"
+                onPress={verify}
+                disabled={loading || codeError !== null || code.length < 6}
+              />
+              {!!onSkip && (
+                <CustomTouchableOpacity
+                  type="transparent"
+                  size="large"
+                  text={t('complete_profile.later')}
+                  textSize="medium"
+                  textColor="muted"
+                  textBoldness="regular"
+                  onPress={onSkip}
+                  disabled={loading}
+                  classes="self-center mt-1"
+                />
+              )}
+            </View>
           </View>
         )}
         {status === Status.VERIFIED && (
@@ -339,17 +331,17 @@ const SmsVerification = ({
                 <FontAwesome6 name="check" size={28} color={Colors.primary} />
               </View>
               <View>
-                <ThemedText type="title" color={Colors.secondary} className="text-center">
+                <CustomText size="title" boldness="bold" color="secondary" classes="text-center">
                   {t('session.sms.verified.title')}
-                </ThemedText>
+                </CustomText>
               </View>
             </View>
             <CustomTouchableOpacity
-              type="secondary"
+              type="support_primary"
               size="large"
               text={t('session.sms.verified.close')}
               textSize="medium"
-              textColor="primary"
+              textColor="on_brand"
               textBoldness="semiBold"
               onPress={onNext}
               disabled={loading}
@@ -363,17 +355,17 @@ const SmsVerification = ({
                 <XIcon color={Colors.primary} />
               </View>
               <View>
-                <ThemedText type="title" color={Colors.secondary} className="text-center">
+                <CustomText size="title" boldness="bold" color="secondary" classes="text-center">
                   {t('session.sms.error.title')}
-                </ThemedText>
+                </CustomText>
               </View>
             </View>
             <CustomTouchableOpacity
-              type="secondary"
+              type="support_primary"
               size="large"
               text={t('session.sms.error.close')}
               textSize="medium"
-              textColor="primary"
+              textColor="on_brand"
               textBoldness="semiBold"
               onPress={() => {
                 if (router.canGoBack()) {

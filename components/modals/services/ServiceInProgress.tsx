@@ -1,10 +1,9 @@
-import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet"
-import React, {forwardRef, useEffect, useRef, useState} from 'react'
-import { Image, Platform, Text, View } from "react-native"
+import BottomSheet from "@gorhom/bottom-sheet";
+import React, { useEffect, useRef, useState } from 'react';
+import { Image, View } from "react-native";
 import { CustomText } from "@/components/CustomText"
 import { Colors } from "@/constants/Colors"
 import { Entypo } from "@expo/vector-icons"
-import ArrowIcon from "@/assets/icons/arrow"
 import CustomTouchableOpacity from "@/components/CustomTouchableOpacity"
 import ChatIcon from "@/assets/icons/chat"
 import { router } from "expo-router"
@@ -62,8 +61,8 @@ const ServiceInProgress = ({ isHome, onContentHeightChange }: { isHome?: boolean
       .catch(() => {
         openDialog({
           icon: <XIcon color={Colors.primary}/>,
-          title: t('errors.title'),
-          subtitle: t('errors.occurred_an_error'),
+          title: t('errors.chat_arrived.title'),
+          subtitle: t('errors.chat_arrived.subtitle'),
           closeAfterMSeconds: 2000,
           closeOnClickOutside: true,
         })
@@ -95,7 +94,7 @@ const ServiceInProgress = ({ isHome, onContentHeightChange }: { isHome?: boolean
       // ref={bottomSheetRef}
       // snapPoints={['30%', contentHeight ? contentHeight + (isHome ? 130 : 30) : 30]}
       style={{
-        backgroundColor: Colors.primary,
+        backgroundColor: Colors.card,
         shadowColor: "#000",
         shadowOffset: {
           width: 0,
@@ -108,10 +107,10 @@ const ServiceInProgress = ({ isHome, onContentHeightChange }: { isHome?: boolean
         borderTopRightRadius: 20,
       }}
       backgroundStyle={{
-        backgroundColor: Colors.primary,
+        backgroundColor: Colors.card,
       }}
       handleIndicatorStyle={{
-        backgroundColor: Colors.gray_strong,
+        backgroundColor: Colors.line,
         width: 60,
       }}
       onClose={() => {
@@ -150,9 +149,11 @@ const ServiceInProgress = ({ isHome, onContentHeightChange }: { isHome?: boolean
               </View>
             ) : null}
           </View>
-          <View className="bg-[#7259FF] px-5 h-6 justify-center rounded-full">
-            <CustomText size="extraSmall" color="secondary" boldness="semiBold" numberOfLines={1}>
-              {`${distance.toFixed(2)}Km` || t('services.service.open.no_distance')}
+          <View className="px-4 h-6 justify-center rounded-full bg-brand_soft">
+            <CustomText size="extraSmall" color="brand" boldness="bold" numberOfLines={1}>
+              {Number.isFinite(distance) && distance > 0
+                ? `${distance.toFixed(1)} km`
+                : t('services.service.open.no_distance')}
             </CustomText>
           </View>
         </View>
@@ -195,21 +196,21 @@ const ServiceInProgress = ({ isHome, onContentHeightChange }: { isHome?: boolean
             ) && (
               <CustomTouchableOpacity
             onPress={arrivedAtDestination}
-            type="secondary"
+            type="support_primary"
             size="large"
             text={t('chat.actions.arrived')}
-            textColor="primary"
-            textBoldness="semiBold"
+            textColor="on_brand"
+            textBoldness="bold"
             classes="w-[48%]"
             disabled={openService?.status === ServiceStatus.ARRIVED}
           />
             )}
             <CustomTouchableOpacity
               onPress={goToServiceStatus}
-              type="secondary"
+              type="secondary_outline"
               size="large"
               text={t('services.service.open.status')}
-              textColor="primary"
+              textColor="secondary"
               textBoldness="semiBold"
               classes={`${(
                 openService?.status === ServiceStatus.ACCEPTED ||

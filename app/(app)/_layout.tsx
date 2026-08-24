@@ -1,4 +1,4 @@
-import {useEffect, useLayoutEffect, useRef, useState} from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {Platform, Text} from 'react-native';
 import {Redirect, router, SplashScreen, Stack} from 'expo-router';
 import {useSession} from '@/contexts/SessionContext';
@@ -8,16 +8,13 @@ import {jwtDecode} from 'jwt-decode';
 import {useDialog} from "@/contexts/DialogContext";
 import {useService} from "@/contexts/ServiceContext";
 import {useApi} from "@/contexts/ApiContext";
-import {API_ROUTES} from "@/constants/ApiRoutes";
 import CheckMark from "@/assets/icons/check-mark";
 import {ServiceInterface} from "@/types/services";
 import {useTranslation} from "react-i18next";
-import XIcon from "@/assets/icons/x";
-import packageInfo from '@/package.json';
 import {useAppStateStatus} from "@/contexts/AppStateStatusContext";
 import Echo from "laravel-echo";
 import {useSchedule} from "@/contexts/ScheduleContext";
-import {ScheduledServiceInterface} from "@/types/schedule";
+import useOngoingServiceNotification from "@/hooks/useOngoingServiceNotification";
 
 export default function AppLayout() {
     const { t } = useTranslation();
@@ -29,9 +26,15 @@ export default function AppLayout() {
     const { appStateStatus } = useAppStateStatus();
     const { setPendingScheduleServices, fetchPendingScheduledService, fetchScheduledServices, getScheduledServices, getPendingScheduleService } = useSchedule();
 
+    // Notificação fixa do serviço em curso — aqui e não na Home para
+    // continuar visível enquanto o técnico navega pela app.
+    useOngoingServiceNotification();
+
     // Prevents re-running the full refresh cycle when vendorData updates mid-cycle
     // (e.g. fetchAndSaveUserData() causes vendorData to change, which would re-trigger this effect)
     const didFetchRef = useRef(false);
+    // Incrementado quando o arranque falha, para repetir o carregamento.
+    const [bootRetry, setBootRetry] = useState(0);
 
     useEffect(() => {
         if (appStateStatus !== "active") {
@@ -42,30 +45,50 @@ export default function AppLayout() {
         if (didFetchRef.current) return;
         didFetchRef.current = true;
 
-        getOpenService();
-        getPendingService();
-        getPendingServices();
-        getHistoryServices(0);
-        getScheduledServices(vendorData);
-        getPendingScheduleService(vendorData).then((schedules) => {
-            console.log('[AppLayout] Pending schedules fetched:', schedules?.length);
+        // Se o arranque falhar (rede fraca, servidor lento), libertamos o
+        // guarda para uma nova tentativa: senão o técnico fica sem o serviço em
+        // curso nem os pedidos até fechar e reabrir a app.
+        let retryScheduled = false;
+        const retryOnFailure = (e: unknown) => {
+            console.error('[AppLayout] falha ao carregar dados iniciais:', e);
+            didFetchRef.current = false;
+            if (retryScheduled) return;
+            retryScheduled = true;
+            setTimeout(() => setBootRetry((n) => n + 1), 4000);
+        };
+
+        // Carregamento em série e por prioridade. Antes disparavam todos ao mesmo
+        // tempo: numa rede fraca competiam entre si e os mais importantes (serviço
+        // em curso, pedidos por aceitar) eram os que mais vezes rebentavam o tempo
+        // limite — o técnico abria a app e não via o trabalho que tinha em mãos.
+        (async () => {
+            // 1) Crítico: o que o técnico precisa de ver imediatamente.
+            await getOpenService();
+            await getPendingService();
+            await getPendingServices();
+
+            // 2) Secundário: falhar aqui não deixa a app inutilizável.
+            await Promise.resolve(getScheduledServices(vendorData)).catch((e) =>
+                console.error('[AppLayout] getScheduledServices falhou:', e));
+            await Promise.resolve(getHistoryServices(0)).catch((e) =>
+                console.error('[AppLayout] getHistoryServices falhou:', e));
+
+            const schedules = await getPendingScheduleService(vendorData).catch((e) => {
+                console.error('[AppLayout] getPendingScheduleService falhou:', e);
+                return null;
+            });
             // Navigate to first pending schedule if exists and no open/pending service
             if (schedules && schedules.length > 0 && !openService && !pendingService) {
                 const firstSchedule = schedules[0];
-                const scheduleId = firstSchedule?.id;
-                const serviceId = firstSchedule?.service_id;
-                console.log('[AppLayout] Navigating to first pending schedule:', scheduleId, serviceId);
                 router.navigate({
                     pathname: '/(app)/(bottom-sheets)/(services)/schedule-proposal/[scheduleId]',
                     params: {
-                        scheduleId: String(scheduleId),
-                        serviceId: serviceId ? String(serviceId) : undefined,
+                        scheduleId: String(firstSchedule?.id),
+                        serviceId: firstSchedule?.service_id ? String(firstSchedule.service_id) : undefined,
                     },
                 });
             }
-        }).catch((e) => {
-            console.error('[AppLayout] getPendingScheduleService failed:', e);
-        });
+        })().catch(retryOnFailure);
         if (
             vendorData.user.phone_number_verified_at === null ||
             vendorData.user.email_verified_at === null ||
@@ -73,13 +96,12 @@ export default function AppLayout() {
         ) {
             fetchAndSaveUserData();
         }
-    }, [appStateStatus, session, vendorData])
+    }, [appStateStatus, session, vendorData, bootRetry])
 
     useEffect(() => {
         if (appStateStatus === "active") {
             if (session && (vendorStatus === 'Online' || openService || pendingService)) {
                 const token = jwtDecode(session as string);
-                console.log('Subscribing to channel service.vendor.' + token.sub);
                 subscribeToSearchServicesChannel(token.sub);
                 return () => {
                     if (echo) {
@@ -131,23 +153,20 @@ export default function AppLayout() {
 
             if (channel) {
                 channel.subscribed(() => {
-                    console.log('Successfully subscribed to channel:', channel.name);
                     channel.error(function (error: any) {
-                        console.log('Channel subscription error:', error);
-                        // console.log(error);
+                        console.error('[Socket] erro na subscrição do canal:', error);
                     });
                     channel.listen('.CreateServiceEvent', (data: { serviceDetails: ServiceInterface }) => {
-                        console.log('[Socket] .CreateServiceEvent received:', data);
-                        console.log('[Socket] Calling getPendingServices...');
-
                         setPendingService(data?.serviceDetails);
                         getPendingServices();
-                        console.log('[Socket] getPendingServices called');
 
-                        router.navigate(`/(app)/(bottom-sheets)/(services)/proposal/${data?.serviceDetails?.id}`);
+                        // Ecrã cheio de pedido a chegar: contagem certa (60 s para imediatos,
+                        // 20 min para agendados), vibração e deslizar-para-aceitar. Substitui o
+                        // antigo `proposal`, que tinha dois botões com o mesmo peso e um
+                        // temporizador fixo de 60 s mesmo para serviços agendados.
+                        router.navigate(`/(app)/(modals)/incoming-request/${data?.serviceDetails?.id}`);
                     });
                     channel.listen('.ServiceCanceledEvent', (data: any) => {
-                        // console.log(data, 'data on ServiceCanceledEvent on layout of vendor');
 
                         setOpenService(null);
                         setPendingService(null);
@@ -167,7 +186,6 @@ export default function AppLayout() {
                         })
                     });
                     channel.listen('.ServiceTimeoutEvent', (data: any) => {
-                        console.log(data, 'data on ServiceTimeoutEvent on layout of vendor');
 
                         setPendingScheduleServices((prev) => (prev ?? []).filter(s => s.service_id !== data?.service?.id));
 
@@ -189,7 +207,6 @@ export default function AppLayout() {
                         })
                     })
                     channel.listen('.ServiceClosedEvent', (data: any) => {
-                        // console.log(data, 'data on ServiceClosedEvent on layout of vendor');
 
                         const updatedWallet = data?.service?.vendor?.wallet;
 
@@ -224,7 +241,6 @@ export default function AppLayout() {
                         setOpenService(data?.service);
                     })
                     channel.listen('.CreateScheduleEvent', (data: any) => {
-                        console.log('created schedule event', data);
 
                         const scheduleDetails = data?.scheduleDetails || {};
                         const scheduleId = scheduleDetails.schedule_id ?? scheduleDetails.id;
@@ -232,7 +248,6 @@ export default function AppLayout() {
                             || scheduleDetails?.service?.id
                             || scheduleDetails?.service?.service_id;
 
-                        console.log('Fetching pending scheduled service with scheduleId:', scheduleId);
 
                         fetchPendingScheduledService(String(scheduleId));
                         getPendingServices(); // Update the pending services list
@@ -245,14 +260,12 @@ export default function AppLayout() {
                         });
                     })
                     channel.listen('.ServiceScheduledEvent', (data: any) => {
-                        console.log('service scheduled event', data);
 
                         const scheduleDetails = data?.scheduleDetails || {};
                         const scheduleId = scheduleDetails.schedule_id ?? scheduleDetails.id;
                         fetchScheduledServices(String(scheduleId));
                     })
                     channel.listen('.AcceptScheduleEvent', (data: any) => {
-                        console.log('[Socket] .AcceptScheduleEvent received:', data);
 
                         if (vendorData) {
                             getScheduledServices(vendorData);
@@ -289,13 +302,6 @@ export default function AppLayout() {
             }}
         >
             <Stack.Screen name="(tabs)"/>
-            <Stack.Screen
-                name="(urgent-service)"
-                options={{
-                    presentation: 'modal',
-                    animation: 'slide_from_bottom',
-                }}
-            />
             <Stack.Screen
                 name="(modals)"
                 options={{

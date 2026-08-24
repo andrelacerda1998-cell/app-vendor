@@ -1,60 +1,108 @@
 import React from 'react'
-import {TouchableOpacity, View} from "react-native"
+import { TouchableOpacity, View } from "react-native"
+import { LinearGradient } from 'expo-linear-gradient'
 import { CustomText } from "./CustomText"
-import AttentionIcon from "@/assets/icons/attention"
+import { Feather } from "@expo/vector-icons"
 import { Colors } from "@/constants/Colors"
-import {useSession} from "@/contexts/SessionContext";
-import {useRouter} from "expo-router";
+import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next"
+import { cardShadow } from "@/components/ui"
+import { useSession } from "@/contexts/SessionContext"
 
+/**
+ * Aviso de perfil incompleto — bloqueia a receção de pedidos, por isso tem de
+ * saltar à vista.
+ *
+ * Em ambar, nao em vermelho. Vermelho diz "esta partido" ou "vais perder algo";
+ * isto e uma tarefa por acabar. E como so desaparece quando o perfil estiver
+ * completo, o tecnico abria a app durante dias com um alarme a gritar por uma
+ * coisa que depende dele fazer com calma. Continua a ser o unico elemento
+ * colorido acima da dobra, por isso nao se perde.
+ */
 const CompleteYourProfile = () => {
-  const { vendorData } = useSession();
   const { t } = useTranslation();
   const router = useRouter();
+  const { vendorData } = useSession();
+
+  /**
+   * O que falta em concreto, pela mesma ordem do ecrã de Estado da conta.
+   * Dizer "completa o teu perfil" sem dizer o quê obrigava o técnico a entrar
+   * e procurar. A morada de faturação é o caso mais silencioso: sem ela, a
+   * criação da conta de faturação rebenta no InvoiceXpress e ele nunca fica
+   * online, sem nada na app que o explique.
+   */
+  const missing: string[] = [];
+  if ((vendorData?.missing_documents?.length ?? 0) > 0) missing.push(t('complete_profile.missing.documents'));
+  if (!vendorData?.user?.phone_number_verified_at) missing.push(t('complete_profile.missing.phone'));
+  if (!vendorData?.user?.email_verified_at) missing.push(t('complete_profile.missing.email'));
+  if (!vendorData?.at_user) missing.push(t('complete_profile.missing.at_user'));
+  if (!vendorData?.company_address) missing.push(t('complete_profile.missing.company_address'));
+  if (!vendorData?.iban) missing.push(t('complete_profile.missing.iban'));
+
+  /**
+   * Contagem em vez da lista toda. Enumerar tudo separado por " · " nao cabia
+   * no cartao: cortava a meio ("morada de faturacao…") e o tecnico nem chegava
+   * a ler o que faltava. O detalhe esta a um toque, no ecra seguinte.
+   */
+  const subtitle = missing.length > 0
+    ? t(missing.length === 1 ? 'complete_profile.missing_one' : 'complete_profile.missing_many', {
+        count: missing.length,
+      })
+    : t('complete_profile.subtitle');
+
+  /**
+   * Procura recente na zona do técnico (últimos 7 dias), vinda do backend.
+   * "Faltam 3 passos" é uma tarefa; "houve 12 pedidos na tua zona" é o que ele
+   * está a perder por não a fazer — a mesma alavanca já usada na
+   * auto-aceitação. Só aparece com número real: sem zonas escolhidas ou sem
+   * procura, o backend manda 0/null e não se inventa nada.
+   */
+  const zoneRequests = vendorData?.zone_recent_requests ?? 0;
 
   return (
     <TouchableOpacity
-      onPress={()=> {
-        // if (
-        //   vendorData?.user.gender_id === null ||
-        //   !vendorData?.user.date_birthday ||
-        //   !vendorData?.user.nif
-        // ) {
-          router.push('/(app)/(complete-profile)/CompleteProfile')
-        // } else if (
-        //   !vendorData?.user.phone_number
-        // ) {
-        //   router.push('/(app)/(tabs)/profile')
-        //   router.push('/(app)/(modals)/(profile)/edit-profile')
-        // } else if (
-        //   vendorData?.user?.phone_number_verified_at === null
-        // ) {
-        //   router.push('/(app)/(modals)/sms')
-        // } else if (
-        //   vendorData?.user?.email_verified_at === null
-        // ) {
-        //   router.push('/(app)/(modals)/confirm-email')
-        // } else if (
-        //   !vendorData?.at_user ||
-        //   !vendorData?.company_address ||
-        //   !vendorData?.iban
-        // ) {
-        //   router.push('/(app)/(tabs)/profile')
-        //   router.push('/(app)/(modals)/(profile)/edit-payment')
-        // }
-      }}
-      className="flex-row justify-between items-center bg-[#6A40DA] p-3 rounded-xl"
+      activeOpacity={0.9}
+      onPress={() => router.push('/(app)/(complete-profile)/CompleteProfile')}
     >
-      <View className="w-[10%]">
-        <View className="w-7 h-7">
-          <AttentionIcon color={Colors.secondary} />
+      <LinearGradient
+        colors={['rgba(250,187,91,0.26)', 'rgba(250,187,91,0.08)']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={[
+          { borderRadius: 16, borderWidth: 1.5, borderColor: 'rgba(250,187,91,0.50)' },
+          cardShadow,
+        ]}
+      >
+        <View className="flex-row items-center p-4">
+          <View
+            className="w-11 h-11 rounded-full items-center justify-center mr-3"
+            style={{ backgroundColor: Colors.brand }}
+          >
+            <Feather name="alert-triangle" size={22} color={Colors.on_brand} />
+          </View>
+          <View className="flex-1">
+            <CustomText size="medium" color="secondary" boldness="bolder" numberOfLines={2}>
+              {t('complete_profile.notice')}
+            </CustomText>
+            <CustomText size="small" color="secondary" boldness="regular" numberOfLines={3} classes="mt-0.5 opacity-80">
+              {subtitle}
+            </CustomText>
+          </View>
+          <Feather name="chevron-right" size={22} color={Colors.brand} />
         </View>
-      </View>
-      <View className="w-[90%]">
-        <CustomText color="secondary">
-          {t('complete_profile.notice')}
-        </CustomText>
-      </View>
+
+        {zoneRequests > 0 && (
+          <View
+            className="flex-row items-center px-4 py-2.5"
+            style={{ borderTopWidth: 1, borderTopColor: 'rgba(250,187,91,0.28)' }}
+          >
+            <Feather name="trending-up" size={15} color={Colors.brand} />
+            <CustomText size="small" color="secondary" boldness="semiBold" classes="ml-2 flex-1" numberOfLines={2}>
+              {t('complete_profile.zone_demand', { count: zoneRequests })}
+            </CustomText>
+          </View>
+        )}
+      </LinearGradient>
     </TouchableOpacity>
   )
 }

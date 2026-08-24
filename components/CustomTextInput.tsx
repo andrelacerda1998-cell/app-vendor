@@ -1,6 +1,6 @@
 import { Colors } from '@/constants/Colors';
 import React, { forwardRef } from 'react'
-import { TextInput, TouchableOpacity } from 'react-native'
+import { TextInput } from 'react-native';
 import { View } from 'react-native';
 import { type CustomTextBoldness, type CustomFontSize, type CustomTextColor } from '@/components/CustomText';
 import XIcon from '@/assets/icons/x';
@@ -163,7 +163,7 @@ const CustomTextInput = forwardRef<TextInput, CustomTextInputProps>(({
             flexDirection: 'row',
             opacity: disabled ? 0.6 : 1,
             fontSize: getFontSize(),
-            color: Colors[textColor],
+            color: Colors[textColor as CustomTextColor],
             fontFamily: getTextBoldness(),
           },
         ]}
@@ -172,7 +172,7 @@ const CustomTextInput = forwardRef<TextInput, CustomTextInputProps>(({
         placeholder={placeholder}
         placeholderTextColor={Colors.support_secondary}
         className={`
-          border-gray_strong focus:border-support_primary
+          border-line focus:border-brand
           ${classes}
         `}
         {...props}

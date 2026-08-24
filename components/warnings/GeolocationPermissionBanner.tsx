@@ -50,7 +50,7 @@ const GeolocationPermissionBanner = ({ onRequestPermission, isLoading = false, h
   if (!isVisible) return null;
 
   return (
-    <View className="flex-row justify-between items-center bg-[#6A40DA] p-3 rounded-xl mt-2">
+    <View className="flex-row justify-between items-center bg-destination p-3 rounded-xl mt-2">
       <View className="w-[10%]">
         <View className="w-7 h-7">
           <LocationIcon color={Colors.secondary} />

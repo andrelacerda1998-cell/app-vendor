@@ -2,22 +2,16 @@ import BackHeader from '@/components/app/BackHeader';
 import {CustomText} from "@/components/CustomText";
 import CustomTextInput from "@/components/CustomTextInput";
 import CustomTouchableOpacity from "@/components/CustomTouchableOpacity";
-import DatePicker from '@/components/DatePicker';
-import {ThemedText} from '@/components/ThemedText';
-import TouchOpacity from '@/components/TouchOpacity';
+import {ListCard} from "@/components/ui";
 import {API_ROUTES} from '@/constants/ApiRoutes';
 import {Colors} from '@/constants/Colors';
 import {useApi} from '@/contexts/ApiContext';
 import {useSession} from '@/contexts/SessionContext';
-import {getDeviceId, validateNIF} from "@/utils";
-import {parseValidDate, defaultBirthDate} from "@/utils/date";
-import {Feather, MaterialIcons, Octicons} from '@expo/vector-icons';
-import BottomSheet, {BottomSheetView} from '@gorhom/bottom-sheet';
+import { Feather } from '@expo/vector-icons';
 import {router} from 'expo-router';
-import React, {useCallback, useEffect, useRef, useState} from 'react'
-import {Control, Controller, useForm} from 'react-hook-form';
-import {View, StatusBar, Image, KeyboardAvoidingView, Platform, Alert, ImageBackground, TouchableOpacity} from 'react-native';
-import {ScrollView, TextInput} from 'react-native-gesture-handler';
+import React, { useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { View, ImageBackground, TouchableOpacity } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import * as Location from 'expo-location';
 import {useDialog} from "@/contexts/DialogContext";
@@ -27,15 +21,16 @@ import {ImagePickerAsset} from "expo-image-picker/src/ImagePicker.types";
 import * as ImagePicker from 'expo-image-picker';
 import { useTranslation } from "react-i18next";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
-import { Picker } from "@react-native-picker/picker";
-import { useActionSheet } from "@expo/react-native-action-sheet";
+import IBAN from 'iban';
+
+/** Normaliza o IBAN para comparação/envio: sem espaços e em maiúsculas. */
+const normalizeIban = (value?: string | null) => (value ?? '').replace(/\s/g, '').toUpperCase();
 
 const EditProfile = () => {
     const { t } = useTranslation();
     const {api} = useApi();
-    const {vendorData, setVendorData, getAvailableGenders, availableGenders} = useSession();
+    const {vendorData, setVendorData} = useSession();
     const {openDialog} = useDialog();
-    const { showActionSheetWithOptions } = useActionSheet();
     const [loading, setLoading] = useState(false);
     const [locationConsentStatus, setLocationConsentStatus] = useState<Location.PermissionStatus>();
     const [loadingUpdateLocation, setLoadingUpdateLocation] = useState(false);
@@ -44,11 +39,6 @@ const EditProfile = () => {
     const [avatarError, setAvatarError] = useState<string|null>(null);
 
     useEffect(() => {
-
-        if (availableGenders === null || availableGenders.length === 0) {
-            getAvailableGenders();
-        }
-
         async function askPermission() {
             let {status} = await Location.requestForegroundPermissionsAsync();
             setLocationConsentStatus(status);
@@ -67,7 +57,6 @@ const EditProfile = () => {
             allowsEditing: true,
             quality: 0.4,
             selectionLimit: 1,
-            // presentationStyle: ImagePicker.UIImagePickerPresentationStyle.FULL_SCREEN,
           });
 
           if (!result.canceled && result.assets?.length) {
@@ -85,29 +74,32 @@ const EditProfile = () => {
         return router.push("/(app)/(tabs)/profile");
     }
 
-    const {control, handleSubmit, formState: {errors, isLoading, isValid}, getValues, setError, reset} = useForm({
+    const initialIban = vendorData?.iban ? IBAN.printFormat(vendorData.iban) : "";
+
+    const {control, handleSubmit, formState: {errors}, getValues, setError} = useForm({
         mode: 'onChange',
         defaultValues: {
             name: vendorData?.user.name || "",
-            date_birthday: parseValidDate(vendorData?.user.date_birthday) ?? defaultBirthDate(),
-            nif: vendorData?.user.nif || "",
             phone_number: vendorData?.user.phone_number.replace('-', '') || "",
-            gender_id: Number(vendorData?.user?.gender_id) || 0,
-            // address: vendorData?.user?.address || `${vendorData?.current_location?.latitude}, ${vendorData?.current_location?.longitude}` || "",
+            iban: initialIban,
         },
     });
 
-    const updateProfile = () => {
-        setLoading(true);
-        const newPhoneNumber = getValues('phone_number').startsWith('+351-') ? getValues('phone_number') : getValues('phone_number').replace('+351', '+351-');
+    /**
+     * Passo 1: dados pessoais.
+     * `nif` e `date_birthday` deixaram de ser enviados de propósito — o NIF passou a ser
+     * derivado do subutilizador da AT no backend e a data de nascimento não é usada.
+     * O UserController::update só toca nesses campos quando a chave vem no pedido,
+     * por isso não os enviar não os apaga.
+     */
+    const updateProfileRequest = () => {
+        const newPhoneNumber = getValues('phone_number').startsWith('+351-')
+            ? getValues('phone_number')
+            : getValues('phone_number').replace('+351', '+351-');
 
         const formData = new FormData();
         formData.append('name', getValues('name'));
-        const birthday = parseValidDate(getValues('date_birthday') as Date) ?? defaultBirthDate();
-        formData.append('date_birthday', birthday.toISOString().split('T')[0]);
-        formData.append('nif', getValues('nif'));
         formData.append('phone_number', newPhoneNumber);
-        formData.append('gender_id', String(getValues('gender_id') || '1'));
 
         if (asset) {
             formData.append('avatar', {
@@ -117,101 +109,120 @@ const EditProfile = () => {
             } as any);
         }
 
-        api.post(API_ROUTES.AUTH_UPDATE_PROFILE + '?_method=PUT', formData, {
+        return api.post(API_ROUTES.AUTH_UPDATE_PROFILE + '?_method=PUT', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
                 'Accept': 'application/json'
             },
             transformRequest: (data) => data,
             timeout: 30000
-        })
-            .then((response) => {
-                const newUserData = response.data.data;
-
-                setVendorData({
-                    ...vendorData,
-                    user: {
-                        ...newUserData,
-                        name: getValues('name'),
-                    },
-                });
-                handleGoBack();
-                openDialog({
-                    icon: <CheckMark color={Colors.primary}/>,
-                    title: t('profile.edit.success.title'),
-                    subtitle: t('profile.edit.success.subtitle'),
-                    closeAfterMSeconds: 2000,
-                    closeOnClickOutside: true,
-                })
-                // setEditData({
-                //   date_birthday: false,
-                //   nif: false,
-                //   phone_number: false,
-                // });
-            })
-            .catch((error) => {
-                const errors = error?.response?.data?.errors ?? {};
-                Object.keys(errors).forEach((key: any) => {
-                    setError(
-                        key,
-                        {type: 'manual', message: errors[key]}
-                    );
-                });
-            })
-            .finally(() => {
-                setLoading(false);
-            })
+        });
     }
 
-    // const handleSetCurrentLocation = async () => {
-    //     if (locationConsentStatus === "denied") {
-    //         openDialog({
-    //             icon: <XIcon color={Colors.primary} />,
-    //             title: t('profile.edit.update_location_denied.title'),
-    //             subtitle: t('profile.edit.update_location_denied.subtitle'),
-    //             closeAfterMSeconds: 3000,
-    //             closeOnClickOutside: true,
-    //         })
-    //         return;
-    //     }
+    /**
+     * Passo 2: IBAN, num endpoint próprio.
+     * O UpdatePaymentRequest exige também `price_rate` e `company_name`; reenviamos os
+     * valores atuais sem os mostrar, senão a validação falha ou os dados são apagados.
+     */
+    const updateIbanRequest = () => {
+        const formData = new FormData();
+        formData.append('iban', normalizeIban(getValues('iban')));
+        formData.append('price_rate', String(vendorData?.price_rate ?? 0));
+        formData.append('company_name', vendorData?.company_name ?? '');
 
-    //     let location = await Location.getCurrentPositionAsync({});
+        return api.post(API_ROUTES.VENDOR_UPDATE_PAYMENT + '?_method=PUT', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                'Accept': 'application/json'
+            },
+            transformRequest: (data) => data,
+            timeout: 30000
+        });
+    }
 
-    //     await updateLocation(location.coords.latitude, location.coords.longitude);
-    // }
+    const applyValidationErrors = (error: any) => {
+        const responseErrors = error?.response?.data?.errors ?? {};
+        Object.keys(responseErrors).forEach((key: any) => {
+            // O endpoint de pagamentos também pode devolver erros de campos que não
+            // mostramos aqui (price_rate/company_name) — esses só vão para o diálogo.
+            if (key === 'name' || key === 'phone_number' || key === 'iban') {
+                setError(key, {type: 'manual', message: responseErrors[key]});
+            }
+        });
+        return responseErrors;
+    }
 
-    // const updateLocation = async (latitude: number, longitude: number) => {
-    //     setLoadingUpdateLocation(true);
-    //     api.put(API_ROUTES.VENDOR_UPDATE_LOCATION, {
-    //         latitude,
-    //         longitude,
-    //         device_id:await getDeviceId()
-    //     }).then((response) => {
-    //         const {current_location} = response.data.data;
-    //         const newVendorData = {
-    //             ...vendorData,
-    //             current_location
-    //         }
-    //         setVendorData(newVendorData);
-    //         openDialog({
-    //             icon: <CheckMark color={Colors.primary}/>,
-    //             title: t('profile.edit.update_location_success.title'),
-    //             subtitle: t('profile.edit.update_location_success.subtitle'),
-    //             closeAfterMSeconds: 2000,
-    //             closeOnClickOutside: true,
-    //         })
-    //     }).catch(err => {
-    //         openDialog({
-    //             icon: <XIcon color={Colors.primary}/>,
-    //             title: t('errors.title'),
-    //             subtitle: t('errors.occurred_an_error'),
-    //             closeAfterMSeconds: 2000,
-    //             closeOnClickOutside: true,
-    //         })
-    //     }).finally(() => {
-    //         setLoadingUpdateLocation(false);
-    //     })
-    // }
+    const saveChanges = async () => {
+        setLoading(true);
+
+        // Fase 1 — perfil. Se falhar, não avançamos para o IBAN.
+        let updatedVendor: any;
+        try {
+            const response = await updateProfileRequest();
+            const newUserData = response.data.data;
+
+            updatedVendor = {
+                ...vendorData,
+                user: {
+                    ...newUserData,
+                    name: getValues('name'),
+                },
+            };
+            setVendorData(updatedVendor);
+        } catch (error: any) {
+            applyValidationErrors(error);
+            openDialog({
+                icon: <XIcon color={Colors.primary}/>,
+                title: t('errors.profile_save.title'),
+                subtitle: error?.response?.data?.metadata?.message
+                    || error?.response?.data?.message
+                    || t('errors.profile_save.subtitle'),
+                closeAfterMSeconds: 3000,
+                closeOnClickOutside: true,
+            });
+            setLoading(false);
+            return;
+        }
+
+        // Fase 2 — IBAN, só se mudou.
+        const ibanChanged = normalizeIban(getValues('iban')) !== normalizeIban(vendorData?.iban);
+
+        if (ibanChanged) {
+            try {
+                const response = await updateIbanRequest();
+                const data = response.data.data;
+                setVendorData({
+                    ...updatedVendor,
+                    iban: data.iban,
+                    price_rate: data.price_rate,
+                    company_name: data.company_name,
+                });
+            } catch (error: any) {
+                applyValidationErrors(error);
+                // O perfil já foi guardado: dizemos exatamente o que passou para o
+                // técnico não ficar sem saber o estado dos dados.
+                openDialog({
+                    icon: <XIcon color={Colors.primary}/>,
+                    title: t('profile.edit.partial_save.title'),
+                    subtitle: t('profile.edit.partial_save.subtitle'),
+                    closeAfterMSeconds: 4000,
+                    closeOnClickOutside: true,
+                });
+                setLoading(false);
+                return;
+            }
+        }
+
+        setLoading(false);
+        handleGoBack();
+        openDialog({
+            icon: <CheckMark color={Colors.primary}/>,
+            title: t('profile.edit.success.title'),
+            subtitle: t('profile.edit.success.subtitle'),
+            closeAfterMSeconds: 2000,
+            closeOnClickOutside: true,
+        });
+    }
 
     const sendResetEmail = () => {
         setLoadingResetPassword(true);
@@ -232,24 +243,24 @@ const EditProfile = () => {
                 if (error.response?.status === 500) {
                     openDialog({
                         icon: <XIcon color={Colors.primary}/>,
-                        title: t('errors.title'),
-                        subtitle: t('errors.server_error'),
+                        title: t('errors.reset_password_email.title'),
+                        subtitle: t('errors.reset_password_email.subtitle'),
                         closeAfterMSeconds: 2000,
                         closeOnClickOutside: true,
                     })
                 } else if (error.response?.status === 400) {
                     openDialog({
                         icon: <XIcon color={Colors.primary}/>,
-                        title: t('errors.title'),
-                        subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('error.occurred_an_error'),
+                        title: t('errors.profile_save.title'),
+                        subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('errors.profile_save.subtitle'),
                         closeAfterMSeconds: 2000,
                         closeOnClickOutside: true,
                     })
                 } else {
                     openDialog({
                         icon: <XIcon color={Colors.primary}/>,
-                        title: t('errors.title'),
-                        subtitle: t('errors.occurred_an_error'),
+                        title: t('errors.profile_save.title'),
+                        subtitle: t('errors.profile_save.subtitle'),
                         closeAfterMSeconds: 2000,
                         closeOnClickOutside: true,
                     })
@@ -267,60 +278,20 @@ const EditProfile = () => {
             successButtonText: t('profile.edit.save.confirm'),
             cancelButtonText: t('profile.edit.save.cancel'),
             onSuccess: () => {
-                updateProfile();
+                saveChanges();
             },
         })
     }
 
-    const handlePressIosPicker = (field: any) => {
-			let options: string[] = [];
-
-			if (availableGenders === null) {
-					return;
-			}
-
-
-			for (const gender of availableGenders) {
-					options.push(gender.name);
-			}
-			options.push(t('general.ios_picker.cancel'))
-
-			const cancelButtonIndex = options.indexOf(t('general.ios_picker.cancel'));
-
-			showActionSheetWithOptions({
-					options: options,
-					cancelButtonIndex: cancelButtonIndex,
-					title: t('general.ios_picker.choose_an_option')
-			}, (selectedIndex) => {
-					// @ts-ignore
-					const label = options[selectedIndex];
-
-					if (label === t('general.ios_picker.cancel')) {
-							return;
-					}
-
-					let gender = availableGenders.filter(value => value.name === label);
-					if (availableGenders === null) {
-							return;
-					}
-					if (gender === null) {
-							return;
-					}
-
-					field.onChange(gender[0].id);
-			});
-
-	}
-
-	const getGenderLabel = (genderId: number) => {
-			const option = availableGenders.filter(value => value.id === genderId);
-
-			if (option[0] === undefined) {
-					return '';
-			}
-
-			return option[0]?.name ?? ''
-	}
+    /**
+     * A morada fiscal não é editável aqui de propósito: o AddressController::update
+     * geocodifica pelo Google e substitui a morada toda, devolvendo 400 se o geocoding
+     * falhar. Se ela vivesse neste formulário, guardar o nome ou o telefone podia falhar
+     * por causa do Google — por isso é só uma linha de navegação para o ecrã dedicado.
+     */
+    const goToCompanyAddress = () => {
+        router.push('/(app)/(modals)/(profile)/edit-company-address');
+    }
 
     return (
         <SafeAreaView style={{flex: 1, backgroundColor: Colors.primary}}>
@@ -425,180 +396,6 @@ const EditProfile = () => {
 
                     <View>
                         <CustomText color="secondary" boldness="semiBold" numberOfLines={1}>
-                            {t('general.birth_date')}
-                        </CustomText>
-                        <Controller
-                            control={control}
-                            name="date_birthday"
-                            rules={{
-                                required: t('general.birth_date_required'),
-                                validate: (value) => {
-                                const date = new Date(value)
-                                if (isNaN(date.getTime())) {
-                                    return t('general.birth_date_invalid');
-                                } else if (date.getTime() > Date.now()) {
-                                    return t('general.birth_date_not_in_future');
-                                } else if (date.getTime() < new Date('1900-01-01').getTime()) {
-                                    return t('general.birth_date_max_age');
-                                } else if (date.getTime() > new Date().setFullYear(new Date().getFullYear() - 18)) {
-                                    return t('general.birth_date_min_age');
-                                }
-                                return true;
-                                }
-                            }}
-                            render={({field}) => (
-                                <DatePicker
-                                    onDateChange={field.onChange}
-                                    pressableClass="border-gray_strong border-[1px]"
-                                    color={Colors.secondary}
-                                    textColor="secondary"
-                                    initialDate={field.value}
-                                    height={60}
-                                    textBoldness="semiBold"
-                                    disabled={loading}
-                                />
-                            )}
-                        />
-                        {errors.date_birthday && errors.date_birthday.message && (
-                            <CustomText
-                                size="small"
-                                color="error"
-                                classes="mt-1"
-                            >
-                                {errors.date_birthday.message as string}
-                            </CustomText>
-                        )}
-                    </View>
-
-                    <View>
-                        <CustomText color="secondary" boldness="semiBold" numberOfLines={1}>
-                                {t('auth.sign_up.personal_information.gender')}
-                        </CustomText>
-
-                        <Controller
-                            control={control}
-                            name="gender_id"
-                            rules={{
-                                required: t('auth.sign_up.personal_information.gender_required'),
-                                validate: value => value !== 0 || t('auth.sign_up.personal_information.gender_required')
-                            }}
-                            render={({field}) => (
-                                <View
-                                    className="relative mt-2 border-[1px] border-gray_strong focus:border-support_primary rounded-lg flex justify-center">
-                                    {
-                                        Platform.OS === 'android' ? (
-                                                <Picker
-                                                    selectedValue={field.value}
-                                                    onValueChange={(value) => field.onChange(value)}
-                                                    style={{
-                                                            width: "96%",
-                                                            margin: "auto",
-                                                            height: 60,
-                                                            color: Colors.secondary,
-                                                    }}
-                                                    placeholder={t('auth.sign_up.personal_information.gender_placeholder')}
-                                                    dropdownIconColor={Colors.secondary}
-                                                >
-                                                        <Picker.Item
-                                                            label={t('auth.sign_up.personal_information.gender_placeholder')}
-                                                            value={null}
-                                                            color={Colors.gray_medium}
-                                                        />
-                                                        {
-                                                            availableGenders.map((gender: { id: number, name: string }) => {
-                                                                return (
-                                                                    <Picker.Item
-                                                                        key={`gender-${gender.id}`}
-                                                                        label={gender.name}
-                                                                        value={gender.id}
-                                                                        color={Colors.primary}
-                                                                    />
-                                                                )
-                                                            })
-                                                        }
-                                                </Picker>
-                                        ) : (
-                                            <View>
-                                                <TouchOpacity
-                                                    className={`
-                                                        rounded-lg py-3 px-5 h-14
-                                                    `}
-                                                    onPress={() => handlePressIosPicker(field)}
-                                                >
-                                                    <CustomText
-                                                        className="mt-1 text-white"
-                                                        color="support_secondary"
-                                                    >
-                                                        {getGenderLabel(field.value)}
-                                                    </CustomText>
-                                                </TouchOpacity>
-                                            </View>
-                                        )
-                                    }
-                                </View>
-                            )}
-                        />
-                        {errors.gender_id && errors.gender_id.message && (
-                            <CustomText
-                                size="small"
-                                color="error"
-                                classes="mt-1"
-                            >
-                                {errors.gender_id.message as string}
-                            </CustomText>
-                        )}
-                    </View>
-
-                    <View>
-                        <CustomText color="secondary" boldness="semiBold" numberOfLines={1}>
-                            {t('general.nif')}
-                        </CustomText>
-                        <Controller
-                            control={control}
-                            name="nif"
-                            rules={{
-                                required: t('general.nif_required'),
-                                pattern: { value: /^[0-9]{9}$/, message: t('general.nif_invalid') },
-                                minLength: { value: 9, message: t('general.nif_min_length') },
-                                validate: (value) => {
-                                    const isValid = validateNIF(value)
-                                    if (!isValid) return t('general.nif_invalid');
-                                }
-                            }}
-                            render={({field}) => (
-                                <View className="mt-2">
-                                    <CustomTextInput
-                                        {...field}
-                                        size="large"
-                                        onChangeText={(value: string) => {
-                                            const newValue = value.replace(/\D/g, '').trim();
-                                            field.onChange(newValue)
-                                        }}
-                                        placeholder={t('general.nif_placeholder')}
-                                        keyboardType="number-pad"
-                                        type="numeric"
-                                        error={errors.nif && errors.nif.message}
-                                        displayErrorIcon={true}
-                                        success={!errors.nif && field.value}
-                                        displaySuccessIcon={true}
-                                        disabled={loading}
-                                    />
-                                </View>
-                            )}
-                        />
-                        {errors.nif && errors.nif.message && (
-                            <CustomText
-                                size="small"
-                                color="error"
-                                classes="mt-1"
-                            >
-                                {errors.nif.message as string}
-                            </CustomText>
-                        )}
-                    </View>
-
-                    <View>
-                        <CustomText color="secondary" boldness="semiBold" numberOfLines={1}>
                             {t('general.phone_number')}
                         </CustomText>
                         <Controller
@@ -648,21 +445,78 @@ const EditProfile = () => {
                         )}
                     </View>
 
-                    {/* <View>
+                    <View>
                         <CustomText color="secondary" boldness="semiBold" numberOfLines={1}>
-                            {t('general.address')}
+                            {t('general.iban')}
                         </CustomText>
-                        <CustomTouchableOpacity
-                            size="large"
-                            type="secondary_outline"
-                            textColor="secondary"
-                            textBoldness="semiBold"
-                            text={loadingUpdateLocation ? t('profile.edit.updating_location') : t('profile.edit.update_location')}
-                            classes="mt-2"
-                            onPress={handleSetCurrentLocation}
-                            disabled={loading || loadingUpdateLocation || loadingResetPassword}
+                        <Controller
+                            control={control}
+                            name="iban"
+                            rules={{
+                                required: t('general.iban_required'),
+                                validate: (value) => {
+                                    const isValid = IBAN.isValid(value);
+                                    if (!isValid) return t('general.iban_invalid');
+                                    return true;
+                                },
+                                maxLength: {value: 31, message: t('general.iban_max_length')},
+                                minLength: {value: 31, message: t('general.iban_min_length')},
+                            }}
+                            render={({field}) => (
+                                <View className="mt-2">
+                                    <CustomTextInput
+                                        {...field}
+                                        size="large"
+                                        onChangeText={(value: string) => {
+                                            // Só letras/números, em maiúsculas, com espaço a cada 4 caracteres.
+                                            let cleaned = value.replace(/[^A-Z0-9]/gi, '').toUpperCase();
+                                            let formatted = cleaned.replace(/(.{4})/g, '$1 ').trim();
+                                            field.onChange(formatted);
+                                        }}
+                                        placeholder="PT12 3456 7891 2345 6789 1234 5"
+                                        error={errors.iban && errors.iban.message}
+                                        displayErrorIcon={true}
+                                        success={!errors.iban && field.value}
+                                        displaySuccessIcon={true}
+                                        disabled={loading}
+                                        autoCapitalize="characters"
+                                        autoCorrect={false}
+                                        autoComplete="iban"
+                                        maxLength={31}
+                                    />
+                                </View>
+                            )}
                         />
-                    </View> */}
+                        {errors.iban && errors.iban.message && (
+                            <CustomText
+                                size="small"
+                                color="error"
+                                classes="mt-1"
+                            >
+                                {errors.iban.message as string}
+                            </CustomText>
+                        )}
+                    </View>
+
+                    <View>
+                        <CustomText color="secondary" boldness="semiBold" numberOfLines={1}>
+                            {t('profile.payments.company_address')}
+                        </CustomText>
+                        <View className="mt-2">
+                            {/* A morada é o texto principal da linha, não um valor
+                                ao lado de uma etiqueta que repete o título da secção
+                                — assim cabe inteira em vez de cortar em "Morada…". */}
+                            <ListCard
+                                items={[
+                                    {
+                                        key: 'company_address',
+                                        label: vendorData?.company_address || t('profile.payments.empty_company_address'),
+                                        onPress: goToCompanyAddress,
+                                    },
+                                ]}
+                            />
+                        </View>
+                    </View>
 
                     <View>
                         <CustomText color="secondary" boldness="semiBold" numberOfLines={1}>
@@ -697,4 +551,3 @@ const EditProfile = () => {
 }
 
 export default EditProfile
-

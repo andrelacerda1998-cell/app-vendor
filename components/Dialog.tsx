@@ -1,6 +1,6 @@
 import { useDialog } from "@/contexts/DialogContext";
 import React, { useEffect } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { CustomText } from "./CustomText";
 import CustomTouchableOpacity from "./CustomTouchableOpacity";
 import { useClickOutside } from "react-native-click-outside";
@@ -51,7 +51,7 @@ const Dialog: React.FC = () => {
               <View className="space-y-2">
                 <CustomText size="large" color="secondary" boldness="semiBold" className="text-center">{content.title}</CustomText>
                 {content.subtitle && (
-                  <CustomText size="small" color="gray_strong" boldness="semiBold" className="text-center">{content.subtitle}</CustomText>
+                  <CustomText size="small" color="gray_light" boldness="semiBold" className="text-center">{content.subtitle}</CustomText>
                 )}
               </View>
               {content.successButtonText && content.cancelButtonText && (
