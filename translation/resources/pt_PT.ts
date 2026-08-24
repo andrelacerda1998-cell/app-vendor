@@ -1617,10 +1617,10 @@ export default {
     // serviço. Sem isso, o técnico assume o que já conhece dos pedidos.
     "matching": {
       "invitation": {
-        "home_card_one": "Tens {{count}} convite à espera de resposta.",
-        "home_card_other": "Tens {{count}} convites à espera de resposta.",
+        "home_card_one": "Tens {{count}} pedido de serviço à espera de resposta.",
+        "home_card_other": "Tens {{count}} pedidos de serviço à espera de resposta.",
         "home_card_hint": "O cliente escolhe entre quem se disponibilizar.",
-        "list_title": "Convites",
+        "list_title": "Pedidos de serviços",
         "fallback_title": "Pedido de serviço",
         "window": "para responder",
         // "18:44" lia-se como hora do dia. Passa a unidade explícita.
@@ -1639,9 +1639,9 @@ export default {
         "accepted_subtitle": "Avisamos-te assim que o cliente decidir. Até lá, a tua agenda continua livre.",
         "too_late_title": "Este pedido já fechou",
         "too_late_subtitle": "Outro profissional respondeu primeiro. Aparecem novos pedidos ao longo do dia.",
-        "empty_title": "Sem convites neste momento",
+        "empty_title": "Sem pedidos neste momento",
         "empty_subtitle": "Quando um cliente procurar um serviço teu, aparece aqui. Mantém as notificações ligadas para não perderes nenhum.",
-        "error_title": "Não foi possível carregar os convites",
+        "error_title": "Não foi possível carregar os pedidos",
         "error_subtitle": "Verifica a ligação à internet e tenta outra vez."
       }
     },
