@@ -60,13 +60,24 @@ const MatchingInvitations = () => {
           pedidos: sem este wrapper o conteúdo era empurrado para o meio do
           ecrã, com um vazio enorme por cima do primeiro cartão. */}
       <View className="flex-1 bg-bg p-5">
-        <View className="flex-row items-center justify-between mb-4">
-          <TouchOpacity onPress={() => router.back()} otherClasses="h-10 w-10" itemsCenter>
-            <ArrowIcon color={Colors.secondary} position="left" size="40%" />
+        {/* Cabeçalho com peso a sério: a `semiBold` desta fonte fica fina a
+            este tamanho e o título perdia-se contra o preto. A seta ganha um
+            fundo próprio — além de se ver, passa a ter uma área de toque
+            decente em vez de um ícone a 40% do contentor. */}
+        <View className="flex-row items-center justify-between mb-5">
+          <TouchOpacity
+            onPress={() => router.back()}
+            otherClasses="h-10 w-10 rounded-full"
+            itemsCenter
+            style={{ backgroundColor: Colors.card }}
+          >
+            <ArrowIcon color={Colors.secondary} position="left" size="45%" />
           </TouchOpacity>
-          <CustomText color="secondary" boldness="semiBold" classes="text-xl">
+
+          <CustomText size="large" color="secondary" boldness="bolder">
             {t('matching.invitation.list_title')}
           </CustomText>
+
           <View className="h-10 w-10" />
         </View>
 
