@@ -171,6 +171,8 @@ const ContactsStep = ({
       .finally(() => setEmailBusy(false));
   };
 
+  const bothVerified = phoneOk && emailOk;
+
   const recheckEmail = async () => {
     setEmailBusy(true);
     setEmailPending(false);
@@ -184,17 +186,31 @@ const ContactsStep = ({
     }
   };
 
-  const bothVerified = phoneOk && emailOk;
-
   return (
     <View className="flex-1 p-5">
       <View className="flex-1">
         <CustomText size="title" color="secondary" boldness="bold" numberOfLines={2}>
           {t('complete_profile.contacts.title')}
         </CustomText>
-        <CustomText color="muted" classes="mt-2 mb-6" numberOfLines={3}>
+        <CustomText color="muted" classes="mt-2 mb-5" numberOfLines={3}>
           {t('complete_profile.contacts.subtitle')}
         </CustomText>
+
+        {/* Progresso do próprio passo: dois pontos, um por contacto, que enchem
+            à medida que se confirmam. Dá a sensação de estar a avançar dentro do
+            passo, não só entre passos. */}
+        <View className="flex-row items-center mb-6">
+          {[phoneOk, emailOk].map((ok, i) => (
+            <View
+              key={i}
+              className="h-1.5 rounded-full mr-2"
+              style={{ width: 28, backgroundColor: ok ? Colors.success : Colors.card_high }}
+            />
+          ))}
+          <CustomText size="extraSmall" boldness="bold" color="secondary" classes="ml-1" style={{ color: bothVerified ? Colors.success : Colors.muted }}>
+            {t('complete_profile.contacts.progress', { count: [phoneOk, emailOk].filter(Boolean).length, done: [phoneOk, emailOk].filter(Boolean).length })}
+          </CustomText>
+        </View>
 
         {/* Telemóvel */}
         <ContactCard icon="smartphone" label={t('general.phone_number')} value={vendorData?.user?.phone_number} verified={phoneOk}>
@@ -288,7 +304,17 @@ const ContactsStep = ({
         </View>
       </View>
 
-      <View className="pt-5">
+      {/* Porque pedimos: uma linha discreta que ocupa o vazio antes do botão
+          com algo útil, em vez de espaço morto. Tranquiliza quem hesita em dar
+          o número. */}
+      <View className="flex-row items-start mb-4 px-1">
+        <Feather name="shield" size={13} color={Colors.muted} style={{ marginTop: 2 }} />
+        <CustomText size="extraSmall" color="muted" classes="ml-2 flex-1" style={{ lineHeight: 17 }}>
+          {t('complete_profile.contacts.privacy_note')}
+        </CustomText>
+      </View>
+
+      <View>
         <CustomTouchableOpacity
           size="large"
           type="support_primary"
