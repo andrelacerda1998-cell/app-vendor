@@ -24,7 +24,12 @@ export interface MatchingInvitation {
     city: string | null;
     postal_code: string | null;
   } | null;
+  /**
+   * Dia e hora pretendidos. Vem de `pending_schedule_data` enquanto a agenda
+   * não pode existir (ver docs/matching.md no backend).
+   */
   schedule: {
-    scheduled_day: string;
+    scheduled_day: string | null;
+    scheduled_time_start: string | null;
   } | null;
 }
