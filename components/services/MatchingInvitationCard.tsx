@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -6,8 +6,7 @@ import { CustomText } from '@/components/CustomText';
 import { Colors } from '@/constants/Colors';
 import { renderMoney } from '@/utils/money';
 import { MatchingInvitation } from '@/types/matching';
-
-const pad = (n: number) => String(n).padStart(2, '0');
+import useExpiryCountdown from '@/hooks/useExpiryCountdown';
 
 /**
  * Um convite de seleção — NÃO é um pedido adjudicado.
@@ -35,48 +34,8 @@ const MatchingInvitationCard = ({
   busy?: boolean;
 }) => {
   const { t } = useTranslation();
-  const [now, setNow] = useState(() => Date.now());
+  const { label: countdown, expired, urgent } = useExpiryCountdown(invitation.expires_at);
 
-  const expiresAt = useMemo(() => {
-    if (!invitation.expires_at) return 0;
-    const parsed = new Date(invitation.expires_at).getTime();
-    return Number.isFinite(parsed) ? parsed : 0;
-  }, [invitation.expires_at]);
-
-  const remainingMs = expiresAt ? Math.max(0, expiresAt - now) : 0;
-  const expired = expiresAt > 0 && remainingMs === 0;
-
-  // Ao segundo apenas no último minuto: acima disso, o segundo a mexer é ruído
-  // que gasta bateria sem ajudar a decidir.
-  useEffect(() => {
-    if (!expiresAt || expired) return;
-    const fine = remainingMs < 60_000;
-    const id = setInterval(() => setNow(Date.now()), fine ? 1000 : 20_000);
-    return () => clearInterval(id);
-  }, [expiresAt, expired, remainingMs]);
-
-  /**
-   * Tempo que falta para responder.
-   *
-   * "18:44" lia-se como uma HORA DO DIA — perigoso numa app cheia de horários
-   * de serviços. Passa a "18 min", e só desce ao segundo no último minuto,
-   * quando o segundo passa mesmo a importar.
-   */
-  const countdown = useMemo(() => {
-    if (!expiresAt) return null;
-    const total = Math.floor(remainingMs / 1000);
-    if (total >= 3600) {
-      const h = Math.floor(total / 3600);
-      const m = Math.floor((total % 3600) / 60);
-      return t('matching.invitation.window_hours', { hours: h, minutes: pad(m) });
-    }
-    if (total >= 60) {
-      return t('matching.invitation.window_minutes', { count: Math.ceil(total / 60) });
-    }
-    return t('matching.invitation.window_seconds', { count: total });
-  }, [expiresAt, remainingMs, t]);
-
-  const urgent = remainingMs > 0 && remainingMs <= 60_000;
   const earn = renderMoney(invitation.amount_for_vendor ?? null);
 
   /** Quando é o serviço. É a primeira pergunta dele, por isso é a primeira linha. */

@@ -1616,9 +1616,10 @@ export default {
     // thing clear: accepting is applying, not winning the job.
     "matching": {
       "invitation": {
-        "home_card_one": "You have {{count}} service request waiting for a reply.",
-        "home_card_other": "You have {{count}} service requests waiting for a reply.",
-        "home_card_hint": "The client chooses among those who make themselves available.",
+        "home_card_one": "{{count}} service request",
+        "home_card_other": "{{count}} service requests",
+        "home_expires": "Expires in {{time}}",
+        "home_expires_soonest": "The most urgent expires in {{time}}",
         "list_title": "Service requests",
         "fallback_title": "Service request",
         "window": "to reply",

@@ -1617,9 +1617,10 @@ export default {
     // serviço. Sem isso, o técnico assume o que já conhece dos pedidos.
     "matching": {
       "invitation": {
-        "home_card_one": "Tens {{count}} pedido de serviço à espera de resposta.",
-        "home_card_other": "Tens {{count}} pedidos de serviço à espera de resposta.",
-        "home_card_hint": "O cliente escolhe entre quem se disponibilizar.",
+        "home_card_one": "{{count}} pedido de serviço",
+        "home_card_other": "{{count}} pedidos de serviço",
+        "home_expires": "Expira em {{time}}",
+        "home_expires_soonest": "O mais urgente expira em {{time}}",
         "list_title": "Pedidos de serviços",
         "fallback_title": "Pedido de serviço",
         "window": "para responder",

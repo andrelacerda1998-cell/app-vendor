@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { View, TouchableOpacity } from 'react-native'
 import { Feather } from '@expo/vector-icons'
 import { router } from 'expo-router'
@@ -6,19 +6,35 @@ import { useTranslation } from 'react-i18next'
 import { CustomText } from '@/components/CustomText'
 import { Colors } from '@/constants/Colors'
 import useMatchingInvitations from '@/hooks/useMatchingInvitations'
+import useExpiryCountdown from '@/hooks/useExpiryCountdown'
 
 /**
- * Convites de seleção à espera de resposta.
+ * Atalho para os pedidos de serviço à espera de resposta.
  *
- * Cartão próprio, e não juntar ao dos pedidos pendentes: um pedido é trabalho
- * adjudicado, um convite é uma candidatura. Somar os dois num número só faria
- * o técnico pensar que tem N trabalhos garantidos quando não tem nenhum.
+ * Mostra o contador do que está mais perto de expirar: com vários pedidos
+ * abertos, o que decide se ele abre a app agora ou daqui a bocado é o mais
+ * urgente, não a contagem total.
  *
- * Escondido quando não há nada — como o dos pedidos.
+ * Cartão próprio, e não juntar ao dos pedidos adjudicados: somar os dois num
+ * número só faria parecer que tem N trabalhos garantidos quando não tem nenhum.
+ *
+ * Escondido quando não há nada.
  */
 const MatchingInvitationsCard = () => {
   const { t } = useTranslation();
   const { invitations } = useMatchingInvitations();
+
+  /** O que expira primeiro é o que manda no aviso. */
+  const soonest = useMemo(() => {
+    const times = invitations
+      .map((i) => i.expires_at)
+      .filter((e): e is string => !!e)
+      .sort();
+
+    return times[0] ?? null;
+  }, [invitations]);
+
+  const { label, urgent } = useExpiryCountdown(soonest);
 
   const count = invitations.length;
   if (count === 0) return null;
@@ -31,18 +47,29 @@ const MatchingInvitationsCard = () => {
         className="flex-row items-center rounded-2xl border p-4"
         style={{ borderColor: Colors.line, backgroundColor: Colors.card }}
       >
-        <Feather name="users" size={22} color={Colors.brand} />
+        <Feather name="users" size={20} color={Colors.brand} />
+
         <View className="flex-1 ml-3">
-          <CustomText color="secondary" boldness="bold" numberOfLines={2}>
+          <CustomText color="secondary" boldness="bold">
             {count === 1
               ? t('matching.invitation.home_card_one', { count })
               : t('matching.invitation.home_card_other', { count })}
           </CustomText>
-          <CustomText size="extraSmall" color="secondary" style={{ color: Colors.muted }}>
-            {t('matching.invitation.home_card_hint')}
-          </CustomText>
+          {!!label && (
+            <CustomText
+              size="extraSmall"
+              classes="mt-0.5"
+              color="secondary"
+              style={{ color: urgent ? Colors.brand : Colors.muted, fontVariant: ['tabular-nums'] }}
+            >
+              {count === 1
+                ? t('matching.invitation.home_expires', { time: label })
+                : t('matching.invitation.home_expires_soonest', { time: label })}
+            </CustomText>
+          )}
         </View>
-        <Feather name="chevron-right" size={20} color={Colors.secondary} />
+
+        <Feather name="chevron-right" size={20} color={Colors.muted} />
       </TouchableOpacity>
     </View>
   )
