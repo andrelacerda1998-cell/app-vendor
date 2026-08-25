@@ -208,7 +208,7 @@ const ContactsStep = ({
             />
           ))}
           <CustomText size="extraSmall" boldness="bold" color="secondary" classes="ml-1" style={{ color: bothVerified ? Colors.success : Colors.muted }}>
-            {t('complete_profile.contacts.progress', { count: [phoneOk, emailOk].filter(Boolean).length, done: [phoneOk, emailOk].filter(Boolean).length })}
+            {t(`complete_profile.contacts.${[phoneOk, emailOk].filter(Boolean).length === 1 ? 'progress_single' : 'progress_multi'}`, { done: [phoneOk, emailOk].filter(Boolean).length })}
           </CustomText>
         </View>
 
