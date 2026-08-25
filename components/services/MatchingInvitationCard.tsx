@@ -169,13 +169,16 @@ const MatchingInvitationCard = ({
       <View className="mt-5" />
 
       <View className="flex-row">
+        {/* Recusar em vermelho, mas em contorno e não preenchido: é uma
+            escolha legítima e não um erro, e um botão vermelho cheio ao lado do
+            de aceitar disputaria a atenção com a ação que interessa. */}
         <TouchableOpacity
           onPress={onDecline}
           disabled={busy}
           className="flex-1 rounded-2xl py-3.5 items-center mr-2.5 border"
-          style={{ borderColor: Colors.line, opacity: busy ? 0.5 : 1 }}
+          style={{ borderColor: `${Colors.danger}59`, opacity: busy ? 0.5 : 1 }}
         >
-          <CustomText boldness="bold" color="secondary" style={{ color: Colors.muted }}>
+          <CustomText boldness="bold" color="secondary" style={{ color: Colors.danger }}>
             {t('matching.invitation.decline')}
           </CustomText>
         </TouchableOpacity>
