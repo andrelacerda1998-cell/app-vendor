@@ -1323,7 +1323,7 @@ export default {
         "welcome_back": "Bem-vindo de volta,",
         "hello": "Olá, {{name}} 👋",
         "ready": "Pronto para receber serviços.",
-        "finish_account": "Vamos concluir a tua conta."
+        "finish_account": "Termina o teu perfil."
     },
     "home_stats": {
         "empty_with_demand_online_one": "Houve {{count}} pedido na tua zona esta semana. Estás visível para os próximos.",

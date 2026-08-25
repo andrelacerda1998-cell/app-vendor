@@ -1323,7 +1323,7 @@ export default {
     "welcome_back": "Welcome back,",
     "hello": "Hi, {{name}} 👋",
     "ready": "Ready to receive services.",
-    "finish_account": "Let's finish your account."
+    "finish_account": "Finish your profile."
   },
   "home_stats": {
     "empty_with_demand_online_one": "There was {{count}} request in your area this week. You're visible for the next ones.",
