@@ -232,8 +232,6 @@ export default {
       "off_label": "Not receiving",
       "off_cta": "Go available",
       "blocked_label": "Profile incomplete",
-      "blocked_title": "You can't receive requests yet",
-      "blocked_subtitle": "Your profile isn't finished. Complete the remaining steps to become available.",
       "online": "Online",
       "offline": "Offline",
     }

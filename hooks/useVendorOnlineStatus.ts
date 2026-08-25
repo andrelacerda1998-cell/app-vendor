@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useApi } from '@/contexts/ApiContext';
 import { useSession } from '@/contexts/SessionContext';
@@ -50,12 +51,9 @@ export const useVendorOnlineStatus = () => {
 
   const toggle = async () => {
     if (blockedByProfile) {
-      openDialog({
-        icon: React.createElement(XIcon, { color: Colors.primary }),
-        title: t('session.status.blocked_title'),
-        subtitle: t('session.status.blocked_subtitle'),
-        closeOnClickOutside: true,
-      });
+      // Não é um beco: leva diretamente ao sítio que resolve o bloqueio, em vez
+      // de só explicar que ele existe.
+      router.push('/(app)/(complete-profile)/CompleteProfile');
       return;
     }
 
