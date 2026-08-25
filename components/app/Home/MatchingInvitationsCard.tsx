@@ -44,41 +44,60 @@ const MatchingInvitationsCard = () => {
       <TouchableOpacity
         activeOpacity={0.85}
         onPress={() => router.push('/(app)/(bottom-sheets)/(services)/matching')}
-        className="flex-row items-center rounded-2xl border p-4"
-        style={{ borderColor: Colors.line, backgroundColor: Colors.card }}
+        className="flex-row items-center rounded-2xl border px-4 py-4"
+        style={{
+          // Contorno âmbar no último minuto: a diferença tem de ser visível
+          // sem se ler o cartão.
+          borderColor: urgent ? Colors.brand : Colors.line,
+          backgroundColor: urgent ? Colors.brand_soft : Colors.card,
+        }}
       >
-        <Feather name="users" size={20} color={Colors.brand} />
+        <View
+          className="w-11 h-11 rounded-2xl items-center justify-center"
+          style={{ backgroundColor: urgent ? 'transparent' : Colors.card_high }}
+        >
+          <Feather name="users" size={20} color={Colors.brand} />
+        </View>
 
-        <View className="flex-1 ml-3 mr-2">
-          <CustomText size="small" color="secondary" style={{ color: Colors.muted }}>
+        <View className="flex-1 ml-3.5 mr-2">
+          {/* Contagem e finalidade juntas numa linha só, para o número ter a
+              largura toda. Antes o "para responder" ficava espremido contra a
+              seta. */}
+          <CustomText size="small" boldness="medium" color="secondary" numberOfLines={1}>
             {count === 1
               ? t('matching.invitation.home_card_one', { count })
               : t('matching.invitation.home_card_other', { count })}
+            <CustomText size="small" color="secondary" style={{ color: Colors.muted }}>
+              {'  ·  '}
+              {count === 1
+                ? t('matching.invitation.home_expires_suffix')
+                : t('matching.invitation.home_expires_suffix_soonest')}
+            </CustomText>
           </CustomText>
 
-          {/* O contador é o elemento dominante: a pergunta dele ao olhar para a
-              Home não é quantos pedidos tem, é quanto tempo lhe resta. O número
-              fica grande, e a etiqueta pequena por cima. */}
+          {/* O contador é o herói: a pergunta dele ao olhar para a Home não é
+              quantos pedidos tem, é quanto tempo lhe resta.
+
+              `tabular-nums` fixa a largura dos dígitos — sem isso o texto dança
+              da esquerda para a direita a cada segundo, porque o "1" é mais
+              estreito do que os outros algarismos. */}
           {!!label && (
-            <View className="flex-row items-baseline mt-0.5">
-              <CustomText
-                size="large"
-                boldness="bolder"
-                color="secondary"
-                style={{ color: urgent ? Colors.brand : Colors.secondary, fontVariant: ['tabular-nums'] }}
-              >
-                {label}
-              </CustomText>
-              <CustomText size="extraSmall" color="secondary" classes="ml-1.5" style={{ color: Colors.muted }}>
-                {count === 1
-                  ? t('matching.invitation.home_expires_suffix')
-                  : t('matching.invitation.home_expires_suffix_soonest')}
-              </CustomText>
-            </View>
+            <CustomText
+              size="headline"
+              boldness="bolder"
+              color="secondary"
+              classes="mt-0.5"
+              style={{
+                color: urgent ? Colors.brand : Colors.secondary,
+                fontVariant: ['tabular-nums'],
+              }}
+            >
+              {label}
+            </CustomText>
           )}
         </View>
 
-        <Feather name="chevron-right" size={20} color={Colors.muted} />
+        <Feather name="chevron-right" size={20} color={urgent ? Colors.brand : Colors.secondary} />
       </TouchableOpacity>
     </View>
   )

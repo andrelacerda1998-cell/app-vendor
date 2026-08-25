@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
@@ -14,7 +13,6 @@ const pad = (n: number) => String(n).padStart(2, '0');
  * app cheia de horários de serviços. A unidade é sempre explícita.
  */
 export function useExpiryCountdown(expiresAt?: string | null) {
-  const { t } = useTranslation();
   const [now, setNow] = useState(() => Date.now());
 
   const target = useMemo(() => {
@@ -26,28 +24,35 @@ export function useExpiryCountdown(expiresAt?: string | null) {
   const remainingMs = target ? Math.max(0, target - now) : 0;
   const expired = target > 0 && remainingMs === 0;
 
-  // Ao segundo só no último minuto: acima disso o segundo a mexer é ruído que
-  // gasta bateria sem ajudar a decidir.
+  // Ao segundo, sempre. Um contador que salta de minuto em minuto parece
+  // parado — e é a sensação de estar a correr que faz alguém responder agora
+  // em vez de logo.
   useEffect(() => {
     if (!target || expired) return;
-    const fine = remainingMs < 60_000;
-    const id = setInterval(() => setNow(Date.now()), fine ? 1000 : 20_000);
+    const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
-  }, [target, expired, remainingMs]);
+  }, [target, expired]);
 
+  /**
+   * Unidade sempre explícita — "28m 45s" e nunca "28:45".
+   *
+   * Dois pontos leem-se como HORA DO DIA, e numa app cheia de horários de
+   * serviços isso é uma confusão à espera de acontecer: "28:45" não existe,
+   * mas "15:00" existe, e o olho não distingue os dois num relance.
+   */
   const label = useMemo(() => {
     if (!target) return null;
     const total = Math.floor(remainingMs / 1000);
 
     if (total >= 3600) {
       const h = Math.floor(total / 3600);
-      return t('matching.invitation.window_hours', { hours: h, minutes: pad(Math.floor((total % 3600) / 60)) });
+      return `${h}h ${pad(Math.floor((total % 3600) / 60))}m`;
     }
     if (total >= 60) {
-      return t('matching.invitation.window_minutes', { count: Math.ceil(total / 60) });
+      return `${Math.floor(total / 60)}m ${pad(total % 60)}s`;
     }
-    return t('matching.invitation.window_seconds', { count: total });
-  }, [target, remainingMs, t]);
+    return `${total}s`;
+  }, [target, remainingMs]);
 
   return {
     label,

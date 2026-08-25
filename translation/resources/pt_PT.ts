@@ -1624,12 +1624,6 @@ export default {
         "list_title": "Pedidos de serviços",
         "fallback_title": "Pedido de serviço",
         "window": "para responder",
-        // "18:44" lia-se como hora do dia. Passa a unidade explícita.
-        "window_hours": "{{hours}}h{{minutes}}",
-        "window_minutes_one": "{{count}} min",
-        "window_minutes_other": "{{count}} min",
-        "window_seconds_one": "{{count}} s",
-        "window_seconds_other": "{{count}} s",
         "immediate": "Para agora",
         "duration": "~{{minutes}} min",
         "you_receive": "Vais receber",

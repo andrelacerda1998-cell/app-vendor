@@ -1623,12 +1623,6 @@ export default {
         "list_title": "Service requests",
         "fallback_title": "Service request",
         "window": "to reply",
-        // "18:44" read like a time of day. Now it carries an explicit unit.
-        "window_hours": "{{hours}}h{{minutes}}",
-        "window_minutes_one": "{{count}} min",
-        "window_minutes_other": "{{count}} min",
-        "window_seconds_one": "{{count}}s",
-        "window_seconds_other": "{{count}}s",
         "immediate": "Right now",
         "duration": "~{{minutes}} min",
         "you_receive": "You'll get",
