@@ -119,9 +119,9 @@ const UserHeader = () => {
           className="flex-row items-center rounded-full pl-3 pr-1.5 py-1.5 mr-3"
           style={{
             flexShrink: 0,
-            backgroundColor: online.isOnline ? 'rgba(35,230,158,0.14)' : Colors.card,
+            backgroundColor: online.isOnline ? 'rgba(35,230,158,0.14)' : Colors.brand_soft,
             borderWidth: 1,
-            borderColor: online.isOnline ? 'rgba(35,230,158,0.45)' : Colors.line,
+            borderColor: online.isOnline ? 'rgba(35,230,158,0.45)' : `${Colors.brand}66`,
             opacity: online.disabled ? 0.5 : 1,
           }}
           accessibilityRole="switch"
@@ -132,7 +132,7 @@ const UserHeader = () => {
             size="extraSmall"
             boldness="bold"
             color="secondary"
-            style={{ color: online.isOnline ? Colors.success : Colors.muted }}
+            style={{ color: online.isOnline ? Colors.success : Colors.brand }}
           >
             {online.isOnline ? t('session.status.on_label') : t('session.status.off_cta')}
           </CustomText>
@@ -146,11 +146,11 @@ const UserHeader = () => {
               width: 34,
               height: 20,
               padding: 2,
-              backgroundColor: online.isOnline ? Colors.success : Colors.line,
+              backgroundColor: online.isOnline ? Colors.success : `${Colors.brand}40`,
               alignItems: online.isOnline ? 'flex-end' : 'flex-start',
             }}
           >
-            <View className="rounded-full" style={{ width: 16, height: 16, backgroundColor: Colors.secondary }} />
+            <View className="rounded-full" style={{ width: 16, height: 16, backgroundColor: online.isOnline ? Colors.secondary : Colors.brand }} />
           </View>
         </TouchableOpacity>
 
