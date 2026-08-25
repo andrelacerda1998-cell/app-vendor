@@ -34,7 +34,10 @@ const MatchingInvitationCard = ({
   busy?: boolean;
 }) => {
   const { t } = useTranslation();
-  const { label: countdown, expired, urgent } = useExpiryCountdown(invitation.expires_at);
+  const { label: countdown, remainingRatio, expired, urgent } = useExpiryCountdown(
+    invitation.expires_at,
+    invitation.notified_at,
+  );
 
   const earn = renderMoney(invitation.amount_for_vendor ?? null);
 
@@ -63,26 +66,36 @@ const MatchingInvitationCard = ({
       className="rounded-2xl border p-5 mb-3"
       style={{ borderColor: Colors.line, backgroundColor: Colors.card }}
     >
-      {/* O contador vive numa pílula própria e discreta: é contexto, não é a
-          oferta. Só ganha a cor da marca no último minuto, quando passa a ser
-          uma decisão a tomar já. */}
+      {/* Contador e barra, tal como na Home: a mesma informação com a mesma
+          cara nos dois sítios. Ver dois tratamentos diferentes para o mesmo
+          número faz duvidar de ambos. */}
       {!!countdown && (
-        <View className="flex-row items-center mb-4">
-          <View
-            className="flex-row items-center rounded-full px-2.5 py-1"
-            style={{ backgroundColor: urgent ? Colors.brand_soft : Colors.card_high }}
-          >
-            <Feather name="clock" size={11} color={urgent ? Colors.brand : Colors.muted} />
+        <View className="mb-4">
+          <View className="flex-row items-baseline mb-2">
             <CustomText
-              size="extraSmall"
-              boldness="bold"
+              size="medium"
+              boldness="bolder"
               color="secondary"
-              classes="ml-1.5"
-              style={{ color: urgent ? Colors.brand : Colors.muted, fontVariant: ['tabular-nums'] }}
+              style={{ color: urgent ? Colors.brand : Colors.secondary, fontVariant: ['tabular-nums'] }}
             >
-              {countdown} {t('matching.invitation.window')}
+              {countdown}
+            </CustomText>
+            <CustomText size="extraSmall" color="secondary" classes="ml-1.5" style={{ color: Colors.muted }}>
+              {t('matching.invitation.window')}
             </CustomText>
           </View>
+
+          {remainingRatio !== null && (
+            <View className="rounded-full overflow-hidden" style={{ height: 3, backgroundColor: Colors.card_high }}>
+              <View
+                style={{
+                  height: 3,
+                  width: `${Math.max(2, remainingRatio * 100)}%`,
+                  backgroundColor: urgent ? Colors.brand : Colors.muted,
+                }}
+              />
+            </View>
+          )}
         </View>
       )}
 
@@ -136,14 +149,7 @@ const MatchingInvitationCard = ({
       {/* O aviso que impede o mal-entendido. Discreto de propósito: tem de ser
           lido, mas não pode pesar mais do que a proposta em si — antes ocupava
           três linhas realçadas e dominava o cartão. */}
-      <CustomText
-        size="extraSmall"
-        color="secondary"
-        classes="mt-4 mb-5"
-        style={{ color: Colors.muted, lineHeight: 17 }}
-      >
-        {t('matching.invitation.explainer')}
-      </CustomText>
+      <View className="mt-5" />
 
       <View className="flex-row">
         <TouchableOpacity

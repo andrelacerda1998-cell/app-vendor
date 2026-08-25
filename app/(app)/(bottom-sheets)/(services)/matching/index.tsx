@@ -4,6 +4,7 @@ import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import TouchOpacity from '@/components/TouchOpacity';
 import ArrowIcon from '@/assets/icons/arrow';
+import { Feather } from '@expo/vector-icons';
 import { CustomText } from '@/components/CustomText';
 import { Colors } from '@/constants/Colors';
 import { EmptyState, ErrorState, SkeletonList } from '@/components/ui';
@@ -59,7 +60,7 @@ const MatchingInvitations = () => {
           pedidos: sem este wrapper o conteúdo era empurrado para o meio do
           ecrã, com um vazio enorme por cima do primeiro cartão. */}
       <View className="flex-1 bg-bg p-5">
-        <View className="flex-row items-center justify-between mb-6">
+        <View className="flex-row items-center justify-between mb-4">
           <TouchOpacity onPress={() => router.back()} otherClasses="h-10 w-10" itemsCenter>
             <ArrowIcon color={Colors.secondary} position="left" size="40%" />
           </TouchOpacity>
@@ -68,6 +69,26 @@ const MatchingInvitations = () => {
           </CustomText>
           <View className="h-10 w-10" />
         </View>
+
+        {/* O aviso vive AQUI e não dentro de cada cartão: repetido em três
+            cartões era ruído, e é uma regra do ecrã inteiro — não de um pedido
+            em particular. Lido uma vez, vale para todos. */}
+        {!loading && !failed && invitations.length > 0 && (
+          <View
+            className="flex-row rounded-xl px-3.5 py-3 mb-4"
+            style={{ backgroundColor: Colors.card }}
+          >
+            <Feather name="info" size={14} color={Colors.brand} style={{ marginTop: 2 }} />
+            <CustomText
+              size="extraSmall"
+              color="secondary"
+              classes="ml-2.5 flex-1"
+              style={{ color: Colors.muted, lineHeight: 17 }}
+            >
+              {t('matching.invitation.explainer')}
+            </CustomText>
+          </View>
+        )}
 
         {loading ? (
           <SkeletonList />
