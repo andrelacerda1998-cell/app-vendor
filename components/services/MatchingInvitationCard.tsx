@@ -113,44 +113,52 @@ const MatchingInvitationCard = ({
       {/* QUANDO — a pergunta que decide se ele pode sequer aceitar. Antes não
           aparecia de todo: o payload trazia schedule a null porque a linha de
           agenda ainda não existe durante a seleção. */}
-      {/* Quando, quanto tempo, e quanto dinheiro — três linhas com etiqueta,
-          separadas por filetes. A duração estava encostada à direita da data em
-          cinzento apagado e passava despercebida; sendo o que decide se o
-          serviço cabe no dia dele, merece uma linha própria. */}
-      <View className="border-t" style={{ borderColor: Colors.line }}>
-        <View className="flex-row items-center justify-between py-3.5">
-          <View className="flex-row items-center flex-1 pr-3">
-            <Feather name={when ? 'calendar' : 'zap'} size={14} color={Colors.muted} />
-            <CustomText size="small" boldness="bold" color="secondary" classes="ml-2">
-              {when ?? t('matching.invitation.immediate')}
+      {/* Quando, quanto tempo, e quanto dinheiro.
+          O destaque vem de PESO, COR e FORMA — nunca de aumentar as letras: o
+          bloco ganha fundo próprio para se separar do resto do cartão, os
+          valores ficam em branco cheio contra etiquetas apagadas, e cada linha
+          tem o seu ícone com a cor da marca. */}
+      <View className="rounded-xl overflow-hidden" style={{ backgroundColor: Colors.card_high }}>
+        <View className="flex-row items-center justify-between px-3.5 py-3">
+          <View className="flex-row items-center">
+            <Feather name={when ? 'calendar' : 'zap'} size={14} color={Colors.brand} />
+            <CustomText size="small" color="secondary" classes="ml-2.5" style={{ color: Colors.muted }}>
+              {t('matching.invitation.when_label')}
             </CustomText>
           </View>
+          <CustomText size="small" boldness="bolder" color="secondary">
+            {when ?? t('matching.invitation.immediate')}
+          </CustomText>
         </View>
 
         {!!durationMinutes && (
           <View
-            className="flex-row items-center justify-between py-3.5 border-t"
+            className="flex-row items-center justify-between px-3.5 py-3 border-t"
             style={{ borderColor: Colors.line }}
           >
             <View className="flex-row items-center">
-              <Feather name="clock" size={14} color={Colors.muted} />
-              <CustomText size="small" color="secondary" classes="ml-2" style={{ color: Colors.muted }}>
+              <Feather name="clock" size={14} color={Colors.brand} />
+              <CustomText size="small" color="secondary" classes="ml-2.5" style={{ color: Colors.muted }}>
                 {t('matching.invitation.duration_label')}
               </CustomText>
             </View>
-            <CustomText size="small" boldness="bold" color="secondary">
+            <CustomText size="small" boldness="bolder" color="secondary">
               {t('matching.invitation.duration', { minutes: durationMinutes })}
             </CustomText>
           </View>
         )}
 
+        {/* O dinheiro é o único com a cor da marca: é o que ele veio ver. */}
         <View
-          className="flex-row items-center justify-between py-3.5 border-t"
+          className="flex-row items-center justify-between px-3.5 py-3 border-t"
           style={{ borderColor: Colors.line }}
         >
-          <CustomText size="small" color="secondary" style={{ color: Colors.muted }}>
-            {t('matching.invitation.you_receive')}
-          </CustomText>
+          <View className="flex-row items-center">
+            <Feather name="credit-card" size={14} color={Colors.brand} />
+            <CustomText size="small" color="secondary" classes="ml-2.5" style={{ color: Colors.muted }}>
+              {t('matching.invitation.you_receive')}
+            </CustomText>
+          </View>
           <CustomText size="large" boldness="bolder" color="secondary" style={{ color: Colors.brand }}>
             {earn}
           </CustomText>

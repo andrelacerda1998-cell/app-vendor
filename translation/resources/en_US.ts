@@ -1624,6 +1624,7 @@ export default {
         "fallback_title": "Service request",
         "window": "to reply",
         "immediate": "Right now",
+        "when_label": "When",
         "duration_label": "Estimated duration",
         "duration": "~{{minutes}} min",
         "you_receive": "You'll get",

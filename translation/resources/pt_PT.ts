@@ -1625,6 +1625,7 @@ export default {
         "fallback_title": "Pedido de serviço",
         "window": "para responder",
         "immediate": "Para agora",
+        "when_label": "Quando",
         "duration_label": "Duração estimada",
         "duration": "~{{minutes}} min",
         "you_receive": "Vais receber",
