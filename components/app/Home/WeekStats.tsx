@@ -60,8 +60,9 @@ const Divider = () => <View style={{ width: 1, height: 32, backgroundColor: Colo
 const WeekStats = () => {
   const { t } = useTranslation();
   const { api } = useApi();
-  const { vendorData } = useSession();
+  const { vendorData, vendorStatus } = useSession();
   const [stats, setStats] = useState<Stats | null>(null);
+  const isOnline = vendorStatus === 'Online';
 
   useEffect(() => {
     let mounted = true;
@@ -119,9 +120,16 @@ const WeekStats = () => {
         >
           <FeatherIcon name="info" size={14} color={Colors.muted} />
           <CustomText color="muted" size="small" classes="ml-2 flex-1" numberOfLines={3}>
-            {zoneRequests > 0
-              ? t('home_stats.empty_with_demand', { count: zoneRequests })
-              : t('home_stats.empty_ready')}
+            {/* "Fica online" só a quem está offline. O texto era incondicional
+                e mandava ficar online quem já estava — uma instrução que não
+                faz sentido faz duvidar de tudo o resto que a app diz. */}
+            {isOnline
+              ? (zoneRequests > 0
+                  ? t('home_stats.empty_with_demand_online', { count: zoneRequests })
+                  : t('home_stats.empty_ready_online'))
+              : (zoneRequests > 0
+                  ? t('home_stats.empty_with_demand', { count: zoneRequests })
+                  : t('home_stats.empty_ready'))}
           </CustomText>
         </View>
       )}

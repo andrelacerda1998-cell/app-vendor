@@ -1320,6 +1320,10 @@ export default {
     "finish_account": "Let's finish your account."
   },
   "home_stats": {
+    // Already online: nothing to do but wait.
+    "empty_ready_online": "You're visible in your area. Requests show up here as they arrive.",
+    "empty_with_demand_online_one": "There was {{count}} request in your area this week. You're visible for the next ones.",
+    "empty_with_demand_online_other": "There were {{count}} requests in your area this week. You're visible for the next ones.",
     "empty_ready": "You're ready and visible in your area. Go online to receive requests.",
     "empty_with_demand_one": "There was {{count}} request in your area this week. Go online so you don't miss the next ones.",
     "empty_with_demand_other": "There were {{count}} requests in your area this week. Go online so you don't miss the next ones.",
