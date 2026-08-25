@@ -1628,7 +1628,7 @@ export default {
         "duration_label": "Estimated duration",
         "duration": "~{{minutes}} min",
         "you_receive": "You'll get",
-        "explainer": "Nothing is reserved yet. The client picks from whoever is available, and you can reply to other requests meanwhile.",
+        "explainer": "The client picks from whoever is available. Your calendar is only booked if you are chosen.",
         "accept": "I'm available",
         "decline": "Not now",
         "accepted_title": "You're on the list",

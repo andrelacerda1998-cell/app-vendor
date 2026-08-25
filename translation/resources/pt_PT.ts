@@ -1629,7 +1629,7 @@ export default {
         "duration_label": "Duração estimada",
         "duration": "~{{minutes}} min",
         "you_receive": "Vais receber",
-        "explainer": "Não fica reservado. O cliente escolhe entre quem se disponibilizar, e podes responder a outros pedidos entretanto.",
+        "explainer": "O cliente escolhe entre quem se disponibilizar. A tua agenda só fica ocupada se fores escolhido.",
         "accept": "Tenho disponibilidade",
         "decline": "Agora não",
         "accepted_title": "Ficaste na lista",

@@ -86,15 +86,15 @@ const MatchingInvitations = () => {
             em particular. Lido uma vez, vale para todos. */}
         {!loading && !failed && invitations.length > 0 && (
           <View
-            className="flex-row rounded-xl px-3.5 py-3 mb-4"
-            style={{ backgroundColor: Colors.card }}
+            className="flex-row rounded-xl px-4 py-3.5 mb-4 border"
+            style={{ backgroundColor: Colors.brand_soft, borderColor: `${Colors.brand}33` }}
           >
-            <Feather name="info" size={14} color={Colors.brand} style={{ marginTop: 2 }} />
+            <Feather name="info" size={16} color={Colors.brand} style={{ marginTop: 1 }} />
             <CustomText
-              size="extraSmall"
+              size="small"
               color="secondary"
-              classes="ml-2.5 flex-1"
-              style={{ color: Colors.muted, lineHeight: 17 }}
+              classes="ml-3 flex-1"
+              style={{ lineHeight: 20 }}
             >
               {t('matching.invitation.explainer')}
             </CustomText>
