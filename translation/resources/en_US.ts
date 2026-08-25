@@ -230,6 +230,7 @@ export default {
       "receive_requests": "Receive service requests",
       "on_label": "Receiving requests",
       "off_label": "Not receiving",
+      "off_cta": "Go available",
       "online": "Online",
       "offline": "Offline",
     }

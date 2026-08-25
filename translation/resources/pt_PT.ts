@@ -230,6 +230,7 @@ export default {
             "receive_requests": "Receber pedidos de serviço",
             "on_label": "A receber pedidos",
             "off_label": "Não recebes pedidos",
+            "off_cta": "Ficar disponível",
             "online": "Online",
             "offline": "Offline"
         }

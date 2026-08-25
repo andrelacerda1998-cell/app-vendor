@@ -134,7 +134,7 @@ const UserHeader = () => {
             color="secondary"
             style={{ color: online.isOnline ? Colors.success : Colors.muted }}
           >
-            {online.isOnline ? t('session.status.on_label') : t('session.status.off_label')}
+            {online.isOnline ? t('session.status.on_label') : t('session.status.off_cta')}
           </CustomText>
 
           {/* Switch desenhado à mão: a bolinha encosta ao lado que está ativo,
