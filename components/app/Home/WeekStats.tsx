@@ -88,7 +88,20 @@ const WeekStats = () => {
   const approved = !!vendorData?.can_accept_service;
   const emptyWeek = !stats?.this_week_earnings && !stats?.this_week_services;
   const zoneRequests = vendorData?.zone_recent_requests ?? 0;
-  const explain = approved && emptyWeek;
+  /**
+   * A linha explicativa só aparece quando tem algo a dizer.
+   *
+   * Estando online e sem procura conhecida, dizer "estás visível" seria a
+   * TERCEIRA coisa no mesmo ecrã a afirmar o mesmo: o cabeçalho já diz "Pronto
+   * para receber serviços" e o interruptor já diz "Online". Repetir não
+   * tranquiliza — só ocupa uma linha e ensina a saltar o cartão.
+   *
+   * Fica em dois casos, ambos com conteúdo real:
+   *  - offline: há um passo concreto a dar;
+   *  - com procura na zona: diz-lhe que HÁ trabalho a acontecer à volta dele,
+   *    que é o que explica os zeros sem ser desmotivante.
+   */
+  const explain = approved && emptyWeek && (!isOnline || zoneRequests > 0);
 
   return (
     <TouchableOpacity
@@ -120,13 +133,8 @@ const WeekStats = () => {
         >
           <FeatherIcon name="info" size={14} color={Colors.muted} />
           <CustomText color="muted" size="small" classes="ml-2 flex-1" numberOfLines={3}>
-            {/* "Fica online" só a quem está offline. O texto era incondicional
-                e mandava ficar online quem já estava — uma instrução que não
-                faz sentido faz duvidar de tudo o resto que a app diz. */}
             {isOnline
-              ? (zoneRequests > 0
-                  ? t('home_stats.empty_with_demand_online', { count: zoneRequests })
-                  : t('home_stats.empty_ready_online'))
+              ? t('home_stats.empty_with_demand_online', { count: zoneRequests })
               : (zoneRequests > 0
                   ? t('home_stats.empty_with_demand', { count: zoneRequests })
                   : t('home_stats.empty_ready'))}
