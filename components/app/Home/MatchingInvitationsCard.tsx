@@ -56,16 +56,16 @@ const MatchingInvitationsCard = () => {
           backgroundColor: Colors.card,
         }}
       >
-        <View className="flex-row items-center px-4 pt-4 pb-3.5">
+        <View className="flex-row items-center px-4 py-4">
           <View
-            className="w-10 h-10 rounded-xl items-center justify-center"
+            className="w-12 h-12 rounded-2xl items-center justify-center"
             style={{ backgroundColor: Colors.brand_soft }}
           >
-            <Feather name="users" size={18} color={Colors.brand} />
+            <Feather name="users" size={20} color={Colors.brand} />
           </View>
 
           <View className="flex-1 ml-3">
-            <CustomText size="small" color="secondary" numberOfLines={1}>
+            <CustomText size="medium" color="secondary" numberOfLines={1}>
               {count === 1
                 ? t('matching.invitation.home_card_one', { count })
                 : t('matching.invitation.home_card_other', { count })}
@@ -77,7 +77,7 @@ const MatchingInvitationsCard = () => {
             {!!label && (
               <View className="flex-row items-baseline mt-0.5">
                 <CustomText
-                  size="large"
+                  size="subtitle"
                   boldness="bolder"
                   color="secondary"
                   style={{ color: accent, fontVariant: ['tabular-nums'] }}
@@ -85,9 +85,9 @@ const MatchingInvitationsCard = () => {
                   {label}
                 </CustomText>
                 <CustomText
-                  size="extraSmall"
+                  size="small"
                   color="secondary"
-                  classes="ml-1.5"
+                  classes="ml-2"
                   style={{ color: Colors.muted }}
                 >
                   {count === 1
@@ -98,16 +98,16 @@ const MatchingInvitationsCard = () => {
             )}
           </View>
 
-          <Feather name="chevron-right" size={18} color={Colors.muted} />
+          <Feather name="chevron-right" size={20} color={Colors.muted} />
         </View>
 
         {/* A barra é o destaque real: encosta às margens do cartão e esvazia-se
             à vista, o que dá urgência sem gritar. */}
         {remainingRatio !== null && (
-          <View style={{ height: 3, backgroundColor: Colors.card_high }}>
+          <View style={{ height: 4, backgroundColor: Colors.card_high }}>
             <View
               style={{
-                height: 3,
+                height: 4,
                 width: `${Math.max(2, remainingRatio * 100)}%`,
                 backgroundColor: urgent ? Colors.brand : Colors.muted,
               }}
