@@ -1619,8 +1619,8 @@ export default {
       "invitation": {
         "home_card_one": "{{count}} pedido de serviço",
         "home_card_other": "{{count}} pedidos de serviço",
-        "home_expires": "Expira em {{time}}",
-        "home_expires_soonest": "O mais urgente expira em {{time}}",
+        "home_expires_suffix": "para responder",
+        "home_expires_suffix_soonest": "no mais urgente",
         "list_title": "Pedidos de serviços",
         "fallback_title": "Pedido de serviço",
         "window": "para responder",

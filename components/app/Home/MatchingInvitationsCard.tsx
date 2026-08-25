@@ -49,23 +49,32 @@ const MatchingInvitationsCard = () => {
       >
         <Feather name="users" size={20} color={Colors.brand} />
 
-        <View className="flex-1 ml-3">
-          <CustomText color="secondary" boldness="bold">
+        <View className="flex-1 ml-3 mr-2">
+          <CustomText size="small" color="secondary" style={{ color: Colors.muted }}>
             {count === 1
               ? t('matching.invitation.home_card_one', { count })
               : t('matching.invitation.home_card_other', { count })}
           </CustomText>
+
+          {/* O contador é o elemento dominante: a pergunta dele ao olhar para a
+              Home não é quantos pedidos tem, é quanto tempo lhe resta. O número
+              fica grande, e a etiqueta pequena por cima. */}
           {!!label && (
-            <CustomText
-              size="extraSmall"
-              classes="mt-0.5"
-              color="secondary"
-              style={{ color: urgent ? Colors.brand : Colors.muted, fontVariant: ['tabular-nums'] }}
-            >
-              {count === 1
-                ? t('matching.invitation.home_expires', { time: label })
-                : t('matching.invitation.home_expires_soonest', { time: label })}
-            </CustomText>
+            <View className="flex-row items-baseline mt-0.5">
+              <CustomText
+                size="large"
+                boldness="bolder"
+                color="secondary"
+                style={{ color: urgent ? Colors.brand : Colors.secondary, fontVariant: ['tabular-nums'] }}
+              >
+                {label}
+              </CustomText>
+              <CustomText size="extraSmall" color="secondary" classes="ml-1.5" style={{ color: Colors.muted }}>
+                {count === 1
+                  ? t('matching.invitation.home_expires_suffix')
+                  : t('matching.invitation.home_expires_suffix_soonest')}
+              </CustomText>
+            </View>
           )}
         </View>
 

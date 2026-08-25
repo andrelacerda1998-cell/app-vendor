@@ -1618,8 +1618,8 @@ export default {
       "invitation": {
         "home_card_one": "{{count}} service request",
         "home_card_other": "{{count}} service requests",
-        "home_expires": "Expires in {{time}}",
-        "home_expires_soonest": "The most urgent expires in {{time}}",
+        "home_expires_suffix": "to reply",
+        "home_expires_suffix_soonest": "on the most urgent",
         "list_title": "Service requests",
         "fallback_title": "Service request",
         "window": "to reply",
