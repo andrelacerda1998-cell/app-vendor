@@ -169,16 +169,22 @@ const MatchingInvitationCard = ({
       <View className="mt-5" />
 
       <View className="flex-row">
-        {/* Recusar em vermelho, mas em contorno e não preenchido: é uma
-            escolha legítima e não um erro, e um botão vermelho cheio ao lado do
-            de aceitar disputaria a atenção com a ação que interessa. */}
+        {/* Recusar tem fundo tonal e não contorno vazio: ao lado de um botão
+            cheio, um contorno oco lê-se como desativado. Com um fundo próprio
+            passa a ser claramente tocável, sem deixar de ser o secundário — é a
+            COR e a LARGURA que mantêm a hierarquia, não a falta de forma.
+
+            Vermelho suave e não saturado: recusar é uma escolha legítima, não
+            um erro. */}
         <TouchableOpacity
           onPress={onDecline}
           disabled={busy}
-          className="flex-1 rounded-2xl py-3.5 items-center mr-2.5 border"
-          style={{ borderColor: `${Colors.danger}59`, opacity: busy ? 0.5 : 1 }}
+          accessibilityRole="button"
+          className="flex-1 flex-row rounded-2xl py-3.5 items-center justify-center mr-2.5"
+          style={{ backgroundColor: `${Colors.danger}1A`, opacity: busy ? 0.5 : 1 }}
         >
-          <CustomText boldness="bold" color="secondary" style={{ color: Colors.danger }}>
+          <Feather name="x" size={15} color={Colors.danger} />
+          <CustomText boldness="bold" color="secondary" classes="ml-1.5" style={{ color: Colors.danger }}>
             {t('matching.invitation.decline')}
           </CustomText>
         </TouchableOpacity>
@@ -186,10 +192,12 @@ const MatchingInvitationCard = ({
         <TouchableOpacity
           onPress={onAccept}
           disabled={busy}
-          className="flex-[1.4] rounded-2xl py-3.5 items-center"
+          accessibilityRole="button"
+          className="flex-[1.4] flex-row rounded-2xl py-3.5 items-center justify-center"
           style={{ backgroundColor: Colors.brand, opacity: busy ? 0.5 : 1 }}
         >
-          <CustomText boldness="bolder" color="secondary" style={{ color: Colors.on_brand }}>
+          <Feather name="check" size={15} color={Colors.on_brand} />
+          <CustomText boldness="bolder" color="secondary" classes="ml-1.5" style={{ color: Colors.on_brand }}>
             {t('matching.invitation.accept')}
           </CustomText>
         </TouchableOpacity>
