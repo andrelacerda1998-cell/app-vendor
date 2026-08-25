@@ -113,23 +113,34 @@ const MatchingInvitationCard = ({
       {/* QUANDO — a pergunta que decide se ele pode sequer aceitar. Antes não
           aparecia de todo: o payload trazia schedule a null porque a linha de
           agenda ainda não existe durante a seleção. */}
-      {/* Quando e quanto, um por cima do outro e separados por uma linha fina:
-          são as duas respostas que ele procura, e caixas dentro de caixas só
-          lhes tiravam peso. */}
+      {/* Quando, quanto tempo, e quanto dinheiro — três linhas com etiqueta,
+          separadas por filetes. A duração estava encostada à direita da data em
+          cinzento apagado e passava despercebida; sendo o que decide se o
+          serviço cabe no dia dele, merece uma linha própria. */}
       <View className="border-t" style={{ borderColor: Colors.line }}>
-        {(when || durationMinutes) && (
-          <View className="flex-row items-center justify-between py-3.5">
-            <View className="flex-row items-center flex-1 pr-3">
-              <Feather name={when ? 'calendar' : 'zap'} size={14} color={Colors.muted} />
-              <CustomText size="small" boldness="bold" color="secondary" classes="ml-2">
-                {when ?? t('matching.invitation.immediate')}
+        <View className="flex-row items-center justify-between py-3.5">
+          <View className="flex-row items-center flex-1 pr-3">
+            <Feather name={when ? 'calendar' : 'zap'} size={14} color={Colors.muted} />
+            <CustomText size="small" boldness="bold" color="secondary" classes="ml-2">
+              {when ?? t('matching.invitation.immediate')}
+            </CustomText>
+          </View>
+        </View>
+
+        {!!durationMinutes && (
+          <View
+            className="flex-row items-center justify-between py-3.5 border-t"
+            style={{ borderColor: Colors.line }}
+          >
+            <View className="flex-row items-center">
+              <Feather name="clock" size={14} color={Colors.muted} />
+              <CustomText size="small" color="secondary" classes="ml-2" style={{ color: Colors.muted }}>
+                {t('matching.invitation.duration_label')}
               </CustomText>
             </View>
-            {!!durationMinutes && (
-              <CustomText size="extraSmall" color="secondary" style={{ color: Colors.muted }}>
-                {t('matching.invitation.duration', { minutes: durationMinutes })}
-              </CustomText>
-            )}
+            <CustomText size="small" boldness="bold" color="secondary">
+              {t('matching.invitation.duration', { minutes: durationMinutes })}
+            </CustomText>
           </View>
         )}
 
@@ -146,9 +157,6 @@ const MatchingInvitationCard = ({
         </View>
       </View>
 
-      {/* O aviso que impede o mal-entendido. Discreto de propósito: tem de ser
-          lido, mas não pode pesar mais do que a proposta em si — antes ocupava
-          três linhas realçadas e dominava o cartão. */}
       <View className="mt-5" />
 
       <View className="flex-row">

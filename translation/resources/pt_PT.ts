@@ -1625,6 +1625,7 @@ export default {
         "fallback_title": "Pedido de serviço",
         "window": "para responder",
         "immediate": "Para agora",
+        "duration_label": "Duração estimada",
         "duration": "~{{minutes}} min",
         "you_receive": "Vais receber",
         "explainer": "Não fica reservado. O cliente escolhe entre quem se disponibilizar, e podes responder a outros pedidos entretanto.",

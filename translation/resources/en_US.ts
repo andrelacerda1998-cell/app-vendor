@@ -1624,6 +1624,7 @@ export default {
         "fallback_title": "Service request",
         "window": "to reply",
         "immediate": "Right now",
+        "duration_label": "Estimated duration",
         "duration": "~{{minutes}} min",
         "you_receive": "You'll get",
         "explainer": "Nothing is reserved yet. The client picks from whoever is available, and you can reply to other requests meanwhile.",
