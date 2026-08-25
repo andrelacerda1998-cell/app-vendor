@@ -13,6 +13,8 @@ export interface MatchingInvitation {
   /** O que ELE recebe. O que o cliente paga nunca aparece aqui. */
   amount_for_vendor: number | null;
   distance: number | null;
+  /** Quando a janela abriu. Com o expires_at dá a proporção já decorrida. */
+  notified_at: string | null;
   /** Quando a janela fecha. Visível de propósito — ver o card. */
   expires_at: string | null;
   service_type: {

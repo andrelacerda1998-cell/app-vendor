@@ -12,7 +12,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
  * Nunca devolve algo como "18:44": isso lê-se como HORA DO DIA, perigoso numa
  * app cheia de horários de serviços. A unidade é sempre explícita.
  */
-export function useExpiryCountdown(expiresAt?: string | null) {
+export function useExpiryCountdown(expiresAt?: string | null, startedAt?: string | null) {
   const [now, setNow] = useState(() => Date.now());
 
   const target = useMemo(() => {
@@ -54,8 +54,27 @@ export function useExpiryCountdown(expiresAt?: string | null) {
     return `${total}s`;
   }, [target, remainingMs]);
 
+  const start = useMemo(() => {
+    if (!startedAt) return 0;
+    const parsed = new Date(startedAt).getTime();
+    return Number.isFinite(parsed) ? parsed : 0;
+  }, [startedAt]);
+
+  /**
+   * Fração da janela que AINDA falta, de 1 a 0.
+   *
+   * Serve para uma barra que se esvazia: a proporção diz num relance o que o
+   * número sozinho não diz — "23m" é muito ou pouco depende da janela ser de
+   * 30 minutos ou de 60 segundos.
+   */
+  const remainingRatio = useMemo(() => {
+    if (!target || !start || target <= start) return null;
+    return Math.max(0, Math.min(1, remainingMs / (target - start)));
+  }, [target, start, remainingMs]);
+
   return {
     label,
+    remainingRatio,
     expired,
     /** Último minuto: é quando passa a ser uma decisão a tomar já. */
     urgent: remainingMs > 0 && remainingMs <= 60_000,
