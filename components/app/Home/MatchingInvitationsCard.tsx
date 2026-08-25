@@ -7,6 +7,7 @@ import { CustomText } from '@/components/CustomText'
 import { Colors } from '@/constants/Colors'
 import useMatchingInvitations from '@/hooks/useMatchingInvitations'
 import useExpiryCountdown from '@/hooks/useExpiryCountdown'
+import { urgencyInk, urgencyTint } from '@/utils/urgencyColor'
 
 /**
  * Atalho para os pedidos de serviço à espera de resposta.
@@ -35,7 +36,7 @@ const MatchingInvitationsCard = () => {
     return live[0] ?? null;
   }, [invitations]);
 
-  const { label, remainingRatio, urgent } = useExpiryCountdown(
+  const { label, remainingRatio, tone } = useExpiryCountdown(
     soonest?.expires_at,
     soonest?.notified_at,
   );
@@ -43,7 +44,10 @@ const MatchingInvitationsCard = () => {
   const count = invitations.length;
   if (count === 0) return null;
 
-  const accent = urgent ? Colors.brand : Colors.secondary;
+  // A cor progride ao longo da janela toda: verde enquanto vai a tempo, âmbar
+  // a meio, vermelho no fim. Responder cedo é melhor para o cliente, por isso o
+  // aviso não pode ficar todo para o último minuto.
+  const accent = urgencyInk(tone);
 
   return (
     <View className="px-5 mt-3">
@@ -52,7 +56,7 @@ const MatchingInvitationsCard = () => {
         onPress={() => router.push('/(app)/(bottom-sheets)/(services)/matching')}
         className="rounded-2xl border overflow-hidden"
         style={{
-          borderColor: urgent ? `${Colors.brand}66` : Colors.line,
+          borderColor: tone === 'calm' ? Colors.line : `${accent}59`,
           backgroundColor: Colors.card,
         }}
       >
@@ -109,7 +113,7 @@ const MatchingInvitationsCard = () => {
               style={{
                 height: 4,
                 width: `${Math.max(2, remainingRatio * 100)}%`,
-                backgroundColor: urgent ? Colors.brand : Colors.muted,
+                backgroundColor: accent,
               }}
             />
           </View>

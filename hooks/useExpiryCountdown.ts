@@ -72,9 +72,36 @@ export function useExpiryCountdown(expiresAt?: string | null, startedAt?: string
     return Math.max(0, Math.min(1, remainingMs / (target - start)));
   }, [target, start, remainingMs]);
 
+  /**
+   * Quão urgente é responder, em três degraus.
+   *
+   * A cor progride ao longo de TODA a janela e não só no último minuto, porque
+   * responder cedo é melhor para o cliente: quanto mais depressa alguém se
+   * disponibiliza, mais cedo ele escolhe e menos tempo fica à espera. Deixar o
+   * aviso para o fim seria premiar quem responde tarde.
+   *
+   * Quando não há `startedAt` não há proporção, e cai-se no tempo absoluto —
+   * pior, mas melhor do que não dizer nada.
+   */
+  const tone: 'calm' | 'warning' | 'critical' = useMemo(() => {
+    if (!target) return 'calm';
+
+    if (remainingRatio !== null) {
+      if (remainingRatio <= 0.2) return 'critical';
+      if (remainingRatio <= 0.5) return 'warning';
+      return 'calm';
+    }
+
+    if (remainingMs <= 60_000) return 'critical';
+    if (remainingMs <= 5 * 60_000) return 'warning';
+
+    return 'calm';
+  }, [target, remainingRatio, remainingMs]);
+
   return {
     label,
     remainingRatio,
+    tone,
     expired,
     /** Último minuto: é quando passa a ser uma decisão a tomar já. */
     urgent: remainingMs > 0 && remainingMs <= 60_000,

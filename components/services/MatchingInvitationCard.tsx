@@ -7,6 +7,7 @@ import { Colors } from '@/constants/Colors';
 import { renderMoney } from '@/utils/money';
 import { MatchingInvitation } from '@/types/matching';
 import useExpiryCountdown from '@/hooks/useExpiryCountdown';
+import { urgencyInk } from '@/utils/urgencyColor';
 
 /**
  * Um convite de seleção — NÃO é um pedido adjudicado.
@@ -34,7 +35,7 @@ const MatchingInvitationCard = ({
   busy?: boolean;
 }) => {
   const { t } = useTranslation();
-  const { label: countdown, remainingRatio, expired, urgent } = useExpiryCountdown(
+  const { label: countdown, remainingRatio, tone, expired } = useExpiryCountdown(
     invitation.expires_at,
     invitation.notified_at,
   );
@@ -76,7 +77,7 @@ const MatchingInvitationCard = ({
               size="medium"
               boldness="bolder"
               color="secondary"
-              style={{ color: urgent ? Colors.brand : Colors.secondary, fontVariant: ['tabular-nums'] }}
+              style={{ color: urgencyInk(tone), fontVariant: ['tabular-nums'] }}
             >
               {countdown}
             </CustomText>
@@ -91,7 +92,7 @@ const MatchingInvitationCard = ({
                 style={{
                   height: 3,
                   width: `${Math.max(2, remainingRatio * 100)}%`,
-                  backgroundColor: urgent ? Colors.brand : Colors.muted,
+                  backgroundColor: urgencyInk(tone),
                 }}
               />
             </View>
