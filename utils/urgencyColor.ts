@@ -5,10 +5,10 @@ export type UrgencyTone = 'calm' | 'warning' | 'critical';
 /**
  * Cor de um contador de resposta.
  *
- * Verde não é "está tudo bem, não faças nada": é "ainda vais a tempo". A escala
- * existe porque responder cedo é melhor para o cliente — ele escolhe mais
- * depressa e espera menos — por isso a cor acompanha a janela inteira em vez de
- * só avisar no fim.
+ * Âmbar -> laranja -> vermelho. Fica dentro da paleta da marca em vez de saltar
+ * para verde: o verde dizia "está tudo bem" quando a mensagem é o contrário —
+ * há um pedido à espera e responder cedo é melhor para o cliente. O âmbar já é
+ * um chamamento, e a escala aquece a partir dele.
  *
  * Partilhado entre a Home e o cartão do pedido para os dois nunca discordarem
  * sobre o que é urgente.
@@ -18,9 +18,9 @@ export const urgencyInk = (tone: UrgencyTone): string => {
     case 'critical':
       return Colors.danger;
     case 'warning':
-      return Colors.brand;
+      return Colors.warning;
     default:
-      return Colors.success;
+      return Colors.brand;
   }
 };
 
