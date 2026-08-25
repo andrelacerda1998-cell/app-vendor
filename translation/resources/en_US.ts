@@ -1633,6 +1633,7 @@ export default {
         "accepted_subtitle": "We'll let you know as soon as the client decides. Until then, your calendar stays free.",
         "too_late_title": "This request is closed",
         "too_late_subtitle": "Another professional replied first. New requests come in throughout the day.",
+        "busiest_hours": "More requests usually come in between {{from}}h and {{to}}h.",
         "empty_title": "No requests right now",
         "empty_subtitle": "When a client looks for one of your services, it shows up here. Keep notifications on so you don't miss any.",
         "error_title": "Couldn't load requests",

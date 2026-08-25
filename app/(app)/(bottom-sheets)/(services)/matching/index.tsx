@@ -23,7 +23,7 @@ import { useDialog } from '@/contexts/DialogContext';
 const MatchingInvitations = () => {
   const { t } = useTranslation();
   const { openDialog } = useDialog();
-  const { invitations, loading, failed, submitting, refresh, accept, decline } = useMatchingInvitations();
+  const { invitations, loading, failed, submitting, busiestHours, refresh, accept, decline } = useMatchingInvitations();
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = useCallback(async () => {
@@ -120,6 +120,28 @@ const MatchingInvitations = () => {
               onDecline={() => decline(item.candidate_id)}
             />
           )}
+          /* Rodapé discreto com o padrão de procura. Só aparece quando o
+             servidor teve amostra suficiente para o calcular — sem dados, não
+             se diz nada, em vez de inventar uma hora de ponta que faria alguém
+             organizar o dia à volta de nada. */
+          ListFooterComponent={
+            busiestHours ? (
+              <View className="flex-row items-center justify-center mt-6 px-4">
+                <Feather name="trending-up" size={12} color={Colors.muted} />
+                <CustomText
+                  size="extraSmall"
+                  color="secondary"
+                  classes="ml-2 text-center"
+                  style={{ color: Colors.muted }}
+                >
+                  {t('matching.invitation.busiest_hours', {
+                    from: String(busiestHours.from).padStart(2, '0'),
+                    to: String(busiestHours.to).padStart(2, '0'),
+                  })}
+                </CustomText>
+              </View>
+            ) : null
+          }
         />
         )}
       </View>

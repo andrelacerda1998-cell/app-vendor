@@ -1634,6 +1634,7 @@ export default {
         "accepted_subtitle": "Avisamos-te assim que o cliente decidir. Até lá, a tua agenda continua livre.",
         "too_late_title": "Este pedido já fechou",
         "too_late_subtitle": "Outro profissional respondeu primeiro. Aparecem novos pedidos ao longo do dia.",
+        "busiest_hours": "Costumam entrar mais pedidos entre as {{from}}h e as {{to}}h.",
         "empty_title": "Sem pedidos neste momento",
         "empty_subtitle": "Quando um cliente procurar um serviço teu, aparece aqui. Mantém as notificações ligadas para não perderes nenhum.",
         "error_title": "Não foi possível carregar os pedidos",
