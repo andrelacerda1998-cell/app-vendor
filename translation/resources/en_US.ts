@@ -228,6 +228,8 @@ export default {
     "status": {
       "title": "Account status",
       "receive_requests": "Receive service requests",
+      "on_label": "Receiving requests",
+      "off_label": "Not receiving",
       "online": "Online",
       "offline": "Offline",
     }

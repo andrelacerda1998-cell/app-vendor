@@ -228,6 +228,8 @@ export default {
         "status": {
             "title": "Estado da conta",
             "receive_requests": "Receber pedidos de serviço",
+            "on_label": "A receber pedidos",
+            "off_label": "Não recebes pedidos",
             "online": "Online",
             "offline": "Offline"
         }
