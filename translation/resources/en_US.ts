@@ -1510,7 +1510,7 @@ export default {
     "settings_schedule": "Schedule settings",
     "repeat": "Repeat",
     "auto_acceptance": "Auto-Acceptance",
-    "auto_accept_on": "On — you accept services within your availability.",
+    "auto_accept_on": "On — you reply to every request in your free hours.",
     "auto_accept_off": "Off — you reply to each request.",
     "auto_accept_enable": "Turn on",
     "availability_schedule": "Availability schedule",
@@ -1549,7 +1549,7 @@ export default {
       "enable_repeat_subtitle": "Turning repeat on makes this week's availability repeat every following week, replacing any hours you added manually. Do you want to continue?",
       "disable_repeat_subtitle": "Turning repeat off deletes every time slot with no service booked, from next week onwards. Do you want to continue?",
       "auto_accept_title": "Turn on Auto-Acceptance?",
-      "auto_accept_subtitle": "Scheduled requests in your free hours will be accepted automatically."
+      "auto_accept_subtitle": "You reply automatically to every service request in the hours you have free. On requests where the client chooses, you join the list without doing anything."
     },
     "days": {
       "Mo": "Monday",
