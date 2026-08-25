@@ -42,10 +42,27 @@ const ContactCard = ({
   children?: React.ReactNode;
 }) => {
   const { t } = useTranslation();
+
+  // Confirmado ganha um visual RESOLVIDO — fundo e contorno verdes suaves — para
+  // o olho o distinguir do que falta e ir direto ao trabalho por fazer. Antes
+  // era igual ao por confirmar, com a única diferença no rótulo à direita.
   return (
-    <View className="rounded-2xl border p-4" style={{ borderColor: Colors.line, backgroundColor: Colors.card }}>
+    <View
+      className="rounded-2xl border p-4"
+      style={{
+        borderColor: verified ? `${Colors.success}40` : Colors.line,
+        backgroundColor: verified ? `${Colors.success}14` : Colors.card,
+      }}
+    >
       <View className="flex-row items-center">
-        <Feather name={icon} size={18} color={verified ? Colors.success : Colors.muted} />
+        {/* Ícone numa pastilha própria quando confirmado: dá o mesmo peso ao
+            "feito" que o botão âmbar dá ao "por fazer". */}
+        <View
+          className="w-9 h-9 rounded-full items-center justify-center"
+          style={{ backgroundColor: verified ? `${Colors.success}26` : Colors.card_high }}
+        >
+          <Feather name={verified ? 'check' : icon} size={17} color={verified ? Colors.success : Colors.muted} />
+        </View>
         <View className="flex-1 ml-3">
           <CustomText color="muted" size="extraSmall" boldness="bold">
             {label.toUpperCase()}
@@ -55,12 +72,9 @@ const ContactCard = ({
           </CustomText>
         </View>
         {verified && (
-          <View className="flex-row items-center">
-            <Feather name="check-circle" size={16} color={Colors.success} />
-            <CustomText color="success" size="small" boldness="bold" classes="ml-1.5">
-              {t('complete_profile.contacts.verified')}
-            </CustomText>
-          </View>
+          <CustomText color="success" size="small" boldness="bold">
+            {t('complete_profile.contacts.verified')}
+          </CustomText>
         )}
       </View>
       {!verified && !!children && <View className="mt-4">{children}</View>}
