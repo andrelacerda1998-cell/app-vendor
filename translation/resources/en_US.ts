@@ -1618,6 +1618,7 @@ export default {
       "invitation": {
         "home_card_one": "{{count}} service request",
         "home_card_other": "{{count}} service requests",
+        "home_cta": "Reply now",
         "home_expires_suffix": "to reply",
         "home_expires_suffix_soonest": "on the most urgent",
         "list_title": "Service requests",

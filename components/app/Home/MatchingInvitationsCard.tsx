@@ -7,7 +7,7 @@ import { CustomText } from '@/components/CustomText'
 import { Colors } from '@/constants/Colors'
 import useMatchingInvitations from '@/hooks/useMatchingInvitations'
 import useExpiryCountdown from '@/hooks/useExpiryCountdown'
-import { urgencyInk, urgencyTint } from '@/utils/urgencyColor'
+import { urgencyInk, urgencyOnInk, urgencyTint } from '@/utils/urgencyColor'
 
 /**
  * Atalho para os pedidos de serviço à espera de resposta.
@@ -102,11 +102,29 @@ const MatchingInvitationsCard = () => {
             )}
           </View>
 
-          <Feather name="chevron-right" size={20} color={Colors.muted} />
         </View>
 
-        {/* A barra é o destaque real: encosta às margens do cartão e esvazia-se
-            à vista, o que dá urgência sem gritar. */}
+        {/* Botão explícito em vez de uma seta: o cartão inteiro já era tocável,
+            mas nada dizia que havia uma AÇÃO a tomar — e a ação é o ponto. Ganha
+            a cor da urgência, por isso vai aquecendo à medida que o tempo corre.
+
+            É `View` e não `TouchableOpacity`: o toque continua a ser do cartão
+            inteiro, para o alvo ser tudo e não só o botão. Um botão dentro de um
+            botão dá duas áreas com comportamentos diferentes e engana o dedo. */}
+        <View className="px-4 pb-4">
+          <View className="rounded-xl py-3 items-center" style={{ backgroundColor: accent }}>
+            <CustomText
+              size="small"
+              boldness="bolder"
+              color="secondary"
+              style={{ color: urgencyOnInk(tone) }}
+            >
+              {t('matching.invitation.home_cta')}
+            </CustomText>
+          </View>
+        </View>
+
+        {/* A barra encosta às margens do cartão e esvazia-se à vista. */}
         {remainingRatio !== null && (
           <View style={{ height: 4, backgroundColor: Colors.card_high }}>
             <View

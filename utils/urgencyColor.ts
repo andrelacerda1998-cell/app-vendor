@@ -26,3 +26,13 @@ export const urgencyInk = (tone: UrgencyTone): string => {
 
 /** Fundo tonal correspondente, para pílulas e ícones. */
 export const urgencyTint = (tone: UrgencyTone): string => `${urgencyInk(tone)}1F`;
+
+/**
+ * Cor do texto sobre um fundo cheio da cor de urgência.
+ *
+ * O âmbar é claro e pede tinta escura; o vermelho e o laranja pedem branco.
+ * Sem isto, um botão âmbar com texto branco fica ilegível ao sol — que é
+ * exatamente onde o profissional o vai ler.
+ */
+export const urgencyOnInk = (tone: UrgencyTone): string =>
+  tone === 'calm' ? Colors.on_brand : Colors.secondary;
