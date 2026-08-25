@@ -231,6 +231,9 @@ export default {
             "on_label": "A receber pedidos",
             "off_label": "Não recebes pedidos",
             "off_cta": "Ficar disponível",
+            "blocked_label": "Perfil por completar",
+            "blocked_title": "Ainda não podes receber pedidos",
+            "blocked_subtitle": "Falta completar o teu perfil. Termina os passos em falta para ficares disponível.",
             "online": "Online",
             "offline": "Offline"
         }

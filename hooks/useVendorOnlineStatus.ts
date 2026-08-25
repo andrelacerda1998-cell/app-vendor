@@ -44,7 +44,21 @@ export const useVendorOnlineStatus = () => {
       .finally(() => setIsLoadingStatus(false));
   }, []);
 
+  // O perfil ainda não permite receber: não faz sentido "A receber pedidos"
+  // verde quando o servidor recusa todos. O botão fica bloqueado e explica.
+  const blockedByProfile = vendorData?.can_accept_service === false;
+
   const toggle = async () => {
+    if (blockedByProfile) {
+      openDialog({
+        icon: React.createElement(XIcon, { color: Colors.primary }),
+        title: t('session.status.blocked_title'),
+        subtitle: t('session.status.blocked_subtitle'),
+        closeOnClickOutside: true,
+      });
+      return;
+    }
+
     if (vendorStatus === 'Offline' && vendorData?.at_user && vendorData?.at_valid === false) {
       openDialog({
         icon: React.createElement(XIcon, { color: Colors.primary }),
@@ -98,7 +112,10 @@ export const useVendorOnlineStatus = () => {
   };
 
   return {
-    isOnline: vendorStatus === 'Online',
+    // Com o perfil incompleto, o técnico NÃO está a receber, esteja o que
+    // estiver gravado no servidor: mostrar "online" seria uma promessa falsa.
+    isOnline: vendorStatus === 'Online' && !blockedByProfile,
+    blocked: blockedByProfile,
     isLoadingStatus,
     disabled: isLoadingStatus || disabled,
     toggle,

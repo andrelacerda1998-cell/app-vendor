@@ -119,27 +119,39 @@ const UserHeader = () => {
           className="flex-row items-center rounded-full pl-3 pr-1.5 py-1.5 mr-3"
           style={{
             flexShrink: 0,
-            backgroundColor: online.isOnline ? 'rgba(35,230,158,0.14)' : Colors.brand_soft,
+            backgroundColor: online.blocked
+              ? Colors.card
+              : online.isOnline ? 'rgba(35,230,158,0.14)' : Colors.brand_soft,
             borderWidth: 1,
-            borderColor: online.isOnline ? 'rgba(35,230,158,0.45)' : `${Colors.brand}66`,
+            borderColor: online.blocked
+              ? Colors.line
+              : online.isOnline ? 'rgba(35,230,158,0.45)' : `${Colors.brand}66`,
             opacity: online.disabled ? 0.5 : 1,
           }}
           accessibilityRole="switch"
           accessibilityState={{ checked: online.isOnline, disabled: online.disabled }}
           accessibilityLabel={t('session.status.receive_requests')}
         >
+          {online.blocked && (
+            <Feather name="lock" size={11} color={Colors.muted} style={{ marginRight: 5 }} />
+          )}
           <CustomText
             size="extraSmall"
             boldness="bold"
             color="secondary"
-            style={{ color: online.isOnline ? Colors.success : Colors.brand }}
+            style={{ color: online.blocked ? Colors.muted : online.isOnline ? Colors.success : Colors.brand }}
           >
-            {online.isOnline ? t('session.status.on_label') : t('session.status.off_cta')}
+            {online.blocked
+              ? t('session.status.blocked_label')
+              : online.isOnline ? t('session.status.on_label') : t('session.status.off_cta')}
           </CustomText>
 
           {/* Switch desenhado à mão: a bolinha encosta ao lado que está ativo,
               como qualquer interruptor de telemóvel. É o sinal universal de
-              "isto liga e desliga", que o texto sozinho não dá. */}
+              "isto liga e desliga", que o texto sozinho não dá.
+              Escondido quando bloqueado: não há nada a alternar, só perfil a
+              completar, e um switch aí só convidava a um toque que não faz nada. */}
+          {!online.blocked && (
           <View
             className="rounded-full ml-2 justify-center"
             style={{
@@ -152,6 +164,7 @@ const UserHeader = () => {
           >
             <View className="rounded-full" style={{ width: 16, height: 16, backgroundColor: online.isOnline ? Colors.secondary : Colors.brand }} />
           </View>
+          )}
         </TouchableOpacity>
 
         <TouchOpacity
