@@ -114,6 +114,30 @@ export function useMatchingInvitations() {
     }
   }, [api, fetch, remove, submitting]);
 
+  /**
+   * Aceitar todos de uma vez. Sequencial de propósito (não martela o backend)
+   * e com um único refresh no fim. Ignora os que falham — normalmente é a
+   * janela que fechou ou outro que chegou primeiro; o refresh limpa-os.
+   */
+  const acceptAll = useCallback(async () => {
+    const ids = invitations.map((i) => i.candidate_id).filter(Boolean) as number[];
+    if (!ids.length || submitting) return { accepted: 0, total: 0 };
+
+    setSubmitting(-1); // marcador de operação em bloco
+    let accepted = 0;
+    for (const id of ids) {
+      try {
+        await api.post(API_ROUTES.VENDOR_MATCHING_ACCEPT(id));
+        accepted++;
+      } catch {
+        // janela fechou ou outro foi mais rápido — ignora
+      }
+    }
+    await fetch();
+    if (mountedRef.current) setSubmitting(null);
+    return { accepted, total: ids.length };
+  }, [api, fetch, invitations, submitting]);
+
   const decline = useCallback(async (candidateId: number) => {
     if (submitting) return;
     setSubmitting(candidateId);
@@ -130,7 +154,7 @@ export function useMatchingInvitations() {
     }
   }, [api, fetch, remove, submitting]);
 
-  return { invitations, loading, failed, submitting, busiestHours, refresh: fetch, accept, decline };
+  return { invitations, loading, failed, submitting, busiestHours, refresh: fetch, accept, acceptAll, decline };
 }
 
 export default useMatchingInvitations;

@@ -12,7 +12,7 @@ import { Colors } from '@/constants/Colors';
  * A carga positiva vem da FORMA (check verde grande, próximos passos claros),
  * não de prometer o que não está garantido.
  */
-const MatchingAcceptedContent = ({ onClose }: { onClose: () => void }) => {
+const MatchingAcceptedContent = ({ onClose, count }: { onClose: () => void; count?: number }) => {
   const { t } = useTranslation();
 
   const Step = ({ icon, text }: { icon: keyof typeof Feather.glyphMap; text: string }) => (
@@ -47,7 +47,9 @@ const MatchingAcceptedContent = ({ onClose }: { onClose: () => void }) => {
           classes="text-center mt-2"
           style={{ lineHeight: 20 }}
         >
-          {t('matching.invitation.accepted_subtitle')}
+          {count && count > 1
+            ? t('matching.invitation.accepted_subtitle_bulk', { count })
+            : t('matching.invitation.accepted_subtitle')}
         </CustomText>
       </View>
 

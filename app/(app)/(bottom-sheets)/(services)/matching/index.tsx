@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { FlatList, RefreshControl, SafeAreaView, View } from 'react-native';
+import { FlatList, RefreshControl, SafeAreaView, TouchableOpacity, View } from 'react-native';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import TouchOpacity from '@/components/TouchOpacity';
@@ -24,7 +24,7 @@ import { useDialog } from '@/contexts/DialogContext';
 const MatchingInvitations = () => {
   const { t } = useTranslation();
   const { openDialog, closeDialog } = useDialog();
-  const { invitations, loading, failed, submitting, busiestHours, refresh, accept, decline } = useMatchingInvitations();
+  const { invitations, loading, failed, submitting, busiestHours, refresh, accept, acceptAll, decline } = useMatchingInvitations();
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = useCallback(async () => {
@@ -54,6 +54,32 @@ const MatchingInvitations = () => {
       subtitle: result.message ?? t('matching.invitation.too_late_subtitle'),
     });
   }, [accept, openDialog, t]);
+
+  const runAcceptAll = useCallback(async () => {
+    const { accepted } = await acceptAll();
+    if (accepted > 0) {
+      openDialog({
+        closeOnClickOutside: true,
+        customContent: <MatchingAcceptedContent onClose={closeDialog} count={accepted} />,
+      });
+      return;
+    }
+    // Nenhum entrou — as janelas fecharam entretanto.
+    openDialog({
+      title: t('matching.invitation.too_late_title'),
+      subtitle: t('matching.invitation.too_late_subtitle'),
+    });
+  }, [acceptAll, openDialog, closeDialog, t]);
+
+  const onAcceptAll = useCallback(() => {
+    openDialog({
+      title: t('matching.invitation.accept_all_confirm_title'),
+      subtitle: t('matching.invitation.accept_all_confirm_subtitle', { count: invitations.length }),
+      successButtonText: t('matching.invitation.accept_all_confirm_cta'),
+      cancelButtonText: t('matching.invitation.accept_all_cancel'),
+      onSuccess: runAcceptAll,
+    });
+  }, [openDialog, t, invitations.length, runAcceptAll]);
 
   return (
     <SafeAreaView className="flex-1 bg-bg">
@@ -108,6 +134,27 @@ const MatchingInvitations = () => {
               </CustomText>
             </View>
           </View>
+        )}
+
+        {/* Atalho para aceitar todos de uma vez — só faz sentido com mais
+            do que um pedido; com um só, o botão do cartão basta. */}
+        {!loading && !failed && invitations.length > 1 && (
+          <TouchableOpacity
+            onPress={onAcceptAll}
+            disabled={submitting !== null}
+            accessibilityRole="button"
+            className="flex-row items-center justify-center rounded-2xl py-3.5 mb-4 border"
+            style={{
+              backgroundColor: `${Colors.brand}1A`,
+              borderColor: `${Colors.brand}33`,
+              opacity: submitting !== null ? 0.5 : 1,
+            }}
+          >
+            <Feather name="check-circle" size={16} color={Colors.brand} />
+            <CustomText boldness="bold" color="secondary" classes="ml-2" style={{ color: Colors.brand }}>
+              {t('matching.invitation.accept_all', { count: invitations.length })}
+            </CustomText>
+          </TouchableOpacity>
         )}
 
         {loading ? (
