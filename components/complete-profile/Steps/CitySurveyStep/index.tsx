@@ -49,6 +49,21 @@ const CitySurveyStep = ({ onNext }: { onNext: () => void }) => {
 
     const suggested = useMemo(() => catalog.filter((c) => c.suggested), [catalog]);
 
+    // Sugeridas agrupadas por distrito; distritos com cidades ativas primeiro,
+    // depois por ordem alfabética.
+    const groupedSuggested = useMemo(() => {
+        const groups: Record<string, CityInterface[]> = {};
+        suggested.forEach((c) => {
+            (groups[c.district] ??= []).push(c);
+        });
+        return Object.entries(groups).sort(([a, ca], [b, cb]) => {
+            const aActive = ca.some((c) => c.active) ? 0 : 1;
+            const bActive = cb.some((c) => c.active) ? 0 : 1;
+            if (aActive !== bActive) return aActive - bActive;
+            return a.localeCompare(b);
+        });
+    }, [suggested]);
+
     const results = useMemo(() => {
         const q = normalize(query);
         if (!q) return [];
@@ -116,7 +131,7 @@ const CitySurveyStep = ({ onNext }: { onNext: () => void }) => {
                     borderWidth: 1,
                     borderColor: selected ? Colors.support_primary : Colors.card_high,
                     paddingHorizontal: 12,
-                    paddingVertical: 10,
+                    height: 60, // altura fixa: cartões iguais com ou sem "Ativa"
                     flexDirection: 'row',
                     alignItems: 'center',
                     gap: 8,
@@ -312,21 +327,25 @@ const CitySurveyStep = ({ onNext }: { onNext: () => void }) => {
                         </CustomText>
                     )
                 ) : (
-                    // Sugeridas em destaque
-                    <View>
-                        <CustomText size="extraSmall" color="muted" boldness="semiBold" classes="mb-3 tracking-widest">
-                            {t('complete_profile.cities.suggested_label').toUpperCase()}
-                        </CustomText>
-                        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-                            {suggested.map((city) => (
-                                <CityTile
-                                    key={city.id}
-                                    city={city}
-                                    selected={availableIds.includes(city.id)}
-                                    onPress={() => toggleAvailable(city.id)}
-                                />
-                            ))}
-                        </View>
+                    // Sugeridas em destaque, agrupadas por distrito
+                    <View style={{ gap: 20 }}>
+                        {groupedSuggested.map(([district, cities]) => (
+                            <View key={district}>
+                                <CustomText size="extraSmall" color="muted" boldness="semiBold" classes="mb-3 tracking-widest">
+                                    {district.toUpperCase()}
+                                </CustomText>
+                                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                                    {cities.map((city) => (
+                                        <CityTile
+                                            key={city.id}
+                                            city={city}
+                                            selected={availableIds.includes(city.id)}
+                                            onPress={() => toggleAvailable(city.id)}
+                                        />
+                                    ))}
+                                </View>
+                            </View>
+                        ))}
                     </View>
                 )}
             </ScrollView>
