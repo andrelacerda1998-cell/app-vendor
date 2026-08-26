@@ -89,15 +89,23 @@ const MatchingInvitations = () => {
             className="flex-row rounded-xl px-4 py-3.5 mb-4 border"
             style={{ backgroundColor: Colors.brand_soft, borderColor: `${Colors.brand}33` }}
           >
-            <Feather name="info" size={16} color={Colors.brand} style={{ marginTop: 1 }} />
-            <CustomText
-              size="small"
-              color="secondary"
-              classes="ml-3 flex-1"
-              style={{ lineHeight: 20 }}
-            >
-              {t('matching.invitation.explainer')}
-            </CustomText>
+            <Feather name="zap" size={16} color={Colors.brand} style={{ marginTop: 1 }} />
+            <View className="ml-3 flex-1">
+              {/* Urgência primeiro (a corrida aos 3 lugares), garantia a seguir
+                  (a agenda só ocupa se for escolhido) — o que o faz responder
+                  já, sem o assustar. */}
+              <CustomText size="small" boldness="bold" color="secondary" style={{ lineHeight: 20 }}>
+                {t('matching.invitation.urgency_title')}
+              </CustomText>
+              <CustomText
+                size="small"
+                color="secondary"
+                classes="mt-0.5"
+                style={{ lineHeight: 20, color: Colors.muted }}
+              >
+                {t('matching.invitation.explainer')}
+              </CustomText>
+            </View>
           </View>
         )}
 
