@@ -1489,7 +1489,7 @@ export default {
         },
         "survey": {
             "title": "Onde queres trabalhar?",
-            "subtitle": "Escolhe pelo menos 3 concelhos. Nos que já estão ativos passas a receber os pedidos dessa zona; nos que ainda vão abrir, a tua escolha ajuda a Piquet a decidir onde abrir a seguir.",
+            "subtitle": "Escolhe pelo menos 3 concelhos. Nos que já estão ativos, começas a receber pedidos. Nos outros, a tua escolha ajuda-nos a decidir onde abrir a seguir.",
             "submit": "Continuar",
             "skip": "Saltar",
             "progress_min": "{{count}} de 3 mínimas",
