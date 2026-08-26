@@ -34,8 +34,12 @@ const DocumentsProfileStep = ({ onNext }: { onNext: () => void }) => {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [activeDoc, setActiveDoc] = useState<DocType | null>(null);
 
-  // Documentos já submetidos (à espera de aprovação) — marcados como concluídos.
-  const submittedIds = (vendorData?.pending_documents ?? []).map((d: any) => d.id);
+  // Um documento obrigatório está "concluído" quando NÃO está em falta —
+  // ou seja, já foi aprovado OU está submetido à espera de aprovação. Antes
+  // olhávamos só para os pendentes, e os já aprovados apareciam como "Carregar"
+  // (incoerente: a conta estava completa mas o passo dizia que faltavam).
+  const missingIds = (vendorData?.missing_documents ?? []).map((d: any) => d.id);
+  const isDone = (id: number) => !missingIds.includes(id);
 
   useEffect(() => {
     api.get(API_ROUTES.GET_DOCUMENTS_TYPES, {
@@ -43,7 +47,7 @@ const DocumentsProfileStep = ({ onNext }: { onNext: () => void }) => {
     })
       .then((res: any) => {
         const list: DocType[] = res?.data?.data?.types || [];
-        setTypes(list.map((tp) => ({ ...tp, uploaded: submittedIds.includes(tp.id) })));
+        setTypes(list.map((tp) => ({ ...tp, uploaded: isDone(tp.id) })));
       })
       .catch(() => {})
       .finally(() => setLoading(false));
