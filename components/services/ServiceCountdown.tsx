@@ -135,7 +135,7 @@ const ServiceCountdown = ({
           estreito que os outros algarismos. */}
       <View className="flex-row items-baseline mt-1.5">
         <CustomText
-          size="headline"
+          size="title"
           boldness="bolder"
           color="secondary"
           style={{ color, fontVariant: ['tabular-nums'] }}

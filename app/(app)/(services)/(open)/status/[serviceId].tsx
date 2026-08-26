@@ -573,13 +573,17 @@ const Status = () => {
             </View>
           )}
 
-          {/* Mapa do caminho até ao cliente; ao toque abre o Waze/Maps. */}
-          <ServiceRouteMap
-            serviceId={svc?.id}
-            destination={svc?.address}
-            origin={vendorData?.current_location ?? vendorData?.location}
-            onPress={startNavigation}
-          />
+          {/* Mapa do caminho até ao cliente; ao toque abre o Waze/Maps.
+              Some quando o serviço já está a decorrer (ARRIVED): a essa altura
+              o técnico já está no local, o caminho deixou de interessar. */}
+          {status !== ServiceStatus.ARRIVED && (
+            <ServiceRouteMap
+              serviceId={svc?.id}
+              destination={svc?.address}
+              origin={vendorData?.current_location ?? vendorData?.location}
+              onPress={startNavigation}
+            />
+          )}
 
           {/* Observações do cliente. Vinham do detalhe do agendamento, que
               deixou de existir — sem isto perdia-se o que o cliente escreveu. */}
