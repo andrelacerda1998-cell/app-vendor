@@ -61,7 +61,7 @@ const ContactCard = ({
           className="w-9 h-9 rounded-full items-center justify-center"
           style={{ backgroundColor: verified ? `${Colors.success}26` : Colors.card_high }}
         >
-          <Feather name={verified ? 'check' : icon} size={17} color={verified ? Colors.success : Colors.muted} />
+          <Feather name={icon} size={17} color={verified ? Colors.success : Colors.muted} />
         </View>
         <View className="flex-1 ml-3">
           <CustomText color="muted" size="extraSmall" boldness="bold">
