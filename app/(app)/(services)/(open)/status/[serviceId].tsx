@@ -576,8 +576,45 @@ const Status = () => {
           </Card>
         )}
 
-        {/* Cliente + mapa + ações */}
-        <Card className="mt-3">
+        {/* Cliente. Em execução reduz-se a uma linha + chat: o técnico já está
+            no local, só precisa de um canal rápido para o cliente. */}
+        {status === ServiceStatus.ARRIVED ? (
+          <Card className="mt-3">
+            <View className="flex-row items-center justify-between">
+              <View className="flex-1 pr-3">
+                <CustomText color="muted" size="extraSmall" boldness="bold">
+                  {t('schedules.customer', { defaultValue: 'Cliente' })}
+                </CustomText>
+                <CustomText color="secondary" boldness="bolder" size="large" numberOfLines={1} classes="mt-0.5">
+                  {svc?.customer?.name}
+                </CustomText>
+              </View>
+              <TouchableOpacity
+                onPress={goToChat}
+                className="flex-row items-center rounded-xl px-4 py-2.5 border"
+                style={{ borderColor: Colors.line }}
+              >
+                <View>
+                  <Feather name="message-square" size={18} color={Colors.secondary} />
+                  {unreadMessages > 0 && (
+                    <View
+                      className="absolute rounded-full items-center justify-center"
+                      style={{ width: 16, height: 16, top: -6, right: -8, backgroundColor: Colors.danger }}
+                    >
+                      <CustomText size="extraSmall" boldness="bold" color="secondary">
+                        {unreadMessages > 9 ? '9+' : unreadMessages}
+                      </CustomText>
+                    </View>
+                  )}
+                </View>
+                <CustomText size="small" color="secondary" boldness="semiBold" classes="ml-2">
+                  {t('services.service.status.chat')}
+                </CustomText>
+              </TouchableOpacity>
+            </View>
+          </Card>
+        ) : (
+          <Card className="mt-3">
           <CustomText color="muted" size="extraSmall" boldness="bold">
             {t('schedules.customer', { defaultValue: 'Cliente' })}
           </CustomText>
@@ -663,7 +700,8 @@ const Status = () => {
             </TouchableOpacity>
           </View>
 
-        </Card>
+          </Card>
+        )}
 
         {/* O valor a receber subiu para o cabeçalho — ver comentário lá. */}
 

@@ -15,9 +15,9 @@ import { cardShadow } from '@/components/ui';
  * entre o resto; passa a cartão próprio, com o número grande e uma barra de
  * progresso, acima de tudo o resto.
  *
- * Exceder o tempo é normal e NÃO é falta: por isso o estado de excesso muda de
- * cor e de texto, mas não usa vermelho de erro. O que importa é ele saber, para
- * poder pedir tempo extra ou avisar o cliente seguinte.
+ * Ao exceder o tempo, o cartão passa a VERMELHO e a texto próprio — é o sinal
+ * que o técnico não pode falhar, para pedir tempo extra ou avisar o cliente
+ * seguinte. (A pedido do produto: antes era âmbar; vermelho lê-se mais depressa.)
  *
  * `startedAt` é o `arrived_at` (início da execução). Sem ele — ou sem duração
  * no catálogo — não se mostra nada: contar a partir de um palpite seria pior
@@ -92,7 +92,7 @@ const ServiceCountdown = ({
 
   // Últimos 10 minutos: âmbar, para dar tempo de reagir antes de exceder.
   const soon = !over && diffMs <= 10 * 60000;
-  const color = over ? Colors.warning : soon ? Colors.brand : Colors.success;
+  const color = over ? Colors.danger : soon ? Colors.brand : Colors.success;
   const progress = Math.min(1, elapsedMs / totalMs);
 
   // Últimos 10 min OU já excedido: é quando pedir tempo extra faz sentido.
