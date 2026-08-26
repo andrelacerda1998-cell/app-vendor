@@ -146,7 +146,7 @@ const CitySurveyStep = ({ onNext }: { onNext: () => void }) => {
                     borderWidth: 1,
                     borderColor: selected ? Colors.support_primary : Colors.card_high,
                     paddingHorizontal: 12,
-                    paddingVertical: 12,
+                    paddingVertical: 10,
                     flexDirection: 'row',
                     alignItems: 'center',
                     gap: 8,
@@ -168,14 +168,25 @@ const CitySurveyStep = ({ onNext }: { onNext: () => void }) => {
                         </CustomText>
                     </View>
                 ) : null}
-                <CustomText
-                    size="small"
-                    color={selected ? 'support_primary' : 'secondary'}
-                    boldness="semiBold"
-                    numberOfLines={1}
-                >
-                    {city.name}
-                </CustomText>
+                <View style={{ flex: 1 }}>
+                    <CustomText
+                        size="small"
+                        color={selected ? 'support_primary' : 'secondary'}
+                        boldness="semiBold"
+                        numberOfLines={1}
+                    >
+                        {city.name}
+                    </CustomText>
+                    {/* Cidades já ativas na Piquet: verde, para se distinguirem. */}
+                    {city.active && (
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 3 }}>
+                            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: Colors.success }} />
+                            <CustomText size="extraSmall" color="success" boldness="regular">
+                                {t('complete_profile.cities.active_label')}
+                            </CustomText>
+                        </View>
+                    )}
+                </View>
             </TouchableOpacity>
         </View>
     );

@@ -3,4 +3,5 @@ export interface CityInterface {
     name: string;
     district: string;
     suggested: boolean;
+    active: boolean;
 }

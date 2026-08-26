@@ -1490,9 +1490,10 @@ export default {
       "address_manual": "Can't find it? Enter the postal code and city"
     },
     "cities": {
-      "available_title": "Which cities are you available to work in?",
-      "available_subtitle": "Select at least 3 cities where you'd be available to accept Piquet service requests.",
+      "available_title": "Which cities do you want to work in?",
+      "available_subtitle": "Pick at least 3. Active cities already receive requests.",
       "suggested_label": "Main cities",
+      "active_label": "Active",
       "search_placeholder": "Search another city",
       "search_results_label": "Results",
       "no_results": "No cities for \"{{query}}\"",
