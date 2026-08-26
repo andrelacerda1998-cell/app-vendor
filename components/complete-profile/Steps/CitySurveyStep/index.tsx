@@ -188,12 +188,12 @@ const CitySurveyStep = ({ onNext }: { onNext: () => void }) => {
                                                                     width: 6,
                                                                     height: 6,
                                                                     borderRadius: 3,
-                                                                    backgroundColor: city.active ? Colors.support_primary : Colors.gray_medium,
+                                                                    backgroundColor: city.active ? Colors.success : Colors.gray_medium,
                                                                 }}
                                                             />
                                                             <CustomText
                                                                 size="extraSmall"
-                                                                color={city.active ? 'support_primary' : 'muted'}
+                                                                color={city.active ? 'success' : 'muted'}
                                                                 boldness="regular"
                                                             >
                                                                 {city.active

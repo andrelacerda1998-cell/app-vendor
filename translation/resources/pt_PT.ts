@@ -1489,7 +1489,7 @@ export default {
         },
         "survey": {
             "title": "Onde queres trabalhar?",
-            "subtitle": "Escolhe pelo menos 3 concelhos. Nos que já estão ativos, começas a receber pedidos. Nos outros, a tua escolha ajuda-nos a decidir onde abrir a seguir.",
+            "subtitle": "Escolhe pelo menos 3 cidades. Nas que já estão ativas, começas a receber pedidos. Nas outras, a tua escolha ajuda-nos a decidir onde abrir a seguir.",
             "submit": "Continuar",
             "skip": "Saltar",
             "progress_min": "{{count}} de 3 mínimas",

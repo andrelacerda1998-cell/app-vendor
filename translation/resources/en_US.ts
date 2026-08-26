@@ -1489,7 +1489,7 @@ export default {
     },
     "survey": {
       "title": "Where do you want to work?",
-      "subtitle": "Pick at least 3 areas. In the ones already active, you start getting requests. In the others, your pick helps us decide where to open next.",
+      "subtitle": "Pick at least 3 cities. In the ones already active, you start getting requests. In the others, your pick helps us decide where to open next.",
       "submit": "Continue",
       "skip": "Skip",
       "progress_min": "{{count}} of 3 minimum",
