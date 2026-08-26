@@ -1653,7 +1653,7 @@ export default {
         "list_title": "Service requests",
         "fallback_title": "Service request",
         "window": "to reply",
-        "immediate": "Right now",
+        "immediate": "Now",
         "when_label": "When",
         "duration_label": "Estimated duration",
         "duration": "~{{minutes}} min",

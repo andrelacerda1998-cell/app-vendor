@@ -131,9 +131,24 @@ const MatchingInvitationCard = ({
               {t('matching.invitation.when_label')}
             </CustomText>
           </View>
-          <CustomText size="small" boldness="bolder" color="secondary">
-            {when ?? t('matching.invitation.immediate')}
-          </CustomText>
+          {when ? (
+            <CustomText size="small" boldness="bolder" color="secondary">
+              {when}
+            </CustomText>
+          ) : (
+            // Imediato ganha um badge cheio da cor da marca: "Agora" é a
+            // informação que muda a decisão, por isso destaca-se pela FORMA e
+            // COR, não pelo tamanho da letra.
+            <View
+              className="flex-row items-center rounded-full px-2.5 py-1"
+              style={{ backgroundColor: Colors.brand }}
+            >
+              <Feather name="zap" size={12} color={Colors.on_brand} />
+              <CustomText size="small" color="secondary" boldness="bolder" classes="ml-1" style={{ color: Colors.on_brand }}>
+                {t('matching.invitation.immediate')}
+              </CustomText>
+            </View>
+          )}
         </View>
 
         {!!durationMinutes && (

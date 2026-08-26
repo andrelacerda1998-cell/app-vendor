@@ -1654,7 +1654,7 @@ export default {
         "list_title": "Pedidos de serviços",
         "fallback_title": "Pedido de serviço",
         "window": "para responder",
-        "immediate": "Para agora",
+        "immediate": "Agora",
         "when_label": "Quando",
         "duration_label": "Duração estimada",
         "duration": "~{{minutes}} min",
