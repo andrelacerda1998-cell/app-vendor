@@ -71,16 +71,6 @@ const MatchingInvitations = () => {
     });
   }, [acceptAll, openDialog, closeDialog, t]);
 
-  const onAcceptAll = useCallback(() => {
-    openDialog({
-      title: t('matching.invitation.accept_all_confirm_title'),
-      subtitle: t('matching.invitation.accept_all_confirm_subtitle', { count: invitations.length }),
-      successButtonText: t('matching.invitation.accept_all_confirm_cta'),
-      cancelButtonText: t('matching.invitation.accept_all_cancel'),
-      onSuccess: runAcceptAll,
-    });
-  }, [openDialog, t, invitations.length, runAcceptAll]);
-
   return (
     <SafeAreaView className="flex-1 bg-bg">
       {/* Envolver em flex-1 e replicar o cabeçalho de 3 partes do ecrã de
@@ -140,7 +130,7 @@ const MatchingInvitations = () => {
             do que um pedido; com um só, o botão do cartão basta. */}
         {!loading && !failed && invitations.length > 1 && (
           <TouchableOpacity
-            onPress={onAcceptAll}
+            onPress={runAcceptAll}
             disabled={submitting !== null}
             accessibilityRole="button"
             className="flex-row items-center justify-center rounded-2xl py-3.5 mb-4 border"
