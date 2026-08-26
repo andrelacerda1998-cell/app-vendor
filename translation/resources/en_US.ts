@@ -1487,6 +1487,23 @@ export default {
       "address_edit": "Edit",
       "address_manual": "Can't find it? Enter the postal code and city"
     },
+    "cities": {
+      "available_title": "Which cities are you available to work in?",
+      "available_subtitle": "Select at least 3 cities where you'd be available to accept Piquet service requests.",
+      "suggested_label": "Main cities",
+      "search_placeholder": "Search another city",
+      "search_results_label": "Results",
+      "no_results": "No cities for \"{{query}}\"",
+      "selected_label": "Chosen cities",
+      "min_progress": "{{count}} of 3 minimum",
+      "selected_count_one": "1 city chosen",
+      "selected_count_other": "{{count}} cities chosen",
+      "preferred_title": "Which 3 cities are you most interested in receiving jobs from?",
+      "preferred_subtitle": "Pick 3 of the cities you selected earlier.",
+      "preferred_progress": "{{count}} of 3",
+      "continue": "Continue",
+      "back": "Back"
+    },
     "survey": {
       "title": "Where do you want to work?",
       "subtitle": "Pick at least 3 cities. In the ones already active, you start getting requests. In the others, your pick helps us decide where to open next.",

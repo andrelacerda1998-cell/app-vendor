@@ -1487,6 +1487,23 @@ export default {
             "address_edit": "Editar",
             "address_manual": "Não encontras? Introduz o código postal e a cidade"
         },
+        "cities": {
+            "available_title": "Em que cidades tens disponibilidade para prestar serviços?",
+            "available_subtitle": "Seleciona pelo menos 3 cidades onde estarias disponível para aceitar pedidos de serviço da Piquet.",
+            "suggested_label": "Cidades principais",
+            "search_placeholder": "Pesquisar outra cidade",
+            "search_results_label": "Resultados",
+            "no_results": "Sem cidades para \"{{query}}\"",
+            "selected_label": "Cidades escolhidas",
+            "min_progress": "{{count}} de 3 mínimas",
+            "selected_count_one": "1 cidade escolhida",
+            "selected_count_other": "{{count}} cidades escolhidas",
+            "preferred_title": "Quais são as 3 cidades onde tens maior interesse em receber serviços?",
+            "preferred_subtitle": "Escolhe 3 das cidades que selecionaste anteriormente.",
+            "preferred_progress": "{{count}} de 3",
+            "continue": "Continuar",
+            "back": "Voltar"
+        },
         "survey": {
             "title": "Onde queres trabalhar?",
             "subtitle": "Escolhe pelo menos 3 cidades. Nas que já estão ativas, começas a receber pedidos. Nas outras, a tua escolha ajuda-nos a decidir onde abrir a seguir.",

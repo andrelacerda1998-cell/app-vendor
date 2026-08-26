@@ -1,228 +1,378 @@
-import Checkbox from '@/components/Checkbox';
 import { CustomText } from '@/components/CustomText';
+import CustomTextInput from '@/components/CustomTextInput';
 import CustomTouchableOpacity from '@/components/CustomTouchableOpacity';
+import XIcon from '@/assets/icons/x';
 import { API_ROUTES } from '@/constants/ApiRoutes';
 import { Colors } from '@/constants/Colors';
 import { useApi } from '@/contexts/ApiContext';
-import { SurveyCityInterface } from '@/types/survey';
-import React, { useEffect, useState } from 'react';
+import { CityInterface } from '@/types/cities';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
 
-const MIN_CITIES = 3;
+const MIN_AVAILABLE = 3;
+const PREFERRED_COUNT = 3;
+
+// Pesquisa tolerante a acentos e maiusculas: "sao" encontra "São".
+const normalize = (s: string) =>
+    s.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().trim();
+
+type Phase = 'available' | 'preferred';
 
 const CitySurveyStep = ({ onNext }: { onNext: () => void }) => {
     const { t } = useTranslation();
     const { api } = useApi();
-    const [cities, setCities] = useState<SurveyCityInterface[]>([]);
-    const [selectedAllowedIds, setSelectedAllowedIds] = useState<number[]>([]);
-    const [selectedSurveyIds, setSelectedSurveyIds] = useState<number[]>([]);
+
+    const [catalog, setCatalog] = useState<CityInterface[]>([]);
+    const [availableIds, setAvailableIds] = useState<number[]>([]);
+    const [preferredIds, setPreferredIds] = useState<number[]>([]);
+    const [phase, setPhase] = useState<Phase>('available');
+    const [query, setQuery] = useState('');
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
-        api.get(API_ROUTES.VENDOR_SURVEY_GET_CITIES)
+        api.get(API_ROUTES.VENDOR_CITIES_GET)
             .then((res) => {
-                const data: SurveyCityInterface[] = res.data.data.cities;
-                setCities(data);
-                setSelectedAllowedIds(data.filter((c) => c.type === 'allowed' && c.voted).map((c) => c.id));
-                setSelectedSurveyIds(data.filter((c) => c.type === 'survey' && c.voted).map((c) => c.id));
-                if (data.length === 0) onNext();
+                const data = res.data.data;
+                setCatalog(data.cities ?? []);
+                setAvailableIds(data.selected?.available_city_ids ?? []);
+                setPreferredIds(data.selected?.preferred_city_ids ?? []);
             })
             .finally(() => setLoading(false));
     }, []);
 
-    const isSelected = (city: SurveyCityInterface) =>
-        city.type === 'allowed'
-            ? selectedAllowedIds.includes(city.id)
-            : selectedSurveyIds.includes(city.id);
+    const byId = useMemo(() => {
+        const m = new Map<number, CityInterface>();
+        catalog.forEach((c) => m.set(c.id, c));
+        return m;
+    }, [catalog]);
 
-    const toggleCity = (city: SurveyCityInterface) => {
-        if (city.type === 'allowed') {
-            setSelectedAllowedIds((prev) =>
-                prev.includes(city.id) ? prev.filter((x) => x !== city.id) : [...prev, city.id]
-            );
-        } else {
-            setSelectedSurveyIds((prev) =>
-                prev.includes(city.id) ? prev.filter((x) => x !== city.id) : [...prev, city.id]
-            );
-        }
+    const suggested = useMemo(() => catalog.filter((c) => c.suggested), [catalog]);
+
+    const results = useMemo(() => {
+        const q = normalize(query);
+        if (!q) return [];
+        return catalog.filter((c) => normalize(c.name).includes(q)).slice(0, 30);
+    }, [query, catalog]);
+
+    const toggleAvailable = (id: number) => {
+        setAvailableIds((prev) => {
+            if (prev.includes(id)) {
+                // Remover de disponíveis remove também das prioritárias.
+                setPreferredIds((p) => p.filter((x) => x !== id));
+                return prev.filter((x) => x !== id);
+            }
+            return [...prev, id];
+        });
+    };
+
+    const togglePreferred = (id: number) => {
+        setPreferredIds((prev) => {
+            if (prev.includes(id)) return prev.filter((x) => x !== id);
+            if (prev.length >= PREFERRED_COUNT) return prev; // top fechado em 3
+            return [...prev, id];
+        });
+    };
+
+    const canContinueAvailable = availableIds.length >= MIN_AVAILABLE;
+    const canSubmit = preferredIds.length === PREFERRED_COUNT;
+
+    const goToPreferred = () => {
+        // O top só pode conter cidades ainda disponíveis.
+        setPreferredIds((prev) => prev.filter((id) => availableIds.includes(id)));
+        setPhase('preferred');
     };
 
     const submit = () => {
         setSubmitting(true);
-        api.post(API_ROUTES.VENDOR_SURVEY_VOTE, {
-            allowed_zone_ids: selectedAllowedIds,
-            survey_city_ids: selectedSurveyIds,
+        api.post(API_ROUTES.VENDOR_CITIES_SAVE, {
+            available_city_ids: availableIds,
+            preferred_city_ids: preferredIds,
         })
             .then(() => onNext())
             .finally(() => setSubmitting(false));
     };
 
-    const groupedDistricts = cities.reduce<Record<string, SurveyCityInterface[]>>((acc, city) => {
-        const key = city.district ?? '';
-        if (!acc[key]) acc[key] = [];
-        acc[key].push(city);
-        return acc;
-    }, {});
-
-    const districtEntries = Object.entries(groupedDistricts);
-
-    const selectedCount = selectedAllowedIds.length + selectedSurveyIds.length;
-    const meetsMinimum = selectedCount >= MIN_CITIES;
-
-    return (
-        <View className="flex-1 p-5">
-            <View className="mb-4">
-                <CustomText size="large" color="secondary" boldness="bold">
-                    {t('complete_profile.survey.title')}
+    const Chip = ({ id, onRemove }: { id: number; onRemove: () => void }) => {
+        const city = byId.get(id);
+        if (!city) return null;
+        return (
+            <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={onRemove}
+                style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 6,
+                    backgroundColor: Colors.support_primary + '20',
+                    borderRadius: 999,
+                    borderWidth: 1,
+                    borderColor: Colors.support_primary,
+                    paddingLeft: 12,
+                    paddingRight: 8,
+                    paddingVertical: 6,
+                }}
+            >
+                <CustomText size="small" color="support_primary" boldness="semiBold">
+                    {city.name}
                 </CustomText>
-                <CustomText size="small" color="muted" boldness="regular" classes="mt-1">
-                    {t('complete_profile.survey.subtitle')}
-                </CustomText>
-                {/* Progresso sempre visível: "x de 3 mínimas" até cumprir o mínimo */}
-                <View
-                    style={{
-                        alignSelf: 'flex-start',
-                        backgroundColor: (meetsMinimum ? Colors.support_primary : Colors.gray_medium) + '33',
-                        borderRadius: 999,
-                        paddingHorizontal: 12,
-                        paddingVertical: 4,
-                        marginTop: 10,
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        gap: 6,
-                    }}
-                >
+                <View style={{ width: 10, height: 10, alignItems: 'center', justifyContent: 'center' }}>
+                    <XIcon color={Colors.support_primary} />
+                </View>
+            </TouchableOpacity>
+        );
+    };
+
+    // Botão-cidade em grelha (fase disponíveis: sugeridas / fase preferidas: escolha do top).
+    const CityTile = ({
+        city,
+        selected,
+        badge,
+        onPress,
+    }: {
+        city: CityInterface;
+        selected: boolean;
+        badge?: number;
+        onPress: () => void;
+    }) => (
+        <View style={{ width: '48%' }}>
+            <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={onPress}
+                style={{
+                    backgroundColor: selected ? Colors.support_primary + '20' : Colors.card_high,
+                    borderRadius: 10,
+                    borderWidth: 1,
+                    borderColor: selected ? Colors.support_primary : Colors.card_high,
+                    paddingHorizontal: 12,
+                    paddingVertical: 12,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 8,
+                }}
+            >
+                {badge ? (
                     <View
                         style={{
-                            width: 8,
-                            height: 8,
-                            borderRadius: 4,
-                            backgroundColor: meetsMinimum ? Colors.support_primary : Colors.gray_light,
+                            width: 20,
+                            height: 20,
+                            borderRadius: 10,
+                            backgroundColor: Colors.support_primary,
+                            alignItems: 'center',
+                            justifyContent: 'center',
                         }}
-                    />
-                    <CustomText size="small" color={meetsMinimum ? 'support_primary' : 'gray_light'} boldness="semiBold">
-                        {meetsMinimum
-                            ? t('complete_profile.survey.zones_selected_other', { count: selectedCount })
-                            : t('complete_profile.survey.progress_min', { count: selectedCount })}
-                    </CustomText>
+                    >
+                        <CustomText size="extraSmall" color="on_brand" boldness="bold">
+                            {String(badge)}
+                        </CustomText>
+                    </View>
+                ) : null}
+                <CustomText
+                    size="small"
+                    color={selected ? 'support_primary' : 'secondary'}
+                    boldness="semiBold"
+                    numberOfLines={1}
+                >
+                    {city.name}
+                </CustomText>
+            </TouchableOpacity>
+        </View>
+    );
+
+    const selectedCountLabel =
+        availableIds.length === 1
+            ? t('complete_profile.cities.selected_count_one')
+            : t('complete_profile.cities.selected_count_other', { count: availableIds.length });
+
+    const StatusPill = ({ done, label }: { done: boolean; label: string }) => (
+        <View
+            style={{
+                alignSelf: 'flex-start',
+                backgroundColor: (done ? Colors.success : Colors.gray_medium) + '33',
+                borderRadius: 999,
+                paddingHorizontal: 12,
+                paddingVertical: 4,
+                marginTop: 10,
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 6,
+            }}
+        >
+            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: done ? Colors.success : Colors.gray_light }} />
+            <CustomText size="small" color={done ? 'success' : 'gray_light'} boldness="semiBold">
+                {label}
+            </CustomText>
+        </View>
+    );
+
+    if (loading) {
+        return (
+            <View className="flex-1 p-5">
+                <View className="h-6 bg-gray_strong rounded opacity-50 mb-3" style={{ width: '80%' }} />
+                <View className="h-4 bg-gray_strong rounded opacity-40 mb-6" style={{ width: '90%' }} />
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                    {Array.from({ length: 8 }).map((_, j) => (
+                        <View key={j} className="h-12 bg-gray_strong rounded-xl opacity-40" style={{ width: '48%' }} />
+                    ))}
                 </View>
             </View>
+        );
+    }
 
-            <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-                {loading ? (
-                    <View style={{ gap: 16 }}>
-                        {Array.from({ length: 3 }).map((_, i) => (
-                            <View key={i}>
-                                <View className="h-4 bg-gray_strong rounded opacity-50 mb-3" style={{ width: '50%' }} />
-                                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-                                    {[0, 1, 2, 3].map((j) => (
-                                        <View key={j} className="h-14 bg-gray_strong rounded-xl opacity-40" style={{ width: '48%' }} />
-                                    ))}
-                                </View>
-                            </View>
-                        ))}
-                    </View>
-                ) : (
-                    <View style={{ gap: 20 }}>
-                        {districtEntries.map(([district, districtCities]) => {
-                            const isAvailable = districtCities.some((c) => c.active);
+    // ---------- FASE 2: top 3 ----------
+    if (phase === 'preferred') {
+        const chosen = availableIds.map((id) => byId.get(id)).filter(Boolean) as CityInterface[];
+        return (
+            <View className="flex-1 p-5">
+                <View className="mb-2">
+                    <CustomText size="large" color="secondary" boldness="bold">
+                        {t('complete_profile.cities.preferred_title')}
+                    </CustomText>
+                    <CustomText size="small" color="muted" boldness="regular" classes="mt-1">
+                        {t('complete_profile.cities.preferred_subtitle')}
+                    </CustomText>
+                    <StatusPill
+                        done={canSubmit}
+                        label={t('complete_profile.cities.preferred_progress', { count: preferredIds.length })}
+                    />
+                </View>
+
+                <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+                    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, paddingTop: 8 }}>
+                        {chosen.map((city) => {
+                            const rank = preferredIds.indexOf(city.id);
                             return (
-                                <View key={district}>
-                                    <CustomText
-                                        size="extraSmall"
-                                        color="muted"
-                                        boldness="semiBold"
-                                        classes="mb-3 tracking-widest"
-                                    >
-                                        {district
-                                            ? `${district.toUpperCase()} — ${isAvailable
-                                                ? t('complete_profile.survey.district_available')
-                                                : t('complete_profile.survey.district_coming_soon')}`
-                                            : (isAvailable
-                                                ? t('complete_profile.survey.district_available')
-                                                : t('complete_profile.survey.district_coming_soon'))}
-                                    </CustomText>
-                                    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-                                        {districtCities.map((city) => {
-                                            const selected = isSelected(city);
-                                            return (
-                                                <View
-                                                    key={city.id}
-                                                    style={{ width: '48%' }}
-                                                >
-                                                    <TouchableOpacity
-                                                        activeOpacity={0.7}
-                                                        onPress={() => toggleCity(city)}
-                                                        style={{
-                                                            backgroundColor: selected ? Colors.support_primary + '20' : Colors.card_high,
-                                                            borderRadius: 10,
-                                                            borderWidth: 1,
-                                                            borderColor: selected ? Colors.support_primary : Colors.card_high,
-                                                            paddingHorizontal: 10,
-                                                            paddingVertical: 10,
-                                                            flexDirection: 'column',
-                                                            alignItems: 'flex-start',
-                                                            gap: 6,
-                                                        }}
-                                                    >
-                                                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                                                            <Checkbox
-                                                                size="small"
-                                                                label=""
-                                                                checked={selected}
-                                                                onChange={() => toggleCity(city)}
-                                                                checkedColor="support_primary"
-                                                                checkMarkColor="primary"
-                                                                uncheckedBorderColor="muted"
-                                                                unCheckedBackgroundColor="primary"
-                                                            />
-                                                            <CustomText size="small" color="secondary" boldness="semiBold" numberOfLines={1}>
-                                                                {city.city}
-                                                            </CustomText>
-                                                        </View>
-                                                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginLeft: 2 }}>
-                                                            <View
-                                                                style={{
-                                                                    width: 6,
-                                                                    height: 6,
-                                                                    borderRadius: 3,
-                                                                    backgroundColor: city.active ? Colors.success : Colors.gray_medium,
-                                                                }}
-                                                            />
-                                                            <CustomText
-                                                                size="extraSmall"
-                                                                color={city.active ? 'success' : 'muted'}
-                                                                boldness="regular"
-                                                            >
-                                                                {city.active
-                                                                    ? t('complete_profile.survey.city_active')
-                                                                    : t('complete_profile.survey.city_coming_soon')}
-                                                            </CustomText>
-                                                        </View>
-                                                    </TouchableOpacity>
-                                                </View>
-                                            );
-                                        })}
-                                    </View>
-                                </View>
+                                <CityTile
+                                    key={city.id}
+                                    city={city}
+                                    selected={rank !== -1}
+                                    badge={rank !== -1 ? rank + 1 : undefined}
+                                    onPress={() => togglePreferred(city.id)}
+                                />
                             );
                         })}
+                    </View>
+                </ScrollView>
+
+                <View className="pt-5" style={{ gap: 10 }}>
+                    <CustomTouchableOpacity
+                        size="large"
+                        type="support_primary"
+                        textColor="on_brand"
+                        textBoldness="bold"
+                        text={t('complete_profile.cities.continue')}
+                        onPress={submit}
+                        disabled={submitting || !canSubmit}
+                    />
+                    <CustomTouchableOpacity
+                        size="large"
+                        type="transparent"
+                        textColor="muted"
+                        textBoldness="semiBold"
+                        text={t('complete_profile.cities.back')}
+                        onPress={() => setPhase('available')}
+                        disabled={submitting}
+                    />
+                </View>
+            </View>
+        );
+    }
+
+    // ---------- FASE 1: disponíveis ----------
+    return (
+        <View className="flex-1 p-5">
+            <View className="mb-2">
+                <CustomText size="large" color="secondary" boldness="bold">
+                    {t('complete_profile.cities.available_title')}
+                </CustomText>
+                <CustomText size="small" color="muted" boldness="regular" classes="mt-1">
+                    {t('complete_profile.cities.available_subtitle')}
+                </CustomText>
+                <StatusPill
+                    done={canContinueAvailable}
+                    label={
+                        canContinueAvailable
+                            ? selectedCountLabel
+                            : t('complete_profile.cities.min_progress', { count: availableIds.length })
+                    }
+                />
+            </View>
+
+            {/* Pesquisa/autocomplete */}
+            <CustomTextInput
+                size="medium"
+                fontSize="medium"
+                textBoldness="regular"
+                textColor="secondary"
+                text={query}
+                onChangeText={setQuery}
+                placeholder={t('complete_profile.cities.search_placeholder')}
+                classes="mb-3"
+            />
+
+            <ScrollView className="flex-1" showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+                {/* Chips das selecionadas */}
+                {availableIds.length > 0 && (
+                    <View className="mb-4">
+                        <CustomText size="extraSmall" color="muted" boldness="semiBold" classes="mb-2 tracking-widest">
+                            {t('complete_profile.cities.selected_label').toUpperCase()}
+                        </CustomText>
+                        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                            {availableIds.map((id) => (
+                                <Chip key={id} id={id} onRemove={() => toggleAvailable(id)} />
+                            ))}
+                        </View>
+                    </View>
+                )}
+
+                {query ? (
+                    // Resultados da pesquisa
+                    results.length > 0 ? (
+                        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                            {results.map((city) => (
+                                <CityTile
+                                    key={city.id}
+                                    city={city}
+                                    selected={availableIds.includes(city.id)}
+                                    onPress={() => toggleAvailable(city.id)}
+                                />
+                            ))}
+                        </View>
+                    ) : (
+                        <CustomText size="small" color="muted" boldness="regular">
+                            {t('complete_profile.cities.no_results', { query })}
+                        </CustomText>
+                    )
+                ) : (
+                    // Sugeridas em destaque
+                    <View>
+                        <CustomText size="extraSmall" color="muted" boldness="semiBold" classes="mb-3 tracking-widest">
+                            {t('complete_profile.cities.suggested_label').toUpperCase()}
+                        </CustomText>
+                        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                            {suggested.map((city) => (
+                                <CityTile
+                                    key={city.id}
+                                    city={city}
+                                    selected={availableIds.includes(city.id)}
+                                    onPress={() => toggleAvailable(city.id)}
+                                />
+                            ))}
+                        </View>
                     </View>
                 )}
             </ScrollView>
 
             <View className="pt-5">
-                {/* Cidades forçadas — sem botão "saltar" (o passo auto-avança quando não há cidades) */}
                 <CustomTouchableOpacity
                     size="large"
                     type="support_primary"
                     textColor="on_brand"
                     textBoldness="bold"
-                    text={t('complete_profile.survey.submit')}
-                    onPress={submit}
-                    disabled={submitting || !meetsMinimum}
+                    text={t('complete_profile.cities.continue')}
+                    onPress={goToPreferred}
+                    disabled={!canContinueAvailable}
                 />
             </View>
         </View>
