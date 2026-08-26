@@ -47,7 +47,12 @@ const CitySurveyStep = ({ onNext }: { onNext: () => void }) => {
         return m;
     }, [catalog]);
 
-    const suggested = useMemo(() => catalog.filter((c) => c.suggested), [catalog]);
+    // Mostradas sem pesquisa: as sugeridas MAIS todas as ativas. As ativas são
+    // onde o técnico já pode receber pedidos, por isso nunca ficam escondidas.
+    const suggested = useMemo(
+        () => catalog.filter((c) => c.suggested || c.active),
+        [catalog],
+    );
 
     // Sugeridas agrupadas por distrito; distritos com cidades ativas primeiro,
     // depois por ordem alfabética.
