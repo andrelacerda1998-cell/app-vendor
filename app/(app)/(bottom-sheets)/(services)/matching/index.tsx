@@ -145,13 +145,13 @@ const MatchingInvitations = () => {
             accessibilityRole="button"
             className="flex-row items-center justify-center rounded-2xl py-3.5 mb-4 border"
             style={{
-              backgroundColor: `${Colors.brand}1A`,
-              borderColor: `${Colors.brand}33`,
+              backgroundColor: `${Colors.success}1A`,
+              borderColor: `${Colors.success}44`,
               opacity: submitting !== null ? 0.5 : 1,
             }}
           >
-            <Feather name="check-circle" size={16} color={Colors.brand} />
-            <CustomText boldness="bold" color="secondary" classes="ml-2" style={{ color: Colors.brand }}>
+            <Feather name="check-circle" size={16} color={Colors.success} />
+            <CustomText boldness="bold" color="secondary" classes="ml-2" style={{ color: Colors.success }}>
               {t('matching.invitation.accept_all', { count: invitations.length })}
             </CustomText>
           </TouchableOpacity>
