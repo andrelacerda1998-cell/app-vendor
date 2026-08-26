@@ -10,13 +10,10 @@ import { useTranslation } from 'react-i18next';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
 
 const MIN_AVAILABLE = 3;
-const PREFERRED_COUNT = 3;
 
 // Pesquisa tolerante a acentos e maiusculas: "sao" encontra "São".
 const normalize = (s: string) =>
     s.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().trim();
-
-type Phase = 'available' | 'preferred';
 
 const CitySurveyStep = ({ onNext }: { onNext: () => void }) => {
     const { t } = useTranslation();
@@ -24,8 +21,6 @@ const CitySurveyStep = ({ onNext }: { onNext: () => void }) => {
 
     const [catalog, setCatalog] = useState<CityInterface[]>([]);
     const [availableIds, setAvailableIds] = useState<number[]>([]);
-    const [preferredIds, setPreferredIds] = useState<number[]>([]);
-    const [phase, setPhase] = useState<Phase>('available');
     const [query, setQuery] = useState('');
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
@@ -36,7 +31,6 @@ const CitySurveyStep = ({ onNext }: { onNext: () => void }) => {
                 const data = res.data.data;
                 setCatalog(data.cities ?? []);
                 setAvailableIds(data.selected?.available_city_ids ?? []);
-                setPreferredIds(data.selected?.preferred_city_ids ?? []);
             })
             .finally(() => setLoading(false));
     }, []);
@@ -76,38 +70,19 @@ const CitySurveyStep = ({ onNext }: { onNext: () => void }) => {
     }, [query, catalog]);
 
     const toggleAvailable = (id: number) => {
-        setAvailableIds((prev) => {
-            if (prev.includes(id)) {
-                // Remover de disponíveis remove também das prioritárias.
-                setPreferredIds((p) => p.filter((x) => x !== id));
-                return prev.filter((x) => x !== id);
-            }
-            return [...prev, id];
-        });
+        setAvailableIds((prev) =>
+            prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+        );
     };
 
-    const togglePreferred = (id: number) => {
-        setPreferredIds((prev) => {
-            if (prev.includes(id)) return prev.filter((x) => x !== id);
-            if (prev.length >= PREFERRED_COUNT) return prev; // top fechado em 3
-            return [...prev, id];
-        });
-    };
 
     const canContinueAvailable = availableIds.length >= MIN_AVAILABLE;
-    const canSubmit = preferredIds.length === PREFERRED_COUNT;
 
-    const goToPreferred = () => {
-        // O top só pode conter cidades ainda disponíveis.
-        setPreferredIds((prev) => prev.filter((id) => availableIds.includes(id)));
-        setPhase('preferred');
-    };
 
     const submit = () => {
         setSubmitting(true);
         api.post(API_ROUTES.VENDOR_CITIES_SAVE, {
             available_city_ids: availableIds,
-            preferred_city_ids: preferredIds,
         })
             .then(() => onNext())
             .finally(() => setSubmitting(false));
@@ -221,65 +196,6 @@ const CitySurveyStep = ({ onNext }: { onNext: () => void }) => {
         );
     }
 
-    // ---------- FASE 2: top 3 ----------
-    if (phase === 'preferred') {
-        const chosen = availableIds.map((id) => byId.get(id)).filter(Boolean) as CityInterface[];
-        return (
-            <View className="flex-1 p-5">
-                <View className="mb-2">
-                    <CustomText size="large" color="secondary" boldness="bold">
-                        {t('complete_profile.cities.preferred_title')}
-                    </CustomText>
-                    <CustomText size="small" color="muted" boldness="regular" classes="mt-1">
-                        {t('complete_profile.cities.preferred_subtitle')}
-                    </CustomText>
-                    <StatusPill
-                        done={canSubmit}
-                        label={t('complete_profile.cities.preferred_progress', { count: preferredIds.length })}
-                    />
-                </View>
-
-                <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-                    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, paddingTop: 8 }}>
-                        {chosen.map((city) => {
-                            const rank = preferredIds.indexOf(city.id);
-                            return (
-                                <CityTile
-                                    key={city.id}
-                                    city={city}
-                                    selected={rank !== -1}
-                                    badge={rank !== -1 ? rank + 1 : undefined}
-                                    onPress={() => togglePreferred(city.id)}
-                                />
-                            );
-                        })}
-                    </View>
-                </ScrollView>
-
-                <View className="pt-5" style={{ gap: 10 }}>
-                    <CustomTouchableOpacity
-                        size="large"
-                        type="support_primary"
-                        textColor="on_brand"
-                        textBoldness="bold"
-                        text={t('complete_profile.cities.continue')}
-                        onPress={submit}
-                        disabled={submitting || !canSubmit}
-                    />
-                    <CustomTouchableOpacity
-                        size="large"
-                        type="transparent"
-                        textColor="muted"
-                        textBoldness="semiBold"
-                        text={t('complete_profile.cities.back')}
-                        onPress={() => setPhase('available')}
-                        disabled={submitting}
-                    />
-                </View>
-            </View>
-        );
-    }
-
     // ---------- FASE 1: disponíveis ----------
     return (
         <View className="flex-1 p-5">
@@ -362,8 +278,8 @@ const CitySurveyStep = ({ onNext }: { onNext: () => void }) => {
                     textColor="on_brand"
                     textBoldness="bold"
                     text={t('complete_profile.cities.continue')}
-                    onPress={goToPreferred}
-                    disabled={!canContinueAvailable}
+                    onPress={submit}
+                    disabled={!canContinueAvailable || submitting}
                 />
             </View>
         </View>
