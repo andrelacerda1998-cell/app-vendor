@@ -399,6 +399,7 @@ export default {
             "finish_service": "Complete job",
         "immediate": "Immediate service",
         "open_map": "Open map",
+                "open_in_maps": "Open in maps",
         "navigate_with": "Navigate with",
         "nav_apps": {
           "apple_maps": "Apple Maps",

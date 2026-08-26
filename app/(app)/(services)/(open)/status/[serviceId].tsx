@@ -25,6 +25,7 @@ import ServiceCountdown from "@/components/services/ServiceCountdown";
 import { Card, ErrorState, SkeletonList } from "@/components/ui";
 import { formatEstimatedDuration } from "@/utils/serviceDetails";
 import { useNavChooser } from "@/hooks/useNavChooser";
+import ServiceRouteMap from "@/components/services/ServiceRouteMap";
 import { track, AnalyticsEvent } from "@/utils/analytics";
 
 interface Details{
@@ -571,6 +572,14 @@ const Status = () => {
               </CustomText>
             </View>
           )}
+
+          {/* Mapa do caminho até ao cliente; ao toque abre o Waze/Maps. */}
+          <ServiceRouteMap
+            serviceId={svc?.id}
+            destination={svc?.address}
+            origin={vendorData?.current_location ?? vendorData?.location}
+            onPress={startNavigation}
+          />
 
           {/* Observações do cliente. Vinham do detalhe do agendamento, que
               deixou de existir — sem isto perdia-se o que o cliente escreveu. */}
