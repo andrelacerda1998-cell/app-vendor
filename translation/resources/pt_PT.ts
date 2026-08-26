@@ -572,7 +572,9 @@ export default {
         },
         "status": {
             "approved": "Conta aprovada",
-            "pending": "Conta em análise"
+            "pending": "Conta em análise",
+            "missing_documents": "Documentos em falta",
+            "incomplete": "Registo por completar"
         },
         "values": {
             "services_active_one": "{{count}} ativo",

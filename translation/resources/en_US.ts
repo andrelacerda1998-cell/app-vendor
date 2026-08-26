@@ -572,7 +572,9 @@ export default {
     },
     "status": {
       "approved": "Account approved",
-      "pending": "Account under review"
+      "pending": "Account under review",
+      "missing_documents": "Documents missing",
+      "incomplete": "Registration incomplete"
     },
     "values": {
       "services_active_one": "{{count}} active",
