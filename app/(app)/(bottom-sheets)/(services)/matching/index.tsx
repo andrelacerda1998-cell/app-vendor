@@ -9,6 +9,7 @@ import { CustomText } from '@/components/CustomText';
 import { Colors } from '@/constants/Colors';
 import { EmptyState, ErrorState, SkeletonList } from '@/components/ui';
 import MatchingInvitationCard from '@/components/services/MatchingInvitationCard';
+import MatchingAcceptedContent from '@/components/services/MatchingAcceptedContent';
 import useMatchingInvitations from '@/hooks/useMatchingInvitations';
 import { useDialog } from '@/contexts/DialogContext';
 
@@ -22,7 +23,7 @@ import { useDialog } from '@/contexts/DialogContext';
  */
 const MatchingInvitations = () => {
   const { t } = useTranslation();
-  const { openDialog } = useDialog();
+  const { openDialog, closeDialog } = useDialog();
   const { invitations, loading, failed, submitting, busiestHours, refresh, accept, decline } = useMatchingInvitations();
   const [refreshing, setRefreshing] = useState(false);
 
@@ -40,8 +41,8 @@ const MatchingInvitations = () => {
       // ainda não está garantido é o que faz o técnico sentir-se enganado
       // quando o cliente escolhe outra pessoa.
       openDialog({
-        title: t('matching.invitation.accepted_title'),
-        subtitle: t('matching.invitation.accepted_subtitle'),
+        closeOnClickOutside: true,
+        customContent: <MatchingAcceptedContent onClose={closeDialog} />,
       });
 
       return;
