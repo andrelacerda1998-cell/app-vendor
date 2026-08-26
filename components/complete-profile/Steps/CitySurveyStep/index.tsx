@@ -1,7 +1,6 @@
 import { CustomText } from '@/components/CustomText';
 import CustomTextInput from '@/components/CustomTextInput';
 import CustomTouchableOpacity from '@/components/CustomTouchableOpacity';
-import XIcon from '@/assets/icons/x';
 import { API_ROUTES } from '@/constants/ApiRoutes';
 import { Colors } from '@/constants/Colors';
 import { useApi } from '@/contexts/ApiContext';
@@ -94,35 +93,6 @@ const CitySurveyStep = ({ onNext }: { onNext: () => void }) => {
             .finally(() => setSubmitting(false));
     };
 
-    const Chip = ({ id, onRemove }: { id: number; onRemove: () => void }) => {
-        const city = byId.get(id);
-        if (!city) return null;
-        return (
-            <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={onRemove}
-                style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    gap: 6,
-                    backgroundColor: Colors.support_primary + '20',
-                    borderRadius: 999,
-                    borderWidth: 1,
-                    borderColor: Colors.support_primary,
-                    paddingLeft: 12,
-                    paddingRight: 8,
-                    paddingVertical: 6,
-                }}
-            >
-                <CustomText size="small" color="support_primary" boldness="semiBold">
-                    {city.name}
-                </CustomText>
-                <View style={{ width: 10, height: 10, alignItems: 'center', justifyContent: 'center' }}>
-                    <XIcon color={Colors.support_primary} />
-                </View>
-            </TouchableOpacity>
-        );
-    };
 
     // Botão-cidade em grelha (fase disponíveis: sugeridas / fase preferidas: escolha do top).
     const CityTile = ({
@@ -323,20 +293,6 @@ const CitySurveyStep = ({ onNext }: { onNext: () => void }) => {
             />
 
             <ScrollView className="flex-1" showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-                {/* Chips das selecionadas */}
-                {availableIds.length > 0 && (
-                    <View className="mb-4">
-                        <CustomText size="extraSmall" color="muted" boldness="semiBold" classes="mb-2 tracking-widest">
-                            {t('complete_profile.cities.selected_label').toUpperCase()}
-                        </CustomText>
-                        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-                            {availableIds.map((id) => (
-                                <Chip key={id} id={id} onRemove={() => toggleAvailable(id)} />
-                            ))}
-                        </View>
-                    </View>
-                )}
-
                 {query ? (
                     // Resultados da pesquisa
                     results.length > 0 ? (
