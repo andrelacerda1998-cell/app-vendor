@@ -32,7 +32,7 @@ const Dialog: React.FC = () => {
       animationOut="slideOutDown"
       backdropColor="rgba(0, 0, 0, 0.7)"
     >
-      <View className="items-center justify-center bg-primary rounded-xl">
+      <View className="items-center justify-center bg-primary rounded-3xl">
         <StatusBar style="light" backgroundColor="rgba(0, 0, 0, 0.5)" animated />
 
         {content && (
@@ -48,19 +48,19 @@ const Dialog: React.FC = () => {
                   </View>
                 </View>
               )}
-              <View className="space-y-2">
-                <CustomText size="large" color="secondary" boldness="semiBold" className="text-center">{content.title}</CustomText>
+              <View className="space-y-3">
+                <CustomText size="large" color="secondary" boldness="bolder" className="text-center">{content.title}</CustomText>
                 {content.subtitle && (
-                  <CustomText size="small" color="gray_light" boldness="semiBold" className="text-center">{content.subtitle}</CustomText>
+                  <CustomText size="small" color="muted" boldness="regular" className="text-center" style={{ lineHeight: 20 }}>{content.subtitle}</CustomText>
                 )}
               </View>
               {content.successButtonText && content.cancelButtonText && (
                 <View className="flex-row justify-between">
                   <CustomTouchableOpacity
                     size="large"
-                    type="secondary_outline"
-                    textColor="secondary"
-                    textBoldness="semiBold"
+                    type={content.dangerCancel ? "danger_outline" : "secondary_outline"}
+                    textColor={content.dangerCancel ? "danger" : "secondary"}
+                    textBoldness="bold"
                     text={content.cancelButtonText}
                     onPress={() => {
                       closeDialog();
@@ -74,13 +74,13 @@ const Dialog: React.FC = () => {
                     size="large"
                     type="support_primary"
                     textColor="primary"
-                    textBoldness="semiBold"
                     text={content.successButtonText}
                     onPress={() => {
                       closeDialog();
                       if (content.onSuccess) content.onSuccess();
                     }}
                     textNumberOfLines={2}
+                    textBoldness="bolder"
                     textClasses="text-center"
                     classes="w-[48%] py-3"
                   />

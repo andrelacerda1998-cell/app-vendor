@@ -228,6 +228,10 @@ export default {
     "status": {
       "title": "Account status",
       "receive_requests": "Receive service requests",
+      "on_label": "Receiving requests",
+      "off_label": "Not receiving",
+      "off_cta": "Go available",
+      "blocked_label": "Profile incomplete",
       "online": "Online",
       "offline": "Offline",
     }
@@ -1317,9 +1321,11 @@ export default {
     "welcome_back": "Welcome back,",
     "hello": "Hi, {{name}} 👋",
     "ready": "Ready to receive services.",
-    "finish_account": "Let's finish your account."
+    "finish_account": "Finish your profile."
   },
   "home_stats": {
+    "empty_with_demand_online_one": "There was {{count}} request in your area this week. You're visible for the next ones.",
+    "empty_with_demand_online_other": "There were {{count}} requests in your area this week. You're visible for the next ones.",
     "empty_ready": "You're ready and visible in your area. Go online to receive requests.",
     "empty_with_demand_one": "There was {{count}} request in your area this week. Go online so you don't miss the next ones.",
     "empty_with_demand_other": "There were {{count}} requests in your area this week. Go online so you don't miss the next ones.",
@@ -1426,6 +1432,9 @@ export default {
       "title": "Confirm your contacts",
       "subtitle": "Confirm your phone and email to start receiving requests.",
       "verified": "Confirmed",
+      "progress_single": "{{done}} of 2 confirmed",
+      "progress_multi": "{{done}} of 2 confirmed",
+      "privacy_note": "We only use these contacts to alert you to new requests and so the client can reach you on the day.",
       "sending": "Sending…",
       "verifying": "Confirming…",
       "checking": "Checking…",
@@ -1510,7 +1519,7 @@ export default {
     "settings_schedule": "Schedule settings",
     "repeat": "Repeat",
     "auto_acceptance": "Auto-Acceptance",
-    "auto_accept_on": "On — you accept services within your availability.",
+    "auto_accept_on": "On — you reply to every request in your free hours.",
     "auto_accept_off": "Off — you reply to each request.",
     "auto_accept_enable": "Turn on",
     "availability_schedule": "Availability schedule",
@@ -1549,7 +1558,7 @@ export default {
       "enable_repeat_subtitle": "Turning repeat on makes this week's availability repeat every following week, replacing any hours you added manually. Do you want to continue?",
       "disable_repeat_subtitle": "Turning repeat off deletes every time slot with no service booked, from next week onwards. Do you want to continue?",
       "auto_accept_title": "Turn on Auto-Acceptance?",
-      "auto_accept_subtitle": "Scheduled requests in your free hours will be accepted automatically."
+      "auto_accept_subtitle": "You reply automatically to every service request in the hours you have free. On requests where the client chooses, you join the list without doing anything."
     },
     "days": {
       "Mo": "Monday",
@@ -1616,28 +1625,27 @@ export default {
     // thing clear: accepting is applying, not winning the job.
     "matching": {
       "invitation": {
-        "home_card_one": "You have {{count}} service request waiting for a reply.",
-        "home_card_other": "You have {{count}} service requests waiting for a reply.",
-        "home_card_hint": "The client chooses among those who make themselves available.",
+        "home_card_one": "{{count}} service request",
+        "home_card_other": "{{count}} service requests",
+        "home_cta": "Reply now",
+        "home_expires_suffix": "to reply",
+        "home_expires_suffix_soonest": "on the most urgent",
         "list_title": "Service requests",
         "fallback_title": "Service request",
         "window": "to reply",
-        // "18:44" read like a time of day. Now it carries an explicit unit.
-        "window_hours": "{{hours}}h{{minutes}}",
-        "window_minutes_one": "{{count}} min",
-        "window_minutes_other": "{{count}} min",
-        "window_seconds_one": "{{count}}s",
-        "window_seconds_other": "{{count}}s",
         "immediate": "Right now",
+        "when_label": "When",
+        "duration_label": "Estimated duration",
         "duration": "~{{minutes}} min",
         "you_receive": "You'll get",
-        "explainer": "Nothing is reserved yet. The client picks from whoever is available, and you can reply to other requests meanwhile.",
+        "explainer": "The client picks from whoever is available. Your calendar is only booked if you are chosen.",
         "accept": "I'm available",
         "decline": "Not now",
         "accepted_title": "You're on the list",
         "accepted_subtitle": "We'll let you know as soon as the client decides. Until then, your calendar stays free.",
         "too_late_title": "This request is closed",
         "too_late_subtitle": "Another professional replied first. New requests come in throughout the day.",
+        "busiest_hours": "More requests usually come in between {{from}}h and {{to}}h.",
         "empty_title": "No requests right now",
         "empty_subtitle": "When a client looks for one of your services, it shows up here. Keep notifications on so you don't miss any.",
         "error_title": "Couldn't load requests",

@@ -42,10 +42,27 @@ const ContactCard = ({
   children?: React.ReactNode;
 }) => {
   const { t } = useTranslation();
+
+  // Confirmado ganha um visual RESOLVIDO — fundo e contorno verdes suaves — para
+  // o olho o distinguir do que falta e ir direto ao trabalho por fazer. Antes
+  // era igual ao por confirmar, com a única diferença no rótulo à direita.
   return (
-    <View className="rounded-2xl border p-4" style={{ borderColor: Colors.line, backgroundColor: Colors.card }}>
+    <View
+      className="rounded-2xl border p-4"
+      style={{
+        borderColor: verified ? `${Colors.success}40` : Colors.line,
+        backgroundColor: verified ? `${Colors.success}14` : Colors.card,
+      }}
+    >
       <View className="flex-row items-center">
-        <Feather name={icon} size={18} color={verified ? Colors.success : Colors.muted} />
+        {/* Ícone numa pastilha própria quando confirmado: dá o mesmo peso ao
+            "feito" que o botão âmbar dá ao "por fazer". */}
+        <View
+          className="w-9 h-9 rounded-full items-center justify-center"
+          style={{ backgroundColor: verified ? `${Colors.success}26` : Colors.card_high }}
+        >
+          <Feather name={verified ? 'check' : icon} size={17} color={verified ? Colors.success : Colors.muted} />
+        </View>
         <View className="flex-1 ml-3">
           <CustomText color="muted" size="extraSmall" boldness="bold">
             {label.toUpperCase()}
@@ -55,12 +72,9 @@ const ContactCard = ({
           </CustomText>
         </View>
         {verified && (
-          <View className="flex-row items-center">
-            <Feather name="check-circle" size={16} color={Colors.success} />
-            <CustomText color="success" size="small" boldness="bold" classes="ml-1.5">
-              {t('complete_profile.contacts.verified')}
-            </CustomText>
-          </View>
+          <CustomText color="success" size="small" boldness="bold">
+            {t('complete_profile.contacts.verified')}
+          </CustomText>
         )}
       </View>
       {!verified && !!children && <View className="mt-4">{children}</View>}
@@ -157,6 +171,8 @@ const ContactsStep = ({
       .finally(() => setEmailBusy(false));
   };
 
+  const bothVerified = phoneOk && emailOk;
+
   const recheckEmail = async () => {
     setEmailBusy(true);
     setEmailPending(false);
@@ -170,17 +186,31 @@ const ContactsStep = ({
     }
   };
 
-  const bothVerified = phoneOk && emailOk;
-
   return (
     <View className="flex-1 p-5">
       <View className="flex-1">
         <CustomText size="title" color="secondary" boldness="bold" numberOfLines={2}>
           {t('complete_profile.contacts.title')}
         </CustomText>
-        <CustomText color="muted" classes="mt-2 mb-6" numberOfLines={3}>
+        <CustomText color="muted" classes="mt-2 mb-5" numberOfLines={3}>
           {t('complete_profile.contacts.subtitle')}
         </CustomText>
+
+        {/* Progresso do próprio passo: dois pontos, um por contacto, que enchem
+            à medida que se confirmam. Dá a sensação de estar a avançar dentro do
+            passo, não só entre passos. */}
+        <View className="flex-row items-center mb-6">
+          {[phoneOk, emailOk].map((ok, i) => (
+            <View
+              key={i}
+              className="h-1.5 rounded-full mr-2"
+              style={{ width: 28, backgroundColor: ok ? Colors.success : Colors.card_high }}
+            />
+          ))}
+          <CustomText size="extraSmall" boldness="bold" color="secondary" classes="ml-1" style={{ color: bothVerified ? Colors.success : Colors.muted }}>
+            {t(`complete_profile.contacts.${[phoneOk, emailOk].filter(Boolean).length === 1 ? 'progress_single' : 'progress_multi'}`, { done: [phoneOk, emailOk].filter(Boolean).length })}
+          </CustomText>
+        </View>
 
         {/* Telemóvel */}
         <ContactCard icon="smartphone" label={t('general.phone_number')} value={vendorData?.user?.phone_number} verified={phoneOk}>
@@ -274,7 +304,17 @@ const ContactsStep = ({
         </View>
       </View>
 
-      <View className="pt-5">
+      {/* Porque pedimos: uma linha discreta que ocupa o vazio antes do botão
+          com algo útil, em vez de espaço morto. Tranquiliza quem hesita em dar
+          o número. */}
+      <View className="flex-row items-start mb-4 px-1">
+        <Feather name="shield" size={13} color={Colors.muted} style={{ marginTop: 2 }} />
+        <CustomText size="extraSmall" color="muted" classes="ml-2 flex-1" style={{ lineHeight: 17 }}>
+          {t('complete_profile.contacts.privacy_note')}
+        </CustomText>
+      </View>
+
+      <View>
         <CustomTouchableOpacity
           size="large"
           type="support_primary"

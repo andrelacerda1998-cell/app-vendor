@@ -13,6 +13,12 @@ interface ContentProps {
   subtitle?: string;
   successButtonText?: string;
   cancelButtonText?: string;
+  /**
+   * Cancelar em vermelho, para diálogos onde recusar é a decisão que se quer
+   * sublinhar. NÃO é o default: na maioria dos diálogos cancelar é a ação
+   * SEGURA, e vermelho reservado para o destrutivo (apagar, cancelar serviço).
+   */
+  dangerCancel?: boolean;
   onSuccess?: () => void;
   onCancel?: () => void;
   customContent?: ReactNode;

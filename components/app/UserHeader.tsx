@@ -91,41 +91,80 @@ const UserHeader = () => {
           </View>
         </TouchableWithoutFeedback>
 
-        <View className="flex-1 pr-4">
+        <View className="flex-1 pr-3" style={{ minWidth: 0 }}>
           <CustomText size="large" color="secondary" boldness="bolder" numberOfLines={1}>
             {t('user_header.hello', { name: vendorData?.user?.first_name ?? '' })}
           </CustomText>
-          <CustomText size="small" color="muted" boldness="regular" numberOfLines={1} classes="mt-0.5">
-            {(vendorData?.at_user && vendorData?.company_address && vendorData?.iban &&
-              vendorData?.user?.phone_number_verified_at && vendorData?.user?.email_verified_at)
-              ? t('user_header.ready')
-              : t('user_header.finish_account')}
-          </CustomText>
+          {/* Só mostra "termina a conta" quando é o caso. O "Pronto para
+              receber" saiu: o botão de estado ao lado já o diz, e repeti-lo só
+              roubava largura ao nome. */}
+          {!(vendorData?.at_user && vendorData?.company_address && vendorData?.iban &&
+             vendorData?.user?.phone_number_verified_at && vendorData?.user?.email_verified_at) && (
+            <CustomText size="small" color="muted" boldness="regular" numberOfLines={1} classes="mt-0.5">
+              {t('user_header.finish_account')}
+            </CustomText>
+          )}
         </View>
 
-        {/* Estado online/offline — tocável, sempre à vista. */}
+        {/* Estado online/offline.
+            "Online"/"Offline" é jargão de apps que muitos profissionais não
+            conhecem, e um pontinho colorido não chega para dizer que aquilo é um
+            interruptor. Passa a dizer o que FAZ ("A receber pedidos" / "Não
+            recebes pedidos") com um switch de verdade ao lado, para ser óbvio o
+            que está ligado e que se pode desligar tocando. */}
         <TouchableOpacity
           onPress={online.toggle}
           disabled={online.disabled}
           activeOpacity={0.8}
-          className="flex-row items-center rounded-full px-3 py-1.5 mr-3"
+          className="flex-row items-center rounded-full pl-3 pr-1.5 py-1.5 mr-3"
           style={{
-            backgroundColor: online.isOnline ? 'rgba(35,230,158,0.14)' : Colors.card,
+            flexShrink: 0,
+            backgroundColor: online.blocked
+              ? Colors.card
+              : online.isOnline ? 'rgba(35,230,158,0.14)' : Colors.brand_soft,
             borderWidth: 1,
-            borderColor: online.isOnline ? 'rgba(35,230,158,0.45)' : Colors.line,
+            borderColor: online.blocked
+              ? Colors.line
+              : online.isOnline ? 'rgba(35,230,158,0.45)' : `${Colors.brand}66`,
             opacity: online.disabled ? 0.5 : 1,
           }}
           accessibilityRole="switch"
           accessibilityState={{ checked: online.isOnline, disabled: online.disabled }}
           accessibilityLabel={t('session.status.receive_requests')}
         >
-          <View
-            className="rounded-full mr-1.5"
-            style={{ width: 8, height: 8, backgroundColor: online.isOnline ? Colors.success : Colors.danger }}
-          />
-          <CustomText size="extraSmall" boldness="bold" color="secondary">
-            {online.isOnline ? t('session.status.online') : t('session.status.offline')}
+          {online.blocked && (
+            <Feather name="lock" size={11} color={Colors.muted} style={{ marginRight: 5 }} />
+          )}
+          <CustomText
+            size="extraSmall"
+            boldness="bold"
+            color="secondary"
+            style={{ color: online.blocked ? Colors.muted : online.isOnline ? Colors.success : Colors.brand }}
+          >
+            {online.blocked
+              ? t('session.status.blocked_label')
+              : online.isOnline ? t('session.status.on_label') : t('session.status.off_cta')}
           </CustomText>
+
+          {/* Switch desenhado à mão: a bolinha encosta ao lado que está ativo,
+              como qualquer interruptor de telemóvel. É o sinal universal de
+              "isto liga e desliga", que o texto sozinho não dá.
+              Escondido quando bloqueado: não há nada a alternar, só perfil a
+              completar, e um switch aí só convidava a um toque que não faz nada. */}
+          {!online.blocked && (
+          <View
+            className="rounded-full ml-2 justify-center"
+            style={{
+              width: 34,
+              height: 20,
+              padding: 2,
+              backgroundColor: online.isOnline ? Colors.success : `${Colors.brand}40`,
+              alignItems: online.isOnline ? 'flex-end' : 'flex-start',
+            }}
+          >
+            <View className="rounded-full" style={{ width: 16, height: 16, backgroundColor: online.isOnline ? Colors.secondary : Colors.brand }} />
+          </View>
+          )}
         </TouchableOpacity>
 
         <TouchOpacity

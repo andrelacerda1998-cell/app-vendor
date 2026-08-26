@@ -383,18 +383,35 @@ const Home = () => {
           );
         })()}
 
+        {/* ORDEM POR URGÊNCIA: o que tem relógio a correr primeiro, o que é
+            retrospetivo no fim.
+
+            Antes, os dois únicos blocos com tempo a contar — os pedidos —
+            ficavam abaixo do resumo de ganhos e do interruptor de
+            auto-aceitação, que são precisamente as duas coisas que nunca mudam
+            de urgência. Um contador que se dá ao trabalho de ticar ao segundo
+            não pode estar atrás de um número que é igual o dia todo. */}
+
+        {/* 1. O trabalho que está a acontecer agora. */}
         {openService && <OpenService />}
 
-        <View className="px-5">
-          <WeekStats />
-        </View>
-
-        <AutoAcceptCard />
-
+        {/* 2. O que expira: pedidos adjudicados e pedidos de serviço. */}
         <PendingRequestsCard />
         <MatchingInvitationsCard />
 
+        {/* 3. O que aí vem hoje. */}
         <Schedules />
+
+        {/* 4. Retrospetivo: já aconteceu, pode esperar. */}
+        <View className="px-5 mt-3">
+          <WeekStats />
+        </View>
+
+        {/* 5. Definições e atalhos. A auto-aceitação configura-se uma vez e
+            nunca mais se toca — não justifica lugar nobre. O sítio certo seria
+            o ecrã de Disponibilidade, onde vive a agenda semanal a que ela na
+            verdade se aplica; fica aqui em baixo até essa mudança se decidir. */}
+        <AutoAcceptCard />
 
         <HomeShortcuts />
       </ScrollView>

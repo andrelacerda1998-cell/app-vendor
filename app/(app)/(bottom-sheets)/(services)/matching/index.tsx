@@ -4,6 +4,7 @@ import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import TouchOpacity from '@/components/TouchOpacity';
 import ArrowIcon from '@/assets/icons/arrow';
+import { Feather } from '@expo/vector-icons';
 import { CustomText } from '@/components/CustomText';
 import { Colors } from '@/constants/Colors';
 import { EmptyState, ErrorState, SkeletonList } from '@/components/ui';
@@ -22,7 +23,7 @@ import { useDialog } from '@/contexts/DialogContext';
 const MatchingInvitations = () => {
   const { t } = useTranslation();
   const { openDialog } = useDialog();
-  const { invitations, loading, failed, submitting, refresh, accept, decline } = useMatchingInvitations();
+  const { invitations, loading, failed, submitting, busiestHours, refresh, accept, decline } = useMatchingInvitations();
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = useCallback(async () => {
@@ -59,15 +60,46 @@ const MatchingInvitations = () => {
           pedidos: sem este wrapper o conteúdo era empurrado para o meio do
           ecrã, com um vazio enorme por cima do primeiro cartão. */}
       <View className="flex-1 bg-bg p-5">
-        <View className="flex-row items-center justify-between mb-6">
-          <TouchOpacity onPress={() => router.back()} otherClasses="h-10 w-10" itemsCenter>
-            <ArrowIcon color={Colors.secondary} position="left" size="40%" />
+        {/* Cabeçalho com peso a sério: a `semiBold` desta fonte fica fina a
+            este tamanho e o título perdia-se contra o preto. A seta ganha um
+            fundo próprio — além de se ver, passa a ter uma área de toque
+            decente em vez de um ícone a 40% do contentor. */}
+        <View className="flex-row items-center justify-between mb-5">
+          <TouchOpacity
+            onPress={() => router.back()}
+            otherClasses="h-10 w-10 rounded-full"
+            itemsCenter
+            style={{ backgroundColor: Colors.card }}
+          >
+            <ArrowIcon color={Colors.secondary} position="left" size="45%" />
           </TouchOpacity>
-          <CustomText color="secondary" boldness="semiBold" classes="text-xl">
+
+          <CustomText size="large" color="secondary" boldness="bolder">
             {t('matching.invitation.list_title')}
           </CustomText>
+
           <View className="h-10 w-10" />
         </View>
+
+        {/* O aviso vive AQUI e não dentro de cada cartão: repetido em três
+            cartões era ruído, e é uma regra do ecrã inteiro — não de um pedido
+            em particular. Lido uma vez, vale para todos. */}
+        {!loading && !failed && invitations.length > 0 && (
+          <View
+            className="flex-row rounded-xl px-4 py-3.5 mb-4 border"
+            style={{ backgroundColor: Colors.brand_soft, borderColor: `${Colors.brand}33` }}
+          >
+            <Feather name="info" size={16} color={Colors.brand} style={{ marginTop: 1 }} />
+            <CustomText
+              size="small"
+              color="secondary"
+              classes="ml-3 flex-1"
+              style={{ lineHeight: 20 }}
+            >
+              {t('matching.invitation.explainer')}
+            </CustomText>
+          </View>
+        )}
 
         {loading ? (
           <SkeletonList />
@@ -99,6 +131,28 @@ const MatchingInvitations = () => {
               onDecline={() => decline(item.candidate_id)}
             />
           )}
+          /* Rodapé discreto com o padrão de procura. Só aparece quando o
+             servidor teve amostra suficiente para o calcular — sem dados, não
+             se diz nada, em vez de inventar uma hora de ponta que faria alguém
+             organizar o dia à volta de nada. */
+          ListFooterComponent={
+            busiestHours ? (
+              <View className="flex-row items-center justify-center mt-6 px-4">
+                <Feather name="trending-up" size={12} color={Colors.muted} />
+                <CustomText
+                  size="extraSmall"
+                  color="secondary"
+                  classes="ml-2 text-center"
+                  style={{ color: Colors.muted }}
+                >
+                  {t('matching.invitation.busiest_hours', {
+                    from: String(busiestHours.from).padStart(2, '0'),
+                    to: String(busiestHours.to).padStart(2, '0'),
+                  })}
+                </CustomText>
+              </View>
+            ) : null
+          }
         />
         )}
       </View>

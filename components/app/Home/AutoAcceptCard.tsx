@@ -77,6 +77,7 @@ const AutoAcceptCard = () => {
       subtitle: t('schedules.confirmation.auto_accept_subtitle'),
       successButtonText: t('schedules.auto_accept_enable'),
       cancelButtonText: t('general.cancel'),
+      dangerCancel: true,
       onSuccess: () => persist(true),
     });
   };

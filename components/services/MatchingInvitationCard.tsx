@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -6,8 +6,8 @@ import { CustomText } from '@/components/CustomText';
 import { Colors } from '@/constants/Colors';
 import { renderMoney } from '@/utils/money';
 import { MatchingInvitation } from '@/types/matching';
-
-const pad = (n: number) => String(n).padStart(2, '0');
+import useExpiryCountdown from '@/hooks/useExpiryCountdown';
+import { urgencyInk } from '@/utils/urgencyColor';
 
 /**
  * Um convite de seleção — NÃO é um pedido adjudicado.
@@ -35,48 +35,11 @@ const MatchingInvitationCard = ({
   busy?: boolean;
 }) => {
   const { t } = useTranslation();
-  const [now, setNow] = useState(() => Date.now());
+  const { label: countdown, remainingRatio, tone, expired } = useExpiryCountdown(
+    invitation.expires_at,
+    invitation.notified_at,
+  );
 
-  const expiresAt = useMemo(() => {
-    if (!invitation.expires_at) return 0;
-    const parsed = new Date(invitation.expires_at).getTime();
-    return Number.isFinite(parsed) ? parsed : 0;
-  }, [invitation.expires_at]);
-
-  const remainingMs = expiresAt ? Math.max(0, expiresAt - now) : 0;
-  const expired = expiresAt > 0 && remainingMs === 0;
-
-  // Ao segundo apenas no último minuto: acima disso, o segundo a mexer é ruído
-  // que gasta bateria sem ajudar a decidir.
-  useEffect(() => {
-    if (!expiresAt || expired) return;
-    const fine = remainingMs < 60_000;
-    const id = setInterval(() => setNow(Date.now()), fine ? 1000 : 20_000);
-    return () => clearInterval(id);
-  }, [expiresAt, expired, remainingMs]);
-
-  /**
-   * Tempo que falta para responder.
-   *
-   * "18:44" lia-se como uma HORA DO DIA — perigoso numa app cheia de horários
-   * de serviços. Passa a "18 min", e só desce ao segundo no último minuto,
-   * quando o segundo passa mesmo a importar.
-   */
-  const countdown = useMemo(() => {
-    if (!expiresAt) return null;
-    const total = Math.floor(remainingMs / 1000);
-    if (total >= 3600) {
-      const h = Math.floor(total / 3600);
-      const m = Math.floor((total % 3600) / 60);
-      return t('matching.invitation.window_hours', { hours: h, minutes: pad(m) });
-    }
-    if (total >= 60) {
-      return t('matching.invitation.window_minutes', { count: Math.ceil(total / 60) });
-    }
-    return t('matching.invitation.window_seconds', { count: total });
-  }, [expiresAt, remainingMs, t]);
-
-  const urgent = remainingMs > 0 && remainingMs <= 60_000;
   const earn = renderMoney(invitation.amount_for_vendor ?? null);
 
   /** Quando é o serviço. É a primeira pergunta dele, por isso é a primeira linha. */
@@ -104,26 +67,36 @@ const MatchingInvitationCard = ({
       className="rounded-2xl border p-5 mb-3"
       style={{ borderColor: Colors.line, backgroundColor: Colors.card }}
     >
-      {/* O contador vive numa pílula própria e discreta: é contexto, não é a
-          oferta. Só ganha a cor da marca no último minuto, quando passa a ser
-          uma decisão a tomar já. */}
+      {/* Contador e barra, tal como na Home: a mesma informação com a mesma
+          cara nos dois sítios. Ver dois tratamentos diferentes para o mesmo
+          número faz duvidar de ambos. */}
       {!!countdown && (
-        <View className="flex-row items-center mb-4">
-          <View
-            className="flex-row items-center rounded-full px-2.5 py-1"
-            style={{ backgroundColor: urgent ? Colors.brand_soft : Colors.card_high }}
-          >
-            <Feather name="clock" size={11} color={urgent ? Colors.brand : Colors.muted} />
+        <View className="mb-4">
+          <View className="flex-row items-baseline mb-2">
             <CustomText
-              size="extraSmall"
-              boldness="bold"
+              size="medium"
+              boldness="bolder"
               color="secondary"
-              classes="ml-1.5"
-              style={{ color: urgent ? Colors.brand : Colors.muted, fontVariant: ['tabular-nums'] }}
+              style={{ color: urgencyInk(tone), fontVariant: ['tabular-nums'] }}
             >
-              {countdown} {t('matching.invitation.window')}
+              {countdown}
+            </CustomText>
+            <CustomText size="extraSmall" color="secondary" classes="ml-1.5" style={{ color: Colors.muted }}>
+              {t('matching.invitation.window')}
             </CustomText>
           </View>
+
+          {remainingRatio !== null && (
+            <View className="rounded-full overflow-hidden" style={{ height: 3, backgroundColor: Colors.card_high }}>
+              <View
+                style={{
+                  height: 3,
+                  width: `${Math.max(2, remainingRatio * 100)}%`,
+                  backgroundColor: urgencyInk(tone),
+                }}
+              />
+            </View>
+          )}
         </View>
       )}
 
@@ -141,59 +114,77 @@ const MatchingInvitationCard = ({
       {/* QUANDO — a pergunta que decide se ele pode sequer aceitar. Antes não
           aparecia de todo: o payload trazia schedule a null porque a linha de
           agenda ainda não existe durante a seleção. */}
-      {/* Quando e quanto, um por cima do outro e separados por uma linha fina:
-          são as duas respostas que ele procura, e caixas dentro de caixas só
-          lhes tiravam peso. */}
-      <View className="border-t" style={{ borderColor: Colors.line }}>
-        {(when || durationMinutes) && (
-          <View className="flex-row items-center justify-between py-3.5">
-            <View className="flex-row items-center flex-1 pr-3">
-              <Feather name={when ? 'calendar' : 'zap'} size={14} color={Colors.muted} />
-              <CustomText size="small" boldness="bold" color="secondary" classes="ml-2">
-                {when ?? t('matching.invitation.immediate')}
+      {/* Quando, quanto tempo, e quanto dinheiro.
+          O destaque vem de PESO, COR e FORMA — nunca de aumentar as letras: o
+          bloco ganha fundo próprio para se separar do resto do cartão, os
+          valores ficam em branco cheio contra etiquetas apagadas, e cada linha
+          tem o seu ícone com a cor da marca. */}
+      <View className="rounded-xl overflow-hidden" style={{ backgroundColor: Colors.card_high }}>
+        <View className="flex-row items-center justify-between px-3.5 py-3">
+          <View className="flex-row items-center">
+            <Feather name={when ? 'calendar' : 'zap'} size={14} color={Colors.brand} />
+            <CustomText size="small" color="secondary" classes="ml-2.5" style={{ color: Colors.muted }}>
+              {t('matching.invitation.when_label')}
+            </CustomText>
+          </View>
+          <CustomText size="small" boldness="bolder" color="secondary">
+            {when ?? t('matching.invitation.immediate')}
+          </CustomText>
+        </View>
+
+        {!!durationMinutes && (
+          <View
+            className="flex-row items-center justify-between px-3.5 py-3 border-t"
+            style={{ borderColor: Colors.line }}
+          >
+            <View className="flex-row items-center">
+              <Feather name="clock" size={14} color={Colors.brand} />
+              <CustomText size="small" color="secondary" classes="ml-2.5" style={{ color: Colors.muted }}>
+                {t('matching.invitation.duration_label')}
               </CustomText>
             </View>
-            {!!durationMinutes && (
-              <CustomText size="extraSmall" color="secondary" style={{ color: Colors.muted }}>
-                {t('matching.invitation.duration', { minutes: durationMinutes })}
-              </CustomText>
-            )}
+            <CustomText size="small" boldness="bolder" color="secondary">
+              {t('matching.invitation.duration', { minutes: durationMinutes })}
+            </CustomText>
           </View>
         )}
 
+        {/* O dinheiro é o único com a cor da marca: é o que ele veio ver. */}
         <View
-          className="flex-row items-center justify-between py-3.5 border-t"
+          className="flex-row items-center justify-between px-3.5 py-3 border-t"
           style={{ borderColor: Colors.line }}
         >
-          <CustomText size="small" color="secondary" style={{ color: Colors.muted }}>
-            {t('matching.invitation.you_receive')}
-          </CustomText>
+          <View className="flex-row items-center">
+            <Feather name="credit-card" size={14} color={Colors.brand} />
+            <CustomText size="small" color="secondary" classes="ml-2.5" style={{ color: Colors.muted }}>
+              {t('matching.invitation.you_receive')}
+            </CustomText>
+          </View>
           <CustomText size="large" boldness="bolder" color="secondary" style={{ color: Colors.brand }}>
             {earn}
           </CustomText>
         </View>
       </View>
 
-      {/* O aviso que impede o mal-entendido. Discreto de propósito: tem de ser
-          lido, mas não pode pesar mais do que a proposta em si — antes ocupava
-          três linhas realçadas e dominava o cartão. */}
-      <CustomText
-        size="extraSmall"
-        color="secondary"
-        classes="mt-4 mb-5"
-        style={{ color: Colors.muted, lineHeight: 17 }}
-      >
-        {t('matching.invitation.explainer')}
-      </CustomText>
+      <View className="mt-5" />
 
       <View className="flex-row">
+        {/* Recusar tem fundo tonal e não contorno vazio: ao lado de um botão
+            cheio, um contorno oco lê-se como desativado. Com um fundo próprio
+            passa a ser claramente tocável, sem deixar de ser o secundário — é a
+            COR e a LARGURA que mantêm a hierarquia, não a falta de forma.
+
+            Vermelho suave e não saturado: recusar é uma escolha legítima, não
+            um erro. */}
         <TouchableOpacity
           onPress={onDecline}
           disabled={busy}
-          className="flex-1 rounded-2xl py-3.5 items-center mr-2.5 border"
-          style={{ borderColor: Colors.line, opacity: busy ? 0.5 : 1 }}
+          accessibilityRole="button"
+          className="flex-1 flex-row rounded-2xl py-3.5 items-center justify-center mr-2.5"
+          style={{ backgroundColor: `${Colors.danger}1A`, opacity: busy ? 0.5 : 1 }}
         >
-          <CustomText boldness="bold" color="secondary" style={{ color: Colors.muted }}>
+          <Feather name="x" size={15} color={Colors.danger} />
+          <CustomText boldness="bold" color="secondary" classes="ml-1.5" style={{ color: Colors.danger }}>
             {t('matching.invitation.decline')}
           </CustomText>
         </TouchableOpacity>
@@ -201,10 +192,12 @@ const MatchingInvitationCard = ({
         <TouchableOpacity
           onPress={onAccept}
           disabled={busy}
-          className="flex-[1.4] rounded-2xl py-3.5 items-center"
+          accessibilityRole="button"
+          className="flex-[1.4] flex-row rounded-2xl py-3.5 items-center justify-center"
           style={{ backgroundColor: Colors.brand, opacity: busy ? 0.5 : 1 }}
         >
-          <CustomText boldness="bolder" color="secondary" style={{ color: Colors.on_brand }}>
+          <Feather name="check" size={15} color={Colors.on_brand} />
+          <CustomText boldness="bolder" color="secondary" classes="ml-1.5" style={{ color: Colors.on_brand }}>
             {t('matching.invitation.accept')}
           </CustomText>
         </TouchableOpacity>

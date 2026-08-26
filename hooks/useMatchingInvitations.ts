@@ -22,6 +22,12 @@ export function useMatchingInvitations() {
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
   const [submitting, setSubmitting] = useState<number | null>(null);
+  /**
+   * Horas em que costumam entrar mais pedidos, calculadas pelo servidor a
+   * partir de pedidos reais. Fica null quando não há amostra que chegue — e
+   * nesse caso não se mostra nada, em vez de inventar um padrão.
+   */
+  const [busiestHours, setBusiestHours] = useState<{ from: number; to: number; share: number } | null>(null);
 
   const mountedRef = useRef(true);
 
@@ -45,6 +51,21 @@ export function useMatchingInvitations() {
   }, [api]);
 
   useEffect(() => { fetch(); }, [fetch]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    api.get(API_ROUTES.VENDOR_MATCHING_INSIGHTS)
+      .then(({ data }) => {
+        if (cancelled) return;
+        setBusiestHours(data?.data?.busiest_hours ?? null);
+      })
+      .catch(() => {
+        // Informação acessória: se falhar, o ecrã funciona na mesma sem ela.
+      });
+
+    return () => { cancelled = true; };
+  }, [api]);
 
   const remove = useCallback((candidateId?: number) => {
     if (!candidateId) return;
@@ -109,7 +130,7 @@ export function useMatchingInvitations() {
     }
   }, [api, fetch, remove, submitting]);
 
-  return { invitations, loading, failed, submitting, refresh: fetch, accept, decline };
+  return { invitations, loading, failed, submitting, busiestHours, refresh: fetch, accept, decline };
 }
 
 export default useMatchingInvitations;
