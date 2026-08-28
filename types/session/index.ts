@@ -17,6 +17,10 @@ export interface VendorDataInterface {
     latitude: number;
     longitude: number;
   },
+  current_location?: {
+    latitude: number;
+    longitude: number;
+  },
   pending_documents: DocumentsInterface[],
   missing_documents: DocumentsInterface[],
   optional_documents: DocumentsInterface[],

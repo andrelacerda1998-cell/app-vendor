@@ -1,7 +1,7 @@
-import React, { useMemo } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { View, TouchableOpacity } from 'react-native'
 import { Feather } from '@expo/vector-icons'
-import { router } from 'expo-router'
+import { router, useFocusEffect } from 'expo-router'
 import { useTranslation } from 'react-i18next'
 import { CustomText } from '@/components/CustomText'
 import { Colors } from '@/constants/Colors'
@@ -25,7 +25,17 @@ import { urgencyInk, urgencyOnInk, urgencyTint } from '@/utils/urgencyColor'
  */
 const MatchingInvitationsCard = () => {
   const { t } = useTranslation();
-  const { invitations } = useMatchingInvitations();
+  const { invitations, refresh } = useMatchingInvitations();
+
+  // A Home tem a sua própria instância do hook; aceitar/recusar no ecrã de
+  // pedidos não a atualiza. Sem isto, o cartão ficava preso na contagem antiga
+  // (ex.: "4 pedidos") depois de já não haver nenhum. Refaz o fetch sempre que
+  // a Home volta a ter foco.
+  useFocusEffect(
+    useCallback(() => {
+      refresh();
+    }, [refresh]),
+  );
 
   /** O que expira primeiro é o que manda no aviso. */
   const soonest = useMemo(() => {

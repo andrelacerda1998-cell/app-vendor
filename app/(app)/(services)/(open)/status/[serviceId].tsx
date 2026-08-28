@@ -25,6 +25,7 @@ import ServiceCountdown from "@/components/services/ServiceCountdown";
 import { Card, ErrorState, SkeletonList } from "@/components/ui";
 import { formatEstimatedDuration } from "@/utils/serviceDetails";
 import { useNavChooser } from "@/hooks/useNavChooser";
+import ServiceRouteMap from "@/components/services/ServiceRouteMap";
 import { track, AnalyticsEvent } from "@/utils/analytics";
 
 interface Details{
@@ -506,35 +507,38 @@ const Status = () => {
           </View>
 
 
-          <View className="h-px my-4" style={{ backgroundColor: Colors.line }} />
+          {/* A meta (quando/duração/imediato) só decide algo ANTES de arrancar.
+              Com o serviço a decorrer, o cabeçalho fica só com o título e o
+              valor — o resto é ruído nesse momento. */}
+          {status !== ServiceStatus.ARRIVED && (
+            <>
+              <View className="h-px my-4" style={{ backgroundColor: Colors.line }} />
 
-          {/* Meta numa linha só: quando · estado · duração. Antes cada item
-              ocupava a sua linha, o que empilhava tudo à esquerda. */}
-          <View className="flex-row items-center flex-wrap" style={{ rowGap: 8 }}>
-            {!!whenLabel && (
-              <View className="flex-row items-center mr-3">
-                <Feather name="calendar" size={15} color={Colors.muted} />
-                <CustomText color="secondary" size="small" classes="ml-2">{whenLabel}</CustomText>
+              <View className="flex-row items-center flex-wrap" style={{ rowGap: 8 }}>
+                {!!whenLabel && (
+                  <View className="flex-row items-center mr-3">
+                    <Feather name="calendar" size={15} color={Colors.muted} />
+                    <CustomText color="secondary" size="small" classes="ml-2">{whenLabel}</CustomText>
+                  </View>
+                )}
+                {!!durationLabel && (
+                  <View className="flex-row items-center mr-3">
+                    <Feather name="clock" size={15} color={Colors.muted} />
+                    <CustomText color="secondary" size="small" classes="ml-2">
+                      {t('services.service.status.estimated_duration', { value: durationLabel })}
+                    </CustomText>
+                  </View>
+                )}
               </View>
-            )}
-            {!!durationLabel && (
-              <View className="flex-row items-center mr-3">
-                <Feather name="clock" size={15} color={Colors.muted} />
-                <CustomText color="secondary" size="small" classes="ml-2">
-                  {t('services.service.status.estimated_duration', { value: durationLabel })}
-                </CustomText>
-              </View>
-            )}
-            {/* Sem selo de estado: o passo ativo do stepper logo a seguir já
-                diz em que ponto está o serviço — repeti-lo era ruído. */}
-          </View>
-          {svc?.is_immediate && (
-            <View className="flex-row items-center mt-2">
-              <Ionicons name="flash" size={15} color={Colors.danger} />
-              <CustomText size="small" color="danger" classes="ml-2.5">
-                {t('services.service.status.immediate')}
-              </CustomText>
-            </View>
+              {svc?.is_immediate && (
+                <View className="flex-row items-center mt-2">
+                  <Ionicons name="flash" size={15} color={Colors.danger} />
+                  <CustomText size="small" color="danger" classes="ml-2.5">
+                    {t('services.service.status.immediate')}
+                  </CustomText>
+                </View>
+              )}
+            </>
           )}
         </Card>
 
@@ -549,13 +553,68 @@ const Status = () => {
           />
         )}
 
-        {/* Stepper de estado */}
-        <Card className="mt-3">
-          <Stepper steps={steps} currentRank={currentRank} />
-        </Card>
+        {/* Em execução, o trabalho-agora vem primeiro: fotos (o "antes" tira-se
+            ao chegar) e extras logo a seguir ao cronómetro. */}
+        {status === ServiceStatus.ARRIVED && (
+          <>
+            <ServicePhotos serviceId={svc?.id} enabled={svc?.status === ServiceStatus.ARRIVED} />
+            <ServiceExtras
+              serviceId={svc?.id}
+              enabled={svc?.status === ServiceStatus.ARRIVED}
+              sheet={extrasSheet}
+              onSheetChange={setExtrasSheet}
+            />
+          </>
+        )}
 
-        {/* Cliente + mapa + ações */}
-        <Card className="mt-3">
+        {/* Stepper de estado — escondido em execução: o cronómetro a correr e o
+            botão "Concluir" já dizem em que ponto está; o stepper só mostrava o
+            passado e comia espaço. */}
+        {status !== ServiceStatus.ARRIVED && (
+          <Card className="mt-3">
+            <Stepper steps={steps} currentRank={currentRank} />
+          </Card>
+        )}
+
+        {/* Cliente. Em execução reduz-se a uma linha + chat: o técnico já está
+            no local, só precisa de um canal rápido para o cliente. */}
+        {status === ServiceStatus.ARRIVED ? (
+          <Card className="mt-3">
+            <View className="flex-row items-center justify-between">
+              <View className="flex-1 pr-3">
+                <CustomText color="muted" size="extraSmall" boldness="bold">
+                  {t('schedules.customer', { defaultValue: 'Cliente' })}
+                </CustomText>
+                <CustomText color="secondary" boldness="bolder" size="large" numberOfLines={1} classes="mt-0.5">
+                  {svc?.customer?.name}
+                </CustomText>
+              </View>
+              <TouchableOpacity
+                onPress={goToChat}
+                className="flex-row items-center rounded-xl px-4 py-2.5 border"
+                style={{ borderColor: Colors.line }}
+              >
+                <View>
+                  <Feather name="message-square" size={18} color={Colors.secondary} />
+                  {unreadMessages > 0 && (
+                    <View
+                      className="absolute rounded-full items-center justify-center"
+                      style={{ width: 16, height: 16, top: -6, right: -8, backgroundColor: Colors.danger }}
+                    >
+                      <CustomText size="extraSmall" boldness="bold" color="secondary">
+                        {unreadMessages > 9 ? '9+' : unreadMessages}
+                      </CustomText>
+                    </View>
+                  )}
+                </View>
+                <CustomText size="small" color="secondary" boldness="semiBold" classes="ml-2">
+                  {t('services.service.status.chat')}
+                </CustomText>
+              </TouchableOpacity>
+            </View>
+          </Card>
+        ) : (
+          <Card className="mt-3">
           <CustomText color="muted" size="extraSmall" boldness="bold">
             {t('schedules.customer', { defaultValue: 'Cliente' })}
           </CustomText>
@@ -570,6 +629,18 @@ const Status = () => {
                 {addressLine}
               </CustomText>
             </View>
+          )}
+
+          {/* Mapa do caminho até ao cliente; ao toque abre o Waze/Maps.
+              Some quando o serviço já está a decorrer (ARRIVED): a essa altura
+              o técnico já está no local, o caminho deixou de interessar. */}
+          {status !== ServiceStatus.ARRIVED && (
+            <ServiceRouteMap
+              serviceId={svc?.id}
+              destination={svc?.address}
+              origin={vendorData?.current_location ?? vendorData?.location}
+              onPress={startNavigation}
+            />
           )}
 
           {/* Observações do cliente. Vinham do detalhe do agendamento, que
@@ -629,7 +700,8 @@ const Status = () => {
             </TouchableOpacity>
           </View>
 
-        </Card>
+          </Card>
+        )}
 
         {/* O valor a receber subiu para o cabeçalho — ver comentário lá. */}
 
@@ -672,24 +744,6 @@ const Status = () => {
             )}
           </View>
         </View>
-        )}
-        {/* Fotos e extras só fazem sentido com o serviço a decorrer: antes de
-            chegar ao local não há nada para fotografar nem para acrescentar. */}
-        {status === ServiceStatus.ARRIVED && (
-          <>
-        <ServicePhotos
-          serviceId={svc?.id}
-          enabled={svc?.status === ServiceStatus.ARRIVED}
-        />
-
-        <ServiceExtras
-          serviceId={svc?.id}
-          enabled={svc?.status === ServiceStatus.ARRIVED}
-          sheet={extrasSheet}
-          onSheetChange={setExtrasSheet}
-        />
-
-          </>
         )}
 
       </ScrollView>

@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { FlatList, RefreshControl, SafeAreaView, View } from 'react-native';
+import { FlatList, RefreshControl, SafeAreaView, TouchableOpacity, View } from 'react-native';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import TouchOpacity from '@/components/TouchOpacity';
@@ -9,6 +9,7 @@ import { CustomText } from '@/components/CustomText';
 import { Colors } from '@/constants/Colors';
 import { EmptyState, ErrorState, SkeletonList } from '@/components/ui';
 import MatchingInvitationCard from '@/components/services/MatchingInvitationCard';
+import MatchingAcceptedContent from '@/components/services/MatchingAcceptedContent';
 import useMatchingInvitations from '@/hooks/useMatchingInvitations';
 import { useDialog } from '@/contexts/DialogContext';
 
@@ -22,8 +23,8 @@ import { useDialog } from '@/contexts/DialogContext';
  */
 const MatchingInvitations = () => {
   const { t } = useTranslation();
-  const { openDialog } = useDialog();
-  const { invitations, loading, failed, submitting, busiestHours, refresh, accept, decline } = useMatchingInvitations();
+  const { openDialog, closeDialog } = useDialog();
+  const { invitations, loading, failed, submitting, busiestHours, refresh, accept, acceptAll, decline } = useMatchingInvitations();
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = useCallback(async () => {
@@ -40,8 +41,8 @@ const MatchingInvitations = () => {
       // ainda não está garantido é o que faz o técnico sentir-se enganado
       // quando o cliente escolhe outra pessoa.
       openDialog({
-        title: t('matching.invitation.accepted_title'),
-        subtitle: t('matching.invitation.accepted_subtitle'),
+        closeOnClickOutside: true,
+        customContent: <MatchingAcceptedContent onClose={closeDialog} />,
       });
 
       return;
@@ -53,6 +54,22 @@ const MatchingInvitations = () => {
       subtitle: result.message ?? t('matching.invitation.too_late_subtitle'),
     });
   }, [accept, openDialog, t]);
+
+  const runAcceptAll = useCallback(async () => {
+    const { accepted } = await acceptAll();
+    if (accepted > 0) {
+      openDialog({
+        closeOnClickOutside: true,
+        customContent: <MatchingAcceptedContent onClose={closeDialog} count={accepted} />,
+      });
+      return;
+    }
+    // Nenhum entrou — as janelas fecharam entretanto.
+    openDialog({
+      title: t('matching.invitation.too_late_title'),
+      subtitle: t('matching.invitation.too_late_subtitle'),
+    });
+  }, [acceptAll, openDialog, closeDialog, t]);
 
   return (
     <SafeAreaView className="flex-1 bg-bg">
@@ -89,16 +106,45 @@ const MatchingInvitations = () => {
             className="flex-row rounded-xl px-4 py-3.5 mb-4 border"
             style={{ backgroundColor: Colors.brand_soft, borderColor: `${Colors.brand}33` }}
           >
-            <Feather name="info" size={16} color={Colors.brand} style={{ marginTop: 1 }} />
-            <CustomText
-              size="small"
-              color="secondary"
-              classes="ml-3 flex-1"
-              style={{ lineHeight: 20 }}
-            >
-              {t('matching.invitation.explainer')}
-            </CustomText>
+            <Feather name="zap" size={16} color={Colors.brand} style={{ marginTop: 1 }} />
+            <View className="ml-3 flex-1">
+              {/* Urgência primeiro (a corrida aos 3 lugares), garantia a seguir
+                  (a agenda só ocupa se for escolhido) — o que o faz responder
+                  já, sem o assustar. */}
+              <CustomText size="small" boldness="bold" color="secondary" style={{ lineHeight: 20 }}>
+                {t('matching.invitation.urgency_title')}
+              </CustomText>
+              <CustomText
+                size="small"
+                color="secondary"
+                classes="mt-0.5"
+                style={{ lineHeight: 20, color: Colors.muted }}
+              >
+                {t('matching.invitation.explainer')}
+              </CustomText>
+            </View>
           </View>
+        )}
+
+        {/* Atalho para aceitar todos de uma vez — só faz sentido com mais
+            do que um pedido; com um só, o botão do cartão basta. */}
+        {!loading && !failed && invitations.length > 1 && (
+          <TouchableOpacity
+            onPress={runAcceptAll}
+            disabled={submitting !== null}
+            accessibilityRole="button"
+            className="flex-row items-center justify-center rounded-2xl py-3.5 mb-4 border"
+            style={{
+              backgroundColor: `${Colors.success}1A`,
+              borderColor: `${Colors.success}44`,
+              opacity: submitting !== null ? 0.5 : 1,
+            }}
+          >
+            <Feather name="check-circle" size={16} color={Colors.success} />
+            <CustomText boldness="bold" color="secondary" classes="ml-2" style={{ color: Colors.success }}>
+              {t('matching.invitation.accept_all', { count: invitations.length })}
+            </CustomText>
+          </TouchableOpacity>
         )}
 
         {loading ? (

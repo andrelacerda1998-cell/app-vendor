@@ -82,8 +82,21 @@ const Profile = () => {
   ];
 
   // Estado da conta: cartão próprio com pill de estado (verde quando aprovada).
+  // "Em análise" só faz sentido depois de o técnico submeter os documentos —
+  // antes disso o registo está incompleto. Dizer "em análise" com documentos
+  // em falta era incoerente. Mesma leitura da página de Estado da conta.
   const approved = !!vendorData?.can_accept_service;
+  const submitted = (vendorData?.pending_documents?.length ?? 0) > 0;
+  const missingDocs = (vendorData?.missing_documents?.length ?? 0) > 0;
+  const underReview = !approved && submitted;
   const statusColor = approved ? Colors.success : Colors.warning;
+  const statusLabel = approved
+    ? t('profile.status.approved')
+    : underReview
+      ? t('profile.status.pending')
+      : missingDocs
+        ? t('profile.status.missing_documents')
+        : t('profile.status.incomplete');
 
   const handleNavigation = (tab: string) => {
     switch (tab) {
@@ -244,7 +257,7 @@ const Profile = () => {
               <StatusPill
                 classes="mt-1.5"
                 color={statusColor}
-                label={approved ? t('profile.status.approved') : t('profile.status.pending')}
+                label={statusLabel}
               />
             </View>
             <Feather name="chevron-right" size={20} color={Colors.muted} />

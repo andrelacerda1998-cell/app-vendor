@@ -95,6 +95,8 @@ export const API_ROUTES = {
     // Survey
     VENDOR_SURVEY_GET_CITIES: `${API_BASE_URL}/vendor/survey/cities`,
     VENDOR_SURVEY_VOTE: `${API_BASE_URL}/vendor/survey/vote`,
+    VENDOR_CITIES_GET: `${API_BASE_URL}/vendor/cities`,
+    VENDOR_CITIES_SAVE: `${API_BASE_URL}/vendor/cities`,
 
     // Company Address
     GET_COMPANY_ADDRESS: `${API_BASE_URL}/vendor/address`,
