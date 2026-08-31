@@ -8,6 +8,8 @@
  */
 export interface MatchingInvitation {
   candidate_id: number;
+  /** Quantos aceites chegam ao cliente (matching.shortlist_size no backend). */
+  shortlist_size?: number;
   service_id: number;
   status: string;
   /** O que ELE recebe. O que o cliente paga nunca aparece aqui. */

@@ -11,6 +11,7 @@ import { EmptyState, ErrorState, SkeletonList } from '@/components/ui';
 import MatchingInvitationCard from '@/components/services/MatchingInvitationCard';
 import MatchingAcceptedContent from '@/components/services/MatchingAcceptedContent';
 import useMatchingInvitations from '@/hooks/useMatchingInvitations';
+import { resolveShortlistSize } from '@/utils/shortlist';
 import { useDialog } from '@/contexts/DialogContext';
 
 /**
@@ -25,6 +26,9 @@ const MatchingInvitations = () => {
   const { t } = useTranslation();
   const { openDialog, closeDialog } = useDialog();
   const { invitations, loading, failed, submitting, busiestHours, refresh, accept, acceptAll, decline } = useMatchingInvitations();
+
+  // Quantos aceites chegam ao cliente (ver utils/shortlist).
+  const shortlistSize = resolveShortlistSize(invitations);
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = useCallback(async () => {
@@ -108,11 +112,15 @@ const MatchingInvitations = () => {
           >
             <Feather name="zap" size={16} color={Colors.brand} style={{ marginTop: 1 }} />
             <View className="ml-3 flex-1">
-              {/* Urgência primeiro (a corrida aos 3 lugares), garantia a seguir
+              {/* Urgência primeiro (a corrida aos lugares), garantia a seguir
                   (a agenda só ocupa se for escolhido) — o que o faz responder
-                  já, sem o assustar. */}
+                  já, sem o assustar.
+                  O número vem do backend (matching.shortlist_size): estava
+                  escrito no texto, e bastava mudá-lo no backoffice para a app
+                  passar a prometer ao profissional uma coisa que já não era
+                  verdade. */}
               <CustomText size="small" boldness="bold" color="secondary" style={{ lineHeight: 20 }}>
-                {t('matching.invitation.urgency_title')}
+                {t('matching.invitation.urgency_title', { count: shortlistSize })}
               </CustomText>
               <CustomText
                 size="small"

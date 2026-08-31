@@ -1659,7 +1659,7 @@ export default {
         "duration_label": "Service duration",
         "duration": "{{minutes}} min",
         "you_receive": "You'll get",
-        "urgency_title": "The client only sees the first 3 who accept.",
+        "urgency_title": "The client only sees the first {{count}} who accept.",
         "explainer": "Accept fast to make the list. Your calendar is only booked if you are chosen.",
         "accept": "I'm available",
         "decline": "Not now",

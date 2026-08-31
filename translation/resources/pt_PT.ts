@@ -1660,7 +1660,7 @@ export default {
         "duration_label": "Duração do serviço",
         "duration": "{{minutes}} min",
         "you_receive": "Vais receber",
-        "urgency_title": "O cliente só vê os 3 primeiros a aceitar.",
+        "urgency_title": "O cliente só vê os {{count}} primeiros a aceitar.",
         "explainer": "Aceita rápido para entrares na lista. Só ocupas a agenda se fores escolhido.",
         "accept": "Tenho disponibilidade",
         "decline": "Agora não",
