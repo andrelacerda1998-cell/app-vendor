@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {FlatList, SafeAreaView, ScrollView, View} from "react-native";
+import {FlatList, SafeAreaView, ScrollView, View, Linking} from "react-native";
 import {useTranslation} from "react-i18next";
 import {router, useLocalSearchParams} from "expo-router";
 import {Colors} from "@/constants/Colors";
@@ -292,6 +292,32 @@ const ServiceSchedulesBottomSheet = () => {
     });
   };
 
+  // Ligar ao cliente: o telefone só chega no DTO quando o agendamento está
+  // aceite/confirmado (ver ServiceRequestedData). Contraparte do lado do técnico
+  // ao "não tenho contacto nem nada" do incidente 13/08.
+  const handleCallCustomer = async (service: ServiceRequestedInterface) => {
+    const phone = service.customer?.phone;
+    if (!phone) {
+      openDialog({
+        title: t("schedules.call_unavailable.title"),
+        subtitle: t("schedules.call_unavailable.subtitle"),
+        closeAfterMSeconds: 3000,
+        closeOnClickOutside: true,
+      });
+      return;
+    }
+    try {
+      await Linking.openURL(`tel:${String(phone).replace(/\s+/g, "")}`);
+    } catch {
+      openDialog({
+        title: t("schedules.call_unavailable.title"),
+        subtitle: t("schedules.call_unavailable.subtitle"),
+        closeAfterMSeconds: 3000,
+        closeOnClickOutside: true,
+      });
+    }
+  };
+
   const handleGoToDestination = (service: ServiceRequestedInterface) => {
     const id = service.service_id;
     api.post(API_ROUTES.VENDOR_SCHEDULE_GO_TO_LOCATION(id)).then((res) => {
@@ -435,6 +461,22 @@ const ServiceSchedulesBottomSheet = () => {
                       </CustomText>
                     </TouchOpacity>
                   </View>
+
+                  {/* Ligar ao cliente: o DTO só traz o telefone com o agendamento
+                      aceite/confirmado, por isso basta o número estar presente. */}
+                  {!!item.customer?.phone && (
+                    <TouchOpacity
+                      rounded="lg"
+                      itemsCenter
+                      onPress={() => handleCallCustomer(item)}
+                      otherClasses="mt-3 px-4 py-3 border border-success"
+                      bgColor="success"
+                    >
+                      <CustomText color="secondary" boldness="semiBold" size="small">
+                        {t("schedules.call_customer")}
+                      </CustomText>
+                    </TouchOpacity>
+                  )}
                 </View>
               </View>
             );

@@ -104,6 +104,8 @@ export interface ServiceRequestedInterface {
     id: number;
     name: string;
     address: string;
+    /** Telefone do cliente — só vem preenchido quando o agendamento está aceite/confirmado. */
+    phone?: string | null;
   };
   amount?: number | null;
   amount_for_vendor?: number | null;
