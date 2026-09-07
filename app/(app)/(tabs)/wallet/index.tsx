@@ -52,6 +52,8 @@ const hhmm = (t?: string) => (t ? String(t).slice(0, 5) : '');
 
 
 
+
+
 const Agenda = () => {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
@@ -506,7 +508,7 @@ const Agenda = () => {
                     const distanceLabel = formatDistanceKm(item?.distance);
 
                     const attendance = attendanceState(item);
-                    const recurrenceKey = recurrenceLabelKey(item);
+                    const recurrenceKey = recurrenceLabelKey(item, true);
                     return (
                       <TouchableOpacity
                         key={`${k}-${i}`}
@@ -596,7 +598,7 @@ const Agenda = () => {
                               <View className="flex-row items-center">
                                 <Feather name="check-circle" size={13} color={Colors.success} />
                                 <CustomText color="success" size="extraSmall" boldness="bold" classes="ml-1.5">
-                                  {t('schedules.attendance_confirmed')}
+                                  {t('schedules.attendance_confirmed_short')}
                                 </CustomText>
                               </View>
                             ) : null}

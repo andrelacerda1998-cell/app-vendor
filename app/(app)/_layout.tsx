@@ -15,8 +15,13 @@ import {useAppStateStatus} from "@/contexts/AppStateStatusContext";
 import Echo from "laravel-echo";
 import {useSchedule} from "@/contexts/ScheduleContext";
 import useOngoingServiceNotification from "@/hooks/useOngoingServiceNotification";
+import { useForceDarkTheme } from '@/contexts/ThemeContext';
 
 export default function AppLayout() {
+    // Já dentro da app, a escolha de tema do técnico volta a mandar: o escuro
+    // forçado é só do fluxo de autenticação (ver useForceDarkTheme).
+    useForceDarkTheme(false);
+
     const { t } = useTranslation();
     const { session, isLoading, vendorData, setWallet, vendorStatus, setVendorStatus, fetchAndSaveUserData, getWalletInfo } = useSession();
     const { openDialog } = useDialog();

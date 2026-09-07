@@ -1554,6 +1554,10 @@ export default {
         "biweekly": "Repete de duas em duas semanas",
         "monthly": "Repete todos os meses",
         "generic": "Serviço recorrente",
+        "short_weekly": "Semanal",
+        "short_biweekly": "Quinzenal",
+        "short_monthly": "Mensal",
+        "short_generic": "Recorrente",
         "short": "Recorrente"
       },
       "details": {
@@ -1574,6 +1578,7 @@ export default {
       },
       "confirm_attendance": "Confirmar presença",
       "attendance_confirmed": "Presença confirmada",
+      "attendance_confirmed_short": "Confirmado",
       "confirm_attendance_error": "Não foi possível confirmar. Tenta outra vez.",
       "confirm_attendance_success_title": "Combinado",
       "confirm_attendance_success_subtitle": "Contamos contigo {{when}}. Se alguma coisa mudar, avisa o quanto antes.",

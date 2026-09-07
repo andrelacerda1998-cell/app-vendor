@@ -29,6 +29,12 @@ interface ThemeContextProps {
   theme: ThemeName;
   setMode: (mode: ThemeMode) => void;
   /**
+   * Força o escuro enquanto durar um fluxo, independentemente da escolha —
+   * usado pela autenticação, cujo ecrã é desenhado sobre preto (logo, fundo e
+   * ilustrações) e não tem versão clara.
+   */
+  setForceDark: (active: boolean) => void;
+  /**
    * Muda a cada troca de tema. Serve de `key` à árvore de ECRÃS — e só a ela:
    * remontar também os providers (sessão, serviço aberto, sockets) para trocar
    * uma cor seria pagar caro por uma mudança visual.
@@ -40,6 +46,7 @@ const ThemeContext = createContext<ThemeContextProps>({
   mode: 'system',
   theme: 'dark',
   setMode: () => {},
+  setForceDark: () => {},
   themeKey: 'dark',
 });
 
@@ -54,6 +61,8 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
    * app piscar escuro→claro a cada arranque.
    */
   const [loaded, setLoaded] = useState(false);
+  /** Ver `setForceDark`. */
+  const [forceDark, setForceDark] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -77,11 +86,12 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const theme: ThemeName = useMemo(() => {
+    if (forceDark) return 'dark';
     if (mode === 'light' || mode === 'dark') return mode;
     // `useColorScheme` devolve null enquanto o sistema não responde; nesse
     // intervalo fica o escuro, que é o tema histórico da app.
     return systemScheme === 'light' ? 'light' : 'dark';
-  }, [mode, systemScheme]);
+  }, [mode, systemScheme, forceDark]);
 
   // Antes de pintar: aplicar na renderização (e não num efeito) evita um
   // fotograma com as cores do tema anterior.
@@ -96,11 +106,26 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const value = useMemo(
-    () => ({ mode, theme, setMode, themeKey: `${theme}-${loaded}` }),
+    () => ({ mode, theme, setMode, setForceDark, themeKey: `${theme}-${loaded}` }),
     [mode, theme, setMode, loaded],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+};
+
+/**
+ * Liga (ou desliga) o escuro forçado enquanto o ecrã estiver montado.
+ *
+ * O par ligar/desligar é explícito e feito nos DOIS lados — o fluxo de
+ * autenticação liga, a app desliga — em vez de confiar só na limpeza do
+ * efeito: com navegação por deep link o grupo de autenticação pode continuar
+ * montado, e a app ficava presa no escuro depois de entrar.
+ */
+export const useForceDarkTheme = (active = true) => {
+  const { setForceDark } = useTheme();
+  useEffect(() => {
+    setForceDark(active);
+  }, [setForceDark, active]);
 };
 
 /** Mantém a barra de estado do sistema legível sobre o tema escolhido. */

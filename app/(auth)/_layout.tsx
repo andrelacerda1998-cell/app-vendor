@@ -1,8 +1,14 @@
 import { Text, View } from 'react-native';
 import { Redirect, SplashScreen, Stack } from 'expo-router';
 import { useSession } from '@/contexts/SessionContext';
+import { useForceDarkTheme } from '@/contexts/ThemeContext';
 
 export default function AppLayout() {
+    // Entrar na app é sempre sobre preto: o ecrã foi desenhado assim (logo,
+    // fundo e ilustrações) e não tem versão clara. A escolha do técnico volta
+    // a valer assim que ele entra.
+    useForceDarkTheme();
+
     const { session, isLoading } = useSession();
 
     // You can keep the splash screen open, or render a loading screen like we do here.

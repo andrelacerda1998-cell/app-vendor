@@ -1554,6 +1554,10 @@ export default {
         "biweekly": "Repeats every two weeks",
         "monthly": "Repeats every month",
         "generic": "Recurring service",
+        "short_weekly": "Weekly",
+        "short_biweekly": "Fortnightly",
+        "short_monthly": "Monthly",
+        "short_generic": "Recurring",
         "short": "Recurring"
       },
       "details": {
@@ -1574,6 +1578,7 @@ export default {
       },
     "confirm_attendance": "Confirm attendance",
     "attendance_confirmed": "Attendance confirmed",
+    "attendance_confirmed_short": "Confirmed",
     "confirm_attendance_error": "Could not confirm. Try again.",
     "confirm_attendance_success_title": "All set",
     "confirm_attendance_success_subtitle": "We're counting on you {{when}}. If anything changes, let us know as early as you can.",

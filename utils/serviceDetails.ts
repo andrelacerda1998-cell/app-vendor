@@ -119,13 +119,19 @@ export const isRecurringSchedule = (
  */
 export const recurrenceLabelKey = (
   item?: Partial<ServiceRequestedInterface> | null,
+  /**
+   * Versão curta ("Semanal") para as etiquetas dos cartões, onde a frase
+   * inteira ("Repete todas as semanas") empurrava tudo para outra linha.
+   */
+  short = false,
 ): string | null => {
   if (!isRecurringSchedule(item)) return null;
 
+  const prefix = short ? "short_" : "";
   const recurrence = item?.schedule?.recurrence;
   if (recurrence === "weekly" || recurrence === "biweekly" || recurrence === "monthly") {
-    return `schedules.recurrence.${recurrence}`;
+    return `schedules.recurrence.${prefix}${recurrence}`;
   }
 
-  return "schedules.recurrence.generic";
+  return `schedules.recurrence.${prefix}generic`;
 };
