@@ -54,6 +54,8 @@ const hhmm = (t?: string) => (t ? String(t).slice(0, 5) : '');
 
 
 
+
+
 const Agenda = () => {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
@@ -591,11 +593,17 @@ const Agenda = () => {
                             confirmação diziam a mesma coisa — "como está este
                             serviço" — e ocupavam três linhas separadas. */}
                         {(ui.label || recurrenceKey || attendance === 'confirmed') && (
-                          <View className="flex-row flex-wrap items-center mt-3 ml-[67px]" style={{ gap: 8 }}>
-                            {ui.label ? <StatusPill color={ui.accent} label={ui.label} /> : null}
-                            {recurrenceKey ? <StatusPill color={Colors.brand} label={t(recurrenceKey)} /> : null}
+                          <View className="flex-row items-center justify-between mt-3 ml-[67px]">
+                            {/* Etiquetas do serviço à esquerda, alinhadas com o
+                                texto; a confirmação encostada à direita, no
+                                canto — é um estado do cartão, não mais uma
+                                etiqueta a competir com as outras. */}
+                            <View className="flex-row flex-wrap items-center flex-1 pr-3" style={{ gap: 8 }}>
+                              {ui.label ? <StatusPill color={ui.accent} label={ui.label} /> : null}
+                              {recurrenceKey ? <StatusPill color={Colors.brand} label={t(recurrenceKey)} /> : null}
+                            </View>
                             {attendance === 'confirmed' ? (
-                              <View className="flex-row items-center">
+                              <View className="flex-row items-center flex-shrink-0">
                                 <Feather name="check-circle" size={13} color={Colors.success} />
                                 <CustomText color="success" size="extraSmall" boldness="bold" classes="ml-1.5">
                                   {t('schedules.attendance_confirmed_short')}
