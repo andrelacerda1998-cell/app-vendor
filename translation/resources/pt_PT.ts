@@ -602,6 +602,7 @@ export default {
             "availability": "Disponibilidade",
             "reviews": "Avaliações",
             "documents": "Documentos",
+            "no_shows": "Faltas",
             "support": "Suporte"
         },
         "my_profile": {
@@ -1546,6 +1547,30 @@ export default {
                 "criminal_record": "Pedir no portal da Justiça",
                 "activity_declaration": "Obter no Portal das Finanças"
             }
+        }
+    },
+    "no_shows": {
+        "title": "Faltas",
+        "rule": "Se faltares a um serviço marcado, em vez de receberes o valor és penalizado em {{percent}}% do que ias receber. Quem confirma a falta é a Piquet, depois de verificar.",
+        "count_one": "{{count}} falta",
+        "count_other": "{{count}} faltas",
+        "penalty": "Penalização",
+        "empty_title": "Sem faltas",
+        "empty_subtitle": "Continua assim — nenhum cliente ficou à espera.",
+        "error_title": "Não foi possível carregar as faltas",
+        "error_subtitle": "Verifica a ligação e tenta outra vez.",
+        "dispute": {
+            "button": "Contestar esta falta",
+            "title": "Contestar a falta",
+            "subtitle": "Conta-nos o que aconteceu. O suporte revê e responde-te na app.",
+            "placeholder": "Ex.: cheguei às 10:05 e o cliente não atendeu a porta nem o telefone.",
+            "send": "Enviar ao suporte",
+            "sent_title": "Recebido",
+            "sent_subtitle": "O suporte vai rever e responde-te em breve.",
+            "error_title": "Não foi possível enviar",
+            "error_subtitle": "Verifica a ligação e tenta outra vez.",
+            "pending": "Em análise",
+            "pending_hint": "Respondemos no Suporte"
         }
     },
     "schedules": {

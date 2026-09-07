@@ -125,4 +125,8 @@ export const API_ROUTES = {
     //current ipen service and extract from there the include / exclude
     //and set this information on the vendor service status screen
     POST_SEARCH_OPERATION_AREAS: `${API_BASE_URL}/customer/services/operation-areas/search`,
+
+    // Faltas do próprio técnico (penalização de 50%) e contestação de cada uma.
+    VENDOR_NO_SHOWS: `${API_BASE_URL}/vendor/no-shows`,
+    VENDOR_NO_SHOW_DISPUTE: (serviceId: number | string) => `${API_BASE_URL}/vendor/no-shows/${serviceId}/dispute`,
 };

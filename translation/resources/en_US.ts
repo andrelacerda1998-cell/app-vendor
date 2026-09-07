@@ -602,6 +602,7 @@ export default {
       "availability": "Availability",
       "reviews": "Reviews",
       "documents": "Documents",
+      "no_shows": "No-shows",
       "support": "Support"
     },
     "my_profile": {
@@ -1547,6 +1548,30 @@ export default {
         "activity_declaration": "Get it on the tax portal"
       }
     },
+  },
+  "no_shows": {
+    "title": "No-shows",
+    "rule": "If you miss a booked job, instead of being paid you are charged {{percent}}% of what you were going to receive. Piquet confirms the no-show after checking.",
+    "count_one": "{{count}} no-show",
+    "count_other": "{{count}} no-shows",
+    "penalty": "Penalty",
+    "empty_title": "No no-shows",
+    "empty_subtitle": "Keep it up — no customer was left waiting.",
+    "error_title": "Couldn't load your no-shows",
+    "error_subtitle": "Check your connection and try again.",
+    "dispute": {
+      "button": "Dispute this no-show",
+      "title": "Dispute the no-show",
+      "subtitle": "Tell us what happened. Support will review and reply in the app.",
+      "placeholder": "E.g.: I arrived at 10:05 and the customer didn't answer the door or the phone.",
+      "send": "Send to support",
+      "sent_title": "Received",
+      "sent_subtitle": "Support will review it and get back to you soon.",
+      "error_title": "Couldn't send",
+      "error_subtitle": "Check your connection and try again.",
+      "pending": "Under review",
+      "pending_hint": "We reply in Support"
+    }
   },
   "schedules": {
       "recurrence": {
