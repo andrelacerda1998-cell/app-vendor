@@ -21,6 +21,7 @@ import { useApi } from '@/contexts/ApiContext';
 import { useDialog } from '@/contexts/DialogContext';
 import { API_ROUTES } from '@/constants/ApiRoutes';
 import TouchOpacity from '@/components/TouchOpacity';
+import CheckMark from '@/assets/icons/check-mark';
 import { formatDistanceKm } from '@/utils/requestTiming';
 import { ServiceStatus } from '@/types/services';
 import useUnavailableDays from '@/hooks/useUnavailableDays';
@@ -40,6 +41,8 @@ const keyOf = (d: Date) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
 const hhmm = (t?: string) => (t ? String(t).slice(0, 5) : '');
+
+
 
 
 
@@ -82,12 +85,32 @@ const Agenda = () => {
    * alguém que se esqueceu — e, quando a confirmação não chega, dá tempo à
    * operação de arranjar outro técnico.
    */
-  const confirmAttendance = (scheduleId?: number | null) => {
+  const confirmAttendance = (item: any) => {
+    const scheduleId = item?.schedule_id;
     if (!scheduleId) return;
 
     setConfirmingId(scheduleId);
     api.post(API_ROUTES.VENDOR_CONFIRM_SCHEDULE_ATTENDANCE(scheduleId))
-      .then(() => setConfirmedNow((prev) => ({ ...prev, [scheduleId]: true })))
+      .then(() => {
+        setConfirmedNow((prev) => ({ ...prev, [scheduleId]: true }));
+
+        // A mensagem repete o QUANDO em vez de repetir "confirmada" (que já
+        // fica escrito no cartão, logo por baixo): o que o técnico precisa de
+        // levar deste ecrã é o dia e a hora a que ficou de aparecer.
+        const day = parseDay(item?.schedule?.scheduled_day);
+        const start = hhmm(item?.schedule?.scheduled_time?.start);
+        const when = day && start ? `${dayTitle(day).toLowerCase()}, às ${start}` : null;
+
+        openDialog({
+          icon: <CheckMark color={Colors.primary} />,
+          title: t('schedules.confirm_attendance_success_title'),
+          subtitle: when
+            ? t('schedules.confirm_attendance_success_subtitle', { when })
+            : t('schedules.confirm_attendance_success_subtitle_generic'),
+          closeAfterMSeconds: 2500,
+          closeOnClickOutside: true,
+        });
+      })
       .catch((err) => {
         console.error(err);
         openDialog({
@@ -214,6 +237,36 @@ const Agenda = () => {
 
   const visibleKeys = (selectedDay ? [selectedDay] : Object.keys(groups)).sort();
 
+  /**
+   * Com um dia escolhido na fita, "Em atraso" segue o filtro: ver a agenda de
+   * quinta e ter lá em cima um serviço de terça é responder a uma pergunta que
+   * não foi feita.
+   */
+  const visibleOverdue = useMemo(() => {
+    if (!selectedDay) return overdue;
+    return overdue.filter((s: any) => {
+      const day = parseDay(s?.schedule?.scheduled_day);
+      return day ? keyOf(day) === selectedDay : false;
+    });
+  }, [overdue, selectedDay]);
+
+  /**
+   * Total dos sete dias da fita — nem mais nem menos. Um serviço em atraso de
+   * ontem aparece na secção "Em atraso" mas não entra aqui: a linha responde a
+   * "o que tenho pela frente", e ontem já não está pela frente.
+   */
+  const weekSummary = useMemo(() => {
+    const keys = new Set(weekDays.map((d) => keyOf(d)));
+    const items = (scheduledServicesData ?? []).filter((s: any) => {
+      const day = parseDay(s?.schedule?.scheduled_day);
+      return day ? keys.has(keyOf(day)) : false;
+    });
+    return {
+      stops: items.length,
+      total: items.reduce((sum: number, i: any) => sum + (Number(i?.amount_for_vendor) || 0), 0),
+    };
+  }, [scheduledServicesData, weekDays]);
+
   const dayTitle = (date: Date) => {
     const diff = Math.round((date.getTime() - today.getTime()) / DAY_MS);
     const label = date.toLocaleDateString('pt-PT', { day: 'numeric', month: 'short' });
@@ -236,10 +289,21 @@ const Agenda = () => {
 
   return (
     <SafeAreaView className={`flex-1 bg-bg`}>
-      <View className="px-5 pt-4 pb-3">
+      <View className="px-5 pt-4 pb-3 flex-row items-end justify-between">
         <CustomText size="subtitle" color="secondary" boldness="bolder">
           {t('tabs.agenda')}
         </CustomText>
+        {/* Quanto trabalho tem pela frente, numa linha. O total por dia já
+            estava nos cabeçalhos, mas ninguém somava a semana de cabeça — e é
+            essa a pergunta de quem abre a agenda ao domingo à noite. */}
+        {weekSummary.stops > 0 && (
+          <CustomText size="extraSmall" color="muted" classes="mb-1">
+            {t('agenda.week_summary', {
+              count: weekSummary.stops,
+              total: renderMoney(weekSummary.total) || '',
+            })}
+          </CustomText>
+        )}
       </View>
 
       {/* Fita de semana */}
@@ -249,6 +313,7 @@ const Agenda = () => {
             const k = keyOf(d);
             const hasItems = (groups[k]?.length ?? 0) > 0;
             const isSelected = selectedDay === k;
+            const isToday = k === keyOf(today);
             const isOff = unavailable.isUnavailable(k);
             return (
               <TouchableOpacity
@@ -276,9 +341,12 @@ const Agenda = () => {
                 <CustomText size="extraSmall" color="muted">
                   {WEEKDAY_LETTERS[d.getDay()]}
                 </CustomText>
+                {/* Hoje a amarelo mesmo sem estar selecionado: sem isto os
+                    sete dias liam-se todos iguais e era preciso contar para
+                    saber em que dia se está. */}
                 <CustomText
                   size="medium"
-                  color={isOff ? 'muted' : 'secondary'}
+                  color={isOff ? 'muted' : isToday && !isSelected ? 'brand' : 'secondary'}
                   boldness="bolder"
                   classes="mt-0.5"
                   style={isOff ? { textDecorationLine: 'line-through' } : undefined}
@@ -305,8 +373,24 @@ const Agenda = () => {
         contentContainerStyle={{ paddingBottom: tabBarContentPadding(insets.bottom) }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.brand} />}
       >
+        {/* Com um dia escolhido, a saída tinha de ser adivinhada (tocar outra
+            vez no mesmo dia da fita). Um botão diz como se volta à semana. */}
+        {selectedDay && (
+          <TouchOpacity
+            rounded="full"
+            itemsCenter
+            onPress={() => setSelectedDay(null)}
+            otherClasses="self-start flex-row px-3 py-1.5 mb-4 border border-line"
+          >
+            <Feather name="arrow-left" size={13} color={Colors.muted} />
+            <CustomText color="muted" size="extraSmall" boldness="bold" classes="ml-1.5">
+              {t('agenda.show_week')}
+            </CustomText>
+          </TouchOpacity>
+        )}
+
         {/* EM ATRASO primeiro: é o que exige ação e o que ninguém lhe mostrava. */}
-        {overdue.length > 0 && (
+        {visibleOverdue.length > 0 && (
           <View className="mb-6">
             <View className="flex-row items-center mb-3">
               <Feather name="alert-triangle" size={16} color={Colors.warning} />
@@ -315,7 +399,7 @@ const Agenda = () => {
               </CustomText>
             </View>
             <View style={{ gap: 10 }}>
-              {overdue.map((item: any, i: number) => (
+              {visibleOverdue.map((item: any, i: number) => (
                 <TouchableOpacity
                   key={`overdue-${item?.service_id ?? i}`}
                   activeOpacity={0.85}
@@ -409,6 +493,7 @@ const Agenda = () => {
                 <View style={{ gap: 10 }}>
                   {items.map((item: any, i: number) => {
                     const start = hhmm(item?.schedule?.scheduled_time?.start);
+                    const end = hhmm(item?.schedule?.scheduled_time?.end);
                     const ui = statusUi(item);
                     const serviceName = item?.service_type?.name ?? '—';
                     // A RUA, não a cidade: `customer.address` é "Cidade, Estado"
@@ -443,11 +528,18 @@ const Agenda = () => {
                         {/* Toque na linha inteira, não só na seta. */}
                         <Card>
                         <View className="flex-row items-center">
-                          {/* Hora primeiro: numa agenda é por ela que se lê o dia. */}
+                          {/* Hora primeiro: numa agenda é por ela que se lê o dia.
+                              A de fim vem por baixo, mais pequena: é o que diz
+                              ao técnico se ainda apanha o serviço seguinte. */}
                           <View className="items-center" style={{ width: 52 }}>
                             <CustomText color="secondary" boldness="bolder" size="medium">
                               {start || '--:--'}
                             </CustomText>
+                            {!!end && (
+                              <CustomText color="muted" size="extraSmall" classes="mt-0.5">
+                                {end}
+                              </CustomText>
+                            )}
                           </View>
 
                           <View
@@ -471,11 +563,16 @@ const Agenda = () => {
                                 </CustomText>
                               </View>
                             ) : null}
-                            {/* A etiqueta só aparece quando diz algo novo: num ecrã
-                                chamado Agenda, "Agendado" em todos os cartões é ruído. */}
-                            {ui.label ? (
-                              <StatusPill classes="mt-1.5" color={ui.accent} label={ui.label} />
-                            ) : null}
+                            {/* Quem vai receber. Chegar e chamar a pessoa pelo
+                                nome é metade da primeira impressão. */}
+                            {!!item?.customer?.name && (
+                              <View className="flex-row items-center mt-0.5">
+                                <Feather name="user" size={12} color={Colors.muted} />
+                                <CustomText color="muted" size="small" numberOfLines={1} classes="ml-1.5 flex-1">
+                                  {item.customer.name}
+                                </CustomText>
+                              </View>
+                            )}
                           </View>
 
                           {/* Sem o valor por serviço: o total do dia está no
@@ -485,13 +582,24 @@ const Agenda = () => {
                           <Feather name="chevron-right" size={18} color={Colors.muted} style={{ marginLeft: 8 }} />
                         </View>
 
-                        {/* Um cliente que volta todas as semanas pesa de outra
-                            maneira na agenda do que uma marcação avulsa. */}
-                        {recurrenceKey ? (
-                          <View className="flex-row mt-3 ml-[67px]">
-                            <StatusPill color={Colors.brand} label={t(recurrenceKey)} />
+                        {/* Uma linha só para os estados: a etiqueta de estado
+                            (a caminho, em execução), a recorrência e a
+                            confirmação diziam a mesma coisa — "como está este
+                            serviço" — e ocupavam três linhas separadas. */}
+                        {(ui.label || recurrenceKey || attendance === 'confirmed') && (
+                          <View className="flex-row flex-wrap items-center mt-3 ml-[67px]" style={{ gap: 8 }}>
+                            {ui.label ? <StatusPill color={ui.accent} label={ui.label} /> : null}
+                            {recurrenceKey ? <StatusPill color={Colors.brand} label={t(recurrenceKey)} /> : null}
+                            {attendance === 'confirmed' ? (
+                              <View className="flex-row items-center">
+                                <Feather name="check-circle" size={13} color={Colors.success} />
+                                <CustomText color="success" size="extraSmall" boldness="bold" classes="ml-1.5">
+                                  {t('schedules.attendance_confirmed')}
+                                </CustomText>
+                              </View>
+                            ) : null}
                           </View>
-                        ) : null}
+                        )}
 
                         {/* Confirmação de presença: aparece a partir das 72h e
                             só enquanto não estiver confirmada. Fora dessa
@@ -506,7 +614,7 @@ const Agenda = () => {
                             rounded="lg"
                             itemsCenter
                             disabled={confirmingId === item?.schedule_id}
-                            onPress={() => confirmAttendance(item?.schedule_id)}
+                            onPress={() => confirmAttendance(item)}
                             otherClasses={`mt-3 py-2.5 ${confirmingId === item?.schedule_id ? 'opacity-60' : ''}`}
                             bgColor="support_primary"
                           >
@@ -514,13 +622,6 @@ const Agenda = () => {
                               {t('schedules.confirm_attendance')}
                             </CustomText>
                           </TouchOpacity>
-                        ) : attendance === 'confirmed' ? (
-                          <View className="flex-row items-center mt-3 ml-[67px]">
-                            <Feather name="check-circle" size={14} color={Colors.success} />
-                            <CustomText color="success" boldness="medium" size="small" classes="ml-2">
-                              {t('schedules.attendance_confirmed')}
-                            </CustomText>
-                          </View>
                         ) : null}
                         </Card>
                       </TouchableOpacity>
