@@ -45,6 +45,8 @@ const hhmm = (t?: string) => (t ? String(t).slice(0, 5) : '');
 
 
 
+
+
 const Agenda = () => {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
@@ -418,9 +420,6 @@ const Agenda = () => {
 
                     const attendance = attendanceState(item);
                     const recurrenceKey = recurrenceLabelKey(item);
-                    const openDetails = () =>
-                      router.push(`/(app)/(services)/(open)/status/${item?.service_id}`);
-
                     return (
                       <TouchableOpacity
                         key={`${k}-${i}`}
@@ -499,30 +498,22 @@ const Agenda = () => {
                             janela seria ruído — confirmar com duas semanas de
                             antecedência não diz nada sobre o dia. */}
                         {attendance === 'pending' ? (
-                          <View className="flex-row items-center mt-3" style={{ gap: 8 }}>
-                            <TouchOpacity
-                              rounded="lg"
-                              itemsCenter
-                              onPress={openDetails}
-                              otherClasses="px-4 py-2.5 border border-line"
-                            >
-                              <CustomText color="secondary" boldness="medium" size="small">
-                                {t('schedules.details.open')}
-                              </CustomText>
-                            </TouchOpacity>
-                            <TouchOpacity
-                              rounded="lg"
-                              itemsCenter
-                              disabled={confirmingId === item?.schedule_id}
-                              onPress={() => confirmAttendance(item?.schedule_id)}
-                              otherClasses={`flex-1 py-2.5 ${confirmingId === item?.schedule_id ? 'opacity-60' : ''}`}
-                              bgColor="support_primary"
-                            >
-                              <CustomText color="strongest" boldness="semiBold" size="small">
-                                {t('schedules.confirm_attendance')}
-                              </CustomText>
-                            </TouchOpacity>
-                          </View>
+                          // Um só botão. Os detalhes abrem-se tocando no
+                          // cartão — ter os dois lado a lado punha a decisão
+                          // (confirmar) a competir com a consulta, e é a
+                          // decisão que trava o cliente à espera em casa.
+                          <TouchOpacity
+                            rounded="lg"
+                            itemsCenter
+                            disabled={confirmingId === item?.schedule_id}
+                            onPress={() => confirmAttendance(item?.schedule_id)}
+                            otherClasses={`mt-3 py-2.5 ${confirmingId === item?.schedule_id ? 'opacity-60' : ''}`}
+                            bgColor="support_primary"
+                          >
+                            <CustomText color="strongest" boldness="semiBold" size="small">
+                              {t('schedules.confirm_attendance')}
+                            </CustomText>
+                          </TouchOpacity>
                         ) : attendance === 'confirmed' ? (
                           <View className="flex-row items-center mt-3 ml-[67px]">
                             <Feather name="check-circle" size={14} color={Colors.success} />
