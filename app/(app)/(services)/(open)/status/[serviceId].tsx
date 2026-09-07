@@ -228,7 +228,9 @@ const Status = () => {
     const missingAfter = photoCounts.after === 0;
 
     openDialog({
-      title: t('services.service.finish.confirmation.title'),
+      title: missingAfter
+        ? t('services.service.finish.confirmation.title_no_photos')
+        : t('services.service.finish.confirmation.title'),
       subtitle: missingAfter
         ? t('services.service.finish.confirmation.subtitle_no_photos')
         : t('services.service.finish.confirmation.subtitle'),

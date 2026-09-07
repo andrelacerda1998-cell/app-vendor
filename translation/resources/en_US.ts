@@ -462,7 +462,8 @@ export default {
         "confirmation": {
           "title": "Finish service",
           "subtitle": "Do you really want to mark this service as complete?",
-          "subtitle_no_photos": "There's no photo of the finished work. If the customer complains, the photo is what speaks for you — and in a minute you won't be able to take it.",
+          "title_no_photos": "Finish without a photo?",
+          "subtitle_no_photos": "Without a photo you have no proof of the work. Once you finish you can't take it.",
           "confirm_anyway": "Finish without it",
           "take_photo": "Take the photo",
           "confirm": "Finish",

@@ -462,7 +462,8 @@ export default {
                 "confirmation": {
                     "title": "Finalizar serviço",
                     "subtitle": "Queres mesmo dar este serviço por concluído?",
-                    "subtitle_no_photos": "Não há foto do trabalho feito. Se o cliente reclamar, é a foto que fala por ti — e daqui a um minuto já não a podes tirar.",
+                    "title_no_photos": "Finalizar sem foto?",
+                    "subtitle_no_photos": "Sem foto, não tens prova do trabalho. Depois de finalizar já não a podes tirar.",
                     "confirm_anyway": "Finalizar assim",
                     "take_photo": "Tirar a foto",
                     "confirm": "Finalizar",
