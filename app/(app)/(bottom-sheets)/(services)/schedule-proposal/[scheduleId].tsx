@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { Vibration } from "react-native";
 import { View, ActivityIndicator } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -16,6 +17,7 @@ import CustomTouchableOpacity from "@/components/CustomTouchableOpacity";
 import Timer from "@/components/Timer";
 import CheckMark from "@/assets/icons/check-mark";
 import XIcon from "@/assets/icons/x";
+import { useAlertSound } from "@/hooks/useAlertSound";
 
 const ACCEPT_WINDOW_SECONDS = 20 * 60;
 
@@ -44,6 +46,16 @@ const ScheduleProposalBottomSheet = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [disableButton, setDisableButton] = useState(false);
   const [didFetchPendingServices, setDidFetchPendingServices] = useState(false);
+  const playAlert = useAlertSound();
+
+  // Um agendamento a chegar é trabalho novo tal como um pedido imediato — e
+  // este ecrã também aparece por cima do que o técnico estiver a fazer. Sem
+  // som, um telemóvel pousado na bancada não avisa ninguém.
+  useEffect(() => {
+    void playAlert();
+    Vibration.vibrate(400);
+    return () => Vibration.cancel();
+  }, [playAlert]);
 
   useEffect(() => {
     if (scheduleId) {

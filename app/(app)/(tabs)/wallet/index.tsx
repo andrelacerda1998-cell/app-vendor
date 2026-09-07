@@ -16,7 +16,11 @@ import { useSession } from '@/contexts/SessionContext';
 import { renderMoney } from '@/utils/money';
 import { Card, EmptyState, ErrorState, SkeletonList, StatusPill } from '@/components/ui';
 import { useIsOnline } from '@/hooks/useIsOnline';
-import { formatStreetLine } from '@/utils/serviceDetails';
+import { formatStreetLine, recurrenceLabelKey } from '@/utils/serviceDetails';
+import { useApi } from '@/contexts/ApiContext';
+import { useDialog } from '@/contexts/DialogContext';
+import { API_ROUTES } from '@/constants/ApiRoutes';
+import TouchOpacity from '@/components/TouchOpacity';
 import { formatDistanceKm } from '@/utils/requestTiming';
 import { ServiceStatus } from '@/types/services';
 import useUnavailableDays from '@/hooks/useUnavailableDays';
@@ -37,6 +41,8 @@ const keyOf = (d: Date) =>
 
 const hhmm = (t?: string) => (t ? String(t).slice(0, 5) : '');
 
+
+
 const Agenda = () => {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
@@ -52,6 +58,63 @@ const Agenda = () => {
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   // Indisponibilidade pontual: toque longo num dia da fita marca/desmarca.
   const unavailable = useUnavailableDays();
+  const { api } = useApi();
+  const { openDialog } = useDialog();
+  const [confirmingId, setConfirmingId] = useState<number | null>(null);
+  /**
+   * Confirmações feitas nesta sessão.
+   *
+   * O `scheduledServicesData` vem do contexto e só muda quando a agenda é
+   * recarregada; sem isto, o técnico carregava em "Confirmar presença" e o
+   * botão ficava lá na mesma, como se nada tivesse acontecido.
+   */
+  const [confirmedNow, setConfirmedNow] = useState<Record<number, boolean>>({});
+
+  /**
+   * "Confirmo que vou."
+   *
+   * Aceitar o agendamento foi há dias ou semanas; isto é o técnico a dizer que
+   * continua a contar com ele. É o que evita o cliente em casa à espera de
+   * alguém que se esqueceu — e, quando a confirmação não chega, dá tempo à
+   * operação de arranjar outro técnico.
+   */
+  const confirmAttendance = (scheduleId?: number | null) => {
+    if (!scheduleId) return;
+
+    setConfirmingId(scheduleId);
+    api.post(API_ROUTES.VENDOR_CONFIRM_SCHEDULE_ATTENDANCE(scheduleId))
+      .then(() => setConfirmedNow((prev) => ({ ...prev, [scheduleId]: true })))
+      .catch((err) => {
+        console.error(err);
+        openDialog({
+          title: t('services.cancel.error.title'),
+          subtitle: t('schedules.confirm_attendance_error'),
+          closeAfterMSeconds: 3000,
+          closeOnClickOutside: true,
+        });
+      })
+      .finally(() => setConfirmingId(null));
+  };
+
+  /**
+   * Janela da confirmação: as mesmas 72h do lembrete que o servidor envia.
+   * Antes disso é cedo demais para valer alguma coisa; depois da hora já não
+   * há nada a confirmar.
+   */
+  const attendanceState = (item: any) => {
+    const confirmed = !!item?.schedule?.vendor_confirmed_at || !!confirmedNow[item?.schedule_id];
+    if (confirmed) return 'confirmed' as const;
+
+    const day = parseDay(item?.schedule?.scheduled_day);
+    const start = hhmm(item?.schedule?.scheduled_time?.start);
+    if (!day || !/^\d{2}:\d{2}$/.test(start)) return 'hidden' as const;
+
+    const [hh, mm] = start.split(':').map(Number);
+    const startsAt = new Date(day.getFullYear(), day.getMonth(), day.getDate(), hh, mm).getTime();
+    const hoursToStart = (startsAt - Date.now()) / 3_600_000;
+
+    return hoursToStart > 0 && hoursToStart <= 72 ? ('pending' as const) : ('hidden' as const);
+  };
 
   const onRefresh = async () => {
     if (!vendorData) return;
@@ -352,6 +415,11 @@ const Agenda = () => {
                     // consegue encadear este serviço com o anterior.
                     const distanceLabel = formatDistanceKm(item?.distance);
 
+                    const attendance = attendanceState(item);
+                    const recurrenceKey = recurrenceLabelKey(item);
+                    const openDetails = () =>
+                      router.push(`/(app)/(services)/(open)/status/${item?.service_id}`);
+
                     return (
                       <TouchableOpacity
                         key={`${k}-${i}`}
@@ -372,7 +440,8 @@ const Agenda = () => {
                         }
                       >
                         {/* Toque na linha inteira, não só na seta. */}
-                        <Card className="flex-row items-center">
+                        <Card>
+                        <View className="flex-row items-center">
                           {/* Hora primeiro: numa agenda é por ela que se lê o dia. */}
                           <View className="items-center" style={{ width: 52 }}>
                             <CustomText color="secondary" boldness="bolder" size="medium">
@@ -414,6 +483,53 @@ const Agenda = () => {
                             ) : null}
                             <Feather name="chevron-right" size={18} color={Colors.muted} style={{ marginLeft: 6 }} />
                           </View>
+                        </View>
+
+                        {/* Um cliente que volta todas as semanas pesa de outra
+                            maneira na agenda do que uma marcação avulsa. */}
+                        {recurrenceKey ? (
+                          <View className="flex-row mt-3 ml-[67px]">
+                            <StatusPill color={Colors.brand} label={t(recurrenceKey)} />
+                          </View>
+                        ) : null}
+
+                        {/* Confirmação de presença: aparece a partir das 72h e
+                            só enquanto não estiver confirmada. Fora dessa
+                            janela seria ruído — confirmar com duas semanas de
+                            antecedência não diz nada sobre o dia. */}
+                        {attendance === 'pending' ? (
+                          <View className="flex-row items-center mt-3" style={{ gap: 8 }}>
+                            <TouchOpacity
+                              rounded="lg"
+                              itemsCenter
+                              onPress={openDetails}
+                              otherClasses="px-4 py-2.5 border border-line"
+                            >
+                              <CustomText color="secondary" boldness="medium" size="small">
+                                {t('schedules.details.open')}
+                              </CustomText>
+                            </TouchOpacity>
+                            <TouchOpacity
+                              rounded="lg"
+                              itemsCenter
+                              disabled={confirmingId === item?.schedule_id}
+                              onPress={() => confirmAttendance(item?.schedule_id)}
+                              otherClasses={`flex-1 py-2.5 ${confirmingId === item?.schedule_id ? 'opacity-60' : ''}`}
+                              bgColor="support_primary"
+                            >
+                              <CustomText color="strongest" boldness="semiBold" size="small">
+                                {t('schedules.confirm_attendance')}
+                              </CustomText>
+                            </TouchOpacity>
+                          </View>
+                        ) : attendance === 'confirmed' ? (
+                          <View className="flex-row items-center mt-3 ml-[67px]">
+                            <Feather name="check-circle" size={14} color={Colors.success} />
+                            <CustomText color="success" boldness="medium" size="small" classes="ml-2">
+                              {t('schedules.attendance_confirmed')}
+                            </CustomText>
+                          </View>
+                        ) : null}
                         </Card>
                       </TouchableOpacity>
                     );

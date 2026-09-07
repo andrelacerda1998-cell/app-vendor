@@ -20,6 +20,7 @@ import {
   requestExpiresAt,
   requestWindowMs,
 } from "@/utils/requestTiming";
+import { useAlertSound } from "@/hooks/useAlertSound";
 
 /**
  * Ecrã full-screen de pedido a chegar (paridade com
@@ -52,6 +53,7 @@ const IncomingRequestScreen = () => {
   const immediate = isImmediateRequest(item);
 
   const [now, setNow] = useState(() => Date.now());
+  const playAlert = useAlertSound();
   const vibratedRef = useRef(false);
   const closingRef = useRef(false);
 
@@ -62,11 +64,14 @@ const IncomingRequestScreen = () => {
     else router.replace('/(app)/(tabs)/home');
   }, []);
 
-  // Vibração forte ao abrir (expo-haptics não está instalado neste projeto).
+  // Som + vibração forte ao abrir (expo-haptics não está instalado neste
+  // projeto). O som é o que chega a um técnico com o telemóvel na bancada: a
+  // vibração sozinha perde-se em cima de uma mesa ou dentro da carrinha.
   useEffect(() => {
+    void playAlert();
     Vibration.vibrate(Platform.OS === 'android' ? [0, 400, 150, 400] : 400);
     return () => Vibration.cancel();
-  }, []);
+  }, [playAlert]);
 
   // Aberto por push com a app fria, a lista de pedidos ainda não carregou —
   // fechar logo por `!item` matava o ecrã antes de haver dados. Pede a lista
