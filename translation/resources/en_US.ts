@@ -1533,6 +1533,9 @@ export default {
     },
   },
   "schedules": {
+    "confirm_attendance": "Confirm attendance",
+    "attendance_confirmed": "Attendance confirmed",
+    "confirm_attendance_error": "Could not confirm. Try again.",
     "availability": "Availability",
     "service_zone": "Service area",
     "day_off": "Day off",

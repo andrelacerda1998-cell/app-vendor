@@ -81,6 +81,7 @@ export const API_ROUTES = {
     VENDOR_GET_SCHEDULED_DETAILS: (id: string) => `${API_BASE_URL}/vendor/schedule/details/${id}`,
     VENDOR_SCHEDULE_GO_TO_LOCATION: (id: number) => `${API_BASE_URL}/vendor/schedule/go-to-location/${id}`,
     VENDOR_CANCEL_SCHEDULE: (id: number | string) => `${API_BASE_URL}/vendor/schedule/${id}/cancel`,
+    VENDOR_CONFIRM_SCHEDULE_ATTENDANCE: (id: number | string) => `${API_BASE_URL}/vendor/schedule/${id}/confirm-attendance`,
     VENDOR_GET_SERVICE_ROUTE: (serviceId: number | string) => `${API_BASE_URL}/vendor/services/${serviceId}/route`,
 
     // Services

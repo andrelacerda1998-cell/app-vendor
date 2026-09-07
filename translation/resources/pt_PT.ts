@@ -1533,6 +1533,9 @@ export default {
         }
     },
     "schedules": {
+      "confirm_attendance": "Confirmar presença",
+      "attendance_confirmed": "Presença confirmada",
+      "confirm_attendance_error": "Não foi possível confirmar. Tenta outra vez.",
       "availability": "Disponibilidade",
       "service_zone": "Zona de serviço",
       "day_off": "Folga",

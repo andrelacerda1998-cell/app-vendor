@@ -292,6 +292,44 @@ const ServiceSchedulesBottomSheet = () => {
     });
   };
 
+  const [confirmingId, setConfirmingId] = useState<number | null>(null);
+
+  /**
+   * "Confirmo que vou."
+   *
+   * Aceitar o agendamento foi há dias ou semanas; isto é o técnico a dizer que
+   * continua a contar com ele. É o que evita o cliente em casa à espera de
+   * alguém que se esqueceu — e, quando a confirmação não chega, dá tempo à
+   * operação de arranjar outro técnico.
+   */
+  const handleConfirmAttendance = (service: ServiceRequestedInterface) => {
+    const scheduleId = service.schedule_id;
+    if (!scheduleId) return;
+
+    setConfirmingId(scheduleId);
+    api.post(API_ROUTES.VENDOR_CONFIRM_SCHEDULE_ATTENDANCE(scheduleId))
+      .then((res) => {
+        const confirmedAt = res?.data?.data?.schedule?.vendor_confirmed_at ?? new Date().toISOString();
+        const stamp = (item: ServiceRequestedInterface) =>
+          item.schedule_id === scheduleId && item.schedule
+            ? { ...item, schedule: { ...item.schedule, vendor_confirmed_at: confirmedAt } }
+            : item;
+
+        setAllScheduledServices((prev) => prev.map(stamp));
+        setScheduledServices((prev) => prev.map(stamp));
+      })
+      .catch((err) => {
+        console.error(err);
+        openDialog({
+          title: t("services.cancel.error.title"),
+          subtitle: t("schedules.confirm_attendance_error"),
+          closeAfterMSeconds: 3000,
+          closeOnClickOutside: true,
+        });
+      })
+      .finally(() => setConfirmingId(null));
+  };
+
   const handleGoToDestination = (service: ServiceRequestedInterface) => {
     const id = service.service_id;
     api.post(API_ROUTES.VENDOR_SCHEDULE_GO_TO_LOCATION(id)).then((res) => {
@@ -363,6 +401,23 @@ const ServiceSchedulesBottomSheet = () => {
 
             const priceLabel = renderMoney(item.amount_for_vendor ?? null);
 
+            const isAttendanceConfirmed = !!item.schedule?.vendor_confirmed_at;
+            // Mesma janela do lembrete que o servidor envia (72h): pedir a
+            // confirmação antes disso é pedi-la cedo demais para valer alguma
+            // coisa, e depois da hora já não há nada a confirmar.
+            const hoursToStart = (() => {
+              // Infinity quando a marcação não tem hora utilizável — ver
+              // getScheduleTimestamp; nesse caso não se pede confirmação.
+              const startsAt = getScheduleTimestamp(item);
+              if (!Number.isFinite(startsAt)) return null;
+              return (startsAt - Date.now()) / 3_600_000;
+            })();
+            const needsAttendanceConfirmation =
+              !isAttendanceConfirmed &&
+              typeof hoursToStart === "number" &&
+              hoursToStart > 0 &&
+              hoursToStart <= 72;
+
             return (
               <View className="mb-4">
                 <View className="rounded-2xl border border-[#2C2C2C] bg-card px-4 py-4">
@@ -406,6 +461,34 @@ const ServiceSchedulesBottomSheet = () => {
                       </View>
                     )}
                   </View>
+
+                  {/* Confirmação de presença: aparece a partir das 72h e só
+                      enquanto não estiver confirmada. Fora dessa janela seria
+                      ruído — confirmar com duas semanas de antecedência não diz
+                      nada sobre o dia. */}
+                  {needsAttendanceConfirmation && (
+                    <TouchOpacity
+                      rounded="lg"
+                      itemsCenter
+                      disabled={confirmingId === item.schedule_id}
+                      onPress={() => handleConfirmAttendance(item)}
+                      otherClasses={`mt-4 py-3 ${confirmingId === item.schedule_id ? "opacity-60" : ""}`}
+                      bgColor="primary"
+                    >
+                      <CustomText color="strongest" boldness="semiBold" size="small">
+                        {t("schedules.confirm_attendance")}
+                      </CustomText>
+                    </TouchOpacity>
+                  )}
+
+                  {isAttendanceConfirmed && (
+                    <View className="mt-4 flex-row items-center">
+                      <View className="h-2 w-2 rounded-full bg-success mr-3" />
+                      <CustomText color="success" boldness="medium" size="small">
+                        {t("schedules.attendance_confirmed")}
+                      </CustomText>
+                    </View>
+                  )}
 
                   <View className="mt-4 flex-row justify-between">
                     {allowGoToDestination ? (

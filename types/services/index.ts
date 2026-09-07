@@ -65,6 +65,8 @@ export interface ServiceInterface {
       start: string;
       end: string;
     };
+    /** Quando o técnico confirmou que vai; null enquanto não confirmar. */
+    vendor_confirmed_at?: string | null;
   } | null,
 }
 
@@ -114,6 +116,8 @@ export interface ServiceRequestedInterface {
       start: string;
       end: string;
     };
+    /** Quando o técnico confirmou que vai; null enquanto não confirmar. */
+    vendor_confirmed_at?: string | null;
   };
   service_type: {
     id: number;
