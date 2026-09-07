@@ -57,50 +57,16 @@ const hhmm = (t?: string) => (t ? String(t).slice(0, 5) : '');
 
 
 
-// __SIMULACAO__ (remover)
-const MOCK_AGENDA: any[] = [
-  { service_id: 90000, schedule_id: 90000, amount_for_vendor: 3000, distance: 5.1,
-    service_type: { name: "Reparação de estore", time: 60 },
-    customer: { name: "Carlos Pinto", address: "Porto, Porto" },
-    address_details: { street_name: "Rua do Bonjardim", street_number: "88", city: "Porto" },
-    status: "scheduled",
-    schedule: { scheduled_day: "2026-09-06", scheduled_time: { start: "16:00", end: "17:00" }, date_label: "week", vendor_confirmed_at: null, recurrence: null, is_recurring: false } },
-  { service_id: 90001, schedule_id: 90001, amount_for_vendor: 4500, distance: 3.2,
-    service_type: { name: "Reparação de canalização", time: 90 },
-    customer: { name: "Ana Silva", address: "Porto, Porto" },
-    address_details: { street_name: "Rua das Flores", street_number: "12", city: "Porto" },
-    status: "scheduled",
-    schedule: { scheduled_day: "2026-09-07", scheduled_time: { start: "23:30", end: "23:59" }, date_label: "today", vendor_confirmed_at: null, recurrence: null, is_recurring: false } },
-  { service_id: 90002, schedule_id: 90002, amount_for_vendor: 6000, distance: 8.9,
-    service_type: { name: "Limpeza geral", time: 120 },
-    customer: { name: "João Costa", address: "Porto, Porto" },
-    address_details: { street_name: "Av. da Boavista", street_number: "300", city: "Porto" },
-    status: "scheduled",
-    schedule: { scheduled_day: "2026-09-08", scheduled_time: { start: "10:00", end: "12:00" }, date_label: "tomorrow", vendor_confirmed_at: "2026-09-07T10:00:00Z", recurrence: "weekly", is_recurring: true } },
-  { service_id: 90003, schedule_id: 90003, amount_for_vendor: 3500, distance: 1.4,
-    service_type: { name: "Montagem de móveis", time: 60 },
-    customer: { name: "Rita Nunes", address: "Porto, Porto" },
-    address_details: { street_name: "Rua de Cedofeita", street_number: "45", city: "Porto" },
-    status: "scheduled", on_the_way_at: "2026-09-07T14:50:00Z",
-    schedule: { scheduled_day: "2026-09-08", scheduled_time: { start: "15:00", end: "16:00" }, date_label: "tomorrow", vendor_confirmed_at: "2026-09-07T11:00:00Z", recurrence: null, is_recurring: false } },
-  { service_id: 90004, schedule_id: 90004, amount_for_vendor: 12000, distance: 12.7,
-    service_type: { name: "Pintura de sala", time: 210 },
-    customer: { name: "Miguel Faria", address: "Porto, Porto" },
-    address_details: { street_name: "Rua de Santa Catarina", street_number: "210", city: "Porto" },
-    status: "scheduled",
-    schedule: { scheduled_day: "2026-09-12", scheduled_time: { start: "09:30", end: "13:00" }, date_label: "week", vendor_confirmed_at: null, recurrence: "monthly", is_recurring: true } },
-];
 
 const Agenda = () => {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const {
-    scheduledServicesData: realScheduled,
+    scheduledServicesData,
     getScheduledServices,
     scheduledServicesLoading,
     scheduledServicesFailed,
   } = useSchedule();
-  const scheduledServicesData = (realScheduled?.length ? realScheduled : MOCK_AGENDA) as any;
   const { vendorData } = useSession();
   const isOnline = useIsOnline();
   const [refreshing, setRefreshing] = useState(false);
