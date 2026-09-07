@@ -43,6 +43,8 @@ const hhmm = (t?: string) => (t ? String(t).slice(0, 5) : '');
 
 
 
+
+
 const Agenda = () => {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
@@ -405,7 +407,6 @@ const Agenda = () => {
                 <View style={{ gap: 10 }}>
                   {items.map((item: any, i: number) => {
                     const start = hhmm(item?.schedule?.scheduled_time?.start);
-                    const price = renderMoney(item?.amount_for_vendor ?? null);
                     const ui = statusUi(item);
                     const serviceName = item?.service_type?.name ?? '—';
                     // A RUA, não a cidade: `customer.address` é "Cidade, Estado"
@@ -425,11 +426,12 @@ const Agenda = () => {
                         key={`${k}-${i}`}
                         activeOpacity={0.85}
                         accessibilityRole="button"
+                        // Sem o preço, tal como no cartão: o leitor de ecrã
+                        // deve dizer o que lá está, não mais do que isso.
                         accessibilityLabel={[
                           start,
                           serviceName,
                           street,
-                          price,
                         ].filter(Boolean).join(', ')}
                         accessibilityHint={t('agenda.open_service_hint')}
                         // O estado do serviço (o que está incluído, morada, chat
@@ -477,12 +479,11 @@ const Agenda = () => {
                             ) : null}
                           </View>
 
-                          <View className="flex-row items-center ml-2">
-                            {price ? (
-                              <CustomText color="secondary" boldness="bolder" size="medium">{price}</CustomText>
-                            ) : null}
-                            <Feather name="chevron-right" size={18} color={Colors.muted} style={{ marginLeft: 6 }} />
-                          </View>
+                          {/* Sem o valor por serviço: o total do dia está no
+                              cabeçalho, e um preço repetido em cada linha rouba
+                              o espaço a quem se lê primeiro numa agenda — a
+                              hora, o serviço e a morada. */}
+                          <Feather name="chevron-right" size={18} color={Colors.muted} style={{ marginLeft: 8 }} />
                         </View>
 
                         {/* Um cliente que volta todas as semanas pesa de outra
