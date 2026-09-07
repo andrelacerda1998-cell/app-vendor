@@ -121,6 +121,9 @@ const Status = () => {
   // o ecrã guarda qual a folha aberta para os dois partilharem estado.
   const [extrasSheet, setExtrasSheet] = useState<ExtrasSheet>(null);
   const [ servicesDetail, setServicesDetail] = useState<Details>({ includes: [], excludes: []})
+  // Quantas fotos há de cada lado (vem do ServicePhotos) — só para avisar, ao
+  // concluir, que falta a do "depois".
+  const [photoCounts, setPhotoCounts] = useState({ before: 0, after: 0 });
   /**
    * O ecrã nasceu para o serviço EM CURSO (`openService`, do ServiceContext).
    * A Agenda passou a abri-lo também para serviços apenas AGENDADOS, que não
@@ -218,11 +221,23 @@ const Status = () => {
   }
 
   const handleFinishService = () => {
+    // O ecrã diz-lhe o tempo todo que as fotos o protegem numa reclamação, mas
+    // é aqui — e só aqui — que ainda dá para as tirar: depois de concluído o
+    // serviço fecha e a oportunidade passou. O aviso não bloqueia; quem
+    // trabalha em casas onde não pode fotografar continua a poder concluir.
+    const missingAfter = photoCounts.after === 0;
+
     openDialog({
       title: t('services.service.finish.confirmation.title'),
-      subtitle: t('services.service.finish.confirmation.subtitle'),
-      successButtonText: t('services.service.finish.confirmation.confirm'),
-      cancelButtonText: t('services.service.finish.confirmation.cancel'),
+      subtitle: missingAfter
+        ? t('services.service.finish.confirmation.subtitle_no_photos')
+        : t('services.service.finish.confirmation.subtitle'),
+      successButtonText: missingAfter
+        ? t('services.service.finish.confirmation.confirm_anyway')
+        : t('services.service.finish.confirmation.confirm'),
+      cancelButtonText: missingAfter
+        ? t('services.service.finish.confirmation.take_photo')
+        : t('services.service.finish.confirmation.cancel'),
       onSuccess: () => finishService(),
     })
   };
@@ -557,7 +572,11 @@ const Status = () => {
             ao chegar) e extras logo a seguir ao cronómetro. */}
         {status === ServiceStatus.ARRIVED && (
           <>
-            <ServicePhotos serviceId={svc?.id} enabled={svc?.status === ServiceStatus.ARRIVED} />
+            <ServicePhotos
+              serviceId={svc?.id}
+              enabled={svc?.status === ServiceStatus.ARRIVED}
+              onCountsChange={setPhotoCounts}
+            />
             <ServiceExtras
               serviceId={svc?.id}
               enabled={svc?.status === ServiceStatus.ARRIVED}
@@ -612,6 +631,21 @@ const Status = () => {
                 </CustomText>
               </TouchableOpacity>
             </View>
+
+            {/* O que o cliente pediu continua a fazer falta DEPOIS de começar:
+                é durante o trabalho que "as casas de banho são o mais urgente"
+                decide por onde se pega. Antes desaparecia ao chegar ao local,
+                exatamente quando passava a ser instruções e não informação. */}
+            {!!svc?.customer_notes && (
+              <View className="mt-4 pt-4" style={{ borderTopWidth: 1, borderTopColor: Colors.line }}>
+                <CustomText color="muted" size="extraSmall" boldness="bold">
+                  {t('schedules.customer_notes')}
+                </CustomText>
+                <CustomText color="secondary" size="small" classes="mt-1">
+                  {svc.customer_notes}
+                </CustomText>
+              </View>
+            )}
           </Card>
         ) : (
           <Card className="mt-3">

@@ -459,6 +459,9 @@ export default {
                 "confirmation": {
                     "title": "Finalizar serviço",
                     "subtitle": "Queres mesmo dar este serviço por concluído?",
+                    "subtitle_no_photos": "Ainda não juntaste nenhuma foto do depois. É o que te protege se o cliente reclamar — e depois de finalizar já não dá para a tirar.",
+                    "confirm_anyway": "Finalizar mesmo assim",
+                    "take_photo": "Tirar a foto",
                     "confirm": "Finalizar",
                     "cancel": "Cancelar"
                 }

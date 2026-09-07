@@ -459,6 +459,9 @@ export default {
         "confirmation": {
           "title": "Finish service",
           "subtitle": "Do you really want to mark this service as complete?",
+          "subtitle_no_photos": "You haven't added an after photo. It's what protects you if the customer complains — and once the job is finished you can't take it any more.",
+          "confirm_anyway": "Finish anyway",
+          "take_photo": "Take the photo",
           "confirm": "Finish",
           "cancel": "Cancel"
         }

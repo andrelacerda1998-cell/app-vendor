@@ -171,7 +171,10 @@ const ServiceExtras = ({
   const approved = extras.filter((e) => e.status === 'approved');
   const rejected = extras.filter((e) => e.status === 'rejected');
 
-  if (!enabled && extras.length === 0 && !error) return null;
+  // Sem extras nenhuns, o cartão era só um título dentro de uma caixa vazia:
+  // os botões que criam extras vivem no rodapé, não aqui. Só existe quando há
+  // mesmo alguma coisa para mostrar (pedido, resposta do cliente ou erro).
+  if (extras.length === 0 && !error) return null;
 
   return (
     <View className="bg-card border rounded-2xl p-4 mt-3" style={{ borderColor: Colors.line }}>
