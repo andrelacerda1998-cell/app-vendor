@@ -1533,6 +1533,29 @@ export default {
     },
   },
   "schedules": {
+      "recurrence": {
+        "weekly": "Repeats every week",
+        "biweekly": "Repeats every two weeks",
+        "monthly": "Repeats every month",
+        "generic": "Recurring service",
+        "short": "Recurring"
+      },
+      "details": {
+        "title": "Service details",
+        "open": "See details",
+        "when": "When",
+        "duration": "Estimated duration",
+        "you_receive": "You get",
+        "customer": "Customer",
+        "address": "Address",
+        "phone": "Phone",
+        "includes": "Included",
+        "excludes": "Not included",
+        "includes_empty": "The backoffice hasn't defined what this service includes yet.",
+        "notes": "Customer notes",
+        "photos": "Customer photos",
+        "not_found": "Couldn't open this service."
+      },
     "confirm_attendance": "Confirm attendance",
     "attendance_confirmed": "Attendance confirmed",
     "confirm_attendance_error": "Could not confirm. Try again.",

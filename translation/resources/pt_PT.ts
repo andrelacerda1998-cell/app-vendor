@@ -1533,6 +1533,29 @@ export default {
         }
     },
     "schedules": {
+      "recurrence": {
+        "weekly": "Repete todas as semanas",
+        "biweekly": "Repete de duas em duas semanas",
+        "monthly": "Repete todos os meses",
+        "generic": "Serviço recorrente",
+        "short": "Recorrente"
+      },
+      "details": {
+        "title": "Detalhes do serviço",
+        "open": "Ver detalhes",
+        "when": "Quando",
+        "duration": "Duração estimada",
+        "you_receive": "Recebes",
+        "customer": "Cliente",
+        "address": "Morada",
+        "phone": "Telefone",
+        "includes": "Está incluído",
+        "excludes": "Não está incluído",
+        "includes_empty": "O backoffice ainda não definiu o que este serviço inclui.",
+        "notes": "Observações do cliente",
+        "photos": "Fotos do cliente",
+        "not_found": "Não foi possível abrir este serviço."
+      },
       "confirm_attendance": "Confirmar presença",
       "attendance_confirmed": "Presença confirmada",
       "confirm_attendance_error": "Não foi possível confirmar. Tenta outra vez.",

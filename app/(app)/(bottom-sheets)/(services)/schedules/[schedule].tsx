@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {FlatList, SafeAreaView, ScrollView, View} from "react-native";
+import {FlatList, SafeAreaView, ScrollView, TouchableOpacity, View} from "react-native";
 import {useTranslation} from "react-i18next";
 import {router, useLocalSearchParams} from "expo-router";
 import {Colors} from "@/constants/Colors";
@@ -15,6 +15,17 @@ import {useApi} from "@/contexts/ApiContext";
 import {API_ROUTES} from "@/constants/ApiRoutes";
 import {useDialog} from "@/contexts/DialogContext";
 import {useService} from "@/contexts/ServiceContext";
+import {Feather} from "@expo/vector-icons";
+import {Card, IconTile, StatusPill} from "@/components/ui";
+import {
+  formatEstimatedDuration,
+  formatStreetLine,
+  recurrenceLabelKey,
+} from "@/utils/serviceDetails";
+
+
+
+
 
 const ServiceSchedulesBottomSheet = () => {
   const { t } = useTranslation();
@@ -397,9 +408,13 @@ const ServiceSchedulesBottomSheet = () => {
               : "";
             const timeLabel = [dateLabel, startTime && endTime ? `${startTime} - ${endTime}` : ""]
               .filter(Boolean)
-              .join(" ");
+              .join(" · ");
 
             const priceLabel = renderMoney(item.amount_for_vendor ?? null);
+            // A rua, não a cidade: o técnico já sabe em que cidade trabalha.
+            const streetLabel = formatStreetLine(item.address_details, item.customer?.address);
+            const durationLabel = formatEstimatedDuration(item.service_type?.time);
+            const recurrenceKey = recurrenceLabelKey(item);
 
             const isAttendanceConfirmed = !!item.schedule?.vendor_confirmed_at;
             // Mesma janela do lembrete que o servidor envia (72h): pedir a
@@ -418,80 +433,129 @@ const ServiceSchedulesBottomSheet = () => {
               hoursToStart > 0 &&
               hoursToStart <= 72;
 
+            const openDetails = () =>
+              router.push(`/(app)/(bottom-sheets)/(services)/schedule-details/${item.service_id}`);
+
             return (
-              <View className="mb-4">
-                <View className="rounded-2xl border border-[#2C2C2C] bg-card px-4 py-4">
-                  <View className="flex-row items-start justify-between">
-                    <View className="flex-1 pr-3">
-                      <View className="flex-row items-center flex-wrap">
-                        <CustomText color="secondary" boldness="semiBold" classes="text-lg">
-                          {item.service_type?.name}
+              <Card className="mb-4">
+                {/* O cabeçalho inteiro abre os detalhes: é onde a mão vai. */}
+                <TouchableOpacity activeOpacity={0.8} onPress={openDetails}>
+                  <View className="flex-row items-center">
+                    <IconTile size={48}>
+                      <Feather name="calendar" size={20} color={Colors.brand} />
+                    </IconTile>
+
+                    <View className="flex-1 ml-3">
+                      <CustomText color="secondary" boldness="bold" size="medium" numberOfLines={1}>
+                        {item.service_type?.name}
+                      </CustomText>
+                      {!!streetLabel && (
+                        <CustomText color="muted" size="extraSmall" numberOfLines={2} classes="mt-0.5">
+                          {streetLabel}
                         </CustomText>
-                        {priceLabel ? (
-                          <CustomText color="success" boldness="medium" classes="text-lg ml-2">
-                            {priceLabel}
-                          </CustomText>
-                        ) : null}
-                      </View>
+                      )}
+                      {(!!item.customer?.name || !!durationLabel) && (
+                        <View className="flex-row items-center mt-0.5" style={{ gap: 10 }}>
+                          {!!item.customer?.name && (
+                            <View className="flex-row items-center flex-shrink">
+                              <Feather name="user" size={12} color={Colors.muted} />
+                              <CustomText color="muted" size="extraSmall" classes="ml-1" numberOfLines={1}>
+                                {item.customer.name}
+                              </CustomText>
+                            </View>
+                          )}
+                          {!!durationLabel && (
+                            <View className="flex-row items-center">
+                              <Feather name="clock" size={12} color={Colors.muted} />
+                              <CustomText color="muted" size="extraSmall" classes="ml-1" numberOfLines={1}>
+                                {durationLabel}
+                              </CustomText>
+                            </View>
+                          )}
+                        </View>
+                      )}
                     </View>
-                    <View className="h-8 w-8 items-center justify-center rounded-full border border-[#303030]">
-                      <ArrowIcon color={Colors.link} position="right" size="45%" />
-                    </View>
+
+                    <Feather name="chevron-right" size={20} color={Colors.muted} />
                   </View>
 
-                  <View className="mt-3 space-y-2">
-                    <View className="flex-row items-center">
-                      <View className="h-2 w-2 rounded-full bg-support_primary mr-3" />
-                      <CustomText color="secondary" size="small">
-                        {timeLabel || "-"}
-                      </CustomText>
-                    </View>
-                    <View className="flex-row items-center">
-                      <View className="h-2 w-2 rounded-full bg-success mr-3" />
-                      <CustomText color="secondary" size="small">
-                        {t("schedules.customer", { defaultValue: "Cliente" })} {item.customer?.name}
-                      </CustomText>
-                    </View>
-                    {item.customer?.address && (
-                      <View className="flex-row items-center">
-                        <View className="h-2 w-2 rounded-full bg-gray_medium mr-3" />
-                        <CustomText color="gray_medium" size="small" numberOfLines={2}>
-                          {item.customer.address}
-                        </CustomText>
-                      </View>
-                    )}
-                  </View>
+                  {/* Um cliente que volta todas as semanas pesa de outra
+                      maneira na agenda do que uma marcação avulsa. */}
+                  {!!recurrenceKey && (
+                    <StatusPill label={t(recurrenceKey)} color={Colors.brand} classes="mt-3" />
+                  )}
 
-                  {/* Confirmação de presença: aparece a partir das 72h e só
-                      enquanto não estiver confirmada. Fora dessa janela seria
-                      ruído — confirmar com duas semanas de antecedência não diz
-                      nada sobre o dia. */}
-                  {needsAttendanceConfirmation && (
-                    <TouchOpacity
-                      rounded="lg"
-                      itemsCenter
-                      disabled={confirmingId === item.schedule_id}
-                      onPress={() => handleConfirmAttendance(item)}
-                      otherClasses={`mt-4 py-3 ${confirmingId === item.schedule_id ? "opacity-60" : ""}`}
-                      bgColor="support_primary"
+                  <View className="flex-row mt-3" style={{ gap: 10 }}>
+                    <View
+                      className="flex-1 rounded-2xl p-3 border"
+                      style={{ backgroundColor: Colors.card_high, borderColor: Colors.line }}
                     >
-                      <CustomText color="strongest" boldness="semiBold" size="small">
-                        {t("schedules.confirm_attendance")}
+                      <CustomText color="muted" size="extraSmall" boldness="bold">
+                        {t("schedules.when").toUpperCase()}
                       </CustomText>
-                    </TouchOpacity>
-                  )}
-
-                  {isAttendanceConfirmed && (
-                    <View className="mt-4 flex-row items-center">
-                      <View className="h-2 w-2 rounded-full bg-success mr-3" />
-                      <CustomText color="success" boldness="medium" size="small">
-                        {t("schedules.attendance_confirmed")}
+                      <CustomText color="secondary" boldness="bold" size="medium" numberOfLines={2} classes="mt-1">
+                        {timeLabel || "—"}
                       </CustomText>
                     </View>
-                  )}
 
-                  <View className="mt-4 flex-row justify-between">
-                    {allowGoToDestination ? (
+                    <View
+                      className="flex-1 rounded-2xl p-3 border"
+                      style={{ backgroundColor: Colors.brand_soft, borderColor: `${Colors.brand}55` }}
+                    >
+                      <CustomText color="muted" size="extraSmall" boldness="bold">
+                        {t("schedules.you_receive").toUpperCase()}
+                      </CustomText>
+                      <CustomText color="brand" boldness="bolder" size="medium" numberOfLines={1} classes="mt-1">
+                        {priceLabel || "—"}
+                      </CustomText>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+
+                {/* Confirmação de presença: aparece a partir das 72h e só
+                    enquanto não estiver confirmada. Fora dessa janela seria
+                    ruído — confirmar com duas semanas de antecedência não diz
+                    nada sobre o dia. */}
+                {needsAttendanceConfirmation && (
+                  <TouchOpacity
+                    rounded="lg"
+                    itemsCenter
+                    disabled={confirmingId === item.schedule_id}
+                    onPress={() => handleConfirmAttendance(item)}
+                    otherClasses={`mt-4 py-3 ${confirmingId === item.schedule_id ? "opacity-60" : ""}`}
+                    bgColor="support_primary"
+                  >
+                    <CustomText color="strongest" boldness="semiBold" size="small">
+                      {t("schedules.confirm_attendance")}
+                    </CustomText>
+                  </TouchOpacity>
+                )}
+
+                {isAttendanceConfirmed && (
+                  <View className="mt-4 flex-row items-center">
+                    <Feather name="check-circle" size={15} color={Colors.success} />
+                    <CustomText color="success" boldness="medium" size="small" classes="ml-2">
+                      {t("schedules.attendance_confirmed")}
+                    </CustomText>
+                  </View>
+                )}
+
+                <View className="h-[1px] my-3" style={{ backgroundColor: Colors.line }} />
+
+                <View className="flex-row items-center justify-between">
+                  <TouchOpacity
+                    rounded="lg"
+                    itemsCenter
+                    onPress={openDetails}
+                    otherClasses="px-4 py-2 border border-line"
+                  >
+                    <CustomText color="secondary" boldness="medium" size="small">
+                      {t("schedules.details.open")}
+                    </CustomText>
+                  </TouchOpacity>
+
+                  <View className="flex-row items-center" style={{ gap: 8 }}>
+                    {allowGoToDestination && (
                       <TouchOpacity
                         rounded="lg"
                         itemsCenter
@@ -503,8 +567,6 @@ const ServiceSchedulesBottomSheet = () => {
                           {t("schedules.go_destination")}
                         </CustomText>
                       </TouchOpacity>
-                    ) : (
-                      <View />
                     )}
                     <TouchOpacity
                       rounded="lg"
@@ -519,7 +581,7 @@ const ServiceSchedulesBottomSheet = () => {
                     </TouchOpacity>
                   </View>
                 </View>
-              </View>
+              </Card>
             );
           }}
           keyExtractor={(item) => String(item.service_id)}
