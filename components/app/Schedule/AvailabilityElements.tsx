@@ -126,7 +126,7 @@ const createStyles = () => StyleSheet.create({
     marginBottom: 18,
   },
   availabilityTitle: {
-    color: "#fff",
+    color: Colors.secondary,
     fontSize: 16,
     fontWeight: "700",
   },

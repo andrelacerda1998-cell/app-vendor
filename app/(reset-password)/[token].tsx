@@ -126,7 +126,7 @@ const ResetPassword = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 p-5 bg-primary">
+    <SafeAreaView className="flex-1 p-5" style={{ backgroundColor: Colors.primary }}>
       <BackHeader
         backButtonColor="secondary"
         middleItem={() => (

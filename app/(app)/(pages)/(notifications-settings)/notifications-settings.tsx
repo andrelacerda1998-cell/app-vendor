@@ -42,7 +42,7 @@ const NotificationSettings = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-bg">
+    <SafeAreaView className="flex-1" style={{ backgroundColor: Colors.bg }}>
       <BackHeader
         backButtonColor="secondary"
         middleItem={() => (
@@ -62,8 +62,8 @@ const NotificationSettings = () => {
           {KEYS.map((key) => (
             <View
               key={key}
-              className="flex-row items-center bg-card border rounded-2xl p-4"
-              style={{ borderColor: Colors.line }}
+              className="flex-row items-center border rounded-2xl p-4"
+              style={{ backgroundColor: Colors.card,  borderColor: Colors.line }}
             >
               <View className="flex-1 pr-4">
                 <CustomText color="secondary" boldness="semiBold" size="medium">

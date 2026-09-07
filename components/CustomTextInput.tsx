@@ -165,16 +165,14 @@ const CustomTextInput = forwardRef<TextInput, CustomTextInputProps>(({
             fontSize: getFontSize(),
             color: Colors[textColor as CustomTextColor],
             fontFamily: getTextBoldness(),
+            borderColor: Colors.line,
           },
         ]}
         editable={!disabled}
         onChangeText={onChangeText}
         placeholder={placeholder}
         placeholderTextColor={Colors.support_secondary}
-        className={`
-          border-line focus:border-brand
-          ${classes}
-        `}
+        className={`${classes}`}
         {...props}
       >
       </TextInput>

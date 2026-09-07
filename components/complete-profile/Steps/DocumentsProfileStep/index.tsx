@@ -184,8 +184,8 @@ const DocumentsProfileStep = ({ onNext }: { onNext: () => void }) => {
             {types.map((doc) => (
               <View
                 key={doc.id}
-                className="flex-row items-center bg-card border rounded-2xl p-4"
-                style={{ borderColor: Colors.line }}
+                className="flex-row items-center border rounded-2xl p-4"
+                style={{ backgroundColor: Colors.card,  borderColor: Colors.line }}
               >
                 <Ionicons
                   name={doc.uploaded ? 'checkmark-circle' : 'document-text-outline'}

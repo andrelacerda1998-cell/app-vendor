@@ -111,7 +111,7 @@ const CancelService = () => {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-strongest">
+    <SafeAreaView className="flex-1" style={{ backgroundColor: Colors.bg }}>
       {/* <StatusBar backgroundColor={Colors.primary} animated /> */}
 
       <BackHeader
@@ -124,7 +124,7 @@ const CancelService = () => {
         otherClasses="p-5"
       />
 
-      <View className="bg-primary p-5 flex-1 rounded-t-3xl">
+      <View className="p-5 flex-1 rounded-t-3xl" style={{ backgroundColor: Colors.primary }}>
         {/* Conteúdo centrado no espaço disponível: o bloco é curto e, encostado
             ao topo, deixava um vazio grande até aos botões. Centrado, a
             respiração fica repartida em cima e em baixo. */}

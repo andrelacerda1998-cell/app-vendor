@@ -36,7 +36,7 @@ const OnboardingSuccess = () => {
     !vendorData?.iban;
 
   return (
-    <SafeAreaView className="flex-1 bg-bg">
+    <SafeAreaView className="flex-1" style={{ backgroundColor: Colors.bg }}>
       <ScrollView
         className="flex-1 px-5"
         contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingVertical: 32 }}

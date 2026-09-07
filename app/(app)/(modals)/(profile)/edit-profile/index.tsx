@@ -321,7 +321,7 @@ const EditProfile = () => {
                                 />
                             )}
 
-                            <View className="bg-gray_medium opacity-50 border-2 border-dashed border-secondary rounded-full h-full w-full absolute"></View>
+                            <View className="opacity-50 border-2 border-dashed rounded-full h-full w-full absolute" style={{ backgroundColor: Colors.gray_medium, borderColor: Colors.secondary }}></View>
 
                             <TouchableOpacity onPress={() => pickImage()} className="absolute h-full w-full items-center justify-center p-2 shadow-md">
                                 <Feather name="camera" size={32} color={Colors.secondary} />

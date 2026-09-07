@@ -96,7 +96,7 @@ const Schedules = () => {
       borderColor="line"
       otherClasses="flex-row items-center p-5"
     >
-      <View className="w-12 h-12 rounded-2xl items-center justify-center bg-brand_soft">
+      <View className="w-12 h-12 rounded-2xl items-center justify-center" style={{ backgroundColor: Colors.brand_soft }}>
         <Feather name="calendar" size={22} color={Colors.brand} />
       </View>
       <View className="flex-1 ml-3.5">

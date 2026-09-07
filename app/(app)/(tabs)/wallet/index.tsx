@@ -50,6 +50,8 @@ const hhmm = (t?: string) => (t ? String(t).slice(0, 5) : '');
 
 
 
+
+
 const Agenda = () => {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
@@ -288,7 +290,7 @@ const Agenda = () => {
   };
 
   return (
-    <SafeAreaView className={`flex-1 bg-bg`}>
+    <SafeAreaView className={`flex-1`} style={{ backgroundColor: Colors.bg }}>
       <View className="px-5 pt-4 pb-3 flex-row items-end justify-between">
         <CustomText size="subtitle" color="secondary" boldness="bolder">
           {t('tabs.agenda')}

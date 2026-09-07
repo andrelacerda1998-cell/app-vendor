@@ -4,15 +4,14 @@ import SettingsElement from "@/components/app/Profile/Settings";
 import { CustomText } from "@/components/CustomText";
 import BackHeader from "@/components/app/BackHeader";
 import { useTranslation } from "react-i18next"
+import { Colors } from '@/constants/Colors';
 
 const Settings = () => {
   const { t } = useTranslation();
 
   return (
     <SafeAreaView
-      className={`flex-1 ${
-        Platform.OS === "ios" && "h-full"
-      } bg-bg flex-1`}
+      className={`flex-1 ${ Platform.OS === "ios" && "h-full" } flex-1`} style={{ backgroundColor: Colors.bg }}
     >
       <BackHeader
         backButtonColor="secondary"

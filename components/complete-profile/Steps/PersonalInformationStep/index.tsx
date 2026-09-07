@@ -213,7 +213,8 @@ const PersonalInformationStep = ({
                             }}
                             render={({field}) => (
                                 <View
-                                    className="relative mt-2 border-[1px] border-gray_strong focus:border-support_primary rounded-lg flex justify-center">
+                                    className="relative mt-2 border-[1px] rounded-lg flex justify-center"
+                                    style={{ borderColor: Colors.gray_strong }}>
                                     {
                                         Platform.OS === 'android' ? (
                                             <Picker

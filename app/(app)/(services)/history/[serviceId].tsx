@@ -92,7 +92,7 @@ const Status = () => {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-primary">
+    <SafeAreaView className="flex-1" style={{ backgroundColor: Colors.primary }}>
       <BackHeader
         backButtonColor="secondary"
         middleItem={() => (
@@ -120,7 +120,7 @@ const Status = () => {
           <View className="items-center space-y-2 py-6">
             {isLoading ? (
               <View className="rounded-full overflow-hidden w-14 h-14 ">
-                <View className="w-full h-full bg-card"></View>
+                <View className="w-full h-full" style={{ backgroundColor: Colors.card }}></View>
               </View>
             ) : (
               <View className="relative flex items-center justify-center h-14 w-14 mx-auto rounded-full overflow-hidden">
@@ -139,10 +139,10 @@ const Status = () => {
             {isLoading ? (
               <View className="items-center w-full">
                 <View className="rounded-full overflow-hidden w-[50%] h-6">
-                  <View className="w-full h-full bg-card"></View>
+                  <View className="w-full h-full" style={{ backgroundColor: Colors.card }}></View>
                 </View>
                 <View className="rounded-full overflow-hidden w-[70%] h-4 mt-2">
-                  <View className="w-full h-full bg-card"></View>
+                  <View className="w-full h-full" style={{ backgroundColor: Colors.card }}></View>
                 </View>
               </View>
             ) : (
@@ -168,15 +168,15 @@ const Status = () => {
               <View className="w-full">
                 <View className="items-center">
                   <View className="rounded-full overflow-hidden w-24 h-24 mt-2">
-                    <View className="w-full h-full bg-card"></View>
+                    <View className="w-full h-full" style={{ backgroundColor: Colors.card }}></View>
                   </View>
                 </View>
                 <View className="items-center mt-4">
                   <View className="rounded-full overflow-hidden w-[50%] h-6">
-                    <View className="w-full h-full bg-card"></View>
+                    <View className="w-full h-full" style={{ backgroundColor: Colors.card }}></View>
                   </View>
                   <View className="rounded-full overflow-hidden w-[70%] h-4 mt-2">
-                    <View className="w-full h-full bg-card"></View>
+                    <View className="w-full h-full" style={{ backgroundColor: Colors.card }}></View>
                   </View>
                 </View>
               </View>
@@ -204,28 +204,28 @@ const Status = () => {
           <View>
             <View className="flex-row justify-between items-center mt-4">
               <View className="rounded-full overflow-hidden w-[33%] h-6">
-                <View className="w-full h-full bg-card"></View>
+                <View className="w-full h-full" style={{ backgroundColor: Colors.card }}></View>
               </View>
               <View className="rounded-full overflow-hidden w-[20%] h-6">
-                <View className="w-full h-full bg-card"></View>
+                <View className="w-full h-full" style={{ backgroundColor: Colors.card }}></View>
               </View>
             </View>
 
             <View className="flex-row justify-between items-center mt-4">
               <View className="rounded-full overflow-hidden w-[30%] h-6">
-                <View className="w-full h-full bg-card"></View>
+                <View className="w-full h-full" style={{ backgroundColor: Colors.card }}></View>
               </View>
               <View className="rounded-full overflow-hidden w-[50%] h-6">
-                <View className="w-full h-full bg-card"></View>
+                <View className="w-full h-full" style={{ backgroundColor: Colors.card }}></View>
               </View>
             </View>
 
             <View className="flex-row justify-between items-center mt-4">
               <View className="rounded-full overflow-hidden w-[35%] h-6">
-                <View className="w-full h-full bg-card"></View>
+                <View className="w-full h-full" style={{ backgroundColor: Colors.card }}></View>
               </View>
               <View className="rounded-full overflow-hidden w-[40%] h-6">
-                <View className="w-full h-full bg-card"></View>
+                <View className="w-full h-full" style={{ backgroundColor: Colors.card }}></View>
               </View>
             </View>
           </View>

@@ -16,6 +16,7 @@ type Props = {
 };
 
 const Confirmation = ({ visible, message, onConfirm, onCancel }: Props) => {
+  const styles = makeStyles();
   const { t } = useTranslation();
 
   return (
@@ -39,7 +40,13 @@ const Confirmation = ({ visible, message, onConfirm, onCancel }: Props) => {
   );
 };
 
-const styles = StyleSheet.create({
+/**
+ * Estilos criados por FUNÇÃO e não uma vez ao carregar o módulo: um
+ * `StyleSheet.create` no topo do ficheiro fixa as cores do tema que estava
+ * activo no arranque e nunca mais as larga — foi assim que a barra de
+ * separadores continuava escura depois de trocar para o tema claro.
+ */
+const makeStyles = () => StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.6)",
@@ -49,7 +56,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   modal: {
-    backgroundColor: Colors.strongest,
+    backgroundColor: Colors.bg,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     padding: 24,

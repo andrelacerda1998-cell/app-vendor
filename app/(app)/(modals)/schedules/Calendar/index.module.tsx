@@ -1,4 +1,5 @@
 import {StyleSheet} from "react-native";
+import { Colors } from '@/constants/Colors';
 
 export default (width: number) => StyleSheet.create({
   backdrop: {
@@ -42,7 +43,7 @@ export default (width: number) => StyleSheet.create({
     justifyContent: "center",
   },
   backIcon: { color: "#f7b85a", fontSize: 24 },
-  headerTitle: { color: "#fff", fontWeight: "600", fontSize: 16 },
+  headerTitle: { color: Colors.secondary, fontWeight: "600", fontSize: 16 },
   headerLine: {
     borderBottomColor: "#2a2a2e",
     borderBottomWidth: 1,
@@ -61,8 +62,8 @@ export default (width: number) => StyleSheet.create({
     justifyContent: "space-between",
     marginTop: 8,
   },
-  navArrow: { color: "#fff", fontSize: 28, paddingHorizontal: 8 },
-  weekRange: { color: "#fff", fontSize: 16, fontWeight: "600" },
+  navArrow: { color: Colors.secondary, fontSize: 28, paddingHorizontal: 8 },
+  weekRange: { color: Colors.secondary, fontSize: 16, fontWeight: "600" },
   weekRow: { marginBottom: 20 },
   weekdayLabels: {
     flexDirection: "row",
@@ -89,7 +90,7 @@ export default (width: number) => StyleSheet.create({
   },
   dayNumber: { color: "#f1f1f1", fontWeight: "600" },
   dayNumberSelected: { color: "#111" },
-  sectionTitle: { color: "#fff", fontSize: 16, marginBottom: 12 },
+  sectionTitle: { color: Colors.secondary, fontSize: 16, marginBottom: 12 },
   blocksList: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -114,7 +115,7 @@ export default (width: number) => StyleSheet.create({
     borderColor: "#f7b85a",
   },
   blockTime: {
-    color: "#fff",
+    color: Colors.secondary,
     fontSize: 16,
     fontWeight: "600",
   },
@@ -155,7 +156,7 @@ export default (width: number) => StyleSheet.create({
     alignSelf: "center",
     padding: 8,
   },
-  addPlus: { color: "#fff", fontSize: 20 },
+  addPlus: { color: Colors.secondary, fontSize: 20 },
   footer: {
     position: "absolute",
     bottom: 20,

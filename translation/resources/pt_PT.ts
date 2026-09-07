@@ -1260,6 +1260,12 @@ export default {
     },
     "settings_screen": {
         "notifications": "Notificações",
+        "appearance": "Aspeto",
+        "theme": {
+          "system": "Sistema",
+          "light": "Claro",
+          "dark": "Escuro"
+        },
         "permissions": "Permissões",
         "about": "Sobre",
         "items": {

@@ -27,8 +27,8 @@ const PendingRequestsCard = () => {
       <TouchableOpacity
         activeOpacity={0.85}
         onPress={() => router.push('/(app)/(bottom-sheets)/(services)/requests')}
-        className="flex-row items-center rounded-2xl border p-4 bg-brand_soft"
-        style={{ borderColor: Colors.line }}
+        className="flex-row items-center rounded-2xl border p-4"
+        style={{ backgroundColor: Colors.brand_soft,  borderColor: Colors.line }}
       >
         <MaterialIcons name="notifications-active" size={22} color={Colors.brand} />
         <CustomText color="secondary" boldness="bold" numberOfLines={2} classes="flex-1 ml-3">

@@ -41,6 +41,7 @@ const ContactCard = ({
   verified: boolean;
   children?: React.ReactNode;
 }) => {
+  const styles = makeStyles();
   const { t } = useTranslation();
 
   // Confirmado ganha um visual RESOLVIDO — fundo e contorno verdes suaves — para
@@ -89,6 +90,7 @@ const ContactsStep = ({
   onNext: (data: VendorDataInterface) => void;
   onSkip: () => void;
 }) => {
+  const styles = makeStyles();
   const { t } = useTranslation();
   const { api } = useApi();
   const { vendorData, setVendorData, fetchAndSaveUserData } = useSession();
@@ -339,7 +341,13 @@ const ContactsStep = ({
   );
 };
 
-const styles = StyleSheet.create({
+/**
+ * Estilos criados por FUNÇÃO e não uma vez ao carregar o módulo: um
+ * `StyleSheet.create` no topo do ficheiro fixa as cores do tema que estava
+ * activo no arranque e nunca mais as larga — foi assim que a barra de
+ * separadores continuava escura depois de trocar para o tema claro.
+ */
+const makeStyles = () => StyleSheet.create({
   pin: {
     width: '15%',
     height: 56,

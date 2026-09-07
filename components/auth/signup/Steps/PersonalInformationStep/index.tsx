@@ -5,6 +5,7 @@ import { Controller, FieldErrors, FieldValues } from 'react-hook-form';
 import { View } from 'react-native';
 import {useActionSheet} from "@expo/react-native-action-sheet";
 import { useTranslation } from "react-i18next"
+import { Colors } from '@/constants/Colors';
 
 type GenderOption = { id: number; name: string };
 
@@ -235,7 +236,7 @@ const PersonalInformationStep = ({
                     }}
                     render={({field}) => (
                         <View
-                            className="relative mt-2 border-[1px] border-gray_strong focus:border-support_primary rounded-lg flex justify-center">
+                            className="relative mt-2 border-[1px] focus: rounded-lg flex justify-center" style={{ borderColor: Colors.gray_strong, borderColor: Colors.support_primary }}>
                             {
                                 Platform.OS === 'android' ? (
                                     <Picker

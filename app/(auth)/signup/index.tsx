@@ -427,7 +427,7 @@ const SignUp = () => {
     };
 
     return (
-        <SafeAreaView className="flex-1 bg-bg">
+        <SafeAreaView className="flex-1" style={{ backgroundColor: Colors.bg }}>
             <StatusBar backgroundColor={Colors.bg} barStyle="light-content" />
             <BackHeader
                 backButtonColor="secondary"

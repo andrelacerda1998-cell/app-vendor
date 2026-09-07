@@ -27,8 +27,8 @@ const DocumentsValidating = () => {
   return (
     <TouchableOpacity
       onPress={() => router.push('/(app)/(modals)/documents')}
-      className="mb-2 flex-row items-center bg-card p-4 rounded-2xl border"
-      style={{ borderColor: Colors.line }}
+      className="mb-2 flex-row items-center p-4 rounded-2xl border"
+      style={{ backgroundColor: Colors.card,  borderColor: Colors.line }}
     >
       <View
         className="w-10 h-10 rounded-full items-center justify-center mr-3"

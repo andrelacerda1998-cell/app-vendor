@@ -76,7 +76,7 @@ const CompleteYourProfile = () => {
         <View className="flex-row items-center p-4">
           <View
             className="w-11 h-11 rounded-full items-center justify-center mr-3"
-            style={{ backgroundColor: Colors.brand }}
+            style={{ backgroundColor: Colors.support_primary }}
           >
             <Feather name="alert-triangle" size={22} color={Colors.on_brand} />
           </View>

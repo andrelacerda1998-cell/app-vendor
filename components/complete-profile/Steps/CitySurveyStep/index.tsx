@@ -185,11 +185,11 @@ const CitySurveyStep = ({ onNext }: { onNext: () => void }) => {
     if (loading) {
         return (
             <View className="flex-1 p-5">
-                <View className="h-6 bg-gray_strong rounded opacity-50 mb-3" style={{ width: '80%' }} />
-                <View className="h-4 bg-gray_strong rounded opacity-40 mb-6" style={{ width: '90%' }} />
+                <View className="h-6 rounded opacity-50 mb-3" style={{ width: '80%', backgroundColor: Colors.gray_strong }} />
+                <View className="h-4 rounded opacity-40 mb-6" style={{ width: '90%', backgroundColor: Colors.gray_strong }} />
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
                     {Array.from({ length: 8 }).map((_, j) => (
-                        <View key={j} className="h-12 bg-gray_strong rounded-xl opacity-40" style={{ width: '48%' }} />
+                        <View key={j} className="h-12 rounded-xl opacity-40" style={{ width: '48%', backgroundColor: Colors.gray_strong }} />
                     ))}
                 </View>
             </View>

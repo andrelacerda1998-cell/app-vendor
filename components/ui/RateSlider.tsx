@@ -97,7 +97,7 @@ const RateSlider = ({
       <View
         className="h-1.5 rounded-full absolute"
         style={{
-          backgroundColor: Colors.brand,
+          backgroundColor: Colors.support_primary,
           width: Math.max(THUMB / 2, thumbLeft + THUMB / 2),
         }}
       />
@@ -108,7 +108,7 @@ const RateSlider = ({
           width: THUMB,
           height: THUMB,
           left: thumbLeft,
-          backgroundColor: Colors.brand,
+          backgroundColor: Colors.support_primary,
           borderWidth: 3,
           borderColor: Colors.bg,
         }}

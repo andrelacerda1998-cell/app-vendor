@@ -472,7 +472,7 @@ const Status = () => {
   // que desenhar os cartões todos vazios.
   if (!svc) {
     return (
-      <SafeAreaView className="flex-1 bg-bg">
+      <SafeAreaView className="flex-1" style={{ backgroundColor: Colors.bg }}>
         <BackHeader
           backButtonColor="secondary"
           middleItem={() => (
@@ -500,7 +500,7 @@ const Status = () => {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-bg">
+    <SafeAreaView className="flex-1" style={{ backgroundColor: Colors.bg }}>
       <BackHeader
         backButtonColor="secondary"
         middleItem={() => (
@@ -797,7 +797,7 @@ const Status = () => {
             Com ambos vazios, o cartão dizia "Sem informação" duas vezes:
             um bloco inteiro a comunicar ausência de conteúdo. */}
         {((servicesDetail?.includes?.length ?? 0) > 0 || (servicesDetail?.excludes?.length ?? 0) > 0) && (
-        <View className="bg-card border rounded-2xl p-4 mt-3" style={{ borderColor: Colors.line }}>
+        <View className="border rounded-2xl p-4 mt-3" style={{ backgroundColor: Colors.card,  borderColor: Colors.line }}>
           <CustomText color="muted" boldness="bold" size="extraSmall">{t('services.includes')}</CustomText>
           <View className="mt-2">
             {servicesDetail?.includes?.length > 0 ? (

@@ -72,11 +72,11 @@ const MatchingInvitations = () => {
   }, [acceptAll, openDialog, closeDialog, t]);
 
   return (
-    <SafeAreaView className="flex-1 bg-bg">
+    <SafeAreaView className="flex-1" style={{ backgroundColor: Colors.bg }}>
       {/* Envolver em flex-1 e replicar o cabeçalho de 3 partes do ecrã de
           pedidos: sem este wrapper o conteúdo era empurrado para o meio do
           ecrã, com um vazio enorme por cima do primeiro cartão. */}
-      <View className="flex-1 bg-bg p-5">
+      <View className="flex-1 p-5" style={{ backgroundColor: Colors.bg }}>
         {/* Cabeçalho com peso a sério: a `semiBold` desta fonte fica fina a
             este tamanho e o título perdia-se contra o preto. A seta ganha um
             fundo próprio — além de se ver, passa a ter uma área de toque

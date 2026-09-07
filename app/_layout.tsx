@@ -48,7 +48,8 @@ import { CustomText } from "@/components/CustomText";
 import CustomTouchableOpacity from "@/components/CustomTouchableOpacity";
 import { PACKAGE_NAME, APP_STORE_URL } from "@/app.config";
 import { isVersionOutdated } from "@/utils";
-import { ThemeProvider, DarkTheme } from '@react-navigation/native';
+import { ThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native';
+import { ThemeProvider as AppThemeProvider, useTheme } from '@/contexts/ThemeContext';
 import { Colors } from "@/constants/Colors";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import {ScheduleProvider} from "@/contexts/ScheduleContext";
@@ -61,7 +62,23 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 // Keep the splash screen visible while fonts are loading
 SplashScreen.preventAutoHideAsync();
 
+/**
+ * O tema tem de envolver TUDO — inclusive o fundo do GestureHandlerRootView e
+ * a barra de estado —, por isso o Root é só o provider e o resto do arranque
+ * vive no RootLayout.
+ */
 export default function Root() {
+    return (
+        <AppThemeProvider>
+            <RootLayout />
+        </AppThemeProvider>
+    );
+}
+
+function RootLayout() {
+    const { theme, themeKey } = useTheme();
+    const isDark = theme === 'dark';
+    const navigationTheme = buildNavigationTheme(isDark);
 
     const translateX = useRef(new Animated.Value(0)).current;
 
@@ -185,7 +202,7 @@ export default function Root() {
             <SafeAreaView style={{ flex: 1, justifyContent:'center', alignItems: 'center', backgroundColor: Colors.primary, padding: 20 }}>
                 <StatusBar backgroundColor="transparent" animated />
                 <View className="flex-1 items-center justify-center">
-                    <View className="w-16 h-16 p-4 rounded-full bg-support_primary mb-4">
+                    <View className="w-16 h-16 p-4 rounded-full mb-4" style={{ backgroundColor: Colors.support_primary }}>
                         <XIcon color={Colors.primary} />
                     </View>
                     <CustomText
@@ -256,7 +273,7 @@ export default function Root() {
                 position: 'absolute',
                 width: 260,
                 height: 260,
-                backgroundColor: Colors.brand,
+                backgroundColor: Colors.support_primary,
                 borderRadius: 12,
                 }}
             />
@@ -307,21 +324,24 @@ export default function Root() {
  * mas nos Ganhos — que a tem em fluxo normal e com cantos arredondados — esse
  * fundo espreitava por baixo e à volta, como um contorno claro.
  */
-const navigationTheme = {
-    ...DarkTheme,
-    colors: {
-        ...DarkTheme.colors,
-        background: Colors.bg,
-        card: Colors.bg,
-        border: Colors.line,
-        text: Colors.secondary,
-        primary: Colors.brand,
-    },
-};
+function buildNavigationTheme(isDark: boolean) {
+    const base = isDark ? DarkTheme : DefaultTheme;
+    return {
+        ...base,
+        colors: {
+            ...base.colors,
+            background: Colors.bg,
+            card: Colors.bg,
+            border: Colors.line,
+            text: Colors.secondary,
+            primary: Colors.brand,
+        },
+    };
+}
 
     return (
-        <GestureHandlerRootView style={{ flex: 1, backgroundColor: Colors.primary }}>
-            <StatusBar backgroundColor="transparent" style="light" animated/>
+        <GestureHandlerRootView style={{ flex: 1, backgroundColor: Colors.bg }}>
+            <StatusBar backgroundColor="transparent" style={isDark ? "light" : "dark"} animated/>
             <KeyboardProvider>
                 <AppStateStatusProvider>
                     <ActionSheetProvider>
@@ -337,7 +357,14 @@ const navigationTheme = {
                                                          <LocationProvider>
                                                              <ForegroundWrapper>
                                                                  <ThemeProvider value={navigationTheme}>
-                                                                     <Slot/>
+                                                                     {/* A `key` remonta os ECRÃS para apanharem as
+                                                                         cores novas. Fica aqui e não mais acima de
+                                                                         propósito: os providers (sessão, serviço em
+                                                                         curso, sockets) não podem ser recriados só
+                                                                         porque se mudou de tema. */}
+                                                                     <View key={themeKey} style={{ flex: 1 }}>
+                                                                         <Slot/>
+                                                                     </View>
                                                                  </ThemeProvider>
                                                                  <Dialog/>
                                                              </ForegroundWrapper>

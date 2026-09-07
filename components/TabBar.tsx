@@ -6,6 +6,7 @@ import { Colors } from "@/constants/Colors";
 import { CustomText } from "@/components/CustomText";
 
 export default function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
+  const styles = makeStyles();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const routesWithAbsolutePosition = ['home/index', 'wallet/index'];
@@ -72,12 +73,16 @@ export default function TabBar({ state, descriptors, navigation }: BottomTabBarP
             style={styles.tabButton}
             key={route.key}
           >
-            {/* Não selecionado é branco (não cinzento): os separadores leem-se
-                bem em qualquer luz. O âmbar fica reservado ao que está ativo. */}
-            {icon ? icon({ color: isFocused ? Colors.support_primary : Colors.secondary, focused: isFocused, size: 24 }) : null}
+            {/* Não selecionado usa a cor do texto principal (branca no tema
+                escuro, quase-preta no claro): os separadores leem-se bem em
+                qualquer luz. O âmbar da marca fica reservado ao que está ativo
+                — via `brand`, que escurece no tema claro, e não via
+                `support_primary`, que é o mesmo amarelo nos dois e sobre
+                branco quase desaparecia. */}
+            {icon ? icon({ color: isFocused ? Colors.brand : Colors.secondary, focused: isFocused, size: 24 }) : null}
             <CustomText
               size="extraSmall"
-              color={isFocused ? "support_primary" : "secondary"}
+              color={isFocused ? "brand" : "secondary"}
               boldness={isFocused ? "semiBold" : "regular"}
               classes="mt-1"
               numberOfLines={1}
@@ -91,7 +96,13 @@ export default function TabBar({ state, descriptors, navigation }: BottomTabBarP
   );
 }
 
-const styles = StyleSheet.create({
+/**
+ * Estilos criados por FUNÇÃO e não uma vez ao carregar o módulo: um
+ * `StyleSheet.create` no topo do ficheiro fixa as cores do tema que estava
+ * activo no arranque e nunca mais as larga — foi assim que a barra de
+ * separadores continuava escura depois de trocar para o tema claro.
+ */
+const makeStyles = () => StyleSheet.create({
   container: {
     width: '100%',
     flexDirection: 'row',

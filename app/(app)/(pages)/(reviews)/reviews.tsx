@@ -54,7 +54,7 @@ const RatingBar = ({ star, count, total }: { star: number; count: number; total:
       >
         <View
           className="rounded-full"
-          style={{ height: 8, width: `${pct}%`, backgroundColor: Colors.brand }}
+          style={{ height: 8, width: `${pct}%`, backgroundColor: Colors.support_primary }}
         />
       </View>
       <CustomText size="extraSmall" color="muted" classes="w-6 text-right">{`${count}`}</CustomText>
@@ -105,7 +105,7 @@ const Reviews = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-bg">
+    <SafeAreaView className="flex-1" style={{ backgroundColor: Colors.bg }}>
       <BackHeader
         backButtonColor="secondary"
         middleItem={() => (
@@ -156,7 +156,7 @@ const Reviews = () => {
 
         {/* Distribuição das notas */}
         {distTotal > 0 && (
-          <View className="bg-card border rounded-2xl p-4 mt-4" style={{ borderColor: Colors.line }}>
+          <View className="border rounded-2xl p-4 mt-4" style={{ backgroundColor: Colors.card,  borderColor: Colors.line }}>
             <CustomText color="secondary" boldness="semiBold" size="small" classes="mb-3">
               {t('reviews.distribution')}
             </CustomText>
@@ -181,8 +181,8 @@ const Reviews = () => {
             {data!.reviews.map((review) => (
               <View
                 key={review.id}
-                className="bg-card border rounded-2xl p-4"
-                style={{ borderColor: Colors.line }}
+                className="border rounded-2xl p-4"
+                style={{ backgroundColor: Colors.card,  borderColor: Colors.line }}
               >
                 <View className="flex-row items-center justify-between">
                   <Stars value={review.rating} />

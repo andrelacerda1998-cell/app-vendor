@@ -47,8 +47,8 @@ const Field = ({
 }) => (
   <View>
     <View
-      className="flex-row items-center rounded-2xl bg-card border px-4"
-      style={{ borderColor: error !== undefined ? Colors.danger : Colors.line, height: 56 }}
+      className="flex-row items-center rounded-2xl border px-4"
+      style={{ backgroundColor: Colors.card,  borderColor: error !== undefined ? Colors.danger : Colors.line, height: 56 }}
     >
       <Feather name={icon} size={20} color={error !== undefined ? Colors.danger : Colors.muted} />
       {children}
@@ -103,7 +103,7 @@ const SignIn = () => {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-bg px-6">
+    <SafeAreaView className="flex-1 px-6" style={{ backgroundColor: Colors.bg }}>
       <StatusBar backgroundColor={Colors.bg} style="light" />
 
       <KeyboardAwareScrollView
@@ -112,7 +112,7 @@ const SignIn = () => {
       >
         {/* Marca: o mesmo simbolo da app, nao um icone generico de ferramentas. */}
         <View className="items-center">
-          <View className="w-[72px] h-[72px] rounded-[20px] bg-support_primary p-4 items-center justify-center">
+          <View className="w-[72px] h-[72px] rounded-[20px] p-4 items-center justify-center" style={{ backgroundColor: Colors.support_primary }}>
             <AdaptiveLogo color={Colors.primary} />
           </View>
           <CustomText size="title" color="secondary" boldness="bolder" classes="mt-6 text-center" numberOfLines={2}>

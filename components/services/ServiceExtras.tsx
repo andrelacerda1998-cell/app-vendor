@@ -177,7 +177,7 @@ const ServiceExtras = ({
   if (extras.length === 0 && !error) return null;
 
   return (
-    <View className="bg-card border rounded-2xl p-4 mt-3" style={{ borderColor: Colors.line }}>
+    <View className="border rounded-2xl p-4 mt-3" style={{ backgroundColor: Colors.card,  borderColor: Colors.line }}>
       <CustomText color="muted" boldness="bold" size="extraSmall">
         {t('service_extras.title')}
       </CustomText>

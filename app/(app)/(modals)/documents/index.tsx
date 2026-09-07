@@ -244,7 +244,7 @@ export default function Documents(){
                                                     <Entypo name="time-slot" size={24} color={Colors.support_primary} />
                                                 </View>
                                             </View>
-                                            <View className="h-[1px] w-full bg-line rounded-full mt-6"></View>
+                                            <View className="h-[1px] w-full rounded-full mt-6" style={{ backgroundColor: Colors.line }}></View>
                                         </View>
                                     ))
                                 }
@@ -277,7 +277,7 @@ export default function Documents(){
                                                     <Entypo name="chevron-right" size={24} color={Colors.support_primary} />
                                                 </View>
                                             </View>
-                                            <View className="h-[1px] w-full bg-line rounded-full mt-6"></View>
+                                            <View className="h-[1px] w-full rounded-full mt-6" style={{ backgroundColor: Colors.line }}></View>
                                         </CustomTouchableOpacity>
                                     ))
                                 }
@@ -309,7 +309,7 @@ export default function Documents(){
                                                     <Entypo name="chevron-right" size={24} color={Colors.support_primary} />
                                                 </View>
                                             </View>
-                                            <View className="h-[1px] w-full bg-line rounded-full mt-6"></View>
+                                            <View className="h-[1px] w-full rounded-full mt-6" style={{ backgroundColor: Colors.line }}></View>
                                         </CustomTouchableOpacity>
                                     ))
                                 }
@@ -510,7 +510,7 @@ const DocumentSelectionPopup = ({
                 // backdropComponent={() => <View style={{ flex: 1, backgroundColor: 'black', opacity: 0.6 }} />}
             >
                 <View
-                    className="bg-primary p-5 rounded-3xl"
+                    className="p-5 rounded-3xl" style={{ backgroundColor: Colors.primary }}
                 >
                     {/* <View className="mb-5">
                         <CustomText size="small" color="secondary" boldness="semiBold" className="text-center">

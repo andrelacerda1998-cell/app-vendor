@@ -261,7 +261,7 @@ const Progress = () => {
   };
 
   return (
-      <SafeAreaView className="flex-1 bg-primary">
+      <SafeAreaView className="flex-1" style={{ backgroundColor: Colors.primary }}>
           <View className="flex-1 bg-black">
               <BackHeader
                   backButtonColor="secondary"
@@ -321,7 +321,7 @@ const Progress = () => {
                   {validUserLocation && vendorLat !== undefined && vendorLng !== undefined && (
                       <Marker coordinate={{ latitude: vendorLat, longitude: vendorLng }}>
                           <View className="border-2 border-[#C3A5FF] rounded-full w-12 h-12 items-center justify-center p-2 bg-[#C3A5FF]/50">
-                              <Ionicons name="car-sport" size={28} color="#fff" />
+                              <Ionicons name="car-sport" size={28} color={Colors.secondary} />
                           </View>
                       </Marker>
                   )}
@@ -343,8 +343,9 @@ const Progress = () => {
                           right: 20,
                           bottom: (contentHeight || 0) + 24,
                           zIndex: 30,
+                          backgroundColor: Colors.primary,
                       }}
-                      className="w-12 h-12 rounded-full bg-primary items-center justify-center shadow-lg"
+                      className="w-12 h-12 rounded-full items-center justify-center shadow-lg"
                   >
                       <MaterialCommunityIcons name="crosshairs-gps" size={26} color={Colors.secondary} />
                   </TouchableOpacity>

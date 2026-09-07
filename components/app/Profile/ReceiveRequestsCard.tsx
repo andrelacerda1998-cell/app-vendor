@@ -106,7 +106,7 @@ const ReceiveRequestsCard = () => {
   const isOnline = vendorStatus === 'Online';
 
   return (
-    <View className="bg-card rounded-2xl border p-4 mt-5" style={{ borderColor: Colors.line }}>
+    <View className="rounded-2xl border p-4 mt-5" style={{ backgroundColor: Colors.card,  borderColor: Colors.line }}>
       <View className="w-full flex-row justify-between items-center">
         <View className="flex-1 pr-4">
           <CustomText size="medium" color="secondary" boldness="bold" numberOfLines={2}>
@@ -123,7 +123,7 @@ const ReceiveRequestsCard = () => {
             O hitSlop dá a área, e o role/state anunciam ligado/desligado. */}
         <View className="w-12 h-7">
           <TouchableOpacity
-            className={`bg-gray_strong w-full h-full relative rounded-full ${disableStatusVendor && 'opacity-30'}`}
+            className={`w-full h-full relative rounded-full ${disableStatusVendor && 'opacity-30'}`} style={{ backgroundColor: Colors.gray_strong }}
             onPress={handleUpdateVendorStatus}
             disabled={isLoadingStatus || disableStatusVendor}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
@@ -132,8 +132,9 @@ const ReceiveRequestsCard = () => {
             accessibilityState={{ checked: isOnline, disabled: isLoadingStatus || disableStatusVendor }}
           >
             <Animated.View
-              className={`absolute top-1 h-5 w-5 ${isOnline ? 'bg-support_primary' : 'bg-gray_light'} rounded-full items-center justify-center`}
+              className="absolute top-1 h-5 w-5 rounded-full items-center justify-center"
               style={{
+                backgroundColor: isOnline ? Colors.support_primary : Colors.gray_light,
                 transform: [{
                   translateX: toggleAnimation.interpolate({ inputRange: [0, 1], outputRange: [4, 24] }),
                 }],

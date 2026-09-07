@@ -87,7 +87,7 @@ const Earnings = () => {
   const iban = maskIban(vendorData?.iban);
 
   return (
-    <SafeAreaView className={`flex-1 bg-bg`}>
+    <SafeAreaView className={`flex-1`} style={{ backgroundColor: Colors.bg }}>
       <View className="px-5 pt-4 pb-3 flex-row items-center justify-between">
         <CustomText size="subtitle" color="secondary" boldness="bolder">
           {t('tabs.earnings')}

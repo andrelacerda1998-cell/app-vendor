@@ -141,7 +141,7 @@ const MatchingInvitationCard = ({
             // COR, não pelo tamanho da letra.
             <View
               className="flex-row items-center rounded-full px-2.5 py-1"
-              style={{ backgroundColor: Colors.brand }}
+              style={{ backgroundColor: Colors.support_primary }}
             >
               <Feather name="zap" size={12} color={Colors.on_brand} />
               <CustomText size="small" color="secondary" boldness="bolder" classes="ml-1" style={{ color: Colors.on_brand }}>
@@ -213,7 +213,7 @@ const MatchingInvitationCard = ({
           disabled={busy}
           accessibilityRole="button"
           className="flex-[1.4] flex-row rounded-2xl py-3.5 items-center justify-center"
-          style={{ backgroundColor: Colors.brand, opacity: busy ? 0.5 : 1 }}
+          style={{ backgroundColor: Colors.support_primary, opacity: busy ? 0.5 : 1 }}
         >
           <Feather name="check" size={15} color={Colors.on_brand} />
           <CustomText boldness="bolder" color="secondary" classes="ml-1.5" style={{ color: Colors.on_brand }}>

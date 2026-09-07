@@ -79,7 +79,7 @@ const UserHeader = () => {
         <TouchableWithoutFeedback onPress={() => router.navigate('/(app)/(tabs)/profile')}>
           <View
             className="h-11 w-11 rounded-full overflow-hidden items-center justify-center mr-3"
-            style={{ backgroundColor: Colors.brand }}
+            style={{ backgroundColor: Colors.support_primary }}
           >
             {vendorData?.user?.avatar?.src ? (
               <Image source={{ uri: vendorData.user.avatar.src }} className="w-full h-full" />
@@ -182,10 +182,7 @@ const UserHeader = () => {
           {
               notifications > 0 && (
                   <View
-                      className={`
-                  bg-secondary rounded-full h-5 w-5 flex items-center justify-center
-                  absolute -top-3 -right-2
-                `}
+                      className={`rounded-full h-5 w-5 flex items-center justify-center absolute -top-3 -right-2`} style={{ backgroundColor: Colors.secondary }}
                   >
                     <CustomText
                         size="extraSmall"

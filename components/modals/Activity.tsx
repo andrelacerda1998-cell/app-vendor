@@ -112,19 +112,19 @@ const Activity = () => {
           flex: 1,
         }}
         showsVerticalScrollIndicator={false}
-        ItemSeparatorComponent={() => (<View className="h-[1px] mx-auto w-[90%] bg-gray_light" />)}
+        ItemSeparatorComponent={() => (<View className="h-[1px] mx-auto w-[90%]" style={{ backgroundColor: Colors.gray_light }} />)}
         renderItem={({ item }) => (
           <CustomTouchableOpacity classes="p-0 h-20" type="transparent">
             <View className="flex-row w-[90%] mx-auto justify-between items-center space-x-4">
               <View className="flex-row w-20 items-center">
-                <View className="h-12 w-12 z-[1] border-2 border-secondary rounded-full">
+                <View className="h-12 w-12 z-[1] border-2 rounded-full" style={{ borderColor: Colors.secondary }}>
                   <Image
                     src="https://r2.erweima.ai/imgcompressed/img/compressed_c5b0073e2f4244f269ef19b63b36acaa.webp"
                     source={{ uri: 'https://r2.erweima.ai/imgcompressed/img/compressed_c5b0073e2f4244f269ef19b63b36acaa.webp' }}
                     className="w-full h-full object-cover object-center rounded-full"
                   />
                 </View>
-                <View className="h-12 w-12 rounded-full flex items-center justify-center bg-secondary relative -left-5">
+                <View className="h-12 w-12 rounded-full flex items-center justify-center relative -left-5" style={{ backgroundColor: Colors.secondary }}>
                   <Entypo name="back-in-time" size={22} color={Colors.primary} />
                 </View>
               </View>
