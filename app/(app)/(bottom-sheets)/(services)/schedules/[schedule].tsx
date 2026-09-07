@@ -473,7 +473,7 @@ const ServiceSchedulesBottomSheet = () => {
                       disabled={confirmingId === item.schedule_id}
                       onPress={() => handleConfirmAttendance(item)}
                       otherClasses={`mt-4 py-3 ${confirmingId === item.schedule_id ? "opacity-60" : ""}`}
-                      bgColor="primary"
+                      bgColor="support_primary"
                     >
                       <CustomText color="strongest" boldness="semiBold" size="small">
                         {t("schedules.confirm_attendance")}
