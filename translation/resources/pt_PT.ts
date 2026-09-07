@@ -399,6 +399,9 @@ export default {
                 "finish_service": "Concluir serviço",
                 "immediate": "Serviço imediato",
                 "open_map": "Abrir mapa",
+                "call": "Ligar",
+                "call_failed_title": "Não foi possível ligar",
+                "call_failed_subtitle": "Tenta pelo chat ou marca o número no telemóvel.",
                 "open_in_maps": "Abrir no mapa",
                 "navigate_with": "Navegar com",
                 "nav_apps": {
@@ -459,8 +462,8 @@ export default {
                 "confirmation": {
                     "title": "Finalizar serviço",
                     "subtitle": "Queres mesmo dar este serviço por concluído?",
-                    "subtitle_no_photos": "Ainda não juntaste nenhuma foto do depois. É o que te protege se o cliente reclamar — e depois de finalizar já não dá para a tirar.",
-                    "confirm_anyway": "Finalizar mesmo assim",
+                    "subtitle_no_photos": "Não há foto do trabalho feito. Se o cliente reclamar, é a foto que fala por ti — e daqui a um minuto já não a podes tirar.",
+                    "confirm_anyway": "Finalizar assim",
                     "take_photo": "Tirar a foto",
                     "confirm": "Finalizar",
                     "cancel": "Cancelar"

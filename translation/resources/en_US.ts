@@ -399,6 +399,9 @@ export default {
             "finish_service": "Complete job",
         "immediate": "Immediate service",
         "open_map": "Open map",
+        "call": "Call",
+        "call_failed_title": "Couldn't place the call",
+        "call_failed_subtitle": "Try the chat, or dial the number from your phone.",
                 "open_in_maps": "Open in maps",
         "navigate_with": "Navigate with",
         "nav_apps": {
@@ -459,8 +462,8 @@ export default {
         "confirmation": {
           "title": "Finish service",
           "subtitle": "Do you really want to mark this service as complete?",
-          "subtitle_no_photos": "You haven't added an after photo. It's what protects you if the customer complains — and once the job is finished you can't take it any more.",
-          "confirm_anyway": "Finish anyway",
+          "subtitle_no_photos": "There's no photo of the finished work. If the customer complains, the photo is what speaks for you — and in a minute you won't be able to take it.",
+          "confirm_anyway": "Finish without it",
           "take_photo": "Take the photo",
           "confirm": "Finish",
           "cancel": "Cancel"
