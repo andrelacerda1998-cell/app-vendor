@@ -12,7 +12,6 @@ i18n
         compatibilityJSON: 'v4',
         resources: {
             ...Object.entries(resources).reduce((acc, [key, value]) => {
-                console.warn(key)
                 return {
                     ...acc,
                     [key]: {
