@@ -1676,6 +1676,11 @@ export default {
     "customer": "Client",
     "new_schedule_of": "New schedule of",
     "go_destination": "Go to destination",
+    "call_customer": "Call the client",
+    "call_unavailable": {
+      "title": "Contact unavailable",
+      "subtitle": "We don't have the client's number yet. Please try again later."
+    },
     "date_label": {
       "today": "Today",
       "tomorrow": "Tomorrow",

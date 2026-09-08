@@ -109,7 +109,10 @@ export interface ServiceRequestedInterface {
     id: number;
     name: string;
     address: string;
-    /** Só depois de a marcação estar confirmada (ver ServiceRequestedData). */
+    /**
+     * Telefone do cliente — só vem preenchido quando o agendamento está
+     * aceite/confirmado (ver ServiceRequestedData no backend).
+     */
     phone?: string | null;
   };
   amount?: number | null;
