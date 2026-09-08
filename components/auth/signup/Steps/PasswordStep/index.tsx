@@ -9,7 +9,7 @@ import React, { useEffect, useState } from 'react'
 import { Control, Controller, FieldErrors, FieldValues, set } from 'react-hook-form'
 import { Pressable, TextInput, TouchableWithoutFeedback, View } from 'react-native'
 import { ScrollView } from 'react-native'
-import { commonPasswords, offensiveUsernames } from '@/utils'
+import { commonPasswords } from '@/utils'
 import { useTranslation } from "react-i18next"
 
 const PasswordStep = ({
@@ -80,63 +80,11 @@ const PasswordStep = ({
         {t('auth.sign_up.password_information.subtitle')}
       </CustomText>
 
-      <View className="mt-8">
-        <CustomText color="secondary" boldness="semiBold" numberOfLines={1}>
-          {t('general.username')}
-        </CustomText>
-
-        <Controller
-            control={control}
-            name="username"
-            rules={{
-              required: t('general.username_required'),
-              minLength: { value: 2, message: t('general.username_min_length') },
-              validate: (value) => {
-                  if (value.length > 30) {
-                    return t('general.username_max_length')
-                  } else if (/[^a-zA-Z0-9_]/.test(value)) {
-                    return t('general.username_invalid_characters')
-                  } else if (value.trim().length === 0) {
-                    return t('general.username_cannot_be_empty_or_only_spaces')
-                  } else if (/^\d+$/.test(value)) {
-                    return t('general.username_cannot_be_only_numbers')
-                  } else if (/\s/.test(value)) {
-                    return t('general.username_cannot_contain_spaces')
-                  } else if (offensiveUsernames.includes(value.toLowerCase())) {
-                    return t('general.username_not_allowed')
-                  }
-                  return true;
-              }
-
-            }}
-            render={({ field }) => (
-                <View className="mt-2">
-                  <CustomTextInput
-                    {...field}
-                    size="large"
-                    onChangeText={(value: string) => {
-                      const filteredValue = value.replace(/\s/g, '');
-                      field.onChange(filteredValue);
-                    }}
-                    placeholder={t('general.username_placeholder')}
-                    error={errors.username && errors.username.message}
-                    displayErrorIcon={true}
-                    success={!errors.username && field.value}
-                    displaySuccessIcon={true}
-                  />
-                </View>
-            )}
-        />
-        {errors.username && errors.username.message && (
-            <CustomText
-              size="small"
-              color="error"
-              classes="mt-1"
-            >
-              {errors.username.message as string}
-            </CustomText>
-        )}
-      </View>
+      {/* O "nome de utilizador" saiu daqui: não fazia sentido para quem se
+          inscreve como profissional (o login é por email — ver LoginController),
+          e o backend já o gera a partir do nome desde que a validação passou a
+          `nullable` (ver CreateVendorController::generateUsername). Era um campo
+          a mais a pedir a alguém que só quer começar a trabalhar. */}
 
       <View className="mt-8">
         <CustomText color="secondary" boldness="semiBold" numberOfLines={1}>
