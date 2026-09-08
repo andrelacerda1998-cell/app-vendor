@@ -101,11 +101,12 @@ const ServiceExtras = ({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Mensagem do servidor quando existe, senão o texto genérico do ecrã.
-  const errorMessage = (e: any, fallbackKey: string) =>
-    e?.response?.data?.metadata?.message
-    || e?.response?.data?.message
-    || t(fallbackKey);
+  // As mensagens de erro deste endpoint são strings inglesas do backend
+  // ("Only pending requests can be withdrawn", "Service is not in execution"):
+  // servem para quem depura, não para o técnico, que lê português. Fica sempre
+  // o texto traduzido do ecrã — o detalhe do servidor não acrescenta nada que
+  // ele possa fazer.
+  const errorMessage = (_e: any, fallbackKey: string) => t(fallbackKey);
 
   const load = async () => {
     if (!serviceId) return;
@@ -172,11 +173,17 @@ const ServiceExtras = ({
   const rejected = extras.filter((e) => e.status === 'rejected');
 
   // Sem extras nenhuns, o cartão era só um título dentro de uma caixa vazia:
-  // os botões que criam extras vivem no rodapé, não aqui. Só existe quando há
-  // mesmo alguma coisa para mostrar (pedido, resposta do cliente ou erro).
-  if (extras.length === 0 && !error) return null;
+  // os botões que criam extras vivem no rodapé, não aqui. Só a LISTA some — as
+  // folhas ficam sempre montadas, senão os botões do rodapé não teriam nada
+  // para abrir no primeiro extra e a funcionalidade era inalcançável.
+  // Conta o que é mesmo desenhado, não `extras.length`: os retirados ainda vêm
+  // na resposta e não têm linha nenhuma — o cartão ficava a ser só um título
+  // dentro de uma caixa vazia depois de o técnico retirar o único pedido.
+  const hasList = pending.length + approved.length + rejected.length > 0 || !!error;
 
   return (
+    <>
+    {hasList && (
     <View className="border rounded-2xl p-4 mt-3" style={{ backgroundColor: Colors.card,  borderColor: Colors.line }}>
       <CustomText color="muted" boldness="bold" size="extraSmall">
         {t('service_extras.title')}
@@ -237,6 +244,9 @@ const ServiceExtras = ({
           </CustomText>
         </View>
       )}
+
+    </View>
+    )}
 
       {/* Sheet: tempo extra.
           Os presets passaram de quatro botões empilhados a uma grelha 2x2 —
@@ -330,7 +340,7 @@ const ServiceExtras = ({
           onPress={() => setPartSheet(false)} classes="mt-1"
         />
       </Sheet>
-    </View>
+    </>
   );
 };
 
