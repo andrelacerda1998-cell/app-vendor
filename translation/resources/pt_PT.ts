@@ -1075,18 +1075,18 @@ export default {
         "title": "Auto-Aceitação",
         "state": {
             "on_title": "Auto-Aceitação ativa",
-            "on_subtitle": "Os serviços agendados dentro da tua disponibilidade são aceites automaticamente.",
+            "on_subtitle": "Respondes automaticamente aos convites nos horários que tens livres — sem teres de abrir a app.",
             "off_title": "Auto-Aceitação desativada",
-            "off_subtitle": "Ativa-a para não perderes pedidos agendados."
+            "off_subtitle": "Sem ela, um convite a que não respondas a tempo fica de fora."
         },
         "how_it_works": {
             "title": "Como funciona",
-            "availability": "Só os serviços agendados dentro da tua disponibilidade são aceites automaticamente.",
-            "notification": "Recebes uma notificação a confirmar cada aceitação.",
-            "customer": "O cliente recebe confirmação imediata.",
-            "responsibility": "Ficas responsável por realizar os serviços aceites automaticamente."
+            "availability": "Só és convidado para blocos que tens livres na tua disponibilidade.",
+            "notification": "Recebes uma notificação por cada convite a que respondeste.",
+            "customer": "O cliente vê os 3 melhores de quem se disponibilizou, por avaliação, preço e distância — e escolhe.",
+            "responsibility": "Se fores o escolhido, o serviço é teu e ficas responsável por o realizar."
         },
-        "warning": "Cancelar um serviço depois de aceite pode gerar penalização."
+        "warning": "Responder a um convite não reserva a tua agenda. Cancelar um serviço depois de te ser atribuído pode gerar penalização."
     },
     "history": {
         "title": "Histórico",
@@ -1209,7 +1209,7 @@ export default {
                 },
                 "auto_accept": {
                     "q": "O que é a Auto-Aceitação?",
-                    "a": "Aceita automaticamente serviços agendados dentro da tua disponibilidade."
+                    "a": "Responde automaticamente aos convites nos horários que tens livres. Entras na seleção; quem o cliente vê são os 3 melhores por avaliação, preço e distância."
                 },
                 "hourly_rate": {
                     "q": "Como funciona o valor/hora?",
@@ -1376,7 +1376,7 @@ export default {
         "fallback_service": "o teu serviço"
     },
     "auto_accept_lost": {
-        "week": "Esta semana passaram-te ao lado {{amount}} em pedidos a que não respondeste."
+        "week": "Esta semana passaram-te ao lado {{count}} convites por não teres respondido a tempo."
     },
     "documents_validating": {
         "pending": "Estamos a validar os teus documentos. Avisamos-te assim que estiver pronto.",
@@ -1620,8 +1620,8 @@ export default {
       "settings_schedule": "Definições de agendamento",
       "repeat": "Repetir",
       "auto_acceptance": "Auto-Aceitação",
-      "auto_accept_on": "Ativa — respondes a todos os pedidos nos horários livres.",
-      "auto_accept_off": "Desativada — respondes a cada pedido.",
+      "auto_accept_on": "Ativa — respondes automaticamente aos convites nos horários livres.",
+      "auto_accept_off": "Desativada — respondes a cada convite.",
       "auto_accept_enable": "Ativar",
       "availability_schedule": "Disponibilidade de agendamento",
       "continue": "Guardar",
@@ -1659,7 +1659,7 @@ export default {
         "enable_repeat_subtitle": "Ao ativares a repetição, a disponibilidade desta semana passa a repetir-se em todas as semanas seguintes e substitui os horários que tenhas adicionado à mão. Queres continuar?",
         "disable_repeat_subtitle": "Ao desativares a repetição, todos os horários ainda sem serviço marcado, a partir da próxima semana, são apagados. Queres continuar?",
         "auto_accept_title": "Ativar a Auto-Aceitação?",
-        "auto_accept_subtitle": "Respondes automaticamente a todos os pedidos de serviço nos horários que tens livres. Nos pedidos em que o cliente escolhe, ficas na lista sem teres de fazer nada.",
+        "auto_accept_subtitle": "Respondes automaticamente aos convites nos horários que tens livres. Entras na seleção sem fazer nada — quem o cliente vê são os 3 melhores por avaliação, preço e distância.",
       },
       "days": {
         "Mo": "Segunda-feira",

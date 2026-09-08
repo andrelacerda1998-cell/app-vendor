@@ -10,7 +10,6 @@ import { useSession } from '@/contexts/SessionContext'
 import { useApi } from '@/contexts/ApiContext'
 import { useDialog } from '@/contexts/DialogContext'
 import { API_ROUTES } from '@/constants/ApiRoutes'
-import { renderMoney } from '@/utils/money'
 
 /**
  * Cartão de Auto Aceitação da Home (build 12 "AutoAcceptanceTile").
@@ -23,30 +22,36 @@ const AutoAcceptCard = () => {
   const { autoAcceptEnabled, setAutoAcceptEnabled, getScheduleSettings } = useSchedule();
   const { openDialog } = useDialog();
   const [saving, setSaving] = useState(false);
-  // Oportunidades perdidas na semana corrente, em cêntimos. `null` = ainda não
+  // Convites que caducaram sem resposta na semana corrente. `null` = ainda não
   // sabemos (ou o backend não devolveu) — nesse caso não se mostra nada.
-  const [lostWeekAmount, setLostWeekAmount] = useState<number | null>(null);
+  const [missedWeek, setMissedWeek] = useState<number | null>(null);
 
   useEffect(() => {
     getScheduleSettings();
   }, []);
 
   // Reutiliza o histórico que já existe (POST /vendor/services/history com
-  // filter=lost) — o campo `totals.lost_week_amount` é a soma dos pedidos que
-  // expiraram ou foram para outro técnico desde segunda-feira.
+  // filter=lost) — o campo `totals.missed_invitations_week` conta os convites
+  // de seleção que caducaram sem resposta desde segunda-feira.
+  //
+  // Era `lost_week_amount`, uma soma em euros. Dois problemas: contava serviços
+  // em REFUSED, que só o fluxo antigo produz (no matching, recusar marca o
+  // candidato e o serviço nunca chega lá), e apresentava como perdido dinheiro
+  // que ele nunca teria ganho — mesmo respondendo, teria de ficar no top 3 por
+  // ranking e depois ser escolhido pelo cliente.
   useEffect(() => {
     if (autoAcceptEnabled) {
-      setLostWeekAmount(null);
+      setMissedWeek(null);
       return;
     }
     let mounted = true;
     api.post(API_ROUTES.POST_SERVICES_HISTORY, { filter: 'lost', offset: 0 })
       .then((res: any) => {
         if (!mounted) return;
-        const raw = res?.data?.data?.totals?.lost_week_amount;
-        setLostWeekAmount(typeof raw === 'number' && raw > 0 ? raw : null);
+        const raw = res?.data?.data?.totals?.missed_invitations_week;
+        setMissedWeek(typeof raw === 'number' && raw > 0 ? raw : null);
       })
-      .catch(() => { if (mounted) setLostWeekAmount(null); });
+      .catch(() => { if (mounted) setMissedWeek(null); });
     return () => { mounted = false; };
   }, [autoAcceptEnabled]);
 
@@ -126,16 +131,17 @@ const AutoAcceptCard = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Custo real de ter a auto-aceitação desligada. Só aparece com um número
-          vindo do backend — sem dados, nada é dito. */}
-      {!autoAcceptEnabled && lostWeekAmount !== null && (
+      {/* O que passou ao lado por não ter respondido. Contagem e não euros: o
+          valor dependia de ser escolhido, e prometê-lo era enganador. Só
+          aparece com um número vindo do backend — sem dados, nada é dito. */}
+      {!autoAcceptEnabled && missedWeek !== null && (
         <View
           className="flex-row items-center mt-3 pt-3 border-t"
           style={{ borderTopColor: Colors.line }}
         >
           <Entypo name="chevron-with-circle-down" size={16} color={Colors.warning} />
           <CustomText color="warning" size="small" boldness="medium" classes="ml-2 flex-1">
-            {t('auto_accept_lost.week', { amount: renderMoney(lostWeekAmount) })}
+            {t('auto_accept_lost.week', { count: missedWeek })}
           </CustomText>
         </View>
       )}
