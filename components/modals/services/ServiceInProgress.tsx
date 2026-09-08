@@ -137,7 +137,7 @@ const ServiceInProgress = ({ isHome, onContentHeightChange }: { isHome?: boolean
                   <UserAvatarIcon />
                 )}
               </View>
-              <View className="h-12 w-12 rounded-full flex items-center justify-center bg-support_primary relative -left-5">
+              <View className="h-12 w-12 rounded-full flex items-center justify-center relative -left-5" style={{ backgroundColor: Colors.support_primary }}>
                 <Entypo name="back-in-time" size={22} color={Colors.primary} />
               </View>
             </View>
@@ -149,7 +149,7 @@ const ServiceInProgress = ({ isHome, onContentHeightChange }: { isHome?: boolean
               </View>
             ) : null}
           </View>
-          <View className="px-4 h-6 justify-center rounded-full bg-brand_soft">
+          <View className="px-4 h-6 justify-center rounded-full" style={{ backgroundColor: Colors.brand_soft }}>
             <CustomText size="extraSmall" color="brand" boldness="bold" numberOfLines={1}>
               {Number.isFinite(distance) && distance > 0
                 ? `${distance.toFixed(1)} km`
@@ -167,8 +167,8 @@ const ServiceInProgress = ({ isHome, onContentHeightChange }: { isHome?: boolean
             </CustomText>
           </View>
           <View className="px-4">
-            <View className="h-2 bg-gray_strong rounded-full w-full"></View>
-            <View className="h-2 bg-support_primary left-4 rounded-full w-[30%] absolute"></View>
+            <View className="h-2 rounded-full w-full" style={{ backgroundColor: Colors.gray_strong }}></View>
+            <View className="h-2 left-4 rounded-full w-[30%] absolute" style={{ backgroundColor: Colors.support_primary }}></View>
           </View>
         </View> */}
         <View className="p-4">

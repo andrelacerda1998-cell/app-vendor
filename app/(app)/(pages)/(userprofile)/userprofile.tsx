@@ -17,9 +17,7 @@ const UserProfile = () => {
 
   return (
     <SafeAreaView
-      className={`flex-1 ${
-        Platform.OS === "ios" && "h-full"
-      } bg-bg flex-1`}
+      className={`flex-1 ${ Platform.OS === "ios" && "h-full" } flex-1`} style={{ backgroundColor: Colors.bg }}
     >
       <BackHeader
         backButtonColor="secondary"
@@ -32,7 +30,7 @@ const UserProfile = () => {
             <TouchableOpacity
                 onPress={() => router.push("/(app)/(modals)/(profile)/edit-profile")}
             >
-              <Feather name="edit-2" size={22} color={"#ffffff"} />
+              <Feather name="edit-2" size={22} color={Colors.secondary} />
             </TouchableOpacity>
         )}
         otherClasses="px-5 py-4"

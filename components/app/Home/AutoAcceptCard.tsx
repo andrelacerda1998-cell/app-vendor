@@ -85,8 +85,8 @@ const AutoAcceptCard = () => {
   return (
     <View className="px-5">
       <View
-        className="bg-card rounded-2xl border p-4"
-        style={{ borderColor: Colors.line }}
+        className="rounded-2xl border p-4"
+        style={{ backgroundColor: Colors.card,  borderColor: Colors.line }}
       >
       <View className="flex-row items-center">
         {/* Corpo do cartão: abre o ecrã dedicado */}
@@ -118,7 +118,8 @@ const AutoAcceptCard = () => {
           accessibilityState={{ checked: autoAcceptEnabled, disabled: saving }}
         >
           <View
-            className={`w-12 h-7 rounded-full justify-center ${autoAcceptEnabled ? 'bg-support_primary' : 'bg-gray_strong'} ${saving ? 'opacity-40' : ''}`}
+            className={`w-12 h-7 rounded-full justify-center ${saving ? 'opacity-40' : ''}`}
+            style={{ backgroundColor: autoAcceptEnabled ? Colors.support_primary : Colors.gray_strong }}
           >
             <View className={`w-5 h-5 rounded-full bg-white ${autoAcceptEnabled ? 'ml-6' : 'ml-1'}`} />
           </View>

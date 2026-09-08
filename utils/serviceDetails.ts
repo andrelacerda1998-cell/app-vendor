@@ -100,3 +100,38 @@ export const formatCustomerNotes = (
   const notes = clean(item?.customer_notes);
   return notes ? notes.replace(/\s+/g, " ") : null;
 };
+
+/**
+ * Uma marcação é recorrente quando tem `recurrence` própria (a primeira da
+ * série) ou quando o backend a marcou como tal (`is_recurring`, que também
+ * cobre as ocorrências seguintes, que herdam a série sem `recurrence` própria).
+ */
+export const isRecurringSchedule = (
+  item?: Partial<ServiceRequestedInterface> | null,
+): boolean => Boolean(item?.schedule?.is_recurring || item?.schedule?.recurrence);
+
+/**
+ * Chave de tradução para a periodicidade: `schedules.recurrence.<chave>`.
+ *
+ * Quando a marcação é recorrente mas não sabemos a cadência (ocorrência filha,
+ * que não traz `recurrence`), dizemos só "recorrente" em vez de arriscar
+ * "todas as semanas" — dizer a cadência errada é pior do que não a dizer.
+ */
+export const recurrenceLabelKey = (
+  item?: Partial<ServiceRequestedInterface> | null,
+  /**
+   * Versão curta ("Semanal") para as etiquetas dos cartões, onde a frase
+   * inteira ("Repete todas as semanas") empurrava tudo para outra linha.
+   */
+  short = false,
+): string | null => {
+  if (!isRecurringSchedule(item)) return null;
+
+  const prefix = short ? "short_" : "";
+  const recurrence = item?.schedule?.recurrence;
+  if (recurrence === "weekly" || recurrence === "biweekly" || recurrence === "monthly") {
+    return `schedules.recurrence.${prefix}${recurrence}`;
+  }
+
+  return `schedules.recurrence.${prefix}generic`;
+};

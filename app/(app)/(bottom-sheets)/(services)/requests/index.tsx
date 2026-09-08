@@ -226,8 +226,8 @@ const Requests = () => {
   }, [expiresMap, windowMap]);
 
   return (
-    <SafeAreaView className="flex-1 bg-bg">
-      <View className="flex-1 bg-bg p-5">
+    <SafeAreaView className="flex-1" style={{ backgroundColor: Colors.bg }}>
+      <View className="flex-1 p-5" style={{ backgroundColor: Colors.bg }}>
         <View className="flex-row items-center justify-between mb-6">
           <TouchOpacity onPress={() => router.back()} otherClasses="h-10 w-10" itemsCenter>
             <ArrowIcon color={Colors.secondary} position="left" size="40%" />

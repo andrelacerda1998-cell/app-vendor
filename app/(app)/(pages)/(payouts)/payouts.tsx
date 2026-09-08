@@ -80,7 +80,7 @@ const Payouts = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-bg">
+    <SafeAreaView className="flex-1" style={{ backgroundColor: Colors.bg }}>
       <BackHeader
         backButtonColor="secondary"
         middleItem={() => (
@@ -127,7 +127,7 @@ const Payouts = () => {
               onPress={retry}
               activeOpacity={0.85}
               className="rounded-xl px-5 py-3 mt-4"
-              style={{ backgroundColor: Colors.brand }}
+              style={{ backgroundColor: Colors.support_primary }}
             >
               <CustomText color="on_brand" boldness="bold" size="small">
                 {t('general.try_again')}

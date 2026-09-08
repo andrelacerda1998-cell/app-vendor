@@ -131,7 +131,7 @@ const EditPayment = () => {
     }
 
     return (
-        <SafeAreaView className="flex-1 bg-primary">
+        <SafeAreaView className="flex-1" style={{ backgroundColor: Colors.primary }}>
             <BackHeader
                 backButtonColor="secondary"
                 middleItem={() => (

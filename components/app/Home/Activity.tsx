@@ -162,7 +162,7 @@ const Activity = () => {
   }
 
   return (
-    <View className="bg-primary rounded-t-xl p-6 pb-24">
+    <View className="rounded-t-xl p-6 pb-24" style={{ backgroundColor: Colors.primary }}>
       <CustomText boldness="semiBold" color="secondary" size="large">
         Activity
       </CustomText>
@@ -201,7 +201,7 @@ const Activity = () => {
                   </View>
                 </View>
               </CustomTouchableOpacity>
-              <View className="h-[1px] w-full bg-gray_light"></View>
+              <View className="h-[1px] w-full" style={{ backgroundColor: Colors.gray_light }}></View>
             </View>
           )
         })}

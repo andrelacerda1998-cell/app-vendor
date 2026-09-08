@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next"
 import { CustomText } from "@/components/CustomText"
 import { Controller, useForm } from "react-hook-form"
 import SmsVerification from "@/components/SmsVerification"
+import { Colors } from '@/constants/Colors';
 
 
 
@@ -22,7 +23,7 @@ const Sms = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-primary p-5">
+    <SafeAreaView className="flex-1 p-5" style={{ backgroundColor: Colors.primary }}>
       {/* <StatusBar backgroundColor={Colors.primary} animated /> */}
 
       <BackHeader

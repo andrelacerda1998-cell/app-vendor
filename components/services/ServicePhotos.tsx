@@ -54,7 +54,20 @@ const MAX_PHOTO_BYTES = 10240 * 1024;
 /** `quality: 0.7` mantém o detalhe do trabalho e faz o caso comum caber no limite. */
 const PICKER_OPTIONS = { quality: 0.7 } as const;
 
-const ServicePhotos = ({ serviceId, enabled }: { serviceId?: number | string; enabled: boolean }) => {
+const ServicePhotos = ({
+  serviceId,
+  enabled,
+  onCountsChange,
+}: {
+  serviceId?: number | string;
+  enabled: boolean;
+  /**
+   * Quantas fotos existem de cada lado. Sai daqui para o ecrã poder avisar,
+   * ao concluir, que ainda não há foto do "depois" — é o último instante em
+   * que ele a pode tirar.
+   */
+  onCountsChange?: (counts: { before: number; after: number }) => void;
+}) => {
   const { t } = useTranslation();
   const { api } = useApi();
   const { openDialog } = useDialog();
@@ -65,6 +78,15 @@ const ServicePhotos = ({ serviceId, enabled }: { serviceId?: number | string; en
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
+
+  // Conta as que já estão guardadas E as que ainda estão a subir: uma foto a
+  // meio do upload já não é uma foto em falta.
+  useEffect(() => {
+    onCountsChange?.({
+      before: photos.before.length + uploads.filter((u) => u.collection === 'before' && !u.failed).length,
+      after: photos.after.length + uploads.filter((u) => u.collection === 'after' && !u.failed).length,
+    });
+  }, [photos, uploads, onCountsChange]);
 
   const load = async () => {
     if (!serviceId) return;

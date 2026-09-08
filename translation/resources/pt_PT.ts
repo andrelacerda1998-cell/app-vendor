@@ -53,7 +53,7 @@ export default {
             "step_counter": "Passo {{current}} de {{total}}",
             "verifying_email": "A verificar email...",
             "signing_up": "A criar conta...",
-            "last_step": "Finalizar",
+            "last_step": "Criar conta",
             "continue_sign_up": "Continuar",
             "instructions": {
                 "first_title": "Começa a ganhar com as tuas competências",
@@ -80,7 +80,7 @@ export default {
             },
             "password_information": {
                 "title": "Cria uma palavra-passe",
-                "subtitle": "É com ela que entras na app. Guarda-a bem."
+                "subtitle": "Entras na app com o teu email e esta palavra-passe."
             },
             "skills_selection": {
                 "title": "Indica as tuas competências",
@@ -399,6 +399,9 @@ export default {
                 "finish_service": "Concluir serviço",
                 "immediate": "Serviço imediato",
                 "open_map": "Abrir mapa",
+                "call": "Ligar",
+                "call_failed_title": "Não foi possível ligar",
+                "call_failed_subtitle": "Tenta pelo chat ou marca o número no telemóvel.",
                 "open_in_maps": "Abrir no mapa",
                 "navigate_with": "Navegar com",
                 "nav_apps": {
@@ -459,6 +462,10 @@ export default {
                 "confirmation": {
                     "title": "Finalizar serviço",
                     "subtitle": "Queres mesmo dar este serviço por concluído?",
+                    "title_no_photos": "Finalizar sem foto?",
+                    "subtitle_no_photos": "Sem foto, não tens prova do trabalho. Depois de finalizar já não a podes tirar.",
+                    "confirm_anyway": "Finalizar assim",
+                    "take_photo": "Tirar a foto",
                     "confirm": "Finalizar",
                     "cancel": "Cancelar"
                 }
@@ -595,6 +602,7 @@ export default {
             "availability": "Disponibilidade",
             "reviews": "Avaliações",
             "documents": "Documentos",
+            "no_shows": "Faltas",
             "support": "Suporte"
         },
         "my_profile": {
@@ -847,10 +855,17 @@ export default {
         "password_placeholder": "",
         "password_required": "Escreve a tua palavra-passe",
         "password_invalid": "Palavra-passe inválida",
-        "password_min_length": "A palavra-passe tem de ter pelo menos 8 caracteres",
+        "password_min_length": "Pelo menos 8 caracteres",
+        "password_min_length_missing_one": "Pelo menos 8 caracteres — falta {{count}}",
+        "password_min_length_missing_other": "Pelo menos 8 caracteres — faltam {{count}}",
+        "password_uppercase": "Uma letra maiúscula (A–Z)",
+        "password_lowercase": "Uma letra minúscula (a–z)",
+        "password_number": "Um número (0–9)",
+        "password_special_character": "Um símbolo (!, #, $, %…)",
+        "password_common": "Nada óbvio como «12345678» ou «palavra-passe»",
         "password_length_requirement": "Pelo menos 8 caracteres",
         "password_uncompromised": "Esta palavra-passe apareceu em fugas de dados conhecidas. Escolhe outra.",
-        "password_match": "As palavras-passe têm de ser iguais",
+        "password_match": "As duas palavras-passe têm de ser iguais",
         "confirm_password": "Confirmar palavra-passe",
         "confirm_password_placeholder": "",
         "confirm_password_required": "Escreve a palavra-passe outra vez",
@@ -1253,6 +1268,12 @@ export default {
     },
     "settings_screen": {
         "notifications": "Notificações",
+        "appearance": "Aspeto",
+        "theme": {
+          "system": "Sistema",
+          "light": "Claro",
+          "dark": "Escuro"
+        },
         "permissions": "Permissões",
         "about": "Sobre",
         "items": {
@@ -1289,6 +1310,9 @@ export default {
         "scheduled": "Agendado",
         "open_service_hint": "Abre o estado do serviço, com a morada, o que está incluído e o chat com o cliente.",
         "overdue_title": "Em atraso",
+        "week_summary_one": "{{count}} serviço · {{total}}",
+        "week_summary_other": "{{count}} serviços · {{total}}",
+        "show_week": "Ver a semana",
       "day_stops_one": "{{count}} paragem",
       "day_stops_other": "{{count}} paragens",
       "unavailable_hint": "Toque longo para marcares o dia como indisponível",
@@ -1532,7 +1556,65 @@ export default {
             }
         }
     },
+    "no_shows": {
+        "title": "Faltas",
+        "rule": "Se faltares a um serviço marcado, em vez de receberes o valor és penalizado em {{percent}}% do que ias receber. Quem confirma a falta é a Piquet, depois de verificar.",
+        "count_one": "{{count}} falta",
+        "count_other": "{{count}} faltas",
+        "penalty": "Penalização",
+        "empty_title": "Sem faltas",
+        "empty_subtitle": "Continua assim — nenhum cliente ficou à espera.",
+        "error_title": "Não foi possível carregar as faltas",
+        "error_subtitle": "Verifica a ligação e tenta outra vez.",
+        "dispute": {
+            "button": "Contestar esta falta",
+            "title": "Contestar a falta",
+            "subtitle": "Conta-nos o que aconteceu. O suporte revê e responde-te na app.",
+            "placeholder": "Ex.: cheguei às 10:05 e o cliente não atendeu a porta nem o telefone.",
+            "send": "Enviar ao suporte",
+            "sent_title": "Recebido",
+            "sent_subtitle": "O suporte vai rever e responde-te em breve.",
+            "error_title": "Não foi possível enviar",
+            "error_subtitle": "Verifica a ligação e tenta outra vez.",
+            "pending": "Em análise",
+            "pending_hint": "Respondemos no Suporte"
+        }
+    },
     "schedules": {
+      "recurrence": {
+        "weekly": "Repete todas as semanas",
+        "biweekly": "Repete de duas em duas semanas",
+        "monthly": "Repete todos os meses",
+        "generic": "Serviço recorrente",
+        "short_weekly": "Semanal",
+        "short_biweekly": "Quinzenal",
+        "short_monthly": "Mensal",
+        "short_generic": "Recorrente",
+        "short": "Recorrente"
+      },
+      "details": {
+        "title": "Detalhes do serviço",
+        "open": "Ver detalhes",
+        "when": "Quando",
+        "duration": "Duração estimada",
+        "you_receive": "Recebes",
+        "customer": "Cliente",
+        "address": "Morada",
+        "phone": "Telefone",
+        "includes": "Está incluído",
+        "excludes": "Não está incluído",
+        "includes_empty": "O backoffice ainda não definiu o que este serviço inclui.",
+        "notes": "Observações do cliente",
+        "photos": "Fotos do cliente",
+        "not_found": "Não foi possível abrir este serviço."
+      },
+      "confirm_attendance": "Confirmar presença",
+      "attendance_confirmed": "Presença confirmada",
+      "attendance_confirmed_short": "Confirmado",
+      "confirm_attendance_error": "Não foi possível confirmar. Tenta outra vez.",
+      "confirm_attendance_success_title": "Combinado",
+      "confirm_attendance_success_subtitle": "Contamos contigo {{when}}. Se alguma coisa mudar, avisa o quanto antes.",
+      "confirm_attendance_success_subtitle_generic": "Contamos contigo. Se alguma coisa mudar, avisa o quanto antes.",
       "availability": "Disponibilidade",
       "service_zone": "Zona de serviço",
       "day_off": "Folga",

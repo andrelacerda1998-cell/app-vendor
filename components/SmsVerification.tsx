@@ -29,6 +29,7 @@ const SmsVerification = ({
   /** Ausente fora do onboarding (ex.: a partir do perfil), onde nao ha passo a saltar. */
   onSkip?: () => void;
 }) => {
+  const styles = makeStyles();
   const { api } = useApi();
   const { t } = useTranslation();
   const { vendorData, setVendorData } = useSession();
@@ -327,7 +328,7 @@ const SmsVerification = ({
         {status === Status.VERIFIED && (
           <View className="flex-1 justify-between">
             <View className="flex-1 justify-center">
-              <View className="bg-secondary h-20 w-20 flex items-center justify-center rounded-full self-center mb-4">
+              <View className="h-20 w-20 flex items-center justify-center rounded-full self-center mb-4" style={{ backgroundColor: Colors.secondary }}>
                 <FontAwesome6 name="check" size={28} color={Colors.primary} />
               </View>
               <View>
@@ -351,7 +352,7 @@ const SmsVerification = ({
         {status === Status.ERROR && (
           <View className="flex-1 justify-between">
             <View className="flex-1 justify-center">
-              <View className="bg-secondary h-20 w-20 p-6 flex items-center justify-center rounded-full self-center mb-4">
+              <View className="h-20 w-20 p-6 flex items-center justify-center rounded-full self-center mb-4" style={{ backgroundColor: Colors.secondary }}>
                 <XIcon color={Colors.primary} />
               </View>
               <View>
@@ -382,7 +383,13 @@ const SmsVerification = ({
   )
 }
 
-const styles = StyleSheet.create({
+/**
+ * Estilos criados por FUNÇÃO e não uma vez ao carregar o módulo: um
+ * `StyleSheet.create` no topo do ficheiro fixa as cores do tema que estava
+ * activo no arranque e nunca mais as larga — foi assim que a barra de
+ * separadores continuava escura depois de trocar para o tema claro.
+ */
+const makeStyles = () => StyleSheet.create({
   container: {
   },
   pinCodeContainer: {

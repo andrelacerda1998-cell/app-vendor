@@ -39,7 +39,7 @@ const VendorMessage = ({message, time, isRead}: { message: string, time: string,
     const { t } = useTranslation();
     return (
         <View className="space-y-2 self-end mb-5">
-            <View className="bg-gray_light p-6 w-full rounded-3xl rounded-br-none">
+            <View className="p-6 w-full rounded-3xl rounded-br-none" style={{ backgroundColor: Colors.gray_light }}>
                 <CustomText size="small" color="primary" boldness="regular">
                     {message}
                 </CustomText>
@@ -63,7 +63,7 @@ const VendorMessage = ({message, time, isRead}: { message: string, time: string,
 const CustomerMessage = ({message, time}: { message: string, time: string }) => {
     return (
         <View className="space-y-2 self-start mb-5">
-            <View className="bg-gray_strong p-6 w-full rounded-3xl rounded-bl-none">
+            <View className="p-6 w-full rounded-3xl rounded-bl-none" style={{ backgroundColor: Colors.gray_strong }}>
                 <CustomText size="small" color="secondary" boldness="regular">
                     {message}
                 </CustomText>
@@ -312,10 +312,10 @@ const Service = () => {
     };
 
     return (
-        <SafeAreaView className="flex-1 bg-strongest">
-            <View className="flex-1 bg-primary">
+        <SafeAreaView className="flex-1" style={{ backgroundColor: Colors.bg }}>
+            <View className="flex-1" style={{ backgroundColor: Colors.primary }}>
                 {/* <StatusBar backgroundColor="black" barStyle="light-content"/> */}
-                <View className="bg-strongest py-8 px-5 space-y-8 z-10 rounded-b-3xl">
+                <View className="py-8 px-5 space-y-8 z-10 rounded-b-3xl" style={{ backgroundColor: Colors.bg }}>
                     <BackHeader
                         backButtonColor="secondary"
                         middleItem={() => (
@@ -477,7 +477,7 @@ const Service = () => {
                         <KeyboardAwareScrollView bottomOffset={40}>
                             <View className="flex-1">
                                 <TextInput
-                                    className="pl-5 pr-16 py-5 rounded-full bg-strongest text-white"
+                                    className="pl-5 pr-16 py-5 rounded-full" style={{ backgroundColor: Colors.card, color: Colors.secondary }}
                                     placeholder={t('chat.input_placeholder')}
                                     placeholderTextColor={Colors.gray_medium}
                                     value={message}

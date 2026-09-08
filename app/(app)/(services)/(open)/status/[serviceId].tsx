@@ -2,7 +2,7 @@ import { Colors } from '@/constants/Colors';
 import { Feather, Ionicons } from '@expo/vector-icons';
 import React, { useEffect, useMemo, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ScrollView, View, TouchableOpacity } from 'react-native';
+import { ScrollView, View, TouchableOpacity, Linking } from 'react-native';
 import BackHeader from '@/components/app/BackHeader';
 import { useSession } from '@/contexts/SessionContext';
 import { CustomText } from "@/components/CustomText";
@@ -121,6 +121,9 @@ const Status = () => {
   // o ecrã guarda qual a folha aberta para os dois partilharem estado.
   const [extrasSheet, setExtrasSheet] = useState<ExtrasSheet>(null);
   const [ servicesDetail, setServicesDetail] = useState<Details>({ includes: [], excludes: []})
+  // Quantas fotos há de cada lado (vem do ServicePhotos) — só para avisar, ao
+  // concluir, que falta a do "depois".
+  const [photoCounts, setPhotoCounts] = useState({ before: 0, after: 0 });
   /**
    * O ecrã nasceu para o serviço EM CURSO (`openService`, do ServiceContext).
    * A Agenda passou a abri-lo também para serviços apenas AGENDADOS, que não
@@ -218,11 +221,25 @@ const Status = () => {
   }
 
   const handleFinishService = () => {
+    // O ecrã diz-lhe o tempo todo que as fotos o protegem numa reclamação, mas
+    // é aqui — e só aqui — que ainda dá para as tirar: depois de concluído o
+    // serviço fecha e a oportunidade passou. O aviso não bloqueia; quem
+    // trabalha em casas onde não pode fotografar continua a poder concluir.
+    const missingAfter = photoCounts.after === 0;
+
     openDialog({
-      title: t('services.service.finish.confirmation.title'),
-      subtitle: t('services.service.finish.confirmation.subtitle'),
-      successButtonText: t('services.service.finish.confirmation.confirm'),
-      cancelButtonText: t('services.service.finish.confirmation.cancel'),
+      title: missingAfter
+        ? t('services.service.finish.confirmation.title_no_photos')
+        : t('services.service.finish.confirmation.title'),
+      subtitle: missingAfter
+        ? t('services.service.finish.confirmation.subtitle_no_photos')
+        : t('services.service.finish.confirmation.subtitle'),
+      successButtonText: missingAfter
+        ? t('services.service.finish.confirmation.confirm_anyway')
+        : t('services.service.finish.confirmation.confirm'),
+      cancelButtonText: missingAfter
+        ? t('services.service.finish.confirmation.take_photo')
+        : t('services.service.finish.confirmation.cancel'),
       onSuccess: () => finishService(),
     })
   };
@@ -420,6 +437,29 @@ const Status = () => {
       track(AnalyticsEvent.NAVIGATION_OPENED, { app }),
     );
 
+  /**
+   * Ligar ao cliente.
+   *
+   * O ecrã passou muito tempo só com chat, para o contacto deixar rasto e o
+   * número não andar a circular. Mas quem está à porta com a campainha
+   * avariada não escreve — liga. O botão só aparece quando o payload traz
+   * mesmo o número (o backend só o dá depois de a marcação estar confirmada).
+   */
+  const customerPhone = String(svc?.customer?.phone_number ?? svc?.customer?.phone ?? '').trim();
+
+  const callCustomer = () => {
+    if (!customerPhone) return;
+    Linking.openURL(`tel:${customerPhone.replace(/\s+/g, '')}`).catch(() => {
+      openDialog({
+        icon: <XIcon color={Colors.primary} />,
+        title: t('services.service.status.call_failed_title'),
+        subtitle: t('services.service.status.call_failed_subtitle'),
+        closeAfterMSeconds: 3000,
+        closeOnClickOutside: true,
+      });
+    });
+  };
+
   const goToChat = () => {
     track(AnalyticsEvent.CHAT_OPENED, { service_id: Number(svc?.id) });
     clearUnreadMessages();
@@ -432,7 +472,7 @@ const Status = () => {
   // que desenhar os cartões todos vazios.
   if (!svc) {
     return (
-      <SafeAreaView className="flex-1 bg-bg">
+      <SafeAreaView className="flex-1" style={{ backgroundColor: Colors.bg }}>
         <BackHeader
           backButtonColor="secondary"
           middleItem={() => (
@@ -460,7 +500,7 @@ const Status = () => {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-bg">
+    <SafeAreaView className="flex-1" style={{ backgroundColor: Colors.bg }}>
       <BackHeader
         backButtonColor="secondary"
         middleItem={() => (
@@ -557,7 +597,11 @@ const Status = () => {
             ao chegar) e extras logo a seguir ao cronómetro. */}
         {status === ServiceStatus.ARRIVED && (
           <>
-            <ServicePhotos serviceId={svc?.id} enabled={svc?.status === ServiceStatus.ARRIVED} />
+            <ServicePhotos
+              serviceId={svc?.id}
+              enabled={svc?.status === ServiceStatus.ARRIVED}
+              onCountsChange={setPhotoCounts}
+            />
             <ServiceExtras
               serviceId={svc?.id}
               enabled={svc?.status === ServiceStatus.ARRIVED}
@@ -580,38 +624,68 @@ const Status = () => {
             no local, só precisa de um canal rápido para o cliente. */}
         {status === ServiceStatus.ARRIVED ? (
           <Card className="mt-3">
-            <View className="flex-row items-center justify-between">
-              <View className="flex-1 pr-3">
+            <View>
+              <CustomText color="muted" size="extraSmall" boldness="bold">
+                {t('schedules.customer', { defaultValue: 'Cliente' })}
+              </CustomText>
+              <CustomText color="secondary" boldness="bolder" size="large" numberOfLines={1} classes="mt-0.5">
+                {svc?.customer?.name}
+              </CustomText>
+
+              {/* Ligar e escrever lado a lado, à largura toda: já no local, é
+                  por aqui que se resolve "estou à porta e ninguém abre". */}
+              <View className="flex-row mt-3" style={{ gap: 10 }}>
+                {!!customerPhone && (
+                  <TouchableOpacity
+                    onPress={callCustomer}
+                    className="flex-1 flex-row items-center justify-center rounded-xl py-3"
+                    style={{ backgroundColor: 'rgba(250,187,91,0.16)', borderWidth: 1, borderColor: 'rgba(250,187,91,0.45)' }}
+                  >
+                    <Feather name="phone" size={17} color={Colors.brand} />
+                    <CustomText size="small" color="brand" boldness="bold" classes="ml-2">
+                      {t('services.service.status.call')}
+                    </CustomText>
+                  </TouchableOpacity>
+                )}
+                <TouchableOpacity
+                  onPress={goToChat}
+                  className="flex-1 flex-row items-center justify-center rounded-xl py-3 border"
+                  style={{ borderColor: Colors.line }}
+                >
+                  <View>
+                    <Feather name="message-square" size={17} color={Colors.secondary} />
+                    {unreadMessages > 0 && (
+                      <View
+                        className="absolute rounded-full items-center justify-center"
+                        style={{ width: 16, height: 16, top: -6, right: -8, backgroundColor: Colors.danger }}
+                      >
+                        <CustomText size="extraSmall" boldness="bold" color="secondary">
+                          {unreadMessages > 9 ? '9+' : unreadMessages}
+                        </CustomText>
+                      </View>
+                    )}
+                  </View>
+                  <CustomText size="small" color="secondary" boldness="semiBold" classes="ml-2">
+                    {t('services.service.status.chat')}
+                  </CustomText>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            {/* O que o cliente pediu continua a fazer falta DEPOIS de começar:
+                é durante o trabalho que "as casas de banho são o mais urgente"
+                decide por onde se pega. Antes desaparecia ao chegar ao local,
+                exatamente quando passava a ser instruções e não informação. */}
+            {!!svc?.customer_notes && (
+              <View className="mt-4 pt-4" style={{ borderTopWidth: 1, borderTopColor: Colors.line }}>
                 <CustomText color="muted" size="extraSmall" boldness="bold">
-                  {t('schedules.customer', { defaultValue: 'Cliente' })}
+                  {t('schedules.customer_notes')}
                 </CustomText>
-                <CustomText color="secondary" boldness="bolder" size="large" numberOfLines={1} classes="mt-0.5">
-                  {svc?.customer?.name}
+                <CustomText color="secondary" size="small" classes="mt-1">
+                  {svc.customer_notes}
                 </CustomText>
               </View>
-              <TouchableOpacity
-                onPress={goToChat}
-                className="flex-row items-center rounded-xl px-4 py-2.5 border"
-                style={{ borderColor: Colors.line }}
-              >
-                <View>
-                  <Feather name="message-square" size={18} color={Colors.secondary} />
-                  {unreadMessages > 0 && (
-                    <View
-                      className="absolute rounded-full items-center justify-center"
-                      style={{ width: 16, height: 16, top: -6, right: -8, backgroundColor: Colors.danger }}
-                    >
-                      <CustomText size="extraSmall" boldness="bold" color="secondary">
-                        {unreadMessages > 9 ? '9+' : unreadMessages}
-                      </CustomText>
-                    </View>
-                  )}
-                </View>
-                <CustomText size="small" color="secondary" boldness="semiBold" classes="ml-2">
-                  {t('services.service.status.chat')}
-                </CustomText>
-              </TouchableOpacity>
-            </View>
+            )}
           </Card>
         ) : (
           <Card className="mt-3">
@@ -673,8 +747,22 @@ const Status = () => {
                 {t('services.service.status.open_map')}
               </CustomText>
             </TouchableOpacity>
-            {/* Sem opção de ligar: o contacto com o cliente passa só pelo chat,
-                que deixa rasto e evita expor/usar o número de telefone. */}
+            {/* Ligar: o chat deixa rasto e é o canal preferido, mas quem está a
+                chegar e não encontra a porta precisa de resposta agora. Só
+                aparece com número no payload — o backend só o dá depois de a
+                marcação estar confirmada. */}
+            {!!customerPhone && (
+              <TouchableOpacity
+                onPress={callCustomer}
+                className="flex-1 items-center rounded-xl py-3 border"
+                style={{ borderColor: Colors.line }}
+              >
+                <Feather name="phone" size={18} color={Colors.secondary} />
+                <CustomText size="small" color="secondary" boldness="semiBold" classes="mt-1">
+                  {t('services.service.status.call')}
+                </CustomText>
+              </TouchableOpacity>
+            )}
             <TouchableOpacity
               onPress={goToChat}
               className="flex-1 items-center rounded-xl py-3 border"
@@ -709,7 +797,7 @@ const Status = () => {
             Com ambos vazios, o cartão dizia "Sem informação" duas vezes:
             um bloco inteiro a comunicar ausência de conteúdo. */}
         {((servicesDetail?.includes?.length ?? 0) > 0 || (servicesDetail?.excludes?.length ?? 0) > 0) && (
-        <View className="bg-card border rounded-2xl p-4 mt-3" style={{ borderColor: Colors.line }}>
+        <View className="border rounded-2xl p-4 mt-3" style={{ backgroundColor: Colors.card,  borderColor: Colors.line }}>
           <CustomText color="muted" boldness="bold" size="extraSmall">{t('services.includes')}</CustomText>
           <View className="mt-2">
             {servicesDetail?.includes?.length > 0 ? (

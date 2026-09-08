@@ -52,7 +52,7 @@ export default function AppLayout() {
           title: t('tabs.home'),
           tabBarIcon: ({ focused }: { focused: boolean }) => (
             <View className="w-6 h-6 items-center justify-center">
-              <HomeIcon color={focused ? Colors.support_primary : Colors.secondary} filled={focused} />
+              <HomeIcon color={focused ? Colors.brand : Colors.secondary} filled={focused} />
             </View>
           ),
         }}
@@ -64,7 +64,7 @@ export default function AppLayout() {
           tabBarIcon: ({ focused }: { focused: boolean }) => (
             <View className="w-7 h-7 items-center justify-center">
               {focused
-                ? <Ionicons name="calendar" size={26} color={Colors.support_primary} />
+                ? <Ionicons name="calendar" size={26} color={Colors.brand} />
                 : <Ionicons name="calendar-outline" size={26} color={Colors.secondary} />
               }
             </View>
@@ -81,7 +81,7 @@ export default function AppLayout() {
               <Ionicons
                 name={focused ? 'cash' : 'cash-outline'}
                 size={26}
-                color={focused ? Colors.support_primary : Colors.secondary}
+                color={focused ? Colors.brand : Colors.secondary}
               />
             </View>
           ),
@@ -93,7 +93,7 @@ export default function AppLayout() {
           title: t('tabs.profile'),
           tabBarIcon: ({ focused }: { focused: boolean }) => (
             <View className="relative">
-              <View className={`h-7 w-7 rounded-full overflow-hidden ${focused && "border-2 border-support_primary"}`}>
+              <View className={`h-7 w-7 rounded-full overflow-hidden ${focused && "border-2 "}`} style={{ borderColor: Colors.brand }}>
                 {vendorData?.user?.avatar?.small ? (
                   <Image
                     src={vendorData?.user?.avatar?.small}
@@ -104,7 +104,7 @@ export default function AppLayout() {
                   <UserAvatarIcon />
                 )}
               </View>
-              {/* <View className={`w-[16px] h-[16px] absolute -bottom-1 -left-[5px] border-[3px] border-primary rounded-full ${vendorStatus === 'Online' ? 'bg-[#80FA5B]' : 'bg-[#FA805B]'}`}></View> */}
+              {/* <View className={`w-[16px] h-[16px] absolute -bottom-1 -left-[5px] border-[3px] rounded-full ${vendorStatus === 'Online' ? 'bg-[#80FA5B]' : 'bg-[#FA805B]'}`} style={{ borderColor: Colors.primary }}></View> */}
             </View>
           ),
         }}

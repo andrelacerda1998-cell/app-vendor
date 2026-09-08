@@ -65,7 +65,7 @@ const ForgotPassword = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-primary p-6">
+    <SafeAreaView className="flex-1 p-6" style={{ backgroundColor: Colors.primary }}>
       <BackHeader
         backButtonColor="secondary"
         middleItem={() => (
@@ -86,7 +86,7 @@ const ForgotPassword = () => {
         }}>
           <View className="flex-1 justify-between mt-8">
             <View className="flex-1 justify-center">
-              <View className="bg-support_primary h-20 w-20 flex items-center justify-center rounded-full self-center mb-4">
+              <View className="h-20 w-20 flex items-center justify-center rounded-full self-center mb-4" style={{ backgroundColor: Colors.support_primary }}>
                 <View className="h-8 w-8">
                   <EmailIcon color={Colors.primary} />
                 </View>

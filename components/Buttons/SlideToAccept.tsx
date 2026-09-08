@@ -138,7 +138,7 @@ const SlideToAccept = ({
               width: THUMB_SIZE,
               height: THUMB_SIZE,
               borderRadius: THUMB_SIZE / 2,
-              backgroundColor: Colors.brand,
+              backgroundColor: Colors.support_primary,
               alignItems: "center",
               justifyContent: "center",
             },

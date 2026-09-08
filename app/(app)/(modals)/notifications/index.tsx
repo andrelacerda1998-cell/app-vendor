@@ -148,7 +148,7 @@ const Notifications = () => {
   }, [notifications, t]);
 
   return (
-    <SafeAreaView className="flex-1 bg-bg py-5">
+    <SafeAreaView className="flex-1 py-5" style={{ backgroundColor: Colors.bg }}>
       <BackHeader
         backButtonColor="secondary"
         middleItem={() => (
@@ -233,7 +233,7 @@ const Notifications = () => {
                       {unread && (
                         <View
                           className="ml-2 rounded-full"
-                          style={{ width: 6, height: 6, backgroundColor: Colors.brand }}
+                          style={{ width: 6, height: 6, backgroundColor: Colors.support_primary }}
                         />
                       )}
                     </View>

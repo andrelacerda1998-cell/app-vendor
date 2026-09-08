@@ -1,4 +1,5 @@
 import {StyleSheet} from "react-native";
+import { Colors } from '@/constants/Colors';
 
 export default () => StyleSheet.create({
   overlay: {
@@ -28,7 +29,7 @@ export default () => StyleSheet.create({
     marginBottom: 16,
   },
   title: {
-    color: "#fff",
+    color: Colors.secondary,
     fontSize: 18,
     fontWeight: "700",
   },
@@ -55,7 +56,7 @@ export default () => StyleSheet.create({
     borderColor: "#2f2f33",
     paddingHorizontal: 16,
     paddingVertical: 14,
-    color: "#fff",
+    color: Colors.secondary,
     backgroundColor: "#16161a",
     fontSize: 16,
   },
@@ -80,7 +81,7 @@ export default () => StyleSheet.create({
     alignItems: "center",
   },
   secondaryText: {
-    color: "#fff",
+    color: Colors.secondary,
     fontWeight: "600",
     fontSize: 16,
   },

@@ -252,12 +252,12 @@ const Home = () => {
   }
 
   return (
-    <SafeAreaView className={`pt-5 h-full relative bg-strongest`}>
+    <SafeAreaView className={`pt-5 h-full relative`} style={{ backgroundColor: Colors.bg }}>
       {/* Cabeçalho compacto: avatar, saudação e notificações numa só linha.
           O logótipo saiu daqui — está no arranque, na autenticação e no ícone da
           app — e ocupava ~70pt do topo, o espaço mais valioso do ecrã. A marca
           continua presente no âmbar e na tipografia. */}
-      <View className="px-5 bg-strongest">
+      <View className="px-5" style={{ backgroundColor: Colors.bg }}>
         {/* Brilho âmbar muito ténue atrás da saudação: dá carácter ao topo sem
             acrescentar um elemento novo nem competir com os cartões. */}
         <LinearGradient

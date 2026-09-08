@@ -123,7 +123,7 @@ const RateServiceBottomSheet = () => {
       backdropComponent={() => <View style={{ flex: 1, backgroundColor: 'black', opacity: 0.6 }} />}
     >
       {/* <StatusBar animated barStyle="light-content" backgroundColor="rgba(134, 134, 134, 0.1)" translucent /> */}
-      <View className="p-5 bg-primary">
+      <View className="p-5" style={{ backgroundColor: Colors.primary }}>
         <View className="flex-row mx-auto">
           <View className="h-12 w-12 relative -right-1 z-[1]">
             {service?.customer?.avatar?.small ? (
@@ -136,7 +136,7 @@ const RateServiceBottomSheet = () => {
               <UserAvatarIcon />
             )}
           </View>
-          <View className="h-12 w-12 rounded-full flex items-center justify-center bg-support_primary relative -left-1">
+          <View className="h-12 w-12 rounded-full flex items-center justify-center relative -left-1" style={{ backgroundColor: Colors.support_primary }}>
             <Feather name="tool" size={22} color={Colors.primary} />
           </View> 
         </View>

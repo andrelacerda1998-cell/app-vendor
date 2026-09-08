@@ -7,6 +7,7 @@ import { CustomText } from "@/components/CustomText";
 import { useTranslation } from "react-i18next"
 import {Feather} from "@expo/vector-icons";
 import { useSession } from "@/contexts/SessionContext";
+import { Colors } from '@/constants/Colors';
 
 const Payments = () => {
   const { vendorData } = useSession();
@@ -15,9 +16,7 @@ const Payments = () => {
 
   return (
     <SafeAreaView
-      className={`flex-1 ${
-        Platform.OS === "ios" && "h-full"
-      } bg-bg flex-1`}
+      className={`flex-1 ${ Platform.OS === "ios" && "h-full" } flex-1`} style={{ backgroundColor: Colors.bg }}
     >
       <BackHeader
         backButtonColor="secondary"
@@ -31,7 +30,7 @@ const Payments = () => {
             <TouchableOpacity
                 onPress={() => router.push("/(app)/(modals)/(profile)/edit-payment")}
             >
-              <Feather name="edit-2" size={22} color={"#ffffff"} />
+              <Feather name="edit-2" size={22} color={Colors.secondary} />
             </TouchableOpacity>
         )}
       />

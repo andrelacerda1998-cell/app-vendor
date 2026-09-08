@@ -9,6 +9,7 @@ import { useApi } from '@/contexts/ApiContext'
 import { useSession } from '@/contexts/SessionContext'
 import { useTranslation } from "react-i18next"
 import EmailConfirmation from "@/components/EmailConfirmation"
+import { Colors } from '@/constants/Colors';
 
 enum Status {
   PENDING = "pending",
@@ -34,7 +35,7 @@ const ConfirmEmail = () => {
   
 
   return (
-    <SafeAreaView className="flex-1 bg-primary p-5">
+    <SafeAreaView className="flex-1 p-5" style={{ backgroundColor: Colors.primary }}>
       {/* <StatusBar backgroundColor={Colors.secondary} animated /> */}
 
       <BackHeader

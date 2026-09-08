@@ -53,7 +53,7 @@ export default {
       "step_counter": "Step {{current}} of {{total}}",
       "verifying_email": "Verifying email...",
       "signing_up": "Creating account...",
-      "last_step": "Finish",
+      "last_step": "Create account",
       "continue_sign_up": "Continue",
       "instructions": {
         "first_title": "Start earning with your skills",
@@ -80,7 +80,7 @@ export default {
       },
       "password_information": {
         "title": "Create a password",
-        "subtitle": "This is how you sign in. Keep it safe."
+        "subtitle": "You sign in with your email and this password."
       },
       "skills_selection": {
         "title": "Tell us your skills",
@@ -399,6 +399,9 @@ export default {
             "finish_service": "Complete job",
         "immediate": "Immediate service",
         "open_map": "Open map",
+        "call": "Call",
+        "call_failed_title": "Couldn't place the call",
+        "call_failed_subtitle": "Try the chat, or dial the number from your phone.",
                 "open_in_maps": "Open in maps",
         "navigate_with": "Navigate with",
         "nav_apps": {
@@ -459,6 +462,10 @@ export default {
         "confirmation": {
           "title": "Finish service",
           "subtitle": "Do you really want to mark this service as complete?",
+          "title_no_photos": "Finish without a photo?",
+          "subtitle_no_photos": "Without a photo you have no proof of the work. Once you finish you can't take it.",
+          "confirm_anyway": "Finish without it",
+          "take_photo": "Take the photo",
           "confirm": "Finish",
           "cancel": "Cancel"
         }
@@ -595,6 +602,7 @@ export default {
       "availability": "Availability",
       "reviews": "Reviews",
       "documents": "Documents",
+      "no_shows": "No-shows",
       "support": "Support"
     },
     "my_profile": {
@@ -847,10 +855,17 @@ export default {
     "password_placeholder": "",
     "password_required": "Enter your password",
     "password_invalid": "Invalid password",
-    "password_min_length": "The password must be at least 8 characters",
+    "password_min_length": "At least 8 characters",
+    "password_min_length_missing_one": "At least 8 characters — {{count}} to go",
+    "password_min_length_missing_other": "At least 8 characters — {{count}} to go",
+    "password_uppercase": "One uppercase letter (A–Z)",
+    "password_lowercase": "One lowercase letter (a–z)",
+    "password_number": "One number (0–9)",
+    "password_special_character": "One symbol (!, #, $, %…)",
+    "password_common": "Nothing obvious like “12345678” or “password”",
     "password_length_requirement": "At least 8 characters",
     "password_uncompromised": "This password has appeared in known data breaches. Choose another one.",
-    "password_match": "The passwords must match",
+    "password_match": "Both passwords must match",
     "confirm_password": "Confirm password",
     "confirm_password_placeholder": "",
     "confirm_password_required": "Enter the password again",
@@ -1253,6 +1268,12 @@ export default {
   },
   "settings_screen": {
     "notifications": "Notifications",
+    "appearance": "Appearance",
+    "theme": {
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
+    },
     "permissions": "Permissions",
     "about": "About",
     "items": {
@@ -1289,6 +1310,9 @@ export default {
     "scheduled": "Scheduled",
     "open_service_hint": "Opens the service status, with the address, what's included and the customer chat.",
     "overdue_title": "Overdue",
+    "week_summary_one": "{{count}} job · {{total}}",
+    "week_summary_other": "{{count}} jobs · {{total}}",
+    "show_week": "Show the week",
     "day_stops_one": "{{count}} stop",
     "day_stops_other": "{{count}} stops",
     "unavailable_hint": "Long press to mark the day as unavailable",
@@ -1532,7 +1556,65 @@ export default {
       }
     },
   },
+  "no_shows": {
+    "title": "No-shows",
+    "rule": "If you miss a booked job, instead of being paid you are charged {{percent}}% of what you were going to receive. Piquet confirms the no-show after checking.",
+    "count_one": "{{count}} no-show",
+    "count_other": "{{count}} no-shows",
+    "penalty": "Penalty",
+    "empty_title": "No no-shows",
+    "empty_subtitle": "Keep it up — no customer was left waiting.",
+    "error_title": "Couldn't load your no-shows",
+    "error_subtitle": "Check your connection and try again.",
+    "dispute": {
+      "button": "Dispute this no-show",
+      "title": "Dispute the no-show",
+      "subtitle": "Tell us what happened. Support will review and reply in the app.",
+      "placeholder": "E.g.: I arrived at 10:05 and the customer didn't answer the door or the phone.",
+      "send": "Send to support",
+      "sent_title": "Received",
+      "sent_subtitle": "Support will review it and get back to you soon.",
+      "error_title": "Couldn't send",
+      "error_subtitle": "Check your connection and try again.",
+      "pending": "Under review",
+      "pending_hint": "We reply in Support"
+    }
+  },
   "schedules": {
+      "recurrence": {
+        "weekly": "Repeats every week",
+        "biweekly": "Repeats every two weeks",
+        "monthly": "Repeats every month",
+        "generic": "Recurring service",
+        "short_weekly": "Weekly",
+        "short_biweekly": "Fortnightly",
+        "short_monthly": "Monthly",
+        "short_generic": "Recurring",
+        "short": "Recurring"
+      },
+      "details": {
+        "title": "Service details",
+        "open": "See details",
+        "when": "When",
+        "duration": "Estimated duration",
+        "you_receive": "You get",
+        "customer": "Customer",
+        "address": "Address",
+        "phone": "Phone",
+        "includes": "Included",
+        "excludes": "Not included",
+        "includes_empty": "The backoffice hasn't defined what this service includes yet.",
+        "notes": "Customer notes",
+        "photos": "Customer photos",
+        "not_found": "Couldn't open this service."
+      },
+    "confirm_attendance": "Confirm attendance",
+    "attendance_confirmed": "Attendance confirmed",
+    "attendance_confirmed_short": "Confirmed",
+    "confirm_attendance_error": "Could not confirm. Try again.",
+    "confirm_attendance_success_title": "All set",
+    "confirm_attendance_success_subtitle": "We're counting on you {{when}}. If anything changes, let us know as early as you can.",
+    "confirm_attendance_success_subtitle_generic": "We're counting on you. If anything changes, let us know as early as you can.",
     "availability": "Availability",
     "service_zone": "Service area",
     "day_off": "Day off",

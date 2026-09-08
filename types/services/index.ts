@@ -65,6 +65,8 @@ export interface ServiceInterface {
       start: string;
       end: string;
     };
+    /** Quando o técnico confirmou que vai; null enquanto não confirmar. */
+    vendor_confirmed_at?: string | null;
   } | null,
 }
 
@@ -99,12 +101,18 @@ export interface ServiceTypeInterface {
   current_price?: string;
 }
 
+/** Espelha App\Enums\Schedule\ScheduleRecurrence no backend. */
+export type ScheduleRecurrence = "weekly" | "biweekly" | "monthly";
+
 export interface ServiceRequestedInterface {
   customer: {
     id: number;
     name: string;
     address: string;
-    /** Telefone do cliente — só vem preenchido quando o agendamento está aceite/confirmado. */
+    /**
+     * Telefone do cliente — só vem preenchido quando o agendamento está
+     * aceite/confirmado (ver ServiceRequestedData no backend).
+     */
     phone?: string | null;
   };
   amount?: number | null;
@@ -116,12 +124,26 @@ export interface ServiceRequestedInterface {
       start: string;
       end: string;
     };
+    /** Quando o técnico confirmou que vai; null enquanto não confirmar. */
+    vendor_confirmed_at?: string | null;
+    /** De quanto em quanto tempo se repete. Null numa marcação avulsa. */
+    recurrence?: ScheduleRecurrence | null;
+    /**
+     * True também nas ocorrências seguintes de uma série, que herdam
+     * `recurrence_parent_id` sem `recurrence` própria — por isso não basta
+     * olhar para `recurrence`.
+     */
+    is_recurring?: boolean;
   };
   service_type: {
     id: number;
     name: string;
     /** Duração estimada em minutos (ServiceType::time). Pode não vir no payload. */
     time?: number | null;
+    /** O que está combinado fazer, já traduzido. */
+    includes?: string[] | null;
+    /** O que NÃO está combinado — é aqui que nascem as discussões à porta. */
+    excludes?: string[] | null;
   };
   service_id: number;
   //added to handle the countdown counters

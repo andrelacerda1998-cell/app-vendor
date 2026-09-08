@@ -55,30 +55,33 @@ const Profile = () => {
   // A minha atividade
   const activitySections: Section[] = [
     {
-      label: t('profile.my_profile.labels.my_services'), tab: 'My Services', icon: <ToolIcon size={22} color="#FFFFFF" />,
+      label: t('profile.my_profile.labels.my_services'), tab: 'My Services', icon: <ToolIcon size={22} color={Colors.secondary} />,
       value: activeServices != null ? t('profile.values.services_active', { count: activeServices }) : undefined,
     },
     {
-      label: t('profile.activity.price_rate'), tab: 'Price Rate', icon: <CreditCardIcon size={22} color="#FFFFFF" />,
+      label: t('profile.activity.price_rate'), tab: 'Price Rate', icon: <CreditCardIcon size={22} color={Colors.secondary} />,
       value: priceRate != null ? `${priceRate.toFixed(2).replace('.', ',')} €` : undefined,
     },
     {
-      label: t('profile.activity.availability'), tab: 'Availability', icon: <Feather name="calendar" size={20} color="#FFFFFF" />,
+      label: t('profile.activity.availability'), tab: 'Availability', icon: <Feather name="calendar" size={20} color={Colors.secondary} />,
       value: activeDays != null ? t('profile.values.days_active', { count: activeDays }) : undefined,
     },
     {
-      label: t('profile.activity.reviews'), tab: 'Reviews', icon: <Feather name="star" size={20} color="#FFFFFF" />,
+      label: t('profile.activity.reviews'), tab: 'Reviews', icon: <Feather name="star" size={20} color={Colors.secondary} />,
       value: stats?.rating != null ? `${stats.rating.toFixed(1)} ★` : undefined,
     },
-    { label: t('profile.activity.documents'), tab: 'Documents', icon: <Feather name="file-text" size={20} color="#FFFFFF" /> },
-    { label: t('history.title'), tab: 'History', icon: <Feather name="clock" size={20} color="#FFFFFF" /> },
+    { label: t('profile.activity.documents'), tab: 'Documents', icon: <Feather name="file-text" size={20} color={Colors.secondary} /> },
+    // Faltas: penalizações por não comparecer. Fica visível mesmo com zero —
+    // saber que a regra existe é metade de não faltar.
+    { label: t('profile.activity.no_shows'), tab: 'No Shows', icon: <Feather name="user-x" size={20} color={Colors.secondary} /> },
+    { label: t('history.title'), tab: 'History', icon: <Feather name="clock" size={20} color={Colors.secondary} /> },
   ];
 
   // Conta
   const accountSections: Section[] = [
     // "O meu perfil" saiu daqui: o lápis no cabeçalho já abre a edição.
-    { label: t('profile.my_profile.labels.settings'), tab: 'Settings', icon: <GearIcon size={20} color="#FFFFFF" /> },
-    { label: t('profile.activity.support'), tab: 'Support', icon: <Feather name="life-buoy" size={20} color="#FFFFFF" /> },
+    { label: t('profile.my_profile.labels.settings'), tab: 'Settings', icon: <GearIcon size={20} color={Colors.secondary} /> },
+    { label: t('profile.activity.support'), tab: 'Support', icon: <Feather name="life-buoy" size={20} color={Colors.secondary} /> },
   ];
 
   // Estado da conta: cartão próprio com pill de estado (verde quando aprovada).
@@ -111,6 +114,9 @@ const Profile = () => {
         break;
       case "Reviews":
         router.navigate({ pathname: "/(app)/(pages)/(reviews)/reviews" });
+        break;
+      case "No Shows":
+        router.navigate({ pathname: "/(app)/(pages)/(no-shows)/no-shows" });
         break;
       case "Documents":
         router.navigate({ pathname: "/(app)/(pages)/(mydocuments)/mydocuments" });
@@ -160,7 +166,7 @@ const Profile = () => {
   const avatarSrc = vendorData?.user?.avatar?.src;
 
   return (
-    <SafeAreaView className="flex-1 bg-bg">
+    <SafeAreaView className="flex-1" style={{ backgroundColor: Colors.bg }}>
       <BackHeader
         backButtonColor="secondary"
         middleItem={() => (
@@ -176,7 +182,7 @@ const Profile = () => {
         <View className="flex-row items-center">
           <View
             className="h-16 w-16 rounded-full overflow-hidden mr-3 items-center justify-center"
-            style={{ backgroundColor: Colors.brand }}
+            style={{ backgroundColor: Colors.support_primary }}
           >
             {avatarSrc ? (
               <Image source={{ uri: avatarSrc }} className="w-full h-full" />
@@ -200,8 +206,8 @@ const Profile = () => {
           </View>
           <TouchableOpacity
             onPress={() => router.push('/(app)/(modals)/(profile)/edit-profile')}
-            className="w-10 h-10 rounded-full items-center justify-center bg-card border"
-            style={{ borderColor: Colors.line }}
+            className="w-10 h-10 rounded-full items-center justify-center border"
+            style={{ backgroundColor: Colors.card,  borderColor: Colors.line }}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             accessibilityRole="button"
             accessibilityLabel={t('profile.edit.header')}

@@ -130,7 +130,7 @@ const WalletHistoryBottomSheet = () => {
       backdropComponent={() => <View style={{ flex: 1, backgroundColor: 'black', opacity: 0.6 }} />}
     >
       {/* <StatusBar animated barStyle="light-content" backgroundColor="rgba(134, 134, 134, 0.1)" translucent /> */}
-      <View className="bg-primary p-5">
+      <View className="p-5" style={{ backgroundColor: Colors.primary }}>
 
         <CustomText
           color="secondary"
@@ -171,7 +171,7 @@ const WalletHistoryBottomSheet = () => {
           </View>
         </View>
 
-        <View className="h-[1px] w-full bg-support_secondary my-3"></View>
+        <View className="h-[1px] w-full my-3" style={{ backgroundColor: Colors.support_secondary }}></View>
 
         <View className="flex flex-row items-center my-3">
           <View className="flex-1">

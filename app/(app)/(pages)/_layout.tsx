@@ -22,6 +22,7 @@ export default function AppLayout() {
       <Stack.Screen name="(support)/support" />
 
       <Stack.Screen name="(reviews)/reviews" />
+      <Stack.Screen name="(no-shows)/no-shows" />
 
       <Stack.Screen name="(mydocuments)/mydocuments" />
 

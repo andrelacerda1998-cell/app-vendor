@@ -9,7 +9,7 @@ import React, { useEffect, useState } from 'react'
 import { Control, Controller, FieldErrors, FieldValues, set } from 'react-hook-form'
 import { Pressable, TextInput, TouchableWithoutFeedback, View } from 'react-native'
 import { ScrollView } from 'react-native'
-import { commonPasswords, offensiveUsernames } from '@/utils'
+import { commonPasswords } from '@/utils'
 import { useTranslation } from "react-i18next"
 
 const PasswordStep = ({
@@ -20,6 +20,12 @@ const PasswordStep = ({
   errors: FieldErrors<FieldValues>,
 }) => {
   const { t } = useTranslation();
+  /**
+   * As regras de composição (maiúscula, minúscula, número, símbolo) são mais
+   * apertadas do que o servidor, que só exige `Password::min(8)->uncompromised()`
+   * (CreateVendorRequest) — comprimento e não estar em fugas conhecidas. Ficam
+   * por decisão do André: a app pede mais do que o mínimo do backend.
+   */
   const wrongPassword = {
     MINIMUM: t('general.password_min_length'),
     UPPERCASE: t('general.password_uppercase'),
@@ -38,6 +44,24 @@ const PasswordStep = ({
     COMMON: true,
     MATCH: true,
   });
+
+  /**
+   * O que a lista MOSTRA — e não o que é verificado.
+   *
+   * O símbolo, a palavra-passe comum e a confirmação continuam a ser
+   * validados (bloqueiam o "Finalizar" e aparecem a vermelho por baixo do
+   * campo); só saíram da checklist, que ficava com sete linhas antes de a
+   * pessoa escrever a primeira letra. Deixar de os VERIFICAR seria outra
+   * coisa: a palavra-passe comum é rejeitada pelo servidor
+   * (Password::uncompromised) e a confirmação também (password.confirmed) —
+   * o erro apareceria no fim do registo, sem dizer em que campo.
+   */
+  const VISIBLE_RULES = ['MINIMUM', 'UPPERCASE', 'LOWERCASE', 'NUMBER'] as const;
+  /**
+   * Quantos caracteres faltam para os 8. "Pelo menos 8 caracteres" obriga a
+   * pessoa a contar o que escreveu; dizer "faltam 3" poupa-lhe isso.
+   */
+  const [missingChars, setMissingChars] = useState(8);
   const [showPassword, setShowPassword] = useState(false);
 
   const validatePassword = () => {
@@ -54,14 +78,17 @@ const PasswordStep = ({
     };
 
     setPasswordErrors(errors);
+    setMissingChars(Math.max(0, 8 - password.length));
 
-    // NOTA: tem de devolver a mensagem em texto (não `false`), senão o
-    // react-hook-form marca o campo como inválido mas errors.password.message
-    // fica undefined -- a única pista visual passa a ser a checklist acima,
-    // sem nenhum texto de erro junto ao próprio campo.
     const firstFailedKey = (Object.keys(errors) as (keyof typeof errors)[]).find((key) => errors[key]);
     if (firstFailedKey) {
-      return wrongPassword[firstFailedKey];
+      // A mensagem por baixo do campo só aparece para o que NÃO está na
+      // checklist. Sem isto, "Pelo menos 8 caracteres" ficava escrito duas
+      // vezes no mesmo ecrã — uma a vermelho debaixo do campo e outra na
+      // lista, a dois centímetros. O campo passa a dizer o que a lista não
+      // diz: símbolo, palavra-passe comum, confirmação.
+      const isInChecklist = (VISIBLE_RULES as readonly string[]).includes(firstFailedKey);
+      return isInChecklist ? false : wrongPassword[firstFailedKey];
     }
 
     return true;
@@ -80,63 +107,11 @@ const PasswordStep = ({
         {t('auth.sign_up.password_information.subtitle')}
       </CustomText>
 
-      <View className="mt-8">
-        <CustomText color="secondary" boldness="semiBold" numberOfLines={1}>
-          {t('general.username')}
-        </CustomText>
-
-        <Controller
-            control={control}
-            name="username"
-            rules={{
-              required: t('general.username_required'),
-              minLength: { value: 2, message: t('general.username_min_length') },
-              validate: (value) => {
-                  if (value.length > 30) {
-                    return t('general.username_max_length')
-                  } else if (/[^a-zA-Z0-9_]/.test(value)) {
-                    return t('general.username_invalid_characters')
-                  } else if (value.trim().length === 0) {
-                    return t('general.username_cannot_be_empty_or_only_spaces')
-                  } else if (/^\d+$/.test(value)) {
-                    return t('general.username_cannot_be_only_numbers')
-                  } else if (/\s/.test(value)) {
-                    return t('general.username_cannot_contain_spaces')
-                  } else if (offensiveUsernames.includes(value.toLowerCase())) {
-                    return t('general.username_not_allowed')
-                  }
-                  return true;
-              }
-
-            }}
-            render={({ field }) => (
-                <View className="mt-2">
-                  <CustomTextInput
-                    {...field}
-                    size="large"
-                    onChangeText={(value: string) => {
-                      const filteredValue = value.replace(/\s/g, '');
-                      field.onChange(filteredValue);
-                    }}
-                    placeholder={t('general.username_placeholder')}
-                    error={errors.username && errors.username.message}
-                    displayErrorIcon={true}
-                    success={!errors.username && field.value}
-                    displaySuccessIcon={true}
-                  />
-                </View>
-            )}
-        />
-        {errors.username && errors.username.message && (
-            <CustomText
-              size="small"
-              color="error"
-              classes="mt-1"
-            >
-              {errors.username.message as string}
-            </CustomText>
-        )}
-      </View>
+      {/* O "nome de utilizador" saiu daqui: não fazia sentido para quem se
+          inscreve como profissional (o login é por email — ver LoginController),
+          e o backend já o gera a partir do nome desde que a validação passou a
+          `nullable` (ver CreateVendorController::generateUsername). Era um campo
+          a mais a pedir a alguém que só quer começar a trabalhar. */}
 
       <View className="mt-8">
         <CustomText color="secondary" boldness="semiBold" numberOfLines={1}>
@@ -241,7 +216,7 @@ const PasswordStep = ({
 
       <View className="mt-4">
         {
-          Object.keys(passwordErrors).map((key) => (
+          VISIBLE_RULES.map((key) => (
             <View key={key} className="flex flex-row gap-2 items-center">
               {
                 passwordErrors[key as keyof typeof passwordErrors] ? (
@@ -255,7 +230,9 @@ const PasswordStep = ({
                 )
               }
               <CustomText color="gray_medium" size="small" numberOfLines={2}>
-                {wrongPassword[key as keyof typeof wrongPassword]}
+                {key === 'MINIMUM' && missingChars > 0 && missingChars < 8
+                  ? t('general.password_min_length_missing', { count: missingChars })
+                  : wrongPassword[key as keyof typeof wrongPassword]}
               </CustomText>
             </View>
           ))

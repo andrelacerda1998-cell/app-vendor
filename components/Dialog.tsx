@@ -6,6 +6,7 @@ import CustomTouchableOpacity from "./CustomTouchableOpacity";
 import { useClickOutside } from "react-native-click-outside";
 import { StatusBar } from "expo-status-bar";
 import Modal from "react-native-modal";
+import { Colors } from '@/constants/Colors';
 
 
 const Dialog: React.FC = () => {
@@ -32,7 +33,7 @@ const Dialog: React.FC = () => {
       animationOut="slideOutDown"
       backdropColor="rgba(0, 0, 0, 0.7)"
     >
-      <View className="items-center justify-center bg-primary rounded-3xl">
+      <View className="items-center justify-center rounded-3xl" style={{ backgroundColor: Colors.primary }}>
         <StatusBar style="light" backgroundColor="rgba(0, 0, 0, 0.5)" animated />
 
         {content && (
@@ -43,7 +44,7 @@ const Dialog: React.FC = () => {
             >
               {content.icon && (
                 <View className="items-center justify-center">
-                  <View className="w-10 h-10 p-3 rounded-full bg-support_primary">
+                  <View className="w-10 h-10 p-3 rounded-full" style={{ backgroundColor: Colors.support_primary }}>
                     {content.icon}
                   </View>
                 </View>

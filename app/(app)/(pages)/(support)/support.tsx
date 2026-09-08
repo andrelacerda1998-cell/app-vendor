@@ -105,7 +105,7 @@ const Support = () => {
   const statusLabel = (s: Ticket['status']) => t(`support.status.${s}`);
 
   return (
-    <SafeAreaView className="flex-1 bg-bg">
+    <SafeAreaView className="flex-1" style={{ backgroundColor: Colors.bg }}>
       <BackHeader
         backButtonColor="secondary"
         middleItem={() => (
@@ -123,7 +123,7 @@ const Support = () => {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.brand} />}
       >
         {/* Novo ticket */}
-        <View className="bg-card border rounded-2xl p-4" style={{ borderColor: Colors.line }}>
+        <View className="border rounded-2xl p-4" style={{ backgroundColor: Colors.card,  borderColor: Colors.line }}>
           <CustomText color="secondary" boldness="bold" size="medium">
             {t('support.new_ticket')}
           </CustomText>
@@ -175,8 +175,8 @@ const Support = () => {
             return (
               <View
                 key={key}
-                className="bg-card border rounded-2xl p-4"
-                style={{ borderColor: Colors.line }}
+                className="border rounded-2xl p-4"
+                style={{ backgroundColor: Colors.card,  borderColor: Colors.line }}
               >
                 <TouchableOpacity
                   onPress={() => setOpenFaq(expanded ? null : key)}
@@ -217,8 +217,8 @@ const Support = () => {
               {tickets.map((ticket) => (
                 <View
                   key={ticket.id}
-                  className="bg-card border rounded-2xl p-4"
-                  style={{ borderColor: Colors.line }}
+                  className="border rounded-2xl p-4"
+                  style={{ backgroundColor: Colors.card,  borderColor: Colors.line }}
                 >
                   <View className="flex-row items-center justify-between">
                     <CustomText color="secondary" boldness="bold" size="medium" numberOfLines={1} classes="flex-1 pr-3">

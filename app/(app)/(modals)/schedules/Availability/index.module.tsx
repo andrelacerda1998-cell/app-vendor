@@ -1,4 +1,5 @@
 import {StyleSheet} from "react-native";
+import { Colors } from '@/constants/Colors';
 
 export default () => StyleSheet.create({
   overlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.6)", justifyContent: "flex-end" },
@@ -20,7 +21,7 @@ export default () => StyleSheet.create({
     marginVertical: 12,
   },
   header: { marginBottom: 12 },
-  title: { color: "#fff", fontSize: 18, fontWeight: "700" },
+  title: { color: Colors.secondary, fontSize: 18, fontWeight: "700" },
   subtitle: { color: "#9b9b9b", marginTop: 6, fontSize: 14 },
   rowHeader: { flexDirection: "row", justifyContent: "space-around", marginTop: 12 },
   smallLabel: { color: "#d6d6d9", fontSize: 13, fontWeight: "600", width: "auto", margin: "auto" },
@@ -35,7 +36,7 @@ export default () => StyleSheet.create({
     paddingHorizontal: 16,
     alignItems: "center",
   },
-  timeText: { color: "#fff", fontSize: 16, fontWeight: "600" },
+  timeText: { color: Colors.secondary, fontSize: 16, fontWeight: "600" },
   errorText: { color: "#ff7070", marginTop: 8, fontSize: 12 },
   footer: { flexDirection: "row", gap: 12, marginTop: 16 },
   secondaryBtn: {
@@ -46,7 +47,7 @@ export default () => StyleSheet.create({
     borderColor: "#2f2f33",
     alignItems: "center",
   },
-  secondaryText: { color: "#fff", fontWeight: "600", fontSize: 16 },
+  secondaryText: { color: Colors.secondary, fontWeight: "600", fontSize: 16 },
   primaryBtn: { flex: 1, paddingVertical: 16, borderRadius: 16, backgroundColor: "#f7b85a", alignItems: "center" },
   primaryBtnDisabled: { backgroundColor: "#6a5332" },
   primaryText: { color: "#111", fontWeight: "700", fontSize: 16 },

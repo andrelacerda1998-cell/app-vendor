@@ -302,7 +302,7 @@ export const ErrorState = ({
           onPress={onRetry}
           activeOpacity={0.85}
           className="rounded-xl px-5 py-3 mt-4"
-          style={{ backgroundColor: Colors.brand }}
+          style={{ backgroundColor: Colors.support_primary }}
         >
           <CustomText color="on_brand" boldness="bold" size="small">
             {retryLabel ?? t('general.try_again')}

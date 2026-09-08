@@ -18,7 +18,7 @@ interface CampaignPayload {
    * app/Notifications/Vendor/*): 'service' abre o serviço em curso,
    * 'request' abre a lista de pedidos.
    */
-  open_type?: 'service' | 'request' | 'complete_profile' | string | null;
+  open_type?: 'service' | 'request' | 'complete_profile' | 'schedule_attendance' | string | null;
   open_id?: number | string | null;
 }
 
@@ -131,6 +131,15 @@ export function NotificationObserverHandler() {
       // abre o wizard diretamente, que é o único sítio onde a ação acontece.
       if (open_type === 'complete_profile') {
         router.push('/(app)/(complete-profile)/CompleteProfile');
+        return;
+      }
+
+      // Lembrete de presença (72h antes). Vai à Agenda e não a um ecrã de
+      // detalhe: é lá que está o botão de confirmar, no cartão do próprio
+      // serviço, com os outros do mesmo dia à volta — que é o contexto de
+      // quem está a decidir se ainda consegue lá ir.
+      if (open_type === 'schedule_attendance') {
+        router.push('/(app)/(tabs)/wallet');
         return;
       }
 

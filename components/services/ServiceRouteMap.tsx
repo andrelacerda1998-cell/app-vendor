@@ -138,7 +138,7 @@ const ServiceRouteMap = ({
           )}
           {start && (
             <Marker coordinate={start} anchor={{ x: 0.5, y: 0.5 }}>
-              <View style={{ width: 14, height: 14, borderRadius: 7, backgroundColor: Colors.brand, borderWidth: 2, borderColor: '#fff' }} />
+              <View style={{ width: 14, height: 14, borderRadius: 7, backgroundColor: Colors.support_primary, borderWidth: 2, borderColor: '#fff' }} />
             </Marker>
           )}
           <Marker coordinate={dest} anchor={{ x: 0.5, y: 1 }}>

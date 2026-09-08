@@ -112,7 +112,7 @@ const CustomerPhotos = ({
               justifyContent: "center",
             }}
           >
-            <Feather name="x" size={20} color="#FFFFFF" />
+            <Feather name="x" size={20} color={Colors.secondary} />
           </TouchableOpacity>
 
           {photos.length > 1 && openIndex !== null && (

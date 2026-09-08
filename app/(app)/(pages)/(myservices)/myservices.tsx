@@ -73,7 +73,7 @@ const MyServices: React.FC<MyServicesProps> = () => {
   };
 
   return (
-    <SafeAreaView className={`flex-1 bg-bg ${Platform.OS === 'android' ? 'pb-[100px]' : 'pb-[50px]'}`}>
+    <SafeAreaView className={`flex-1 ${Platform.OS === 'android' ? 'pb-[100px]' : 'pb-[50px]'}`} style={{ backgroundColor: Colors.bg }}>
       <BackHeader
         backButtonColor="secondary"
         middleItem={() => (

@@ -15,6 +15,7 @@ import { Colors } from '@/constants/Colors';
 import { useApi } from '@/contexts/ApiContext';
 import { useDialog } from '@/contexts/DialogContext';
 import { useSession } from '@/contexts/SessionContext';
+import { useTheme, ThemeMode } from '@/contexts/ThemeContext';
 import { API_ROUTES } from '@/constants/ApiRoutes';
 import InfoSquareIcon from "@/assets/icons/info";
 import PrivacyPolicy from "@/assets/icons/privacy";
@@ -34,6 +35,7 @@ const Settings = () => {
   const { api } = useApi();
   const { openDialog } = useDialog();
   const { signOut } = useSession();
+  const { mode, setMode } = useTheme();
 
   const [prefs, setPrefs] = useState<Prefs>({});
   const [saving, setSaving] = useState<string | null>(null);
@@ -93,7 +95,7 @@ const Settings = () => {
       key: 'documents',
       label: t('profile.settings.documents'),
       onPress: () => router.push('/(app)/(modals)/documents'),
-      icon: <DocumentIcon size={20} color="#fff" />,
+      icon: <DocumentIcon size={20} color={Colors.secondary} />,
     },
     {
       key: 'delete_account',
@@ -108,13 +110,13 @@ const Settings = () => {
       key: 'about',
       label: t('profile.settings.about'),
       onPress: () => Linking.openURL('https://piquetapp.com/#FAQ'),
-      icon: <InfoSquareIcon size={24} color="#fff" color2="#000" />,
+      icon: <InfoSquareIcon size={24} color={Colors.secondary} color2="#000" />,
     },
     {
       key: 'privacy',
       label: t('profile.settings.privacy'),
       onPress: () => Linking.openURL('https://piquetapp.com/politica-de-privacidade-para-utilizadores/'),
-      icon: <PrivacyPolicy width={24} height={24} color="#fff" />,
+      icon: <PrivacyPolicy width={24} height={24} color={Colors.secondary} />,
     },
     {
       key: 'use_terms',
@@ -126,7 +128,7 @@ const Settings = () => {
       key: 'version',
       label: t('profile.settings.version'),
       value: packageInfo.version,
-      icon: <Feather name="info" size={20} color="#fff" />,
+      icon: <Feather name="info" size={20} color={Colors.secondary} />,
     },
   ];
 
@@ -136,7 +138,47 @@ const Settings = () => {
       contentContainerStyle={{ paddingBottom: 32 }}
       showsVerticalScrollIndicator={false}
     >
+      {/* Aspeto — em primeiro porque é a única definição que se vê a mudar
+          no momento em que se toca; as outras só se notam mais tarde. */}
+      <SectionHeader title={t('settings_screen.appearance')} />
+      <Card padded={false}>
+        <View className="flex-row p-2" style={{ gap: 8 }}>
+          {(['system', 'light', 'dark'] as ThemeMode[]).map((option) => {
+            const active = mode === option;
+            return (
+              <TouchableOpacity
+                key={option}
+                onPress={() => setMode(option)}
+                activeOpacity={0.85}
+                accessibilityRole="radio"
+                accessibilityState={{ selected: active }}
+                className="flex-1 items-center rounded-xl py-3 border"
+                style={{
+                  borderColor: active ? Colors.brand : Colors.line,
+                  backgroundColor: active ? Colors.brand_soft : 'transparent',
+                }}
+              >
+                <Feather
+                  name={option === 'system' ? 'smartphone' : option === 'light' ? 'sun' : 'moon'}
+                  size={18}
+                  color={active ? Colors.brand : Colors.muted}
+                />
+                <CustomText
+                  color={active ? 'brand' : 'muted'}
+                  size="extraSmall"
+                  boldness={active ? 'bold' : 'medium'}
+                  classes="mt-1.5"
+                >
+                  {t(`settings_screen.theme.${option}`)}
+                </CustomText>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      </Card>
+
       {/* Notificações */}
+      <View className="mt-7" />
       <SectionHeader title={t('settings_screen.notifications')} />
       <Card padded={false}>
         {NOTIFICATION_KEYS.map((key, i) => (
