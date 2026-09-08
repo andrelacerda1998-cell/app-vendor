@@ -20,21 +20,23 @@ const PasswordStep = ({
   errors: FieldErrors<FieldValues>,
 }) => {
   const { t } = useTranslation();
+  /**
+   * Três regras, e não sete.
+   *
+   * Exigir maiúscula + minúscula + número + símbolo não torna a palavra-passe
+   * mais segura: leva as pessoas ao mesmo sítio previsível ("Piquet2026!") e
+   * afasta quem só quer inscrever-se. O que o SERVIDOR exige é
+   * `Password::min(8)->uncompromised()` (CreateVendorRequest) — comprimento e
+   * não estar em fugas de dados conhecidas. As quatro regras de composição
+   * eram invenção da app, mais apertadas do que o backend sem nada a ganhar.
+   */
   const wrongPassword = {
     MINIMUM: t('general.password_min_length'),
-    UPPERCASE: t('general.password_uppercase'),
-    LOWERCASE: t('general.password_lowercase'),
-    NUMBER: t('general.password_number'),
-    SPECIAL_CHAR: t('general.password_special_character'),
     COMMON: t('general.password_common'),
     MATCH: t('general.password_match'),
   }
   const [passwordErrors, setPasswordErrors] = useState({
     MINIMUM: true,
-    UPPERCASE: true,
-    LOWERCASE: true,
-    NUMBER: true,
-    SPECIAL_CHAR: true,
     COMMON: true,
     MATCH: true,
   });
@@ -45,10 +47,6 @@ const PasswordStep = ({
     const password_confirmation = control._formValues.password_confirmation;
     const errors = {
       MINIMUM: password.length < 8,
-      UPPERCASE: !/[A-Z]/.test(password),
-      LOWERCASE: !/[a-z]/.test(password),
-      NUMBER: !/[0-9]/.test(password),
-      SPECIAL_CHAR: !/[!@?#$%^&*_/-]/.test(password),
       COMMON: commonPasswords.includes(password),
       MATCH: password !== password_confirmation,
     };
