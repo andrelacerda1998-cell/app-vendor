@@ -1,5 +1,5 @@
 import React from "react";
-import { Switch, View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import { Image } from "expo-image";
 import { Feather } from "@expo/vector-icons";
 import { CustomText } from "@/components/CustomText";
@@ -16,7 +16,15 @@ interface ServiceTypeItemSelectorProps {
 }
 
 /**
- * Linha de um tipo de serviço com switch de subscrição.
+ * Linha de um tipo de serviço que o técnico liga ou desliga.
+ *
+ * A LINHA INTEIRA é o botão, e o estado mostra-se com um visto. Era um
+ * `Switch`, que aqui dizia pouco: o manípulo branco sobre cinzento lê-se como
+ * ligado, o alvo era uma pastilha de 50 px ao canto, e um interruptor é um
+ * "ligar/desligar" quando o que se está a fazer é escolher itens de uma lista.
+ * Selecionado ganha moldura âmbar e o visto preenchido — dá para ver o que já
+ * está escolhido a percorrer a lista, sem ler.
+ *
  * A duração e o ganho só aparecem quando o backend devolver `time` — ver utils/services.ts.
  */
 const ServiceTypeItemSelector: React.FC<ServiceTypeItemSelectorProps> = ({
@@ -29,7 +37,19 @@ const ServiceTypeItemSelector: React.FC<ServiceTypeItemSelectorProps> = ({
   const earning = formatEuro(estimateVendorEarning(hourRate, item.time));
 
   return (
-    <View className="w-full flex-row items-center justify-between">
+    <TouchableOpacity
+      activeOpacity={0.7}
+      onPress={() => addServiceType(item.id)}
+      accessibilityRole="checkbox"
+      accessibilityState={{ checked: isSelected }}
+      accessibilityLabel={item.name}
+      className="w-full flex-row items-center justify-between rounded-2xl px-2 py-2"
+      style={{
+        backgroundColor: isSelected ? Colors.brand_soft : 'transparent',
+        borderWidth: 1,
+        borderColor: isSelected ? Colors.brand : 'transparent',
+      }}
+    >
       {/* A imagem do catálogo, a mesma que o cliente vê. Reconhecer o trabalho
           pelo desenho é mais rápido do que ler uma lista de 26 nomes que
           começam todos por "Reparação de" — e é assim que ele escolhe o que
@@ -65,13 +85,22 @@ const ServiceTypeItemSelector: React.FC<ServiceTypeItemSelectorProps> = ({
         )}
       </View>
 
-      <Switch
-        value={isSelected}
-        onValueChange={() => addServiceType(item.id)}
-        trackColor={{ false: Colors.card_high, true: Colors.brand }}
-        thumbColor={Colors.secondary}
-      />
-    </View>
+      {/* Visto preenchido quando escolhido, círculo vazio quando não —
+          o par cheio/vazio lê-se de relance, ao contrário de dois tons de
+          cinzento num interruptor. */}
+      <View
+        className="items-center justify-center rounded-full"
+        style={{
+          width: 26,
+          height: 26,
+          backgroundColor: isSelected ? Colors.brand : 'transparent',
+          borderWidth: isSelected ? 0 : 1.5,
+          borderColor: Colors.line,
+        }}
+      >
+        {isSelected && <Feather name="check" size={16} color={Colors.on_brand} />}
+      </View>
+    </TouchableOpacity>
   );
 };
 
