@@ -40,6 +40,11 @@ const PasswordStep = ({
     COMMON: true,
     MATCH: true,
   });
+  /**
+   * Quantos caracteres faltam para os 8. "Pelo menos 8 caracteres" obriga a
+   * pessoa a contar o que escreveu; dizer "faltam 3" poupa-lhe isso.
+   */
+  const [missingChars, setMissingChars] = useState(8);
   const [showPassword, setShowPassword] = useState(false);
 
   const validatePassword = () => {
@@ -52,6 +57,7 @@ const PasswordStep = ({
     };
 
     setPasswordErrors(errors);
+    setMissingChars(Math.max(0, 8 - password.length));
 
     // NOTA: tem de devolver a mensagem em texto (não `false`), senão o
     // react-hook-form marca o campo como inválido mas errors.password.message
@@ -201,7 +207,9 @@ const PasswordStep = ({
                 )
               }
               <CustomText color="gray_medium" size="small" numberOfLines={2}>
-                {wrongPassword[key as keyof typeof wrongPassword]}
+                {key === 'MINIMUM' && missingChars > 0 && missingChars < 8
+                  ? t('general.password_min_length_missing', { count: missingChars })
+                  : wrongPassword[key as keyof typeof wrongPassword]}
               </CustomText>
             </View>
           ))
