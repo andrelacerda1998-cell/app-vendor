@@ -44,6 +44,19 @@ const PasswordStep = ({
     COMMON: true,
     MATCH: true,
   });
+
+  /**
+   * O que a lista MOSTRA — e não o que é verificado.
+   *
+   * O símbolo, a palavra-passe comum e a confirmação continuam a ser
+   * validados (bloqueiam o "Finalizar" e aparecem a vermelho por baixo do
+   * campo); só saíram da checklist, que ficava com sete linhas antes de a
+   * pessoa escrever a primeira letra. Deixar de os VERIFICAR seria outra
+   * coisa: a palavra-passe comum é rejeitada pelo servidor
+   * (Password::uncompromised) e a confirmação também (password.confirmed) —
+   * o erro apareceria no fim do registo, sem dizer em que campo.
+   */
+  const VISIBLE_RULES = ['MINIMUM', 'UPPERCASE', 'LOWERCASE', 'NUMBER'] as const;
   /**
    * Quantos caracteres faltam para os 8. "Pelo menos 8 caracteres" obriga a
    * pessoa a contar o que escreveu; dizer "faltam 3" poupa-lhe isso.
@@ -201,7 +214,7 @@ const PasswordStep = ({
 
       <View className="mt-4">
         {
-          Object.keys(passwordErrors).map((key) => (
+          VISIBLE_RULES.map((key) => (
             <View key={key} className="flex flex-row gap-2 items-center">
               {
                 passwordErrors[key as keyof typeof passwordErrors] ? (
