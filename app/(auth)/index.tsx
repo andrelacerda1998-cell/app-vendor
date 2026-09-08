@@ -193,7 +193,7 @@ const SignIn = () => {
           disabled={isLoggingIn}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           accessibilityRole="button"
-          className="self-end mt-4"
+          className="self-center mt-4"
         >
           <CustomText size="small" color="muted" boldness="medium" numberOfLines={1}>
             {t('auth.sign_in.forgot_password')}
