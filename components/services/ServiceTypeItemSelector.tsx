@@ -1,5 +1,6 @@
 import React from "react";
 import { Switch, View } from "react-native";
+import { Image } from "expo-image";
 import { Feather } from "@expo/vector-icons";
 import { CustomText } from "@/components/CustomText";
 import { Colors } from "@/constants/Colors";
@@ -29,6 +30,18 @@ const ServiceTypeItemSelector: React.FC<ServiceTypeItemSelectorProps> = ({
 
   return (
     <View className="w-full flex-row items-center justify-between">
+      {/* A imagem do catálogo, a mesma que o cliente vê. Reconhecer o trabalho
+          pelo desenho é mais rápido do que ler uma lista de 26 nomes que
+          começam todos por "Reparação de" — e é assim que ele escolhe o que
+          sabe fazer. Sem imagem no payload, a linha fica como estava. */}
+      {!!item.image && (
+        <Image
+          source={{ uri: item.image }}
+          style={{ width: 40, height: 40, borderRadius: 10, marginRight: 12 }}
+          contentFit="cover"
+          transition={120}
+        />
+      )}
       <View className="flex-1 mr-3">
         <CustomText size="small" color="secondary" boldness="semiBold" numberOfLines={2}>
           {item.name}

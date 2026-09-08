@@ -85,7 +85,6 @@ export default {
             "skills_selection": {
                 "title": "Indica as tuas competências",
                 "subtitle": "Escolhe o que sabes fazer. É com isto que te enviamos pedidos.",
-                "hint": "Toca numa categoria para veres os trabalhos que tem dentro.",
                 "no_skills_found": "Ainda não há competências para mostrar. Verifica a ligação e tenta outra vez.",
                 "error_must_select": {
                     "title": "Falta escolher uma competência",

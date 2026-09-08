@@ -85,7 +85,6 @@ export default {
       "skills_selection": {
         "title": "Tell us your skills",
         "subtitle": "Pick what you can do. This is how we send you requests.",
-        "hint": "Tap a category to see the jobs inside it.",
         "no_skills_found": "No skills to show yet. Check your connection and try again.",
         "error_must_select": {
           "title": "Pick at least one skill",

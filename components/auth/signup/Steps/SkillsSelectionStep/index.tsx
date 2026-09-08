@@ -37,9 +37,6 @@ const SkillsSelectionStep = ({
         <CustomText color="muted" numberOfLines={3} classes="mt-2">
           {t('auth.sign_up.skills_selection.subtitle')}
         </CustomText>
-        <CustomText color="muted" size="small" numberOfLines={2} classes="mt-3">
-          {t('auth.sign_up.skills_selection.hint')}
-        </CustomText>
       </View>
 
       <FlatList
