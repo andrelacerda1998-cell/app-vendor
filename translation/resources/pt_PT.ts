@@ -1471,7 +1471,7 @@ export default {
             "email_check": "Já confirmei"
         },
         "billing": {
-            "title": "Acesso à AT",
+            "title": "Subutilizador AT",
             "subtitle": "Cria um acesso nas Finanças só para faturas e escreve-o aqui."
         },
         "zone_demand_one": "{{count}} pedido na tua zona esta semana",

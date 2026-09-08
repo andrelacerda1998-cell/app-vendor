@@ -1471,7 +1471,7 @@ export default {
       "email_check": "I've confirmed"
     },
     "billing": {
-      "title": "Tax authority access",
+      "title": "Tax Authority sub-user",
       "subtitle": "Create a tax portal login just for invoices and enter it here."
     },
     "zone_demand_one": "{{count}} request in your area this week",
