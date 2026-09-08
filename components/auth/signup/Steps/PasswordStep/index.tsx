@@ -80,13 +80,15 @@ const PasswordStep = ({
     setPasswordErrors(errors);
     setMissingChars(Math.max(0, 8 - password.length));
 
-    // NOTA: tem de devolver a mensagem em texto (não `false`), senão o
-    // react-hook-form marca o campo como inválido mas errors.password.message
-    // fica undefined -- a única pista visual passa a ser a checklist acima,
-    // sem nenhum texto de erro junto ao próprio campo.
     const firstFailedKey = (Object.keys(errors) as (keyof typeof errors)[]).find((key) => errors[key]);
     if (firstFailedKey) {
-      return wrongPassword[firstFailedKey];
+      // A mensagem por baixo do campo só aparece para o que NÃO está na
+      // checklist. Sem isto, "Pelo menos 8 caracteres" ficava escrito duas
+      // vezes no mesmo ecrã — uma a vermelho debaixo do campo e outra na
+      // lista, a dois centímetros. O campo passa a dizer o que a lista não
+      // diz: símbolo, palavra-passe comum, confirmação.
+      const isInChecklist = (VISIBLE_RULES as readonly string[]).includes(firstFailedKey);
+      return isInChecklist ? false : wrongPassword[firstFailedKey];
     }
 
     return true;

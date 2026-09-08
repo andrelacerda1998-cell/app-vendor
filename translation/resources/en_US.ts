@@ -53,7 +53,7 @@ export default {
       "step_counter": "Step {{current}} of {{total}}",
       "verifying_email": "Verifying email...",
       "signing_up": "Creating account...",
-      "last_step": "Finish",
+      "last_step": "Create account",
       "continue_sign_up": "Continue",
       "instructions": {
         "first_title": "Start earning with your skills",
@@ -80,7 +80,7 @@ export default {
       },
       "password_information": {
         "title": "Create a password",
-        "subtitle": "This is how you sign in. Keep it safe."
+        "subtitle": "You sign in with your email and this password."
       },
       "skills_selection": {
         "title": "Tell us your skills",

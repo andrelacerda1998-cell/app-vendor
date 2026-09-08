@@ -53,7 +53,7 @@ export default {
             "step_counter": "Passo {{current}} de {{total}}",
             "verifying_email": "A verificar email...",
             "signing_up": "A criar conta...",
-            "last_step": "Finalizar",
+            "last_step": "Criar conta",
             "continue_sign_up": "Continuar",
             "instructions": {
                 "first_title": "Começa a ganhar com as tuas competências",
@@ -80,7 +80,7 @@ export default {
             },
             "password_information": {
                 "title": "Cria uma palavra-passe",
-                "subtitle": "É com ela que entras na app. Guarda-a bem."
+                "subtitle": "Entras na app com o teu email e esta palavra-passe."
             },
             "skills_selection": {
                 "title": "Indica as tuas competências",
