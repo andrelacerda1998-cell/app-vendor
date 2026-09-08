@@ -85,17 +85,18 @@ const ServiceTypeItemSelector: React.FC<ServiceTypeItemSelectorProps> = ({
         )}
       </View>
 
-      {/* Visto preenchido quando escolhido, círculo vazio quando não —
-          o par cheio/vazio lê-se de relance, ao contrário de dois tons de
-          cinzento num interruptor. */}
+      {/* Visto preenchido quando escolhido, bolinha vazia quando não.
+          A borda é `muted` e não `line`: com `line` (#2E2E33) sobre o fundo
+          escuro a bolinha era quase invisível, e uma lista onde não se vê o
+          que é selecionável parece uma lista de leitura. */}
       <View
         className="items-center justify-center rounded-full"
         style={{
           width: 26,
           height: 26,
           backgroundColor: isSelected ? Colors.brand : 'transparent',
-          borderWidth: isSelected ? 0 : 1.5,
-          borderColor: Colors.line,
+          borderWidth: isSelected ? 0 : 2,
+          borderColor: Colors.muted,
         }}
       >
         {isSelected && <Feather name="check" size={16} color={Colors.on_brand} />}
