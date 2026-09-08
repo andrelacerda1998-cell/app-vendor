@@ -1075,18 +1075,18 @@ export default {
     "title": "Auto-Acceptance",
     "state": {
       "on_title": "Auto-Acceptance on",
-      "on_subtitle": "Services scheduled within your availability are accepted automatically.",
+      "on_subtitle": "You answer invitations automatically during your free hours — without opening the app.",
       "off_title": "Auto-Acceptance off",
-      "off_subtitle": "Turn it on so you don't miss scheduled requests."
+      "off_subtitle": "Without it, an invitation you don't answer in time is left out."
     },
     "how_it_works": {
       "title": "How it works",
-      "availability": "Only services scheduled within your availability are accepted automatically.",
-      "notification": "You get a notification confirming every acceptance.",
-      "customer": "The client gets immediate confirmation.",
-      "responsibility": "You are responsible for carrying out the services accepted automatically."
+      "availability": "You are only invited for slots you have free in your availability.",
+      "notification": "You get a notification for every invitation you answered.",
+      "customer": "The client sees the best 3 of those who are available, by rating, price and distance — and chooses.",
+      "responsibility": "If you are the one chosen, the service is yours and you are responsible for carrying it out."
     },
-    "warning": "Cancelling a service after it is accepted may lead to a penalty."
+    "warning": "Answering an invitation does not book your calendar. Cancelling a service after it is assigned to you may lead to a penalty."
   },
   "history": {
     "title": "History",
@@ -1209,7 +1209,7 @@ export default {
         },
         "auto_accept": {
           "q": "What is Auto-Acceptance?",
-          "a": "It automatically accepts scheduled services that fall within your availability."
+          "a": "Answers invitations automatically during your free hours. You enter the selection; the client sees the best 3 by rating, price and distance."
         },
         "hourly_rate": {
           "q": "How does the hourly rate work?",
@@ -1376,7 +1376,7 @@ export default {
     "fallback_service": "your service"
   },
   "auto_accept_lost": {
-    "week": "This week you missed {{amount}} in requests you didn't reply to."
+    "week": "This week {{count}} invitations passed you by because you didn't answer in time."
   },
   "documents_validating": {
     "pending": "We're validating your documents. We'll let you know as soon as it's done.",
@@ -1620,8 +1620,8 @@ export default {
     "settings_schedule": "Schedule settings",
     "repeat": "Repeat",
     "auto_acceptance": "Auto-Acceptance",
-    "auto_accept_on": "On — you reply to every request in your free hours.",
-    "auto_accept_off": "Off — you reply to each request.",
+    "auto_accept_on": "On — you answer invitations automatically in your free hours.",
+    "auto_accept_off": "Off — you answer each invitation.",
     "auto_accept_enable": "Turn on",
     "availability_schedule": "Availability schedule",
     "continue": "Save",
@@ -1659,7 +1659,7 @@ export default {
       "enable_repeat_subtitle": "Turning repeat on makes this week's availability repeat every following week, replacing any hours you added manually. Do you want to continue?",
       "disable_repeat_subtitle": "Turning repeat off deletes every time slot with no service booked, from next week onwards. Do you want to continue?",
       "auto_accept_title": "Turn on Auto-Acceptance?",
-      "auto_accept_subtitle": "You reply automatically to every service request in the hours you have free. On requests where the client chooses, you join the list without doing anything."
+      "auto_accept_subtitle": "You answer invitations automatically in the hours you have free. You enter the selection without doing anything — the client sees the best 3 by rating, price and distance."
     },
     "days": {
       "Mo": "Monday",
