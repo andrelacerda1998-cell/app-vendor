@@ -21,17 +21,24 @@ const PasswordStep = ({
 }) => {
   const { t } = useTranslation();
   /**
-   * As regras de composição (maiúscula, minúscula, número, símbolo) são mais
-   * apertadas do que o servidor, que só exige `Password::min(8)->uncompromised()`
-   * (CreateVendorRequest) — comprimento e não estar em fugas conhecidas. Ficam
-   * por decisão do André: a app pede mais do que o mínimo do backend.
+   * A lista que se vê É a lista de regras — não há nenhuma escondida.
+   *
+   * Antes o símbolo era exigido sem estar na checklist: a lista dizia tudo ✓
+   * verde e aparecia um erro vermelho por baixo dos DOIS campos, vindo de uma
+   * regra que não estava escrita em lado nenhum. Deixou de ser exigido
+   * (decisão do André) — o servidor nunca o pediu: `Password::min(8)
+   * ->uncompromised()` (CreateVendorRequest) é comprimento e não estar em
+   * fugas de dados conhecidas.
+   *
+   * Sobram duas verificações fora da lista, e são de outra natureza: a
+   * palavra-passe comum e a confirmação. Essas não são "requisitos a cumprir"
+   * — são enganos, e aparecem como erro no campo onde o engano está.
    */
   const wrongPassword = {
     MINIMUM: t('general.password_min_length'),
     UPPERCASE: t('general.password_uppercase'),
     LOWERCASE: t('general.password_lowercase'),
     NUMBER: t('general.password_number'),
-    SPECIAL_CHAR: t('general.password_special_character'),
     COMMON: t('general.password_common'),
     MATCH: t('general.password_match'),
   }
@@ -40,7 +47,6 @@ const PasswordStep = ({
     UPPERCASE: true,
     LOWERCASE: true,
     NUMBER: true,
-    SPECIAL_CHAR: true,
     COMMON: true,
     MATCH: true,
   });
@@ -64,7 +70,7 @@ const PasswordStep = ({
   const [missingChars, setMissingChars] = useState(8);
   const [showPassword, setShowPassword] = useState(false);
 
-  const validatePassword = () => {
+  const validatePassword = (field?: 'password' | 'password_confirmation') => {
     const password = control._formValues.password;
     const password_confirmation = control._formValues.password_confirmation;
     const errors = {
@@ -72,7 +78,6 @@ const PasswordStep = ({
       UPPERCASE: !/[A-Z]/.test(password),
       LOWERCASE: !/[a-z]/.test(password),
       NUMBER: !/[0-9]/.test(password),
-      SPECIAL_CHAR: !/[!@?#$%^&*_/-]/.test(password),
       COMMON: commonPasswords.includes(password),
       MATCH: password !== password_confirmation,
     };
@@ -80,18 +85,27 @@ const PasswordStep = ({
     setPasswordErrors(errors);
     setMissingChars(Math.max(0, 8 - password.length));
 
-    const firstFailedKey = (Object.keys(errors) as (keyof typeof errors)[]).find((key) => errors[key]);
-    if (firstFailedKey) {
-      // A mensagem por baixo do campo só aparece para o que NÃO está na
-      // checklist. Sem isto, "Pelo menos 8 caracteres" ficava escrito duas
-      // vezes no mesmo ecrã — uma a vermelho debaixo do campo e outra na
-      // lista, a dois centímetros. O campo passa a dizer o que a lista não
-      // diz: símbolo, palavra-passe comum, confirmação.
-      const isInChecklist = (VISIBLE_RULES as readonly string[]).includes(firstFailedKey);
-      return isInChecklist ? false : wrongPassword[firstFailedKey];
+    // Cada erro aparece no campo onde se corrige, e uma só vez.
+    //
+    // Os dois campos partilham esta validação; sem separar por campo, o mesmo
+    // aviso saía por baixo dos DOIS ("Um símbolo" repetido, no ecrã que deu
+    // origem a isto). E o que já está na checklist não se repete debaixo do
+    // campo — estaria escrito duas vezes com dois centímetros de intervalo.
+    if (field === 'password_confirmation') {
+      return errors.MATCH ? wrongPassword.MATCH : true;
     }
 
-    return true;
+    if (errors.COMMON) {
+      return wrongPassword.COMMON;
+    }
+
+    // O resto está todo na checklist: marca o campo como inválido (bloqueia o
+    // "Criar conta") sem escrever nada por baixo dele.
+    const falhaNaLista = (VISIBLE_RULES as readonly string[]).some(
+      (key) => errors[key as keyof typeof errors],
+    );
+
+    return falhaNaLista || errors.MATCH ? false : true;
   };
 
   useEffect(() => {
@@ -124,7 +138,7 @@ const PasswordStep = ({
           defaultValue=""
           rules={{
             required: t('general.password_required'),
-            validate: () => validatePassword()
+            validate: () => validatePassword('password')
           }}
           render={({ field }) => (
             <View className="mt-2 justify-center" removeClippedSubviews={true}>
@@ -180,7 +194,7 @@ const PasswordStep = ({
           defaultValue=""
           rules={{
             required: t('general.confirm_password_required'),
-            validate: () => validatePassword()
+            validate: () => validatePassword('password_confirmation')
           }}
           render={({ field }) => (
             <View className="mt-2 justify-center" removeClippedSubviews={true}>

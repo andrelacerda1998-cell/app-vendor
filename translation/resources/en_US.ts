@@ -85,7 +85,6 @@ export default {
       "skills_selection": {
         "title": "Tell us your skills",
         "subtitle": "Pick what you can do. This is how we send you requests.",
-        "hint": "Tap a category to see the jobs inside it.",
         "no_skills_found": "No skills to show yet. Check your connection and try again.",
         "error_must_select": {
           "title": "Pick at least one skill",
@@ -861,7 +860,6 @@ export default {
     "password_uppercase": "One uppercase letter (A–Z)",
     "password_lowercase": "One lowercase letter (a–z)",
     "password_number": "One number (0–9)",
-    "password_special_character": "One symbol (!, #, $, %…)",
     "password_common": "Nothing obvious like “12345678” or “password”",
     "password_length_requirement": "At least 8 characters",
     "password_uncompromised": "This password has appeared in known data breaches. Choose another one.",

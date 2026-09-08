@@ -95,6 +95,11 @@ export interface ServiceTypeInterface {
   time?: number | null;
   description?: string;
   operation_area_id?: OperationArea['id'];
+  /**
+   * Imagem do catálogo (a mesma que o cliente vê ao escolher o serviço).
+   * URL assinado e temporário — não guardar.
+   */
+  image?: string | null;
   /** Preço "desde" (€) do catálogo. Também só devolvido no endpoint do cliente. */
   starts_from?: number | null;
   suggested_price?: string;
