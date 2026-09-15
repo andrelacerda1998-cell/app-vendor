@@ -210,7 +210,7 @@ const Status = () => {
         openDialog({
           icon: <XIcon color={Colors.primary} />,
           title: t('errors.service_finish.title'),
-          subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('errors.service_finish.subtitle'),
+          subtitle: t('errors.service_finish.subtitle'),
           closeAfterMSeconds: 3000,
           closeOnClickOutside: true,
         })
@@ -361,7 +361,7 @@ const Status = () => {
       openDialog({
         icon: <XIcon color={Colors.primary} />,
         title: t('errors.service_status.title'),
-        subtitle: error?.response?.data?.metadata?.message || t('errors.service_status.subtitle'),
+        subtitle: t('errors.service_status.subtitle'),
         closeAfterMSeconds: 2500,
         closeOnClickOutside: true,
       });

@@ -30,8 +30,11 @@ import { useAlertSound } from "@/hooks/useAlertSound";
  * de hardware é intercetado — o profissional tem de aceitar, recusar, ou
  * esperar que expire.
  *
- * NOTA: não está ligado a push notifications de propósito; a rota fica apenas
- * pronta e navegável.
+ * LIGADO A PUSH: `hooks/useNotification.tsx` abre este ecrã quando chega uma
+ * notificação com `open_type: 'request'` e `open_id` — que é o que o servidor
+ * envia em NewServiceAvailableNotification, MatchingInvitationNotification e
+ * NewScheduledServiceNotification. (O comentário anterior dizia o contrário e
+ * era falso: teria levado alguém a "ligar" um caminho que já existe.)
  *
  * A informação de decisão (morada completa, duração estimada e observações do
  * cliente) vem toda do <ServiceCard/> usado abaixo — é a mesma peça que a lista

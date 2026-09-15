@@ -140,7 +140,7 @@ const ScheduleProposalBottomSheet = () => {
         openDialog({
           icon: <XIcon color={Colors.primary} />,
           title: t("errors.service_accept.title"),
-          subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t("errors.service_accept.subtitle"),
+          subtitle: t("errors.service_accept.subtitle"),
           closeAfterMSeconds: 2000,
           closeOnClickOutside: true,
         });
@@ -177,7 +177,7 @@ const ScheduleProposalBottomSheet = () => {
         openDialog({
           icon: <XIcon color={Colors.primary} />,
           title: t("errors.service_refuse.title"),
-          subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t("errors.service_refuse.subtitle"),
+          subtitle: t("errors.service_refuse.subtitle"),
           closeAfterMSeconds: 2000,
           closeOnClickOutside: true,
         });

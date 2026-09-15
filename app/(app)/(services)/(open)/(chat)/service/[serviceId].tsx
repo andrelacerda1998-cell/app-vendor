@@ -202,7 +202,7 @@ const Service = () => {
                 openDialog({
                     icon: <XIcon color={Colors.primary}/>,
                     title: t('errors.chat_load.title'),
-                    subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('errors.chat_load.subtitle'),
+                    subtitle: t('errors.chat_load.subtitle'),
                     closeAfterMSeconds: 2000,
                     closeOnClickOutside: true,
                 })

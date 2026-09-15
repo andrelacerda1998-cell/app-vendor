@@ -85,7 +85,7 @@ const ReceiveRequestsCard = () => {
       .catch((error: any) => {
         const subtitle = error?.response?.status === 422
           ? t('errors.account_under_verification')
-          : error?.response?.data?.metadata?.message || error?.response?.data?.message || t('errors.status_update.subtitle');
+          : t('errors.status_update.subtitle');
 
         openDialog({
           icon: <XIcon color={Colors.primary} />,

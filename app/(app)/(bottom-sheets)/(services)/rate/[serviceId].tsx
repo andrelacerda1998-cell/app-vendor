@@ -83,7 +83,7 @@ const RateServiceBottomSheet = () => {
         openDialog({
           icon: <XIcon color={Colors.primary} />,
           title: t('errors.service_rate.title'),
-          subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('errors.service_rate.subtitle'),
+          subtitle: t('errors.service_rate.subtitle'),
           closeAfterMSeconds: 2000,
           closeOnClickOutside: true,
         })

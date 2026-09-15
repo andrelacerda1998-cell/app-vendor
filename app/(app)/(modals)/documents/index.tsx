@@ -181,7 +181,7 @@ export default function Documents(){
                 } else {
                     openDialog({
                         title: t('errors.documents_submit.title'),
-                        subtitle: error?.response?.data?.message || t('auth.sign_up.documents.submit.error'),
+                        subtitle: t('auth.sign_up.documents.submit.error'),
                         icon: <XIcon color={Colors.primary}/>,
                         closeAfterMSeconds: 2000,
                         closeOnClickOutside: true,

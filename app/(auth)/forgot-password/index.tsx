@@ -50,7 +50,7 @@ const ForgotPassword = () => {
       } else if (error.response?.status === 400) {
         setError('email', {
           type: 'manual',
-          message: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('errors.wait_before_trying_again')
+          message: t('errors.wait_before_trying_again')
         });
       } else {
         setError('email', {

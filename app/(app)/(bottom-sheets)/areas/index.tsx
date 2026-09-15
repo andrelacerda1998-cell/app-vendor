@@ -57,7 +57,7 @@ const AreasBottomSheet = () => {
       openDialog({
         icon: <XIcon color={Colors.primary} />,
         title: t('errors.areas_save.title'),
-        subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('errors.areas_save.subtitle'),
+        subtitle: t('errors.areas_save.subtitle'),
         closeAfterMSeconds: 2000,
         closeOnClickOutside: true,
       })
