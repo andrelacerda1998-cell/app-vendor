@@ -118,6 +118,12 @@ const ReceiveRequestsCard = () => {
               {isOnline ? t('session.status.online') : t('session.status.offline')}
             </CustomText>
           </View>
+          {/* Desde 15/09/2026 este interruptor é o único que decide se chegam
+              convites — antes o horário semanal mandava no agendado. Vale a
+              pena dizê-lo, senão ninguém sabe o que o botão faz. */}
+          <CustomText size="extraSmall" color="muted" classes="mt-1.5" numberOfLines={2}>
+            {isOnline ? t('session.status.on_hint') : t('session.status.off_hint')}
+          </CustomText>
         </View>
         {/* 48×28 era abaixo do mínimo tocável e o estado só se lia pela cor.
             O hitSlop dá a área, e o role/state anunciam ligado/desligado. */}

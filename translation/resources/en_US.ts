@@ -233,6 +233,8 @@ export default {
       "blocked_label": "Profile incomplete",
       "online": "Online",
       "offline": "Offline",
+      "on_hint": "You get both immediate and scheduled requests.",
+      "off_hint": "You get no requests, immediate or scheduled.",
     }
   },
   "services": {
@@ -1081,7 +1083,7 @@ export default {
     },
     "how_it_works": {
       "title": "How it works",
-      "availability": "You are only invited for slots you have free in your availability.",
+      "availability": "You're invited for any hour you have free. You decide, invitation by invitation.",
       "notification": "You get a notification for every invitation you answered.",
       "customer": "The client sees the best 3 of those who are available, by rating, price and distance — and chooses.",
       "responsibility": "If you are the one chosen, the service is yours and you are responsible for carrying it out."
@@ -1631,7 +1633,7 @@ export default {
     },
     "availability_range": {
       "title": "Availability range",
-      "subtitle": "Pick the hours in which you take scheduled services.",
+      "subtitle": "Pick the hours when auto-accept can answer for you. You'll still get invitations at any hour.",
       "from": "From",
       "to": "Until",
       "invalid": "The start time must be before the end time",

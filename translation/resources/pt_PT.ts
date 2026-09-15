@@ -232,7 +232,9 @@ export default {
             "off_cta": "Ficar disponível",
             "blocked_label": "Perfil por completar",
             "online": "Online",
-            "offline": "Offline"
+            "offline": "Offline",
+            "on_hint": "Recebes pedidos imediatos e agendados.",
+            "off_hint": "Não recebes pedidos, nem imediatos nem agendados."
         }
     },
     "services": {
@@ -1081,7 +1083,7 @@ export default {
         },
         "how_it_works": {
             "title": "Como funciona",
-            "availability": "Só és convidado para blocos que tens livres na tua disponibilidade.",
+            "availability": "És convidado para qualquer hora que tenhas livre. Quem decide és tu, convite a convite.",
             "notification": "Recebes uma notificação por cada convite a que respondeste.",
             "customer": "O cliente vê os 3 melhores de quem se disponibilizou, por avaliação, preço e distância — e escolhe.",
             "responsibility": "Se fores o escolhido, o serviço é teu e ficas responsável por o realizar."
@@ -1631,7 +1633,7 @@ export default {
       },
       "availability_range": {
         "title": "Intervalo de disponibilidade",
-        "subtitle": "Escolhe o horário em que aceitas serviços agendados.",
+        "subtitle": "Escolhe as horas em que a auto-aceitação pode responder por ti. Convites continuas a receber a qualquer hora.",
         "from": "A partir das",
         "to": "Até às",
         "invalid": "A hora inicial tem de ser anterior à hora final",
