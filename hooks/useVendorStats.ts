@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useApi } from '@/contexts/ApiContext';
 import { API_ROUTES } from '@/constants/ApiRoutes';
 
@@ -30,10 +30,8 @@ export const useVendorStats = () => {
   const { api } = useApi();
   const [stats, setStats] = useState<VendorStats | null>(null);
 
-  useEffect(() => {
-    let alive = true;
-
-    if (!cache || Date.now() - cache.at > TTL_MS) {
+  const fetch = useCallback((force = false) => {
+    if (force || !cache || Date.now() - cache.at > TTL_MS) {
       cache = {
         at: Date.now(),
         promise: api
@@ -44,12 +42,22 @@ export const useVendorStats = () => {
       };
     }
 
-    cache.promise.then((data) => { if (alive) setStats(data); });
-
-    return () => { alive = false; };
+    return cache.promise;
   }, [api]);
 
-  return stats;
+  useEffect(() => {
+    let alive = true;
+    fetch().then((data) => { if (alive) setStats(data); });
+    return () => { alive = false; };
+  }, [fetch]);
+
+  /** Recarrega a sério, ignorando a cache — para o puxar-para-atualizar. */
+  const refresh = useCallback(async () => {
+    const data = await fetch(true);
+    setStats(data);
+  }, [fetch]);
+
+  return { stats, refresh };
 };
 
 export default useVendorStats;

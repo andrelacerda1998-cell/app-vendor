@@ -6,7 +6,7 @@ import { Feather } from '@expo/vector-icons'
 import { router } from 'expo-router'
 import { renderMoney } from '@/utils/money'
 import { useTranslation } from 'react-i18next'
-import { Card } from '@/components/ui'
+import { Card, SkeletonBlock } from '@/components/ui'
 import { useSession } from '@/contexts/SessionContext'
 import { useVendorStats } from '@/hooks/useVendorStats'
 import { Feather as FeatherIcon } from '@expo/vector-icons'
@@ -53,7 +53,7 @@ const WeekStats = () => {
   const { t } = useTranslation();
   const { vendorData, vendorStatus } = useSession();
   // Mesma resposta que o cartão do pagamento — uma só chamada por abertura.
-  const stats = useVendorStats();
+  const { stats } = useVendorStats();
   const isOnline = vendorStatus === 'Online';
 
   const earnings = renderMoney(stats?.this_week_earnings ?? 0) || '0,00 €';
@@ -86,6 +86,31 @@ const WeekStats = () => {
    *    que é o que explica os zeros sem ser desmotivante.
    */
   const explain = approved && emptyWeek && (!isOnline || zoneRequests > 0);
+
+  /**
+   * Enquanto nao ha numeros, esqueleto — nunca zeros.
+   *
+   * Um "0,00 €" durante o carregamento le-se como um ganho real: o tecnico
+   * abre a app, ve zero, e so um segundo depois o numero muda. O separador
+   * Ganhos ja fazia isto; a Home mostrava os zeros na mesma resposta vazia.
+   */
+  if (!stats) {
+    return (
+      <Card padded={false} style={{ paddingVertical: 18 }}>
+        <View className="flex-row items-center">
+          {[0, 1, 2].map((i) => (
+            <React.Fragment key={i}>
+              {i > 0 && <Divider />}
+              <View className="flex-1 items-center">
+                <SkeletonBlock width={70} height={20} />
+                <SkeletonBlock width={54} height={10} style={{ marginTop: 8 }} />
+              </View>
+            </React.Fragment>
+          ))}
+        </View>
+      </Card>
+    );
+  }
 
   return (
     <TouchableOpacity
