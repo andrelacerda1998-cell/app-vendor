@@ -630,7 +630,12 @@ const Agenda = () => {
                             disabled={confirmingId === item?.schedule_id}
                             onPress={() => confirmAttendance(item)}
                             otherClasses={`mt-3 py-2.5 ${confirmingId === item?.schedule_id ? 'opacity-60' : ''}`}
-                            bgColor="support_primary"
+                            // Verde, e nao ambar: o ambar e a cor com que a app
+                            // chama a atencao (dinheiro, avisos, o proprio
+                            // destaque do cartao). Confirmar presenca e um
+                            // "sim, la estarei" — a mesma familia do visto de
+                            // confirmado que aparece depois, no lugar do botao.
+                            bgColor="success"
                           >
                             <CustomText color="strongest" boldness="semiBold" size="small">
                               {t('schedules.confirm_attendance')}
