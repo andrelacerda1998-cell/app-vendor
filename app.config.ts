@@ -26,7 +26,9 @@ export default ({config}: ConfigContext):ExpoConfig => {
         orientation: "portrait",
         icon: ICON,
         scheme: scheme,
-        owner: "piquet",
+        // Org EAS antiga `piquet` ficou órfã no handoff (ver memória/acessos).
+        // Passa para a org da Piquet Technologies (André); slug via env.
+        owner: process.env.EAS_OWNER || "piquet-technologies",
         userInterfaceStyle: "automatic",
         jsEngine: "hermes",
         runtimeVersion: version,
@@ -128,7 +130,9 @@ export default ({config}: ConfigContext):ExpoConfig => {
             API_URL: apiEndpoint,
             API_PROTOCOL: apiProtocol,
             eas: {
-                "projectId": "20ae14b2-f775-4cab-b460-3fe740ae20bc"
+                // O id antigo (20ae14b2-…) era da org órfã `piquet`. O projeto novo
+                // é criado por `eas init` na org nova (workflow) e o id vem por env.
+                "projectId": process.env.EAS_PROJECT_ID || undefined
             }
         },
     }
