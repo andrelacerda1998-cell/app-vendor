@@ -58,7 +58,10 @@ const DeleteAccount = () => {
               })
               .catch((error) => {
                   if (error?.response?.status === 400){
-                      setError('password',{type:'manual', message:error?.response?.data?.message})
+                      // Sem a mensagem do servidor: vem em inglês ("These credentials do
+                      // not match our records") e o único erro possível aqui é a
+                      // palavra-passe estar errada.
+                      setError('password',{type:'manual', message: t('errors.wrong_password')})
                   }
 
                   const errors = error?.response?.data?.errors ?? {};

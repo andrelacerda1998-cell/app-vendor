@@ -75,7 +75,7 @@ const BillingStep = ({
         openDialog({
           icon: <XIcon color={Colors.primary} />,
           title: t('errors.at_user_save.title'),
-          subtitle: err?.response?.data?.message || t('errors.at_user_save.subtitle'),
+          subtitle: t('errors.at_user_save.subtitle'),
           closeAfterMSeconds: 2500,
           closeOnClickOutside: true,
         });

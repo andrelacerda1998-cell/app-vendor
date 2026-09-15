@@ -60,7 +60,7 @@ const WalletHistoryBottomSheet = () => {
   //       openDialog({
   //         icon: <XIcon color={Colors.primary} />,
   //         title: 'Error',
-  //         subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || 'Please, wait before trying again',
+  //         subtitle: 'Please, wait before trying again',
   //         closeAfterMSeconds: 2000,
   //         closeOnClickOutside: true,
   //       })

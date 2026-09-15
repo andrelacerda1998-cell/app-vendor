@@ -53,7 +53,6 @@ import { ThemeProvider as AppThemeProvider, useTheme } from '@/contexts/ThemeCon
 import { Colors } from "@/constants/Colors";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import {ScheduleProvider} from "@/contexts/ScheduleContext";
-// import FloatingView from '@/components/floating-view/FloatingView';
 import { useAndroidForegroundService } from '@/hooks/useAndroidForegroundService';
 import { NotificationObserverHandler } from '@/hooks/useNotification';
 import { Dimensions } from 'react-native';
@@ -386,10 +385,6 @@ function buildNavigationTheme(isDark: boolean) {
 
 
 
-
-// function FloatingViewWrapper() {
-//   return <FloatingView />
-// }
 
 // Wrapper to call the hook from inside the ServiceProvider
 function ForegroundWrapper({ children }: { children: React.ReactNode }) {

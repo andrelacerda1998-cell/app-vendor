@@ -63,7 +63,7 @@ const EditProfile = () => {
             setAsset(result.assets[0]);
           }
         } catch (error: any) {
-          setAvatarError(error?.response?.data?.message)
+          setAvatarError(t('errors.avatar_upload'))
         }
     };
 
@@ -174,9 +174,7 @@ const EditProfile = () => {
             openDialog({
                 icon: <XIcon color={Colors.primary}/>,
                 title: t('errors.profile_save.title'),
-                subtitle: error?.response?.data?.metadata?.message
-                    || error?.response?.data?.message
-                    || t('errors.profile_save.subtitle'),
+                subtitle: t('errors.profile_save.subtitle'),
                 closeAfterMSeconds: 3000,
                 closeOnClickOutside: true,
             });
@@ -252,7 +250,7 @@ const EditProfile = () => {
                     openDialog({
                         icon: <XIcon color={Colors.primary}/>,
                         title: t('errors.profile_save.title'),
-                        subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('errors.profile_save.subtitle'),
+                        subtitle: t('errors.profile_save.subtitle'),
                         closeAfterMSeconds: 2000,
                         closeOnClickOutside: true,
                     })

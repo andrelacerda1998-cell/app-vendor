@@ -35,7 +35,10 @@ const EditCompanyAddress = () => {
             at_password: '',
         },
     });
-    const [updateError, setUpdateError] = useState(false);
+    // `false` = sem erro; string = a mensagem a mostrar. Estava tipado como
+    // boolean e recebia uma string — passava porque a mensagem vinha de um
+    // `any` do axios e o TypeScript não via nada.
+    const [updateError, setUpdateError] = useState<string | false>(false);
 
     const handleGoBack = () => {
         if (router.canGoBack()) {
@@ -69,10 +72,13 @@ const EditCompanyAddress = () => {
                 })
             })
             .catch(err => {
+                // A mensagem crua do servidor serve só para CLASSIFICAR o
+                // erro — nunca para ser mostrada. Vem em inglês técnico
+                // ("Invalid AT credentials") e o técnico não a percebe.
                 const raw = err?.response?.data?.metadata?.message || err?.response?.data?.message || '';
                 const message = /credenc|credential/i.test(raw)
                     ? t('profile.edit.at_user.wrong_credentials')
-                    : (raw || t('errors.at_user_save.subtitle'));
+                    : t('errors.at_user_save.subtitle');
                 setUpdateError(message);
 
                 openDialog({

@@ -192,7 +192,7 @@ const Home = () => {
           openDialog({
             icon: <XIcon color={Colors.primary} />,
             title: t('errors.status_load.title'),
-            subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('errors.status_load.subtitle'),
+            subtitle: t('errors.status_load.subtitle'),
             closeAfterMSeconds: 2000,
             closeOnClickOutside: true,
           })
@@ -259,7 +259,7 @@ const Home = () => {
         openDialog({
           icon: <XIcon color={Colors.primary} />,
           title: t('errors.status_update.title'),
-          subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('errors.status_update.subtitle'),
+          subtitle: t('errors.status_update.subtitle'),
           closeAfterMSeconds: 2000,
           closeOnClickOutside: true,
           onClose: () => {

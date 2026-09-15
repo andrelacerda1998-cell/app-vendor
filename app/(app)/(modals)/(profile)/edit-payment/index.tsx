@@ -94,7 +94,7 @@ const EditPayment = () => {
                     openDialog({
                         icon: <XIcon color={Colors.primary}/>,
                         title: t('errors.payment_save.title'),
-                        subtitle: error?.response?.data?.metadata?.message || error?.response?.data?.message || t('errors.payment_save.subtitle'),
+                        subtitle: t('errors.payment_save.subtitle'),
                         closeAfterMSeconds: 2000,
                         closeOnClickOutside: true,
                     });

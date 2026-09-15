@@ -721,6 +721,8 @@ export default {
         "network_error": "Sem ligação à internet. Liga-te ao Wi-Fi ou aos dados móveis e tenta outra vez.",
         "user_not_found": "Não encontrámos nenhuma conta com estes dados. Confirma o email.",
         "occurred_an_error": "Não conseguimos concluir. Verifica a ligação e tenta outra vez.",
+        "wrong_password": "Palavra-passe errada.",
+        "avatar_upload": "Não foi possível guardar a fotografia. Tenta outra vez.",
         "wait_before_trying_again": "Espera um pouco antes de tentares outra vez.",
         "address_invalid": "Esta morada não é válida. Confirma a rua, o número e o código postal.",
         "invalid_email_or_password": "Email ou palavra-passe errados. Confirma os dados e tenta outra vez.",

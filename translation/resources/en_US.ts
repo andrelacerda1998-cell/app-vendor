@@ -721,6 +721,8 @@ export default {
     "network_error": "No internet connection. Connect to Wi-Fi or mobile data and try again.",
     "user_not_found": "We couldn't find an account with these details. Check the email.",
     "occurred_an_error": "We couldn't complete this. Check your connection and try again.",
+      "wrong_password": "Wrong password.",
+      "avatar_upload": "We couldn't save the photo. Try again.",
     "wait_before_trying_again": "Wait a moment before trying again.",
     "address_invalid": "This address isn't valid. Check the street, number and postal code.",
     "invalid_email_or_password": "Wrong email or password. Check your details and try again.",

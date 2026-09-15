@@ -73,7 +73,6 @@ export const API_ROUTES = {
     VENDOR_GET_SCHEDULE_SETTINGS: (id: Number) => `${API_BASE_URL}/vendor/schedule/settings/${id}`,
     VENDOR_UPDATE_SCHEDULE_SETTINGS: `${API_BASE_URL}/vendor/schedule/update`,
     VENDOR_UPDATE_SCHEDULE_AVAILABILITY: `${API_BASE_URL}/vendor/schedule/update-availability`,
-    VENDOR_UPDATE_AUTO_ACCEPT: `${API_BASE_URL}/vendor/schedule/auto-accept`,
     VENDOR_ACCEPT_SCHEDULED_SERVICE: `${API_BASE_URL}/vendor/schedule/accept`,
     VENDOR_UNAVAILABLE_DAYS: `${API_BASE_URL}/vendor/schedule/unavailable-days`,
     VENDOR_UNAVAILABLE_DAY_DELETE: (day: string) => `${API_BASE_URL}/vendor/schedule/unavailable-days/${day}`,
