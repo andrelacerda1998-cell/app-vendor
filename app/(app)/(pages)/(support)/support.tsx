@@ -36,7 +36,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 
-const FAQ_KEYS = ['payments', 'auto_accept', 'hourly_rate', 'missed_request'] as const;
+const FAQ_KEYS = ['payments', 'hourly_rate', 'missed_request'] as const;
 
 const Support = () => {
   const { t } = useTranslation();

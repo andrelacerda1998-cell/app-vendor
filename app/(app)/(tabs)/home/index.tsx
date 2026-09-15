@@ -31,7 +31,6 @@ import WeekStats from "@/components/app/Home/WeekStats";
 import PendingRequestsCard from "@/components/app/Home/PendingRequestsCard";
 import MatchingInvitationsCard from "@/components/app/Home/MatchingInvitationsCard";
 import HomeShortcuts from "@/components/app/Home/HomeShortcuts";
-import AutoAcceptCard from "@/components/app/Home/AutoAcceptCard";
 import NotificationsDisabledBanner from "@/components/NotificationsDisabledBanner";
 import DocumentExpiryBanner from "@/components/DocumentExpiryBanner";
 import { useDepartureReminders } from "@/hooks/useDepartureReminders";
@@ -411,7 +410,6 @@ const Home = () => {
             nunca mais se toca — não justifica lugar nobre. O sítio certo seria
             o ecrã de Disponibilidade, onde vive a agenda semanal a que ela na
             verdade se aplica; fica aqui em baixo até essa mudança se decidir. */}
-        <AutoAcceptCard />
 
         <HomeShortcuts />
       </ScrollView>

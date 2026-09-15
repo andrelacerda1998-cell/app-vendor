@@ -4,7 +4,7 @@
  * A lógica de gravação e os endpoints mantêm-se inalterados.
  */
 import React, { useCallback, useEffect, useState } from "react";
-import { View, ScrollView, Switch, Platform, ActivityIndicator, TouchableOpacity } from "react-native";
+import { View, ScrollView, Platform, ActivityIndicator, TouchableOpacity } from "react-native";
 import * as Location from "expo-location";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
@@ -18,7 +18,6 @@ import TouchOpacity from "@/components/TouchOpacity";
 import { Card, IconTile, SectionHeader } from "@/components/ui";
 import { Colors } from "@/constants/Colors";
 import Address from "@/app/(app)/(modals)/schedules/Address";
-import Confirmation, { MessageConfirmation } from "@/app/(app)/(modals)/schedules/Confirmation";
 import { useApi } from "@/contexts/ApiContext";
 import { API_ROUTES } from "@/constants/ApiRoutes";
 import { useSession } from "@/contexts/SessionContext";
@@ -31,7 +30,7 @@ const ServiceSchedulesSettingsBottomSheets = () => {
   const { t } = useTranslation();
   const { api } = useApi();
   const { vendorData } = useSession();
-  const { weekdays, address, setAddress, autoAcceptEnabled, setAutoAcceptEnabled } = useSchedule();
+  const { weekdays, address, setAddress } = useSchedule();
 
   const { getCurrentLocation } = useLocation();
 
@@ -39,8 +38,6 @@ const ServiceSchedulesSettingsBottomSheets = () => {
   const [locating, setLocating] = useState(false);
   const [locationFailed, setLocationFailed] = useState(false);
   const [detected, setDetected] = useState(false);
-  const [messageConfirmation, setMessageConfirmation] = useState<MessageConfirmation>({ title: '', subtitle: ''});
-  const [confirmationVisible, setConfirmationVisible] = useState(false);
 
   const saveAddress = (nextAddress: AddressData) => {
     setAddress(nextAddress);
@@ -100,30 +97,11 @@ const ServiceSchedulesSettingsBottomSheets = () => {
     detectCurrentLocation();
   }, [address, detectCurrentLocation]);
 
-  const autoAcceptConfirmation = () => {
-    if (autoAcceptEnabled) {
-      setAutoAcceptEnabled(false)
-      return
-    }
-
-    setMessageConfirmation({
-      title: t('schedules.confirmation.auto_accept_title'),
-      subtitle: t('schedules.confirmation.auto_accept_subtitle')
-    })
-    setConfirmationVisible(true)
-  }
-
-  const confirmAutoAccept = () => {
-    setAutoAcceptEnabled(prev => !prev)
-    setConfirmationVisible(false)
-  }
-
   const saveSettings = () => {
     if (!vendorData) return;
 
     const available_days = weekdays.reduce<Record<string, any>>((acc, day) => {
       acc[day.key] = {
-        auto_accept: autoAcceptEnabled,
         time_start: day.start,
         time_end: day.end,
         is_enabled: day.enabled
@@ -239,26 +217,6 @@ const ServiceSchedulesSettingsBottomSheets = () => {
           </TouchableOpacity>
         </Card>
 
-        <SectionHeader title={t('schedules.settings_schedule')} classes="mt-8" />
-        <Card>
-          <View className="flex-row items-center">
-            <View className="flex-1 mr-3">
-              <CustomText color="secondary" size="medium" boldness="semiBold" numberOfLines={1}>
-                {t('schedules.auto_acceptance')}
-              </CustomText>
-              <CustomText color="muted" size="extraSmall" classes="mt-0.5" numberOfLines={2}>
-                {autoAcceptEnabled ? t('schedules.auto_accept_on') : t('schedules.auto_accept_off')}
-              </CustomText>
-            </View>
-            <Switch
-              value={autoAcceptEnabled}
-              onValueChange={autoAcceptConfirmation}
-              trackColor={{ false: Colors.card_high, true: Colors.brand }}
-              thumbColor={Colors.secondary}
-            />
-          </View>
-        </Card>
-
         <SectionHeader title={t('schedules.availability_schedule')} classes="mt-8" />
         <Card>
           <AvailabilityElements />
@@ -281,12 +239,6 @@ const ServiceSchedulesSettingsBottomSheets = () => {
         onClose={() => setAddressOpen(false)}
         onSave={(address) => saveAddress(address)}
         initialValue={address ?? undefined}
-      />
-      <Confirmation
-        visible={confirmationVisible}
-        message={messageConfirmation}
-        onConfirm={() => confirmAutoAccept()}
-        onCancel={() => setConfirmationVisible(false)}
       />
     </SafeAreaView>
   );

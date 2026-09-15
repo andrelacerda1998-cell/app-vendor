@@ -63,8 +63,6 @@ interface ScheduleContextProps {
   setWeekdays: React.Dispatch<React.SetStateAction<WeekdayConfig[]>>;
   address: AddressData | null;
   setAddress: React.Dispatch<React.SetStateAction<AddressData | null>>;
-  autoAcceptEnabled: boolean;
-  setAutoAcceptEnabled: React.Dispatch<React.SetStateAction<boolean>>
   pendingScheduleServices: ScheduledServiceInterface[] | [];
   setPendingScheduleServices: React.Dispatch<React.SetStateAction<ScheduledServiceInterface[] | []>>;
   fetchPendingScheduledService: (scheduleId: string) => void;
@@ -93,8 +91,6 @@ const ScheduleContext = createContext<ScheduleContextProps>({
   setWeekdays: () => {},
   address: null,
   setAddress: () => {},
-  autoAcceptEnabled: false,
-  setAutoAcceptEnabled: () => {},
   pendingScheduleServices: [],
   setPendingScheduleServices: () => {},
   fetchPendingScheduledService: () => {},
@@ -114,7 +110,6 @@ export const ScheduleProvider: React.FC<{ children: ReactNode }> = ({ children }
   const { t } = useTranslation();
   const [weekdays, setWeekdays] = useState<WeekdayConfig[]>([]);
   const [address, setAddress] = useState<AddressData | null>(null);
-  const [autoAcceptEnabled, setAutoAcceptEnabled] = useState(false);
   const [pendingScheduleServices, setPendingScheduleServices] = useState<ScheduledServiceInterface[] | []>([]);
   const [scheduledServicesLoading, setScheduledServicesLoading] = useState(true);
   const [scheduledServicesFailed, setScheduledServicesFailed] = useState(false);
@@ -219,7 +214,6 @@ export const ScheduleProvider: React.FC<{ children: ReactNode }> = ({ children }
           }
 
           setWeekdays(weekdaysData);
-          setAutoAcceptEnabled(!!Number(data[0].auto_accept));
         }).catch((err: any) => {
           console.error("Error fetching schedule settings:", err);
         });
@@ -454,8 +448,6 @@ export const ScheduleProvider: React.FC<{ children: ReactNode }> = ({ children }
         setWeekdays,
         address,
         setAddress,
-        autoAcceptEnabled,
-        setAutoAcceptEnabled,
         pendingScheduleServices,
         setPendingScheduleServices,
         setScheduledServicesData,
