@@ -986,6 +986,13 @@ export default {
     "my_areas": "My areas",
     "my_areas_empty": "You haven't picked any areas yet. Choose where you work to start getting requests.",
     "my_areas_change": "Change areas",
+    "my_work": {
+        "title": "What you do",
+        "change": "Change",
+        "empty": "You haven't picked any service types yet. Choose what you do to start getting requests.",
+        "services_one": "{{count}} active service type",
+        "services_other": "{{count}} active service types"
+    },
     "shortcuts": {
       "title": "Shortcuts",
       "history": "History",
@@ -1675,6 +1682,7 @@ export default {
     "times_up": "Time is up",
     "remaining_time": "Remaining time",
     "empty": "Free agenda",
+    "empty_hint": "The services you accept show up here and in the Agenda tab.",
     "section_title": "Your agenda",
     "today_count_one": "{{count}} service today",
     "today_count_other": "{{count}} services today",

@@ -42,19 +42,36 @@ const HomeShortcuts = () => {
   return (
     <View className="px-5">
       <SectionHeader title={t('home.shortcuts.title')} />
-      <View className="flex-row" style={{ gap: 12 }}>
-        {/* A Agenda já tem separador próprio; aqui vale mais o acesso rápido
-            à disponibilidade, que não está em mais lado nenhum na Home. */}
-        <ShortcutCard
-          icon="schedule"
-          label={t('profile.activity.availability')}
-          onPress={() => router.push('/(app)/(bottom-sheets)/(services)/schedulesSettings')}
-        />
-        <ShortcutCard
-          icon="support-agent"
-          label={t('home.shortcuts.support')}
-          onPress={() => router.push('/(app)/(pages)/(support)/support')}
-        />
+      {/* Dois pares. Todos estes ecrãs viviam enterrados no Perfil e todos
+          respondem a uma pergunta que se faz na Home: quando trabalho, quanto
+          cobro, o que dizem de mim, e com quem falo quando algo corre mal. */}
+      <View style={{ gap: 12 }}>
+        <View className="flex-row" style={{ gap: 12 }}>
+          {/* A Agenda já tem separador próprio; aqui vale mais o acesso rápido
+              à disponibilidade, que não está em mais lado nenhum na Home. */}
+          <ShortcutCard
+            icon="schedule"
+            label={t('profile.activity.availability')}
+            onPress={() => router.push('/(app)/(bottom-sheets)/(services)/schedulesSettings')}
+          />
+          <ShortcutCard
+            icon="euro"
+            label={t('hourly_rate.title')}
+            onPress={() => router.push('/(app)/(pages)/(hourly-rate)/hourly-rate')}
+          />
+        </View>
+        <View className="flex-row" style={{ gap: 12 }}>
+          <ShortcutCard
+            icon="star-outline"
+            label={t('profile.activity.reviews')}
+            onPress={() => router.push('/(app)/(pages)/(reviews)/reviews')}
+          />
+          <ShortcutCard
+            icon="support-agent"
+            label={t('home.shortcuts.support')}
+            onPress={() => router.push('/(app)/(pages)/(support)/support')}
+          />
+        </View>
       </View>
     </View>
   );

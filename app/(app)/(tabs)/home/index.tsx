@@ -31,6 +31,7 @@ import WeekStats from "@/components/app/Home/WeekStats";
 import PendingRequestsCard from "@/components/app/Home/PendingRequestsCard";
 import MatchingInvitationsCard from "@/components/app/Home/MatchingInvitationsCard";
 import HomeShortcuts from "@/components/app/Home/HomeShortcuts";
+import MyWorkCard from "@/components/app/Home/MyWorkCard";
 import NotificationsDisabledBanner from "@/components/NotificationsDisabledBanner";
 import DocumentExpiryBanner from "@/components/DocumentExpiryBanner";
 import { useDepartureReminders } from "@/hooks/useDepartureReminders";
@@ -406,11 +407,11 @@ const Home = () => {
           <WeekStats />
         </View>
 
-        {/* 5. Definições e atalhos. A auto-aceitação configura-se uma vez e
-            nunca mais se toca — não justifica lugar nobre. O sítio certo seria
-            o ecrã de Disponibilidade, onde vive a agenda semanal a que ela na
-            verdade se aplica; fica aqui em baixo até essa mudança se decidir. */}
+        {/* 5. Onde trabalha: zonas e tipos de serviço subscritos. Estavam a
+            ser carregados no arranque e nunca mostrados. */}
+        <MyWorkCard />
 
+        {/* 6. Atalhos para o que vive enterrado no Perfil. */}
         <HomeShortcuts />
       </ScrollView>
       {/* {openService && <ServiceInProgress isHome />} */}
