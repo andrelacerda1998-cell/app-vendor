@@ -423,6 +423,7 @@ export default {
           "value": "{{value}} minutes"
         },
         "distance": "Distance",
+        "value_is_yours": "Yours, no deductions",
         "value_to_receive": "Amount to receive",
         "confirm_it_was_finished": "Confirm it's complete",
         "finish": "Finish",

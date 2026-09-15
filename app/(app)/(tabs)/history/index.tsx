@@ -150,6 +150,24 @@ const Earnings = () => {
               value: renderMoney(stats?.total_earned ?? stats?.total_paid ?? 0) || '0,00 €',
             })}
           </CustomText>
+
+          {/* Como funciona a margem da Piquet.
+              A explicação existia, mas só no ecrã do Valor/hora — que é o
+              último sítio onde alguém está quando lhe ocorre "afinal quanto é
+              que a Piquet me tirou?". A dúvida nasce aqui, a olhar para o
+              dinheiro, e o silêncio faz supor um desconto que não existe: o
+              técnico recebe o valor/hora dele por inteiro, e a margem é somada
+              ao preço do cliente. Mesma chave de tradução, para não haver duas
+              versões da mesma regra. */}
+          <View
+            className="flex-row items-start mt-3 pt-3"
+            style={{ borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.10)' }}
+          >
+            <Feather name="info" size={13} color={Colors.muted} style={{ marginTop: 2 }} />
+            <CustomText size="extraSmall" color="muted" classes="ml-2 flex-1" numberOfLines={3}>
+              {t('hourly_rate.margin_note')}
+            </CustomText>
+          </View>
         </HeroCard>
 
         {/* Por receber: serviços já feitos que ainda não foram pagos. Antes

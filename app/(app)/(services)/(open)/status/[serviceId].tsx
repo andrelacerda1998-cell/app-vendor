@@ -542,6 +542,14 @@ const Status = () => {
                 <CustomText color="brand" boldness="bolder" size="large" classes="mt-0.5">
                   {earn}
                 </CustomText>
+                {/* O valor que ali esta e o dele por inteiro, nao um liquido
+                    depois de descontos. Sem o dizer, um numero sozinho ao lado
+                    da marca faz supor uma comissao retirada — e essa duvida
+                    acaba em suporte. Tres palavras chegam; a regra completa
+                    esta nos Ganhos e no Valor/hora. */}
+                <CustomText color="muted" size="extraSmall" classes="mt-0.5">
+                  {t('services.service.status.value_is_yours')}
+                </CustomText>
               </View>
             ) : null}
           </View>
