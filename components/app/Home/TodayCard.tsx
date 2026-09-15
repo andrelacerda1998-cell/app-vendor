@@ -11,7 +11,7 @@ import { useSchedule } from '@/contexts/ScheduleContext';
 import { renderMoney } from '@/utils/money';
 import { formatStreetLine } from '@/utils/serviceDetails';
 import { formatShortDate } from '@/utils/date';
-import { needsAttendanceConfirmation, scheduleStartsAt } from '@/utils/attendance';
+import { scheduleStartsAt } from '@/utils/attendance';
 
 const hhmm = (t?: string) => (t ? String(t).slice(0, 5) : '');
 
@@ -57,9 +57,6 @@ const TodayCard = () => {
   const MAX_LINHAS = 3;
   const proximos = (porVir.length > 0 ? porVir : hoje).slice(0, MAX_LINHAS);
   const proximo = proximos[0] ?? null;
-  const restantes = Math.max(0, (porVir.length > 0 ? porVir.length : hoje.length) - proximos.length);
-
-  const porConfirmar = list.filter(needsAttendanceConfirmation).length;
 
   // Vazio: um cartao tocavel que explica, em vez de uma linha solta.
   if (!proximo) {
@@ -100,11 +97,7 @@ const TodayCard = () => {
 
   return (
     <View className="px-5">
-      <SectionHeader
-        title={titulo}
-        action={restantes > 0 ? t('home_today.see_all') : undefined}
-        onAction={restantes > 0 ? goToAgenda : undefined}
-      />
+      <SectionHeader title={titulo} />
 
       <Card padded={false}>
         {proximos.map((servico: any, i: number) => {
@@ -170,24 +163,29 @@ const TodayCard = () => {
           );
         })}
 
-        {/* A confirmacao e uma accao sobre o que esta aqui em cima, e nao um
-            aviso a parte: fica dentro do cartao, por baixo de uma linha. */}
-        {porConfirmar > 0 && (
-          <View className="px-4 pb-4">
-            <TouchableOpacity
-              activeOpacity={0.85}
-              accessibilityRole="button"
-              onPress={goToAgenda}
-              className="flex-row items-center justify-center rounded-xl py-2.5"
-              style={{ backgroundColor: Colors.success }}
-            >
-              <Feather name="check" size={16} color={Colors.strongest} />
-              <CustomText color="strongest" boldness="bold" size="small" classes="ml-2">
-                {t('schedules.attendance_nudge_action', { count: porConfirmar })}
-              </CustomText>
-            </TouchableOpacity>
-          </View>
-        )}
+        {/* "Ver tudo" fecha o cartao, no lugar onde estava o botao de
+            confirmar presenca. A confirmacao passa a viver so na Agenda, onde
+            cada dia tem o seu botao: confirmar e uma decisao por dia — dizer
+            "amanha estou ca" nao e o mesmo que dizer "hoje estou ca" — e a
+            Home juntava dias diferentes num toque so.
+
+            Neutro, e nao verde: isto e navegacao, nao um compromisso. O verde
+            fica reservado para o que o e. */}
+        <View className="px-4 pb-4">
+          <TouchableOpacity
+            activeOpacity={0.85}
+            accessibilityRole="button"
+            onPress={goToAgenda}
+            className="flex-row items-center justify-center rounded-xl border py-2.5"
+            style={{ borderColor: Colors.line, backgroundColor: Colors.card_high }}
+          >
+            <CustomText color="secondary" boldness="semiBold" size="small">
+              {t('home_today.see_all')}
+            </CustomText>
+            <Feather name="chevron-right" size={16} color={Colors.muted} style={{ marginLeft: 4 }} />
+          </TouchableOpacity>
+        </View>
+
       </Card>
     </View>
   );

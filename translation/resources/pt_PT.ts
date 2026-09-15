@@ -1588,10 +1588,6 @@ export default {
         "photos": "Fotos do cliente",
         "not_found": "Não foi possível abrir este serviço."
       },
-      "attendance_nudge_action_one": "Confirmar presença",
-      "attendance_nudge_action_other": "Confirmar presença em {{count}} serviços",
-      "attendance_nudge_title_one": "Tens 1 serviço por confirmar",
-      "attendance_nudge_title_other": "Tens {{count}} serviços por confirmar",
       "confirm_attendance_day_one": "Confirmar presença",
       "confirm_attendance_day_other": "Confirmar presença nos {{count}}",
       "confirm_attendance_day_subtitle_one": "Presença confirmada. O cliente já sabe que contas lá estar.",

@@ -1588,10 +1588,6 @@ export default {
         "photos": "Customer photos",
         "not_found": "Couldn't open this service."
       },
-    "attendance_nudge_action_one": "Confirm attendance",
-    "attendance_nudge_action_other": "Confirm attendance for {{count}} jobs",
-    "attendance_nudge_title_one": "1 job to confirm",
-    "attendance_nudge_title_other": "{{count}} jobs to confirm",
     "confirm_attendance_day_one": "Confirm attendance",
     "confirm_attendance_day_other": "Confirm attendance for all {{count}}",
     "confirm_attendance_day_subtitle_one": "Attendance confirmed. The customer knows you're coming.",
