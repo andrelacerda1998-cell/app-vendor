@@ -1583,6 +1583,11 @@ export default {
         "photos": "Customer photos",
         "not_found": "Couldn't open this service."
       },
+    "attendance_nudge_title_one": "Confirm you're going",
+    "attendance_nudge_title_other": "Confirm you're going to {{count}} jobs",
+    "attendance_nudge_today": "Today at {{time}}. The customer waits at home if you don't show up.",
+    "attendance_nudge_tomorrow": "Tomorrow at {{time}}. The customer waits at home if you don't show up.",
+    "attendance_nudge_subtitle": "The customer waits at home if you don't show up. Tap to confirm.",
     "confirm_attendance": "Confirm attendance",
     "attendance_confirmed": "Attendance confirmed",
     "attendance_confirmed_short": "Confirmed",

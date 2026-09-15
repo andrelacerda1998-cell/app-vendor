@@ -30,6 +30,7 @@ import AttentionIcon from "@/assets/icons/attention";
 import WeekStats from "@/components/app/Home/WeekStats";
 import PendingRequestsCard from "@/components/app/Home/PendingRequestsCard";
 import MatchingInvitationsCard from "@/components/app/Home/MatchingInvitationsCard";
+import ConfirmAttendanceCard from "@/components/app/Home/ConfirmAttendanceCard";
 import HomeShortcuts from "@/components/app/Home/HomeShortcuts";
 import NotificationsDisabledBanner from "@/components/NotificationsDisabledBanner";
 import DocumentExpiryBanner from "@/components/DocumentExpiryBanner";
@@ -398,17 +399,22 @@ const Home = () => {
         <PendingRequestsCard />
         <MatchingInvitationsCard />
 
-        {/* 3. O que aí vem hoje. */}
+        {/* 3. Compromissos ja aceites que esperam um "sim, la estarei".
+            Antes do resumo da agenda: e uma decisao por tomar, nao uma
+            consulta. */}
+        <ConfirmAttendanceCard />
+
+        {/* 4. O que aí vem hoje. */}
         <Schedules />
 
-        {/* 4. Retrospetivo: já aconteceu, pode esperar.
+        {/* 5. Retrospetivo: já aconteceu, pode esperar.
             Sem margem própria: o `gap` da coluna é o único ritmo vertical do
             ecrã, e o mt-3 daqui abria um buraco só neste sítio. */}
         <View className="px-5">
           <WeekStats />
         </View>
 
-        {/* 5. Atalhos para o que vive enterrado no Perfil. */}
+        {/* 6. Atalhos para o que vive enterrado no Perfil. */}
         <HomeShortcuts />
       </ScrollView>
       {/* {openService && <ServiceInProgress isHome />} */}

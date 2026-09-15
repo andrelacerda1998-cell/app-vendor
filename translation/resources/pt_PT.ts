@@ -1583,6 +1583,11 @@ export default {
         "photos": "Fotos do cliente",
         "not_found": "Não foi possível abrir este serviço."
       },
+      "attendance_nudge_title_one": "Confirma que vais ao serviço",
+      "attendance_nudge_title_other": "Confirma que vais a {{count}} serviços",
+      "attendance_nudge_today": "Hoje às {{time}}. O cliente fica à espera se não apareceres.",
+      "attendance_nudge_tomorrow": "Amanhã às {{time}}. O cliente fica à espera se não apareceres.",
+      "attendance_nudge_subtitle": "O cliente fica à espera se não apareceres. Toca para confirmar.",
       "confirm_attendance": "Confirmar presença",
       "attendance_confirmed": "Presença confirmada",
       "attendance_confirmed_short": "Confirmado",

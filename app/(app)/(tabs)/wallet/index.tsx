@@ -16,6 +16,7 @@ import { useSession } from '@/contexts/SessionContext';
 import { renderMoney } from '@/utils/money';
 import { Card, EmptyState, ErrorState, SkeletonList, StatusPill } from '@/components/ui';
 import { useIsOnline } from '@/hooks/useIsOnline';
+import { isAttendanceConfirmed, needsAttendanceConfirmation } from '@/utils/attendance';
 import { formatStreetLine, recurrenceLabelKey } from '@/utils/serviceDetails';
 import { useApi } from '@/contexts/ApiContext';
 import { useDialog } from '@/contexts/DialogContext';
@@ -132,23 +133,15 @@ const Agenda = () => {
   };
 
   /**
-   * Janela da confirmação: as mesmas 72h do lembrete que o servidor envia.
-   * Antes disso é cedo demais para valer alguma coisa; depois da hora já não
-   * há nada a confirmar.
+   * O estado da confirmacao neste cartao. A regra de "esta na altura de
+   * confirmar" vive em utils/attendance, partilhada com o aviso da Home; aqui
+   * so se junta o que acabou de ser confirmado neste ecra, que o servidor
+   * ainda nao devolveu.
    */
   const attendanceState = (item: any) => {
-    const confirmed = !!item?.schedule?.vendor_confirmed_at || !!confirmedNow[item?.schedule_id];
-    if (confirmed) return 'confirmed' as const;
+    if (isAttendanceConfirmed(item) || confirmedNow[item?.schedule_id]) return 'confirmed' as const;
 
-    const day = parseDay(item?.schedule?.scheduled_day);
-    const start = hhmm(item?.schedule?.scheduled_time?.start);
-    if (!day || !/^\d{2}:\d{2}$/.test(start)) return 'hidden' as const;
-
-    const [hh, mm] = start.split(':').map(Number);
-    const startsAt = new Date(day.getFullYear(), day.getMonth(), day.getDate(), hh, mm).getTime();
-    const hoursToStart = (startsAt - Date.now()) / 3_600_000;
-
-    return hoursToStart > 0 && hoursToStart <= 72 ? ('pending' as const) : ('hidden' as const);
+    return needsAttendanceConfirmation(item) ? ('pending' as const) : ('hidden' as const);
   };
 
   const onRefresh = async () => {
