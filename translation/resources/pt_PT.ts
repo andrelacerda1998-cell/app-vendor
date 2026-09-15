@@ -986,10 +986,6 @@ export default {
         "my_areas": "As minhas zonas",
         "my_areas_empty": "Ainda não escolheste zonas. Escolhe onde trabalhas para começares a receber pedidos.",
         "my_areas_change": "Alterar zonas",
-        "payment": {
-            "title": "A receber",
-            "on_date": "Pagamento no dia {{date}}"
-        },
         "shortcuts": {
             "title": "Atalhos",
             "history": "Histórico",
@@ -1128,12 +1124,10 @@ export default {
         }
     },
     "document_expiry": {
-        "expiring_title_today": "Hoje é o último dia de validade do teu {{name}}",
-        "expiring_title_one": "Amanhã o teu {{name}} fica inválido",
-        "expiring_title_other": "Daqui a {{count}} dias o teu {{name}} fica inválido",
-        "expiring_subtitle": "Atualiza o documento para continuares a aceitar pedidos.",
-        "expired_title": "O teu {{name}} expirou",
-        "expired_subtitle": "Não podes aceitar pedidos até enviares um documento válido."
+        "expiring_today": "Hoje é o último dia de validade do teu {{name}}. Atualiza o documento.",
+        "expiring_one": "Amanhã o teu {{name}} fica inválido. Atualiza o documento.",
+        "expiring_other": "Daqui a {{count}} dias o teu {{name}} fica inválido. Atualiza o documento.",
+        "expired": "O teu {{name}} expirou. Não recebes pedidos até o atualizares."
     },
     "notifications_disabled": {
         "title": "Notificações desligadas",

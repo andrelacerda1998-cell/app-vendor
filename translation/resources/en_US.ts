@@ -986,10 +986,6 @@ export default {
     "my_areas": "My areas",
     "my_areas_empty": "You haven't picked any areas yet. Choose where you work to start getting requests.",
     "my_areas_change": "Change areas",
-    "payment": {
-        "title": "To receive",
-        "on_date": "Paid on {{date}}"
-    },
     "shortcuts": {
       "title": "Shortcuts",
       "history": "History",
@@ -1128,12 +1124,10 @@ export default {
     }
   },
   "document_expiry": {
-    "expiring_title_today": "Today is the last valid day of your {{name}}",
-    "expiring_title_one": "Tomorrow your {{name}} becomes invalid",
-    "expiring_title_other": "In {{count}} days your {{name}} becomes invalid",
-    "expiring_subtitle": "Update the document to keep accepting jobs.",
-    "expired_title": "Your {{name}} has expired",
-    "expired_subtitle": "You can't accept jobs until you upload a valid document."
+    "expiring_today": "Today is the last valid day of your {{name}}. Update the document.",
+    "expiring_one": "Tomorrow your {{name}} becomes invalid. Update the document.",
+    "expiring_other": "In {{count}} days your {{name}} becomes invalid. Update the document.",
+    "expired": "Your {{name}} has expired. You won't get requests until you update it."
   },
   "notifications_disabled": {
     "title": "Notifications are off",

@@ -31,7 +31,6 @@ import WeekStats from "@/components/app/Home/WeekStats";
 import PendingRequestsCard from "@/components/app/Home/PendingRequestsCard";
 import MatchingInvitationsCard from "@/components/app/Home/MatchingInvitationsCard";
 import HomeShortcuts from "@/components/app/Home/HomeShortcuts";
-import NextPaymentCard from "@/components/app/Home/NextPaymentCard";
 import NotificationsDisabledBanner from "@/components/NotificationsDisabledBanner";
 import DocumentExpiryBanner from "@/components/DocumentExpiryBanner";
 import { useDepartureReminders } from "@/hooks/useDepartureReminders";
@@ -409,10 +408,7 @@ const Home = () => {
           <WeekStats />
         </View>
 
-        {/* 5. O dinheiro: por receber e quando entra na conta. */}
-        <NextPaymentCard />
-
-        {/* 6. Atalhos para o que vive enterrado no Perfil. */}
+        {/* 5. Atalhos para o que vive enterrado no Perfil. */}
         <HomeShortcuts />
       </ScrollView>
       {/* {openService && <ServiceInProgress isHome />} */}
