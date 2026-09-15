@@ -68,21 +68,22 @@ const ConfirmAttendanceCard = () => {
         className="rounded-2xl border p-4"
         style={{ backgroundColor: 'rgba(35,230,158,0.10)', borderColor: 'rgba(35,230,158,0.40)' }}
       >
-        <View className="flex-row items-center">
+        {/* Tudo centrado, em coluna: com o icone encostado a esquerda, um
+            texto centrado ficava a flutuar no espaco que sobrava. O visto
+            passa para cima, sobre o eixo do titulo e do botao. */}
+        <View className="items-center">
           <View
-            className="w-10 h-10 rounded-full items-center justify-center mr-3"
+            className="w-10 h-10 rounded-full items-center justify-center mb-2.5"
             style={{ backgroundColor: Colors.success }}
           >
             <Feather name="check" size={20} color={Colors.strongest} />
           </View>
-          <View className="flex-1">
-            <CustomText color="secondary" boldness="bold" size="medium" numberOfLines={1}>
-              {t('schedules.attendance_nudge_title', { count: porConfirmar.length })}
-            </CustomText>
-            <CustomText color="muted" size="small" classes="mt-0.5" numberOfLines={1}>
-              {quando ?? t('schedules.attendance_nudge_subtitle')}
-            </CustomText>
-          </View>
+          <CustomText color="secondary" boldness="bold" size="medium" classes="text-center" numberOfLines={2}>
+            {t('schedules.attendance_nudge_title', { count: porConfirmar.length })}
+          </CustomText>
+          <CustomText color="muted" size="small" classes="mt-0.5 text-center" numberOfLines={1}>
+            {quando ?? t('schedules.attendance_nudge_subtitle')}
+          </CustomText>
         </View>
 
         {/* Abre a Agenda, onde cada servico tem o seu botao: com mais do que
