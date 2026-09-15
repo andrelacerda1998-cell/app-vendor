@@ -1344,6 +1344,9 @@ export default {
         "more_other": "Mais {{count}} avisos"
     },
     "home_today": {
+        "tomorrow": "AMANHÃ",
+        "count_more_one": "+{{count}} hoje",
+        "count_more_other": "+{{count}} hoje",
         "title": "HOJE",
         "service": "serviço",
         "services": "serviços",
@@ -1583,6 +1586,8 @@ export default {
         "photos": "Fotos do cliente",
         "not_found": "Não foi possível abrir este serviço."
       },
+      "attendance_nudge_action_one": "Confirmar presença",
+      "attendance_nudge_action_other": "Confirmar presença em {{count}} serviços",
       "attendance_nudge_title_one": "Tens 1 serviço por confirmar",
       "attendance_nudge_title_other": "Tens {{count}} serviços por confirmar",
       "confirm_attendance": "Confirmar presença",

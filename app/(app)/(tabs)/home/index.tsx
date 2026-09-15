@@ -16,7 +16,7 @@ import { useService } from "@/contexts/ServiceContext";
 import OpenService from "@/components/services/OpenService";
 
 
-import Schedules from "@/components/app/Home/Schedules";
+import TodayCard from "@/components/app/Home/TodayCard";
 import {useSession} from "@/contexts/SessionContext";
 import { useTranslation } from "react-i18next";
 import XIcon from "@/assets/icons/x";
@@ -30,7 +30,6 @@ import AttentionIcon from "@/assets/icons/attention";
 import WeekStats from "@/components/app/Home/WeekStats";
 import PendingRequestsCard from "@/components/app/Home/PendingRequestsCard";
 import MatchingInvitationsCard from "@/components/app/Home/MatchingInvitationsCard";
-import ConfirmAttendanceCard from "@/components/app/Home/ConfirmAttendanceCard";
 import HomeShortcuts from "@/components/app/Home/HomeShortcuts";
 import NotificationsDisabledBanner from "@/components/NotificationsDisabledBanner";
 import DocumentExpiryBanner from "@/components/DocumentExpiryBanner";
@@ -399,22 +398,19 @@ const Home = () => {
         <PendingRequestsCard />
         <MatchingInvitationsCard />
 
-        {/* 3. Compromissos ja aceites que esperam um "sim, la estarei".
-            Antes do resumo da agenda: e uma decisao por tomar, nao uma
-            consulta. */}
-        <ConfirmAttendanceCard />
+        {/* 3. HOJE: o proximo servico em concreto — hora, o que e, onde,
+            quem, quanto rende — com a confirmacao de presenca la dentro.
+            Eram dois cartoes encostados a falar da mesma agenda. */}
+        <TodayCard />
 
-        {/* 4. O que aí vem hoje. */}
-        <Schedules />
-
-        {/* 5. Retrospetivo: já aconteceu, pode esperar.
-            Sem margem própria: o `gap` da coluna é o único ritmo vertical do
-            ecrã, e o mt-3 daqui abria um buraco só neste sítio. */}
+        {/* 4. Retrospetivo: ja aconteceu, pode esperar. Desceu para debaixo
+            do que ha a fazer — nao ha nada a decidir com tres numeros de uma
+            semana que ja passou, e estavam a meio do ecra. */}
         <View className="px-5">
           <WeekStats />
         </View>
 
-        {/* 6. Atalhos para o que vive enterrado no Perfil. */}
+        {/* 5. Atalhos para o que vive enterrado no Perfil. */}
         <HomeShortcuts />
       </ScrollView>
       {/* {openService && <ServiceInProgress isHome />} */}

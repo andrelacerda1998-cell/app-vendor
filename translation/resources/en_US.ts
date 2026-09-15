@@ -1344,6 +1344,9 @@ export default {
     "more_other": "{{count}} more notices"
   },
   "home_today": {
+    "tomorrow": "TOMORROW",
+    "count_more_one": "+{{count}} today",
+    "count_more_other": "+{{count}} today",
     "title": "TODAY",
     "service": "service",
     "services": "services",
@@ -1583,6 +1586,8 @@ export default {
         "photos": "Customer photos",
         "not_found": "Couldn't open this service."
       },
+    "attendance_nudge_action_one": "Confirm attendance",
+    "attendance_nudge_action_other": "Confirm attendance for {{count}} jobs",
     "attendance_nudge_title_one": "1 job to confirm",
     "attendance_nudge_title_other": "{{count}} jobs to confirm",
     "confirm_attendance": "Confirm attendance",
