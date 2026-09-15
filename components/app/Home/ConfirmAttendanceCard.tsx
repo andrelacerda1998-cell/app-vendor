@@ -6,9 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { CustomText } from '@/components/CustomText';
 import { Colors } from '@/constants/Colors';
 import { useSchedule } from '@/contexts/ScheduleContext';
-import { needsAttendanceConfirmation, scheduleStartsAt } from '@/utils/attendance';
-
-const hhmm = (t?: string) => (t ? String(t).slice(0, 5) : '');
+import { needsAttendanceConfirmation } from '@/utils/attendance';
 
 /**
  * "Confirma que vais" — aviso na Home dos servicos por confirmar.
@@ -18,12 +16,9 @@ const hhmm = (t?: string) => (t ? String(t).slice(0, 5) : '');
  * que ele veja ao abrir a app. Quando a confirmacao nao chega, o cliente fica
  * em casa a espera — e a operacao so descobre tarde demais.
  *
- * Nao repete a agenda: conta quantos faltam e diz quando e o mais proximo.
- * Toca-se e abre a Agenda, onde esta o botao.
- *
- * A legenda e so a hora. O "o cliente fica a espera se nao apareceres" que
- * aqui esteve explicava o porque a quem ja esta a ler um pedido para
- * confirmar — duas linhas de texto para uma informacao de quatro palavras.
+ * Nao repete a agenda: diz quantos faltam e leva ao sitio onde se confirma.
+ * A hora do proximo saiu — quem quer saber qual e esta a um toque, na
+ * Agenda, e a linha so afastava o titulo do botao.
  *
  * Verde, como o proprio botao e como o visto de confirmado: e a familia da
  * confirmacao. O ambar fica para o que corre mal.
@@ -32,38 +27,17 @@ const ConfirmAttendanceCard = () => {
   const { t } = useTranslation();
   const { scheduledServicesData } = useSchedule();
 
-  const porConfirmar = (scheduledServicesData ?? [])
-    .filter(needsAttendanceConfirmation)
-    .sort((a, b) => (scheduleStartsAt(a) ?? 0) - (scheduleStartsAt(b) ?? 0));
+  // So o numero interessa: o cartao deixou de dizer qual e o proximo, por
+  // isso nao ha nada a ordenar.
+  const porConfirmar = (scheduledServicesData ?? []).filter(needsAttendanceConfirmation);
 
   if (porConfirmar.length === 0) return null;
 
-  const proximo = porConfirmar[0];
-  const hora = hhmm(proximo?.schedule?.scheduled_time?.start);
-  const rotulo = proximo?.schedule?.date_label;
-
-  /**
-   * "Hoje as 16:00" sozinho nao se percebia: com o titulo a falar de tres
-   * servicos e a legenda a dar uma hora, tanto podia ser o inicio do proximo
-   * como o prazo para confirmar. A legenda passa a dizer o que aquela hora e.
-   *
-   * Com um unico servico por confirmar, "o mais proximo" nao existe — nao ha
-   * com o que comparar. O sufixo dessa variante e `_single` e nao `_one` de
-   * proposito: `_one` e uma forma plural do i18next e seria apanhada se
-   * alguem passasse um `count` a chave base.
-   */
-  const varios = porConfirmar.length > 1;
-  const quando = rotulo === 'today'
-    ? t(varios ? 'schedules.attendance_nudge_today' : 'schedules.attendance_nudge_today_single', { time: hora })
-    : rotulo === 'tomorrow'
-      ? t(varios ? 'schedules.attendance_nudge_tomorrow' : 'schedules.attendance_nudge_tomorrow_single', { time: hora })
-      : null;
-
   return (
     <View className="px-5">
-      {/* Facto, quando, e um botao a dizer o que fazer. A seta sozinha
-          obrigava a adivinhar que o cartao levava a algum lado — e o titulo
-          dava uma ordem ("confirma") sem mostrar onde se confirma. */}
+      {/* Facto e um botao a dizer o que fazer. A seta sozinha obrigava a
+          adivinhar que o cartao levava a algum lado — e o titulo dava uma
+          ordem ("confirma") sem mostrar onde se confirma. */}
       <View
         className="rounded-2xl border p-3.5"
         style={{ backgroundColor: 'rgba(35,230,158,0.10)', borderColor: 'rgba(35,230,158,0.40)' }}
@@ -77,9 +51,6 @@ const ConfirmAttendanceCard = () => {
             {t('schedules.attendance_nudge_title', { count: porConfirmar.length })}
           </CustomText>
         </View>
-        <CustomText color="muted" size="extraSmall" classes="mt-0.5 text-center" numberOfLines={1}>
-          {quando ?? t('schedules.attendance_nudge_subtitle')}
-        </CustomText>
 
         {/* Abre a Agenda, onde cada servico tem o seu botao: com mais do que
             um por confirmar, um toque nao pode decidir por todos. */}
@@ -87,7 +58,7 @@ const ConfirmAttendanceCard = () => {
           activeOpacity={0.85}
           accessibilityRole="button"
           onPress={() => router.navigate('/(app)/(tabs)/wallet')}
-          className="items-center rounded-xl mt-2.5 py-2"
+          className="items-center rounded-xl mt-3 py-2"
           style={{ backgroundColor: Colors.success }}
         >
           <CustomText color="strongest" boldness="bold" size="small">
