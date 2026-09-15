@@ -34,9 +34,15 @@ const DocumentExpiryBanner = () => {
   const expired = worst.is_expired || (worst.days_to_expire ?? 1) < 0;
   const tone = expired ? Colors.danger : Colors.warning;
 
+  const days = worst.days_to_expire ?? 0;
+
+  // O último dia de validade tem frase própria: a pluralização do i18next não
+  // tem categoria "zero" em português, e a contagem daria "Daqui a 0 dias".
   const title = expired
     ? t('document_expiry.expired_title', { name: worst.name })
-    : t('document_expiry.expiring_title', { name: worst.name, count: worst.days_to_expire ?? 0 });
+    : days === 0
+      ? t('document_expiry.expiring_title_today', { name: worst.name })
+      : t('document_expiry.expiring_title', { name: worst.name, count: days });
 
   const subtitle = expired
     ? t('document_expiry.expired_subtitle')

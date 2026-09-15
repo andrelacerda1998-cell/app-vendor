@@ -1128,9 +1128,10 @@ export default {
     }
   },
   "document_expiry": {
-    "expiring_title_one": "Your {{name}} expires tomorrow",
-    "expiring_title_other": "Your {{name}} expires in {{count}} days",
-    "expiring_subtitle": "Renew it to keep accepting jobs. Tap to upload the new document.",
+    "expiring_title_today": "Today is the last valid day of your {{name}}",
+    "expiring_title_one": "Tomorrow your {{name}} becomes invalid",
+    "expiring_title_other": "In {{count}} days your {{name}} becomes invalid",
+    "expiring_subtitle": "Update the document to keep accepting jobs.",
     "expired_title": "Your {{name}} has expired",
     "expired_subtitle": "You can't accept jobs until you upload a valid document."
   },

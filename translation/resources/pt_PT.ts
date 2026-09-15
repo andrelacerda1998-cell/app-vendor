@@ -1128,9 +1128,10 @@ export default {
         }
     },
     "document_expiry": {
-        "expiring_title_one": "O teu {{name}} expira amanhã",
-        "expiring_title_other": "O teu {{name}} expira em {{count}} dias",
-        "expiring_subtitle": "Renova-o para continuares a aceitar pedidos. Toca para enviar o novo documento.",
+        "expiring_title_today": "Hoje é o último dia de validade do teu {{name}}",
+        "expiring_title_one": "Amanhã o teu {{name}} fica inválido",
+        "expiring_title_other": "Daqui a {{count}} dias o teu {{name}} fica inválido",
+        "expiring_subtitle": "Atualiza o documento para continuares a aceitar pedidos.",
         "expired_title": "O teu {{name}} expirou",
         "expired_subtitle": "Não podes aceitar pedidos até enviares um documento válido."
     },
