@@ -26,6 +26,20 @@ interface Section {
   [key: string]: any;
 }
 
+/**
+ * "PT50 0002 0123 1234 5678 9015 4" → "PT50 •••• 0154".
+ *
+ * Na lista do Perfil basta confirmar QUAL e a conta; o numero inteiro fica no
+ * ecra de detalhe. Um IBAN completo numa lista le-se de relance por quem esta
+ * ao lado, e nao acrescenta nada a quem so quer verificar que esta certo.
+ */
+const maskIban = (iban?: string | null) => {
+  if (!iban) return undefined;
+  const clean = String(iban).replace(/\s+/g, '');
+  if (clean.length < 8) return clean;
+  return `${clean.slice(0, 4)} •••• ${clean.slice(-4)}`;
+};
+
 const Profile = () => {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
@@ -80,6 +94,18 @@ const Profile = () => {
   // Conta
   const accountSections: Section[] = [
     // "O meu perfil" saiu daqui: o lápis no cabeçalho já abre a edição.
+    //
+    // Dados de pagamento: o ecrã existia e estava INACESSÍVEL — havia o
+    // `case "Payments"` no switch, mas nenhuma secção com esse tab, por isso
+    // nada o chamava. Na prática o técnico que se enganasse no IBAN no registo
+    // não tinha como o corrigir na app; tinha de ligar ao suporte. É o dado
+    // mais importante da conta dele: é por ali que recebe o dinheiro.
+    {
+      label: t('profile.my_profile.labels.payments'),
+      tab: 'Payments',
+      icon: <Feather name="credit-card" size={20} color={Colors.secondary} />,
+      value: vendorData?.iban ? maskIban(vendorData.iban) : t('profile.payments.empty_iban'),
+    },
     { label: t('profile.my_profile.labels.settings'), tab: 'Settings', icon: <GearIcon size={20} color={Colors.secondary} /> },
     { label: t('profile.activity.support'), tab: 'Support', icon: <Feather name="life-buoy" size={20} color={Colors.secondary} /> },
   ];
@@ -295,6 +321,10 @@ const Profile = () => {
               key: s.tab,
               icon: s.icon,
               label: s.label,
+              // Esta lista descartava o `value`, ao contrario da de cima. Sem
+              // ele, "Pagamentos" nao diz para onde vai o dinheiro e obriga a
+              // abrir o ecra so para confirmar que o IBAN esta certo.
+              value: s.value,
               onPress: () => handleNavigation(s.tab),
             }))}
           />
