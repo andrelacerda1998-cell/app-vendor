@@ -62,9 +62,9 @@ const NextPaymentCard = () => {
             ecrã a viver num canto. */}
         <View className="flex-row items-end justify-between">
           <View className="flex-1 pr-3">
-            <CustomText size="small" color="muted">
-              {t('home.payment.to_receive')}
-            </CustomText>
+            {/* Sem rótulo aqui dentro: o cabeçalho da secção já diz "A
+                receber", e repeti-lo a dois centímetros era a mesma frase
+                duas vezes a roubar espaço ao número. */}
             {/* Âmbar só quando há dinheiro: a cor da marca num 0,00 € celebra
                 o nada, e de tanto aparecer deixa de significar alguma coisa.
                 Mesma regra dos números da semana aqui em cima. */}

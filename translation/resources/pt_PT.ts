@@ -987,8 +987,7 @@ export default {
         "my_areas_empty": "Ainda não escolheste zonas. Escolhe onde trabalhas para começares a receber pedidos.",
         "my_areas_change": "Alterar zonas",
         "payment": {
-            "title": "Ganhos da semana",
-            "to_receive": "A receber",
+            "title": "A receber",
             "on_date": "Pagamento no dia {{date}}",
             "services_count_one": "{{count}} serviço",
             "services_count_other": "{{count}} serviços"
