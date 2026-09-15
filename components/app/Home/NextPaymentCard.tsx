@@ -44,11 +44,9 @@ const NextPaymentCard = () => {
 
   return (
     <View className="px-5">
-      <SectionHeader
-        title={t('home.payment.title')}
-        action={t('home.payment.see_earnings')}
-        onAction={() => router.push('/(app)/(tabs)/history')}
-      />
+      {/* Sem ação no cabeçalho: o cartão inteiro já abre os Ganhos, e um
+          "Ver ganhos" ao lado era o mesmo destino escrito duas vezes. */}
+      <SectionHeader title={t('home.payment.title')} />
 
       <TouchOpacity
         onPress={() => router.push('/(app)/(tabs)/history')}
