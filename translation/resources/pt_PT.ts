@@ -987,7 +987,9 @@ export default {
         "my_areas_empty": "Ainda não escolheste zonas. Escolhe onde trabalhas para começares a receber pedidos.",
         "my_areas_change": "Alterar zonas",
         "payment": {
-            "title": "O teu dinheiro"
+            "title": "Ganhos da semana",
+            "to_receive": "A receber",
+            "on_date": "Pagamento no dia {{date}}"
         },
         "shortcuts": {
             "title": "Atalhos",

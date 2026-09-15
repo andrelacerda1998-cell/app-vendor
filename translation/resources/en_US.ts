@@ -987,7 +987,9 @@ export default {
     "my_areas_empty": "You haven't picked any areas yet. Choose where you work to start getting requests.",
     "my_areas_change": "Change areas",
     "payment": {
-        "title": "Your money"
+        "title": "This week\u2019s earnings",
+        "to_receive": "To receive",
+        "on_date": "Paid on {{date}}"
     },
     "shortcuts": {
       "title": "Shortcuts",

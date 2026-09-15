@@ -54,53 +54,42 @@ const NextPaymentCard = () => {
         rounded="2xl"
         border
         borderColor="line"
-        otherClasses="p-4"
+        otherClasses="flex-row items-center p-4"
       >
-        {/* Por receber primeiro: é o número, a data é a consequência. Só
-            aparece quando há trabalho feito por pagar — a zeros seria uma
-            linha a celebrar o nada. */}
-        {pending > 0 && (
-          <View className="flex-row items-center pb-3.5 mb-3.5" style={{ borderBottomWidth: 1, borderBottomColor: Colors.line }}>
-            <View
-              className="w-12 h-12 rounded-2xl items-center justify-center"
-              style={{ backgroundColor: 'rgba(233,162,59,0.16)' }}
-            >
-              <Feather name="clock" size={21} color={Colors.warning} />
-            </View>
-            <View className="flex-1 ml-3.5">
-              <CustomText color="secondary" boldness="bold" size="medium">
-                {t('earnings.pending_payment_title')}
-              </CustomText>
-              <CustomText color="muted" size="extraSmall" classes="mt-0.5" numberOfLines={2}>
-                {t('earnings.pending_payment_subtitle', { count: stats.pending_payment_count ?? 0 })}
-              </CustomText>
-            </View>
-            <CustomText boldness="bolder" size="large" color="secondary" style={{ color: Colors.warning }}>
-              {renderMoney(pending) || '0,00 €'}
-            </CustomText>
-          </View>
-        )}
-
-        <View className="flex-row items-center">
-          <View
-            className="w-12 h-12 rounded-2xl items-center justify-center"
-            style={{ backgroundColor: 'rgba(35,230,158,0.12)' }}
-          >
-            <Ionicons name="calendar-clear" size={21} color={Colors.success} />
-          </View>
-          <View className="flex-1 ml-3.5">
-            <CustomText size="small" color="muted">
-              {t('earnings.next_payment')}
-            </CustomText>
-            <CustomText size="medium" color="secondary" boldness="bold" classes="mt-0.5" numberOfLines={1}>
-              {t('earnings.next_payment_on', { date: formatLongDate(stats.next_payment_date) })}
-            </CustomText>
-            <CustomText size="extraSmall" color="muted" classes="mt-0.5" numberOfLines={1}>
-              {iban ? t('earnings.to_iban', { iban }) : t('earnings.next_payment_hint')}
-            </CustomText>
-          </View>
-          <Feather name="chevron-right" size={18} color={Colors.muted} />
+        <View
+          className="w-12 h-12 rounded-2xl items-center justify-center"
+          style={{ backgroundColor: 'rgba(35,230,158,0.12)' }}
+        >
+          <Ionicons name="calendar-clear" size={21} color={Colors.success} />
         </View>
+
+        <View className="flex-1 ml-3.5">
+          {/* O valor primeiro, grande: e a razao de o tecnico abrir a app.
+              A data logo por baixo, que sozinho um numero nao diz quando. */}
+          <CustomText size="small" color="muted">
+            {t('home.payment.to_receive')}
+          </CustomText>
+          <CustomText size="extraLarge" color="secondary" boldness="bolder" classes="mt-0.5">
+            {renderMoney(pending) || '0,00 €'}
+          </CustomText>
+          <CustomText size="small" color="secondary" boldness="semiBold" classes="mt-1" numberOfLines={1}>
+            {t('home.payment.on_date', { date: formatLongDate(stats.next_payment_date) })}
+          </CustomText>
+          {/* Quantos servicos compoem o valor: so quando ha algum, senao
+              seria uma linha a dizer "0 servicos" por baixo de 0,00 €. */}
+          {pending > 0 && (stats.pending_payment_count ?? 0) > 0 && (
+            <CustomText size="extraSmall" color="muted" classes="mt-0.5" numberOfLines={1}>
+              {t('earnings.pending_payment_subtitle', { count: stats.pending_payment_count })}
+            </CustomText>
+          )}
+          {!!iban && (
+            <CustomText size="extraSmall" color="muted" classes="mt-0.5" numberOfLines={1}>
+              {t('earnings.to_iban', { iban })}
+            </CustomText>
+          )}
+        </View>
+
+        <Feather name="chevron-right" size={18} color={Colors.muted} />
       </TouchOpacity>
     </View>
   );
