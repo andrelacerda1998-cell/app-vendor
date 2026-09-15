@@ -8,7 +8,7 @@ import { Colors } from '@/constants/Colors';
 import TouchOpacity from '@/components/TouchOpacity';
 import { useVendorStats } from '@/hooks/useVendorStats';
 import { renderMoney } from '@/utils/money';
-import { formatLongDate } from '@/utils/date';
+import { formatDayMonth } from '@/utils/date';
 
 /**
  * "A receber" — quanto esta por transferir e em que dia entra na conta.
@@ -55,7 +55,7 @@ const NextPaymentCard = () => {
             {t('home.payment.title')}
           </CustomText>
           <CustomText size="small" color="muted" classes="mt-1" numberOfLines={1}>
-            {t('home.payment.on_date', { date: formatLongDate(stats.next_payment_date) })}
+            {t('home.payment.on_date', { date: formatDayMonth(stats.next_payment_date) })}
           </CustomText>
         </View>
 

@@ -33,6 +33,17 @@ export function formatLongDate(iso?: string | null): string {
   return d ? d.toLocaleDateString('pt-PT', { day: 'numeric', month: 'short', weekday: 'long' }) : '';
 }
 
+/**
+ * "21 de setembro" — dia e mes por extenso, sem ano.
+ *
+ * Para datas proximas, onde o ano se subentende e so estorva. O `de` vem do
+ * proprio locale pt-PT, nao de concatenacao nossa.
+ */
+export function formatDayMonth(iso?: string | null): string {
+  const d = parseValidDate(iso ?? null);
+  return d ? d.toLocaleDateString('pt-PT', { day: 'numeric', month: 'long' }) : '';
+}
+
 export function formatFullDate(iso?: string | null): string {
   const d = parseValidDate(iso ?? null);
   return d ? d.toLocaleDateString('pt-PT', { day: '2-digit', month: 'long', year: 'numeric' }) : '';

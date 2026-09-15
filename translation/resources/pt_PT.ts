@@ -988,7 +988,7 @@ export default {
         "my_areas_change": "Alterar zonas",
         "payment": {
             "title": "A receber",
-            "on_date": "Pagamento na {{date}}"
+            "on_date": "Pagamento no dia {{date}}"
         },
         "shortcuts": {
             "title": "Atalhos",
