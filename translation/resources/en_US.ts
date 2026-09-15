@@ -1588,12 +1588,6 @@ export default {
         "photos": "Customer photos",
         "not_found": "Couldn't open this service."
       },
-    "confirm_attendance_day_one": "Confirm attendance",
-    "confirm_attendance_day_other": "Confirm attendance for all {{count}}",
-    "confirm_attendance_day_subtitle_one": "Attendance confirmed. The customer knows you're coming.",
-    "confirm_attendance_day_subtitle_other": "Attendance confirmed for all {{count}} jobs that day.",
-    "confirm_attendance_partial_one": "{{count}} job could not be confirmed. Try again.",
-    "confirm_attendance_partial_other": "{{count}} jobs could not be confirmed. Try again.",
     "confirm_attendance": "Confirm attendance",
     "attendance_confirmed": "Attendance confirmed",
     "attendance_confirmed_short": "Confirmed",

@@ -86,66 +86,57 @@ const Agenda = () => {
   const [confirmedNow, setConfirmedNow] = useState<Record<number, boolean>>({});
 
   /**
-   * Confirmar a presenca de um dia inteiro.
+   * Confirmar a presenca de UM servico.
    *
-   * Com tres servicos no mesmo dia eram tres botoes verdes empilhados: o
-   * verde deixava de destacar seja o que for e a lista passava a parecer um
-   * formulario. Passa a haver um so, no topo do dia — e a decisao e a mesma
-   * que o tecnico ja tomava em conjunto: "amanha estou ca".
-   *
-   * Cada servico continua a ser confirmado por si no servidor; o que muda e
-   * o numero de toques.
+   * E por servico e nao por dia: cada agendamento e um compromisso com um
+   * cliente concreto, e o tecnico pode contar com um e ainda estar em duvida
+   * sobre o seguinte. Um botao que decidia pelo dia inteiro tirava-lhe essa
+   * distincao — e a confirmacao existe precisamente para a operacao saber,
+   * servico a servico, com o que pode contar.
    */
-  const [confirmingDay, setConfirmingDay] = useState<string | null>(null);
+  const [confirmingId, setConfirmingId] = useState<number | null>(null);
 
-  const confirmDayAttendance = async (dayKey: string, items: any[]) => {
-    const porConfirmar = items.filter((item) => attendanceState(item) === 'pending');
-    if (porConfirmar.length === 0) return;
+  const confirmAttendance = (item: any) => {
+    const scheduleId = item?.schedule_id;
+    if (!scheduleId) return;
 
-    setConfirmingDay(dayKey);
-    try {
-      const resultados = await Promise.allSettled(
-        porConfirmar.map((item) =>
-          api.post(API_ROUTES.VENDOR_CONFIRM_SCHEDULE_ATTENDANCE(item.schedule_id))
-        )
-      );
+    setConfirmingId(scheduleId);
+    api.post(API_ROUTES.VENDOR_CONFIRM_SCHEDULE_ATTENDANCE(scheduleId))
+      .then(() => {
+        setConfirmedNow((prev) => ({ ...prev, [scheduleId]: true }));
 
-      const confirmados = porConfirmar.filter((_, i) => resultados[i].status === 'fulfilled');
-      const falhados = porConfirmar.length - confirmados.length;
+        // A mensagem repete o QUANDO em vez de repetir "confirmada" (que já
+        // fica escrito no cartão, logo por baixo): o que o técnico precisa de
+        // levar deste ecrã é o dia e a hora a que ficou de aparecer.
+        const day = parseDay(item?.schedule?.scheduled_day);
+        const start = hhmm(item?.schedule?.scheduled_time?.start);
+        const when = day && start ? `${dayTitle(day).toLowerCase()}, às ${start}` : null;
 
-      setConfirmedNow((prev) => ({
-        ...prev,
-        ...Object.fromEntries(confirmados.map((item) => [item.schedule_id, true])),
-      }));
+        openDialog({
+          icon: <CheckMark color={Colors.primary} />,
+          title: t('schedules.confirm_attendance_success_title'),
+          subtitle: when
+            ? t('schedules.confirm_attendance_success_subtitle', { when })
+            : t('schedules.confirm_attendance_success_subtitle_generic'),
+          closeAfterMSeconds: 2500,
+          closeOnClickOutside: true,
+        });
 
-      // Falhar UM nao pode parecer que falhou tudo: diz-se quantos ficaram por
-      // confirmar, e os que passaram ficam marcados na mesma.
-      if (falhados > 0) {
+        // Recarrega a agenda partilhada: sem isto a confirmacao so existia no
+        // estado deste ecra e a Home continuava a contar este servico como
+        // por confirmar.
+        if (vendorData) getScheduledServices(vendorData);
+      })
+      .catch((err) => {
+        console.error(err);
         openDialog({
           title: t('services.cancel.error.title'),
-          subtitle: t('schedules.confirm_attendance_partial', { count: falhados }),
+          subtitle: t('schedules.confirm_attendance_error'),
           closeAfterMSeconds: 3000,
           closeOnClickOutside: true,
         });
-        return;
-      }
-
-      openDialog({
-        icon: <CheckMark color={Colors.primary} />,
-        title: t('schedules.confirm_attendance_success_title'),
-        subtitle: t('schedules.confirm_attendance_day_subtitle', { count: confirmados.length }),
-        closeAfterMSeconds: 2500,
-        closeOnClickOutside: true,
-      });
-
-      // Recarrega a agenda partilhada: sem isto, a confirmacao so existia no
-      // estado deste ecra e a Home continuava a pedir para confirmar os
-      // mesmos servicos — o tecnico confirmava aqui, voltava ao Inicio e era
-      // recebido com o mesmo pedido.
-      if (vendorData) getScheduledServices(vendorData);
-    } finally {
-      setConfirmingDay(null);
-    }
+      })
+      .finally(() => setConfirmingId(null));
   };
 
   /**
@@ -507,30 +498,6 @@ const Agenda = () => {
                 })()}
                 {items.length <= 1 && <View className="mb-2" />}
 
-                {/* Um botao para o dia, em vez de um por cartao. */}
-                {(() => {
-                  const porConfirmar = items.filter((item: any) => attendanceState(item) === 'pending');
-                  if (porConfirmar.length === 0) return null;
-
-                  const aConfirmar = confirmingDay === k;
-                  return (
-                    <TouchOpacity
-                      rounded="lg"
-                      itemsCenter
-                      disabled={aConfirmar}
-                      onPress={() => confirmDayAttendance(k, items)}
-                      otherClasses={`mb-3 py-2.5 ${aConfirmar ? 'opacity-60' : ''}`}
-                      bgColor="success"
-                    >
-                      <CustomText color="strongest" boldness="bold" size="small">
-                        {porConfirmar.length > 1
-                          ? t('schedules.confirm_attendance_day', { count: porConfirmar.length })
-                          : t('schedules.confirm_attendance')}
-                      </CustomText>
-                    </TouchOpacity>
-                  );
-                })()}
-
                 <View style={{ gap: 10 }}>
                   {items.map((item: any, i: number) => {
                     const start = hhmm(item?.schedule?.scheduled_time?.start);
@@ -622,6 +589,25 @@ const Agenda = () => {
                               hora, o serviço e a morada. */}
                           <Feather name="chevron-right" size={18} color={Colors.muted} style={{ marginLeft: 8 }} />
                         </View>
+
+                        {/* Confirmação de presença: aparece a partir das 72h
+                            e só enquanto não estiver confirmada. Fora dessa
+                            janela seria ruído — confirmar com duas semanas de
+                            antecedência não diz nada sobre o dia. */}
+                        {attendance === 'pending' ? (
+                          <TouchOpacity
+                            rounded="lg"
+                            itemsCenter
+                            disabled={confirmingId === item?.schedule_id}
+                            onPress={() => confirmAttendance(item)}
+                            otherClasses={`mt-3 py-2.5 ${confirmingId === item?.schedule_id ? 'opacity-60' : ''}`}
+                            bgColor="success"
+                          >
+                            <CustomText color="strongest" boldness="semiBold" size="small">
+                              {t('schedules.confirm_attendance')}
+                            </CustomText>
+                          </TouchOpacity>
+                        ) : null}
 
                         {/* Uma linha só para os estados: a etiqueta de estado
                             (a caminho, em execução), a recorrência e a

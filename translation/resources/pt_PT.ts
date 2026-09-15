@@ -1588,12 +1588,6 @@ export default {
         "photos": "Fotos do cliente",
         "not_found": "Não foi possível abrir este serviço."
       },
-      "confirm_attendance_day_one": "Confirmar presença",
-      "confirm_attendance_day_other": "Confirmar presença nos {{count}}",
-      "confirm_attendance_day_subtitle_one": "Presença confirmada. O cliente já sabe que contas lá estar.",
-      "confirm_attendance_day_subtitle_other": "Presença confirmada nos {{count}} serviços do dia.",
-      "confirm_attendance_partial_one": "Faltou confirmar {{count}} serviço. Tenta outra vez.",
-      "confirm_attendance_partial_other": "Faltaram confirmar {{count}} serviços. Tenta outra vez.",
       "confirm_attendance": "Confirmar presença",
       "attendance_confirmed": "Presença confirmada",
       "attendance_confirmed_short": "Confirmado",
