@@ -989,7 +989,9 @@ export default {
         "payment": {
             "title": "Ganhos da semana",
             "to_receive": "A receber",
-            "on_date": "Pagamento no dia {{date}}"
+            "on_date": "Pagamento no dia {{date}}",
+            "services_count_one": "{{count}} serviço",
+            "services_count_other": "{{count}} serviços"
         },
         "shortcuts": {
             "title": "Atalhos",

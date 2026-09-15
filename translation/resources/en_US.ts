@@ -989,7 +989,9 @@ export default {
     "payment": {
         "title": "This week\u2019s earnings",
         "to_receive": "To receive",
-        "on_date": "Paid on {{date}}"
+        "on_date": "Paid on {{date}}",
+        "services_count_one": "{{count}} service",
+        "services_count_other": "{{count}} services"
     },
     "shortcuts": {
       "title": "Shortcuts",
