@@ -50,10 +50,15 @@ const HomeShortcuts = () => {
   const { t } = useTranslation();
 
   /**
-   * Oito destinos, em pares por tema: o trabalho que recebe, o dinheiro, a
-   * conta em ordem, e o que os outros dizem / quem ajuda. Todos viviam
-   * enterrados no separador Perfil, atras de uma lista longa, e todos
-   * respondem a uma pergunta que se faz na Home.
+   * Seis destinos, em pares: os tres primeiros governam o trabalho que lhe
+   * chega (quando, o que, por quanto), os tres ultimos a conta em ordem, a
+   * reputacao e a ajuda. Todos viviam enterrados no separador Perfil.
+   *
+   * Ficaram de fora o Historico e as Faltas. O historico de servicos e
+   * retrospetivo e o separador Ganhos ja mostra o que foi feito e o que ha
+   * a receber; as faltas sao raras e estao a zero para quase toda a gente —
+   * ambos continuam no Perfil, que e onde se vai procurar o que nao se usa
+   * todos os dias. Um atalho que nunca se toca rouba atencao aos outros.
    *
    * "Os meus servicos" volta a estar a mao: era o cartao de categorias que
    * saiu da Home por ocupar um lugar nobre sem o merecer — como atalho fica
@@ -76,21 +81,9 @@ const HomeShortcuts = () => {
       onPress: () => router.push('/(app)/(pages)/(hourly-rate)/hourly-rate'),
     },
     {
-      icon: 'history',
-      label: t('history.title'),
-      onPress: () => router.push('/(app)/(pages)/(history)/history'),
-    },
-    {
       icon: 'description',
       label: t('profile.activity.documents'),
       onPress: () => router.push('/(app)/(pages)/(mydocuments)/mydocuments'),
-    },
-    {
-      // Faltas: as penalizacoes por nao comparecer. Saber que a regra existe
-      // e metade de nao faltar — por isso fica a vista, mesmo a zero.
-      icon: 'person-off',
-      label: t('profile.activity.no_shows'),
-      onPress: () => router.push('/(app)/(pages)/(no-shows)/no-shows'),
     },
     {
       icon: 'star-outline',
