@@ -988,7 +988,6 @@ export default {
         "my_areas_change": "Alterar zonas",
         "payment": {
             "title": "A receber",
-            "total_earned": "Ganho até hoje",
             "on_date": "Pagamento no dia {{date}}",
             "services_count_one": "{{count}} serviço",
             "services_count_other": "{{count}} serviços"
