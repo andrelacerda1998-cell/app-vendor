@@ -1337,6 +1337,8 @@ export default {
         "finish_account": "Termina o teu perfil."
     },
     "home_stats": {
+        "pending_payment_one": "{{count}} serviço por receber",
+        "pending_payment_other": "{{count}} serviços por receber",
         "empty_with_demand_online_one": "Houve {{count}} pedido na tua zona esta semana. Estás visível para os próximos.",
         "empty_with_demand_online_other": "Houve {{count}} pedidos na tua zona esta semana. Estás visível para os próximos.",
         "empty_ready": "Estás pronto e visível na tua zona. Fica online para receberes pedidos.",

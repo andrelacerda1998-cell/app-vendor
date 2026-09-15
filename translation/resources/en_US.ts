@@ -1337,6 +1337,8 @@ export default {
     "finish_account": "Finish your profile."
   },
   "home_stats": {
+    "pending_payment_one": "{{count}} service awaiting payment",
+    "pending_payment_other": "{{count}} services awaiting payment",
     "empty_with_demand_online_one": "There was {{count}} request in your area this week. You're visible for the next ones.",
     "empty_with_demand_online_other": "There were {{count}} requests in your area this week. You're visible for the next ones.",
     "empty_ready": "You're ready and visible in your area. Go online to receive requests.",

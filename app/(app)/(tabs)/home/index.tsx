@@ -402,8 +402,10 @@ const Home = () => {
         {/* 3. O que aí vem hoje. */}
         <Schedules />
 
-        {/* 4. Retrospetivo: já aconteceu, pode esperar. */}
-        <View className="px-5 mt-3">
+        {/* 4. Retrospetivo: já aconteceu, pode esperar.
+            Sem margem própria: o `gap` da coluna é o único ritmo vertical do
+            ecrã, e o mt-3 daqui abria um buraco só neste sítio. */}
+        <View className="px-5">
           <WeekStats />
         </View>
 

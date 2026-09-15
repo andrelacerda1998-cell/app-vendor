@@ -17,6 +17,9 @@ interface Stats {
   this_week_services: number;
   total_services: number;
   rating: number | null;
+  /** Já ganho e ainda por transferir — vem da mesma chamada. */
+  pending_payment_amount?: number;
+  pending_payment_count?: number;
 }
 
 const StatItem = ({
@@ -125,6 +128,25 @@ const WeekStats = () => {
       <Divider />
       <StatItem value={rating} label={t('home_stats.rating')} star />
       </View>
+
+      {/* Por receber: trabalho já feito que ainda não foi pago.
+          Vinha na mesma resposta e só existia no separador Ganhos — era a
+          pergunta a que a Home não respondia, com a semana a zeros mas
+          dinheiro à espera. Só aparece quando há mesmo algo pendente. */}
+      {!!stats?.pending_payment_amount && (
+        <View
+          className="flex-row items-center mx-4 mt-4 pt-3"
+          style={{ borderTopWidth: 1, borderTopColor: Colors.line }}
+        >
+          <FeatherIcon name="clock" size={14} color={Colors.warning} />
+          <CustomText color="muted" size="small" classes="ml-2 flex-1" numberOfLines={2}>
+            {t('home_stats.pending_payment', { count: stats.pending_payment_count ?? 0 })}
+          </CustomText>
+          <CustomText size="small" boldness="bolder" color="secondary" style={{ color: Colors.warning }}>
+            {renderMoney(stats.pending_payment_amount) || '0,00 €'}
+          </CustomText>
+        </View>
+      )}
 
       {explain && (
         <View
