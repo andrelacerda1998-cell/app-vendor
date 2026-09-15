@@ -988,9 +988,7 @@ export default {
         "my_areas_change": "Alterar zonas",
         "payment": {
             "title": "A receber",
-            "on_date": "Pagamento no dia {{date}}",
-            "services_count_one": "{{count}} serviço",
-            "services_count_other": "{{count}} serviços"
+            "on_date": "Pagamento na {{date}}"
         },
         "shortcuts": {
             "title": "Atalhos",
@@ -1701,8 +1699,6 @@ export default {
       "incoming_request_title": "Novo pedido recebido",
       "incoming_request_window_immediate": "Tens 60 segundos para aceitar.",
       "incoming_request_window_scheduled": "Tens 20 minutos para aceitar.",
-      "services_count_one": "serviço agendado",
-      "services_count_other": "serviços agendados",
       "customer_notes": "Observações do cliente"
     },
     // Notificação fixa do serviço em curso (useOngoingServiceNotification).

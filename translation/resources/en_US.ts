@@ -988,9 +988,7 @@ export default {
     "my_areas_change": "Change areas",
     "payment": {
         "title": "To receive",
-        "on_date": "Paid on {{date}}",
-        "services_count_one": "{{count}} service",
-        "services_count_other": "{{count}} services"
+        "on_date": "Paid on {{date}}"
     },
     "shortcuts": {
       "title": "Shortcuts",
@@ -1701,8 +1699,6 @@ export default {
     "incoming_request_title": "New request received",
     "incoming_request_window_immediate": "You have 60 seconds to accept.",
     "incoming_request_window_scheduled": "You have 20 minutes to accept.",
-    "services_count_one": "scheduled service",
-    "services_count_other": "scheduled services",
     "customer_notes": "Client notes"
   },
     // Ongoing service sticky notification (useOngoingServiceNotification).
