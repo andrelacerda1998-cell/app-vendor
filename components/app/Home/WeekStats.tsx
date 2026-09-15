@@ -1,26 +1,15 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { View, TouchableOpacity } from 'react-native'
 import { CustomText } from '@/components/CustomText'
 import { Colors } from '@/constants/Colors'
 import { Feather } from '@expo/vector-icons'
 import { router } from 'expo-router'
-import { useApi } from '@/contexts/ApiContext'
-import { API_ROUTES } from '@/constants/ApiRoutes'
 import { renderMoney } from '@/utils/money'
 import { useTranslation } from 'react-i18next'
 import { Card } from '@/components/ui'
 import { useSession } from '@/contexts/SessionContext'
+import { useVendorStats } from '@/hooks/useVendorStats'
 import { Feather as FeatherIcon } from '@expo/vector-icons'
-
-interface Stats {
-  this_week_earnings: number;
-  this_week_services: number;
-  total_services: number;
-  rating: number | null;
-  /** Já ganho e ainda por transferir — vem da mesma chamada. */
-  pending_payment_amount?: number;
-  pending_payment_count?: number;
-}
 
 const StatItem = ({
   value,
@@ -62,18 +51,10 @@ const Divider = () => <View style={{ width: 1, height: 32, backgroundColor: Colo
 
 const WeekStats = () => {
   const { t } = useTranslation();
-  const { api } = useApi();
   const { vendorData, vendorStatus } = useSession();
-  const [stats, setStats] = useState<Stats | null>(null);
+  // Mesma resposta que o cartão do pagamento — uma só chamada por abertura.
+  const stats = useVendorStats();
   const isOnline = vendorStatus === 'Online';
-
-  useEffect(() => {
-    let mounted = true;
-    api.get(API_ROUTES.VENDOR_GET_STATS)
-      .then((res: any) => { if (mounted) setStats(res?.data?.data ?? null); })
-      .catch(() => {});
-    return () => { mounted = false; };
-  }, []);
 
   const earnings = renderMoney(stats?.this_week_earnings ?? 0) || '0,00 €';
   const services = String(stats?.this_week_services ?? 0);
@@ -128,25 +109,6 @@ const WeekStats = () => {
       <Divider />
       <StatItem value={rating} label={t('home_stats.rating')} star />
       </View>
-
-      {/* Por receber: trabalho já feito que ainda não foi pago.
-          Vinha na mesma resposta e só existia no separador Ganhos — era a
-          pergunta a que a Home não respondia, com a semana a zeros mas
-          dinheiro à espera. Só aparece quando há mesmo algo pendente. */}
-      {!!stats?.pending_payment_amount && (
-        <View
-          className="flex-row items-center mx-4 mt-4 pt-3"
-          style={{ borderTopWidth: 1, borderTopColor: Colors.line }}
-        >
-          <FeatherIcon name="clock" size={14} color={Colors.warning} />
-          <CustomText color="muted" size="small" classes="ml-2 flex-1" numberOfLines={2}>
-            {t('home_stats.pending_payment', { count: stats.pending_payment_count ?? 0 })}
-          </CustomText>
-          <CustomText size="small" boldness="bolder" color="secondary" style={{ color: Colors.warning }}>
-            {renderMoney(stats.pending_payment_amount) || '0,00 €'}
-          </CustomText>
-        </View>
-      )}
 
       {explain && (
         <View

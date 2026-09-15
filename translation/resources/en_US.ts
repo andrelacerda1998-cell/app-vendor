@@ -986,12 +986,9 @@ export default {
     "my_areas": "My areas",
     "my_areas_empty": "You haven't picked any areas yet. Choose where you work to start getting requests.",
     "my_areas_change": "Change areas",
-    "my_work": {
-        "title": "What you do",
-        "change": "Change",
-        "empty": "You haven't picked any service types yet. Choose what you do to start getting requests.",
-        "services_one": "{{count}} active service type",
-        "services_other": "{{count}} active service types"
+    "payment": {
+        "title": "Your money",
+        "see_earnings": "See earnings"
     },
     "shortcuts": {
       "title": "Shortcuts",
@@ -1337,8 +1334,6 @@ export default {
     "finish_account": "Finish your profile."
   },
   "home_stats": {
-    "pending_payment_one": "{{count}} service awaiting payment",
-    "pending_payment_other": "{{count}} services awaiting payment",
     "empty_with_demand_online_one": "There was {{count}} request in your area this week. You're visible for the next ones.",
     "empty_with_demand_online_other": "There were {{count}} requests in your area this week. You're visible for the next ones.",
     "empty_ready": "You're ready and visible in your area. Go online to receive requests.",

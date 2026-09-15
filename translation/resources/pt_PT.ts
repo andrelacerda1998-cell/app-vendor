@@ -986,12 +986,9 @@ export default {
         "my_areas": "As minhas zonas",
         "my_areas_empty": "Ainda não escolheste zonas. Escolhe onde trabalhas para começares a receber pedidos.",
         "my_areas_change": "Alterar zonas",
-        "my_work": {
-            "title": "O que fazes",
-            "change": "Alterar",
-            "empty": "Ainda não escolheste tipos de serviço. Escolhe o que fazes para começares a receber pedidos.",
-            "services_one": "{{count}} tipo de serviço ativo",
-            "services_other": "{{count}} tipos de serviço ativos"
+        "payment": {
+            "title": "O teu dinheiro",
+            "see_earnings": "Ver ganhos"
         },
         "shortcuts": {
             "title": "Atalhos",
@@ -1337,8 +1334,6 @@ export default {
         "finish_account": "Termina o teu perfil."
     },
     "home_stats": {
-        "pending_payment_one": "{{count}} serviço por receber",
-        "pending_payment_other": "{{count}} serviços por receber",
         "empty_with_demand_online_one": "Houve {{count}} pedido na tua zona esta semana. Estás visível para os próximos.",
         "empty_with_demand_online_other": "Houve {{count}} pedidos na tua zona esta semana. Estás visível para os próximos.",
         "empty_ready": "Estás pronto e visível na tua zona. Fica online para receberes pedidos.",
