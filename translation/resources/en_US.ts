@@ -1344,6 +1344,8 @@ export default {
     "more_other": "{{count}} more notices"
   },
   "home_today": {
+    "next_title": "UPCOMING",
+    "see_all": "See all",
     "tomorrow": "TOMORROW",
     "count_more_one": "+{{count}} today",
     "count_more_other": "+{{count}} today",

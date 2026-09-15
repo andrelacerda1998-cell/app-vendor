@@ -1344,6 +1344,8 @@ export default {
         "more_other": "Mais {{count}} avisos"
     },
     "home_today": {
+        "next_title": "PRÓXIMOS SERVIÇOS",
+        "see_all": "Ver tudo",
         "tomorrow": "AMANHÃ",
         "count_more_one": "+{{count}} hoje",
         "count_more_other": "+{{count}} hoje",
