@@ -22,9 +22,13 @@ const hhmm = (t?: string) => (t ? String(t).slice(0, 5) : '');
  * proximo as 16:00". Duas vistas do mesmo assunto, e nenhuma delas dizia QUAL
  * e o servico — o tecnico tinha de abrir a Agenda para saber a quem ia.
  *
- * Passa a um bloco: hora, o que e, onde, quem, quanto rende. A confirmacao de
+ * Passa a um bloco: hora, o que e, onde, quanto rende. A confirmacao de
  * presenca, quando falta, vive dentro dele — e uma accao sobre este servico,
  * nao um aviso a parte.
+ *
+ * Sem o nome do cliente: na Home basta saber que servico e a que horas, e o
+ * nome fica no cartao da Agenda e no ecra do servico, onde serve mesmo para
+ * alguma coisa (chegar e chamar a pessoa pelo nome).
  *
  * Sem nada hoje, mostra o proximo dia com trabalho; sem nada de todo, diz-lo
  * e explica onde aparecem os servicos aceites.
@@ -77,7 +81,6 @@ const TodayCard = () => {
   const rotulo = proximo?.schedule?.date_label;
   const nome = proximo?.service_type?.name ?? '—';
   const rua = formatStreetLine(proximo?.address_details, proximo?.customer?.address);
-  const cliente = proximo?.customer?.name;
   const valor = renderMoney(proximo?.amount_for_vendor ?? null);
 
   // "Hoje" so quando e mesmo hoje: com o proximo servico a ser quinta-feira,
@@ -130,14 +133,6 @@ const TodayCard = () => {
                 <Feather name="map-pin" size={12} color={Colors.muted} />
                 <CustomText color="muted" size="small" numberOfLines={1} classes="ml-1.5 flex-1">
                   {rua}
-                </CustomText>
-              </View>
-            )}
-            {!!cliente && (
-              <View className="flex-row items-center mt-0.5">
-                <Feather name="user" size={12} color={Colors.muted} />
-                <CustomText color="muted" size="small" numberOfLines={1} classes="ml-1.5 flex-1">
-                  {cliente}
                 </CustomText>
               </View>
             )}
