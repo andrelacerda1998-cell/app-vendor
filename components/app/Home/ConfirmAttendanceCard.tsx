@@ -65,26 +65,21 @@ const ConfirmAttendanceCard = () => {
           obrigava a adivinhar que o cartao levava a algum lado — e o titulo
           dava uma ordem ("confirma") sem mostrar onde se confirma. */}
       <View
-        className="rounded-2xl border p-4"
+        className="rounded-2xl border p-3.5"
         style={{ backgroundColor: 'rgba(35,230,158,0.10)', borderColor: 'rgba(35,230,158,0.40)' }}
       >
-        {/* Tudo centrado, em coluna: com o icone encostado a esquerda, um
-            texto centrado ficava a flutuar no espaco que sobrava. O visto
-            passa para cima, sobre o eixo do titulo e do botao. */}
-        <View className="items-center">
-          <View
-            className="w-10 h-10 rounded-full items-center justify-center mb-2.5"
-            style={{ backgroundColor: Colors.success }}
-          >
-            <Feather name="check" size={20} color={Colors.strongest} />
-          </View>
-          <CustomText color="secondary" boldness="bold" size="medium" classes="text-center" numberOfLines={2}>
+        {/* Tudo centrado, no mesmo eixo do botao. O visto vem na linha do
+            titulo, e nao num circulo por cima: empilhado, gastava uma linha
+            inteira para repetir o que a cor verde do cartao ja diz. */}
+        <View className="flex-row items-center justify-center">
+          <Feather name="check-circle" size={16} color={Colors.success} style={{ marginRight: 7 }} />
+          <CustomText color="secondary" boldness="bold" size="small" classes="text-center" numberOfLines={1}>
             {t('schedules.attendance_nudge_title', { count: porConfirmar.length })}
           </CustomText>
-          <CustomText color="muted" size="small" classes="mt-0.5 text-center" numberOfLines={1}>
-            {quando ?? t('schedules.attendance_nudge_subtitle')}
-          </CustomText>
         </View>
+        <CustomText color="muted" size="extraSmall" classes="mt-0.5 text-center" numberOfLines={1}>
+          {quando ?? t('schedules.attendance_nudge_subtitle')}
+        </CustomText>
 
         {/* Abre a Agenda, onde cada servico tem o seu botao: com mais do que
             um por confirmar, um toque nao pode decidir por todos. */}
@@ -92,7 +87,7 @@ const ConfirmAttendanceCard = () => {
           activeOpacity={0.85}
           accessibilityRole="button"
           onPress={() => router.navigate('/(app)/(tabs)/wallet')}
-          className="items-center rounded-xl mt-3 py-2.5"
+          className="items-center rounded-xl mt-2.5 py-2"
           style={{ backgroundColor: Colors.success }}
         >
           <CustomText color="strongest" boldness="bold" size="small">
