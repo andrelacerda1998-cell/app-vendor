@@ -40,10 +40,23 @@ const ConfirmAttendanceCard = () => {
 
   const proximo = porConfirmar[0];
   const hora = hhmm(proximo?.schedule?.scheduled_time?.start);
-  const quando = proximo?.schedule?.date_label === 'today'
-    ? t('schedules.attendance_nudge_today', { time: hora })
-    : proximo?.schedule?.date_label === 'tomorrow'
-      ? t('schedules.attendance_nudge_tomorrow', { time: hora })
+  const rotulo = proximo?.schedule?.date_label;
+
+  /**
+   * "Hoje as 16:00" sozinho nao se percebia: com o titulo a falar de tres
+   * servicos e a legenda a dar uma hora, tanto podia ser o inicio do proximo
+   * como o prazo para confirmar. A legenda passa a dizer o que aquela hora e.
+   *
+   * Com um unico servico por confirmar, "o mais proximo" nao existe — nao ha
+   * com o que comparar. O sufixo dessa variante e `_single` e nao `_one` de
+   * proposito: `_one` e uma forma plural do i18next e seria apanhada se
+   * alguem passasse um `count` a chave base.
+   */
+  const varios = porConfirmar.length > 1;
+  const quando = rotulo === 'today'
+    ? t(varios ? 'schedules.attendance_nudge_today' : 'schedules.attendance_nudge_today_single', { time: hora })
+    : rotulo === 'tomorrow'
+      ? t(varios ? 'schedules.attendance_nudge_tomorrow' : 'schedules.attendance_nudge_tomorrow_single', { time: hora })
       : null;
 
   return (
