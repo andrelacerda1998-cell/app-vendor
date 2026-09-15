@@ -61,29 +61,44 @@ const ConfirmAttendanceCard = () => {
 
   return (
     <View className="px-5">
-      <TouchableOpacity
-        activeOpacity={0.85}
-        accessibilityRole="button"
-        onPress={() => router.navigate('/(app)/(tabs)/wallet')}
-        className="flex-row items-center rounded-2xl border p-4"
+      {/* Facto, quando, e um botao a dizer o que fazer. A seta sozinha
+          obrigava a adivinhar que o cartao levava a algum lado — e o titulo
+          dava uma ordem ("confirma") sem mostrar onde se confirma. */}
+      <View
+        className="rounded-2xl border p-4"
         style={{ backgroundColor: 'rgba(35,230,158,0.10)', borderColor: 'rgba(35,230,158,0.40)' }}
       >
-        <View
-          className="w-10 h-10 rounded-full items-center justify-center mr-3"
+        <View className="flex-row items-center">
+          <View
+            className="w-10 h-10 rounded-full items-center justify-center mr-3"
+            style={{ backgroundColor: Colors.success }}
+          >
+            <Feather name="check" size={20} color={Colors.strongest} />
+          </View>
+          <View className="flex-1">
+            <CustomText color="secondary" boldness="bold" size="medium" numberOfLines={1}>
+              {t('schedules.attendance_nudge_title', { count: porConfirmar.length })}
+            </CustomText>
+            <CustomText color="muted" size="small" classes="mt-0.5" numberOfLines={1}>
+              {quando ?? t('schedules.attendance_nudge_subtitle')}
+            </CustomText>
+          </View>
+        </View>
+
+        {/* Abre a Agenda, onde cada servico tem o seu botao: com mais do que
+            um por confirmar, um toque nao pode decidir por todos. */}
+        <TouchableOpacity
+          activeOpacity={0.85}
+          accessibilityRole="button"
+          onPress={() => router.navigate('/(app)/(tabs)/wallet')}
+          className="items-center rounded-xl mt-3 py-2.5"
           style={{ backgroundColor: Colors.success }}
         >
-          <Feather name="check" size={20} color={Colors.strongest} />
-        </View>
-        <View className="flex-1 pr-2">
-          <CustomText color="secondary" boldness="bold" size="medium" numberOfLines={2}>
-            {t('schedules.attendance_nudge_title', { count: porConfirmar.length })}
+          <CustomText color="strongest" boldness="bold" size="small">
+            {t('schedules.confirm_attendance')}
           </CustomText>
-          <CustomText color="muted" size="small" classes="mt-0.5" numberOfLines={1}>
-            {quando ?? t('schedules.attendance_nudge_subtitle')}
-          </CustomText>
-        </View>
-        <Feather name="chevron-right" size={20} color={Colors.success} />
-      </TouchableOpacity>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
