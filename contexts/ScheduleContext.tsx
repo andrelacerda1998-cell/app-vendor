@@ -148,6 +148,12 @@ export const ScheduleProvider: React.FC<{ children: ReactNode }> = ({ children }
                 start: schedule.scheduled_time_start ?? schedule.schedule?.scheduled_time_start ?? '',
                 end: schedule.scheduled_time_end ?? schedule.schedule?.scheduled_time_end ?? '',
               },
+              // Quando o tecnico ja confirmou que vai. O servidor manda-o, este
+              // mapeamento deitava-o fora ao reconstruir o objeto campo a campo:
+              // depois de recarregar a agenda, a app perdia a memoria do que ja
+              // tinha sido confirmado e voltava a pedir o mesmo.
+              vendor_confirmed_at:
+                schedule.vendor_confirmed_at ?? schedule.schedule?.vendor_confirmed_at ?? null,
             },
             service_type: {
               id: schedule.service_type.id,
