@@ -18,8 +18,12 @@ const hhmm = (t?: string) => (t ? String(t).slice(0, 5) : '');
  * que ele veja ao abrir a app. Quando a confirmacao nao chega, o cliente fica
  * em casa a espera — e a operacao so descobre tarde demais.
  *
- * Nao repete a agenda: conta quantos faltam e diz qual e o mais proximo.
+ * Nao repete a agenda: conta quantos faltam e diz quando e o mais proximo.
  * Toca-se e abre a Agenda, onde esta o botao.
+ *
+ * A legenda e so a hora. O "o cliente fica a espera se nao apareceres" que
+ * aqui esteve explicava o porque a quem ja esta a ler um pedido para
+ * confirmar — duas linhas de texto para uma informacao de quatro palavras.
  *
  * Verde, como o proprio botao e como o visto de confirmado: e a familia da
  * confirmacao. O ambar fica para o que corre mal.
@@ -61,7 +65,7 @@ const ConfirmAttendanceCard = () => {
           <CustomText color="secondary" boldness="bold" size="medium" numberOfLines={2}>
             {t('schedules.attendance_nudge_title', { count: porConfirmar.length })}
           </CustomText>
-          <CustomText color="muted" size="small" classes="mt-0.5" numberOfLines={2}>
+          <CustomText color="muted" size="small" classes="mt-0.5" numberOfLines={1}>
             {quando ?? t('schedules.attendance_nudge_subtitle')}
           </CustomText>
         </View>
