@@ -16,6 +16,7 @@ import { useSession } from '@/contexts/SessionContext';
 import { renderMoney } from '@/utils/money';
 import { Card, EmptyState, ErrorState, SkeletonList, StatusPill } from '@/components/ui';
 import { useIsOnline } from '@/hooks/useIsOnline';
+import { isAttendanceConfirmed, needsAttendanceConfirmation } from '@/utils/attendance';
 import { formatStreetLine, recurrenceLabelKey } from '@/utils/serviceDetails';
 import { useApi } from '@/contexts/ApiContext';
 import { useDialog } from '@/contexts/DialogContext';
@@ -75,7 +76,6 @@ const Agenda = () => {
   const unavailable = useUnavailableDays();
   const { api } = useApi();
   const { openDialog } = useDialog();
-  const [confirmingId, setConfirmingId] = useState<number | null>(null);
   /**
    * Confirmações feitas nesta sessão.
    *
@@ -86,13 +86,16 @@ const Agenda = () => {
   const [confirmedNow, setConfirmedNow] = useState<Record<number, boolean>>({});
 
   /**
-   * "Confirmo que vou."
+   * Confirmar a presenca de UM servico.
    *
-   * Aceitar o agendamento foi há dias ou semanas; isto é o técnico a dizer que
-   * continua a contar com ele. É o que evita o cliente em casa à espera de
-   * alguém que se esqueceu — e, quando a confirmação não chega, dá tempo à
-   * operação de arranjar outro técnico.
+   * E por servico e nao por dia: cada agendamento e um compromisso com um
+   * cliente concreto, e o tecnico pode contar com um e ainda estar em duvida
+   * sobre o seguinte. Um botao que decidia pelo dia inteiro tirava-lhe essa
+   * distincao — e a confirmacao existe precisamente para a operacao saber,
+   * servico a servico, com o que pode contar.
    */
+  const [confirmingId, setConfirmingId] = useState<number | null>(null);
+
   const confirmAttendance = (item: any) => {
     const scheduleId = item?.schedule_id;
     if (!scheduleId) return;
@@ -118,6 +121,11 @@ const Agenda = () => {
           closeAfterMSeconds: 2500,
           closeOnClickOutside: true,
         });
+
+        // Recarrega a agenda partilhada: sem isto a confirmacao so existia no
+        // estado deste ecra e a Home continuava a contar este servico como
+        // por confirmar.
+        if (vendorData) getScheduledServices(vendorData);
       })
       .catch((err) => {
         console.error(err);
@@ -132,23 +140,15 @@ const Agenda = () => {
   };
 
   /**
-   * Janela da confirmação: as mesmas 72h do lembrete que o servidor envia.
-   * Antes disso é cedo demais para valer alguma coisa; depois da hora já não
-   * há nada a confirmar.
+   * O estado da confirmacao neste cartao. A regra de "esta na altura de
+   * confirmar" vive em utils/attendance, partilhada com o aviso da Home; aqui
+   * so se junta o que acabou de ser confirmado neste ecra, que o servidor
+   * ainda nao devolveu.
    */
   const attendanceState = (item: any) => {
-    const confirmed = !!item?.schedule?.vendor_confirmed_at || !!confirmedNow[item?.schedule_id];
-    if (confirmed) return 'confirmed' as const;
+    if (isAttendanceConfirmed(item) || confirmedNow[item?.schedule_id]) return 'confirmed' as const;
 
-    const day = parseDay(item?.schedule?.scheduled_day);
-    const start = hhmm(item?.schedule?.scheduled_time?.start);
-    if (!day || !/^\d{2}:\d{2}$/.test(start)) return 'hidden' as const;
-
-    const [hh, mm] = start.split(':').map(Number);
-    const startsAt = new Date(day.getFullYear(), day.getMonth(), day.getDate(), hh, mm).getTime();
-    const hoursToStart = (startsAt - Date.now()) / 3_600_000;
-
-    return hoursToStart > 0 && hoursToStart <= 72 ? ('pending' as const) : ('hidden' as const);
+    return needsAttendanceConfirmation(item) ? ('pending' as const) : ('hidden' as const);
   };
 
   const onRefresh = async () => {
@@ -590,6 +590,25 @@ const Agenda = () => {
                           <Feather name="chevron-right" size={18} color={Colors.muted} style={{ marginLeft: 8 }} />
                         </View>
 
+                        {/* Confirmação de presença: aparece a partir das 72h
+                            e só enquanto não estiver confirmada. Fora dessa
+                            janela seria ruído — confirmar com duas semanas de
+                            antecedência não diz nada sobre o dia. */}
+                        {attendance === 'pending' ? (
+                          <TouchOpacity
+                            rounded="lg"
+                            itemsCenter
+                            disabled={confirmingId === item?.schedule_id}
+                            onPress={() => confirmAttendance(item)}
+                            otherClasses={`mt-3 py-2.5 ${confirmingId === item?.schedule_id ? 'opacity-60' : ''}`}
+                            bgColor="success"
+                          >
+                            <CustomText color="strongest" boldness="semiBold" size="small">
+                              {t('schedules.confirm_attendance')}
+                            </CustomText>
+                          </TouchOpacity>
+                        ) : null}
+
                         {/* Uma linha só para os estados: a etiqueta de estado
                             (a caminho, em execução), a recorrência e a
                             confirmação diziam a mesma coisa — "como está este
@@ -615,28 +634,6 @@ const Agenda = () => {
                           </View>
                         )}
 
-                        {/* Confirmação de presença: aparece a partir das 72h e
-                            só enquanto não estiver confirmada. Fora dessa
-                            janela seria ruído — confirmar com duas semanas de
-                            antecedência não diz nada sobre o dia. */}
-                        {attendance === 'pending' ? (
-                          // Um só botão. Os detalhes abrem-se tocando no
-                          // cartão — ter os dois lado a lado punha a decisão
-                          // (confirmar) a competir com a consulta, e é a
-                          // decisão que trava o cliente à espera em casa.
-                          <TouchOpacity
-                            rounded="lg"
-                            itemsCenter
-                            disabled={confirmingId === item?.schedule_id}
-                            onPress={() => confirmAttendance(item)}
-                            otherClasses={`mt-3 py-2.5 ${confirmingId === item?.schedule_id ? 'opacity-60' : ''}`}
-                            bgColor="support_primary"
-                          >
-                            <CustomText color="strongest" boldness="semiBold" size="small">
-                              {t('schedules.confirm_attendance')}
-                            </CustomText>
-                          </TouchOpacity>
-                        ) : null}
                         </Card>
                       </TouchableOpacity>
                     );

@@ -32,11 +32,11 @@ export default {
             "button": "Guardar palavra-passe",
             "success": {
                 "title": "Palavra-passe alterada",
-                "subtitle": "Já podes iniciar sessão com a nova palavra-passe.",
+                "subtitle": "Já podes iniciar sessão com a nova palavra-passe."
             },
             "errors": {
                 "password_used_before": "Já usaste esta palavra-passe. Escolhe uma diferente.",
-                "token_invalid": "Este link já expirou. Pede um novo email para criares a palavra-passe.",
+                "token_invalid": "Este link já expirou. Pede um novo email para criares a palavra-passe."
             }
         },
         "sign_in": {
@@ -88,14 +88,14 @@ export default {
                 "no_skills_found": "Ainda não há competências para mostrar. Verifica a ligação e tenta outra vez.",
                 "error_must_select": {
                     "title": "Falta escolher uma competência",
-                    "subtitle": "Escolhe pelo menos uma competência para continuares.",
+                    "subtitle": "Escolhe pelo menos uma competência para continuares."
                 }
             },
             "services_types_selection": {
                 "title": "Escolhe os trabalhos que queres fazer",
                 "subtitle": "Quantos mais escolheres, mais pedidos recebes.",
                 "no_services_found": "Ainda não há tipos de serviço para mostrar. Verifica a ligação e tenta outra vez.",
-                "loading_services": "A carregar serviços...",
+                "loading_services": "A carregar serviços..."
             },
             "documents": {
                 "title": "Os teus documentos",
@@ -113,15 +113,15 @@ export default {
                     title: "Escolher ficheiro",
                     camera: "Tirar foto",
                     library: "Escolher da galeria",
-                    files: "Escolher ficheiro",
+                    files: "Escolher ficheiro"
                 },
                 submit: {
                     success: {
                         title: "Documento enviado",
-                        subtitle: "Vamos analisá-lo e avisamos-te assim que estiver validado.",
+                        subtitle: "Vamos analisá-lo e avisamos-te assim que estiver validado."
                     },
                     error: "Não conseguimos enviar o documento. Verifica a ligação e tenta outra vez.",
-                    "error_file_too_big": "O ficheiro é demasiado grande. O máximo é 2 MB — tira nova foto com menos qualidade ou envia um PDF mais leve.",
+                    "error_file_too_big": "O ficheiro é demasiado grande. O máximo é 2 MB — tira nova foto com menos qualidade ou envia um PDF mais leve."
                 }
             },
             "price_rate": {
@@ -131,13 +131,13 @@ export default {
                 "market_range": "A maioria dos técnicos cobra {{min}}–{{max}}/h.",
                 "market_within": "Dentro da média da plataforma.",
                 "market_below": "Abaixo da média — podes estar a deixar dinheiro na mesa.",
-                "market_above": "Acima da média — podes receber menos pedidos.",
+                "market_above": "Acima da média — podes receber menos pedidos."
             },
             "advise": {
                 "agree": "Ao criares conta, aceitas os nossos",
                 "terms_of_use": "Termos e Condições",
                 "and": "e",
-                "privacy_policy": "Política de Privacidade.",
+                "privacy_policy": "Política de Privacidade."
             }
         }
     },
@@ -150,7 +150,7 @@ export default {
             "empty": "Assim que houver novidades sobre pedidos, pagamentos ou agendamentos, aparecem aqui.",
             "empty_title": "Sem notificações",
             "today": "Hoje",
-            "yesterday": "Ontem",
+            "yesterday": "Ontem"
         },
         "sms": {
             "header": "Verificar telefone",
@@ -159,14 +159,14 @@ export default {
                 "subtitle": "Recebes um código por SMS neste número.",
                 "edit_phone_number": "Alterar número de telefone",
                     "edit_phone_number_short": "Alterar",
-                "send_sms": "Enviar código",
+                "send_sms": "Enviar código"
             },
             "sent": {
                 "title": "Enviámos-te um código por SMS",
                 "subtitle": "Escreve o código para confirmares o teu número.",
                 "code": "Código",
                 "resend_code": "Reenviar código",
-                "verify": "Verificar",
+                "verify": "Verificar"
             },
             "verified": {
                 "title": "Telefone verificado",
@@ -176,11 +176,11 @@ export default {
                 "title": "Não foi possível verificar o telefone",
                 "subtitle": "Verifica a ligação e pede um novo código.",
                 "close": "Fechar",
-                "code_invalid": "Código errado. Confirma o SMS ou pede um novo código.",
+                "code_invalid": "Código errado. Confirma o SMS ou pede um novo código."
             },
             "already_sent": {
                 "title": "Já te enviámos o código",
-                "subtitle": "Vê as mensagens do teu telemóvel. Se não chegar, pede um novo código dentro de um minuto.",
+                "subtitle": "Vê as mensagens do teu telemóvel. Se não chegar, pede um novo código dentro de um minuto."
             }
         },
         "confirm_email": {
@@ -221,7 +221,7 @@ export default {
             "success": {
                 "title": "Sessão terminada",
                 "subtitle_timeout": "Terminámos a tua sessão por inatividade. Inicia sessão outra vez para continuares.",
-                "subtitle_error": "Não conseguimos renovar a tua sessão. Inicia sessão outra vez para continuares.",
+                "subtitle_error": "Não conseguimos renovar a tua sessão. Inicia sessão outra vez para continuares."
             }
         },
         "status": {
@@ -232,7 +232,9 @@ export default {
             "off_cta": "Ficar disponível",
             "blocked_label": "Perfil por completar",
             "online": "Online",
-            "offline": "Offline"
+            "offline": "Offline",
+            "on_hint": "Recebes pedidos imediatos e agendados.",
+            "off_hint": "Não recebes pedidos, nem imediatos nem agendados."
         }
     },
     "services": {
@@ -297,7 +299,7 @@ export default {
             },
             "error": {
                 "title": "Não foi possível cancelar o serviço",
-                "subtitle": "Verifica a ligação e tenta outra vez. O serviço continua marcado.",
+                "subtitle": "Verifica a ligação e tenta outra vez. O serviço continua marcado."
             }
         },
         "close": {
@@ -370,7 +372,7 @@ export default {
                 "no_distance": "Distância indisponível",
                 "cancel": "Cancelar",
                 "status": "Estado do serviço",
-                "arrived": "Chegaste ao destino",
+                "arrived": "Chegaste ao destino"
             },
             "pending": "Pedido à espera da tua resposta",
             "status": {
@@ -476,10 +478,10 @@ export default {
                     "km": "Km",
                     "kilometers": "Quilómetros",
                     "received_value": "Valor recebido",
-                    "date": "Data",
+                    "date": "Data"
                 },
                 "download_invoice": "Fatura",
-                "rate_service": "Avaliar serviço",
+                "rate_service": "Avaliar serviço"
             }
         },
         "no_services_found": "Ainda não há serviços para mostrar aqui.",
@@ -519,7 +521,7 @@ export default {
             "subtitle": "Avisámos o cliente de que já chegaste."
         },
         "actions": {
-            "arrived": "Cheguei",
+            "arrived": "Cheguei"
         }
     },
     "profile": {
@@ -560,9 +562,9 @@ export default {
             "at_user": {
                 "update": {
                     "title": "Dados da AT atualizados",
-                    "subtitle": "Já podemos emitir as faturas dos teus serviços.",
+                    "subtitle": "Já podemos emitir as faturas dos teus serviços."
                 },
-                "wrong_credentials": "Os dados da AT não estão certos. Confirma que usaste a palavra-passe do subutilizador — não é o código de acesso telefónico.",
+                "wrong_credentials": "Os dados da AT não estão certos. Confirma que usaste a palavra-passe do subutilizador — não é o código de acesso telefónico."
             },
             "at_invalid": {
                 "banner": "Os teus dados da AT não estão a funcionar. Toca para os atualizares.",
@@ -957,20 +959,20 @@ export default {
         "company_address_required": "Escreve a morada de faturação",
         "yes": "Sim",
         "no": "Não",
-        "cancel": "Cancelar",
+        "cancel": "Cancelar"
     },
     "wallet": {
         "balance": {
             "name": "Saldo"
         },
         "service": {
-            "no_price_provided": "Sem valor definido",
+            "no_price_provided": "Sem valor definido"
         }
     },
     "delete_account": {
         "header": "Eliminar conta",
         "submit": "Eliminar conta",
-        "submit_loading": "A eliminar conta...",
+        "submit_loading": "A eliminar conta..."
     },
     "my_services": {
         "duration": "Duração prevista: {{value}}",
@@ -978,7 +980,7 @@ export default {
         "hour_rate_label": "O teu valor/hora",
         "hour_rate_value": "{{value}}/hora",
         "change_rate": "Alterar",
-        "earnings_hint": "O valor por serviço é calculado com o teu valor/hora e a duração do trabalho. Deslocações e horários fora do normal podem aumentar o valor.",
+        "earnings_hint": "O valor por serviço é calculado com o teu valor/hora e a duração do trabalho. Deslocações e horários fora do normal podem aumentar o valor."
     },
     "home": {
         "my_areas": "As minhas zonas",
@@ -1071,23 +1073,6 @@ export default {
         "step_approved": "Conta aprovada",
         "see_documents": "Ver documentos"
     },
-    "auto_acceptance": {
-        "title": "Auto-Aceitação",
-        "state": {
-            "on_title": "Auto-Aceitação ativa",
-            "on_subtitle": "Respondes automaticamente aos convites nos horários que tens livres — sem teres de abrir a app.",
-            "off_title": "Auto-Aceitação desativada",
-            "off_subtitle": "Sem ela, um convite a que não respondas a tempo fica de fora."
-        },
-        "how_it_works": {
-            "title": "Como funciona",
-            "availability": "Só és convidado para blocos que tens livres na tua disponibilidade.",
-            "notification": "Recebes uma notificação por cada convite a que respondeste.",
-            "customer": "O cliente vê os 3 melhores de quem se disponibilizou, por avaliação, preço e distância — e escolhe.",
-            "responsibility": "Se fores o escolhido, o serviço é teu e ficas responsável por o realizar."
-        },
-        "warning": "Responder a um convite não reserva a tua agenda. Cancelar um serviço depois de te ser atribuído pode gerar penalização."
-    },
     "history": {
         "title": "Histórico",
         "error_title": "Não foi possível carregar o histórico",
@@ -1139,11 +1124,10 @@ export default {
         }
     },
     "document_expiry": {
-        "expiring_title_one": "O teu {{name}} expira amanhã",
-        "expiring_title_other": "O teu {{name}} expira em {{count}} dias",
-        "expiring_subtitle": "Renova-o para continuares a aceitar pedidos. Toca para enviar o novo documento.",
-        "expired_title": "O teu {{name}} expirou",
-        "expired_subtitle": "Não podes aceitar pedidos até enviares um documento válido."
+        "expiring_today": "Hoje é o último dia de validade do teu {{name}}. Atualiza o documento.",
+        "expiring_one": "Amanhã o teu {{name}} fica inválido. Atualiza o documento.",
+        "expiring_other": "Daqui a {{count}} dias o teu {{name}} fica inválido. Atualiza o documento.",
+        "expired": "O teu {{name}} expirou. Não recebes pedidos até o atualizares."
     },
     "notifications_disabled": {
         "title": "Notificações desligadas",
@@ -1206,10 +1190,6 @@ export default {
                 "payments": {
                     "q": "Como recebo pagamentos?",
                     "a": "Os pagamentos são acumulados semanalmente e pagos à segunda-feira para o teu IBAN."
-                },
-                "auto_accept": {
-                    "q": "O que é a Auto-Aceitação?",
-                    "a": "Responde automaticamente aos convites nos horários que tens livres. Entras na seleção; quem o cliente vê são os 3 melhores por avaliação, preço e distância."
                 },
                 "hourly_rate": {
                     "q": "Como funciona o valor/hora?",
@@ -1364,6 +1344,11 @@ export default {
         "more_other": "Mais {{count}} avisos"
     },
     "home_today": {
+        "next_title": "PRÓXIMOS SERVIÇOS",
+        "see_all": "Ver tudo",
+        "tomorrow": "AMANHÃ",
+        "count_more_one": "+{{count}} hoje",
+        "count_more_other": "+{{count}} hoje",
         "title": "HOJE",
         "service": "serviço",
         "services": "serviços",
@@ -1374,9 +1359,6 @@ export default {
         "title": "Está na hora de sair 🚗",
         "body": "Sai agora para chegares a horas: {{service}} às {{time}}.",
         "fallback_service": "o teu serviço"
-    },
-    "auto_accept_lost": {
-        "week": "Esta semana passaram-te ao lado {{count}} convites por não teres respondido a tempo."
     },
     "documents_validating": {
         "pending": "Estamos a validar os teus documentos. Avisamos-te assim que estiver pronto.",
@@ -1392,13 +1374,13 @@ export default {
             "empty": "Ainda não há tipos de serviço para escolher. Verifica a ligação e tenta outra vez.",
             "none_selected": "Nenhum selecionado",
             "selected_count_one": "{{count}} selecionado",
-            "selected_count_other": "{{count}} selecionados",
+            "selected_count_other": "{{count}} selecionados"
         },
         "update": {
             "title": "Atualizar zonas de trabalho",
             "subtitle": "Queres guardar as zonas que escolheste?",
             "cancel": "Cancelar",
-            "confirm": "Confirmar",
+            "confirm": "Confirmar"
         }
     },
     "documents": {
@@ -1421,7 +1403,7 @@ export default {
         "foreground_service": {
             "active": {
                 "title": "Localização ativa",
-                "body": "Estás a partilhar a tua localização com a Piquet",
+                "body": "Estás a partilhar a tua localização com a Piquet"
             },
             "permission": {
                 "title": "Permissão de localização",
@@ -1429,13 +1411,13 @@ export default {
                 "android_subtitle": "Para ficares online no Android, tens de permitir a localização em segundo plano nas definições da aplicação.",
                 "error": {
                     "title": "Não foi possível ativar a localização",
-                    "subtitle": "Ativa a localização «Sempre» nas Definições do telemóvel e tenta outra vez.",
+                    "subtitle": "Ativa a localização «Sempre» nas Definições do telemóvel e tenta outra vez."
                 }
             },
             "tracking": {
                 "error": {
                     "title": "Não foi possível iniciar o seguimento",
-                    "subtitle": "Ativa a localização «Sempre» nas Definições do telemóvel e tenta outra vez.",
+                    "subtitle": "Ativa a localização «Sempre» nas Definições do telemóvel e tenta outra vez."
                 }
             }
         }
@@ -1445,7 +1427,7 @@ export default {
         "permission_description": "Precisas da localização ativa para ficares online e receberes pedidos perto de ti.",
         "permission_button": "Ativar",
         "settings_dialog_cancel": "Agora não",
-        "settings_dialog_confirm": "Abrir Definições",
+        "settings_dialog_confirm": "Abrir Definições"
     },
     "address": {
         "search_empty": "Não encontrámos essa morada. Escreve-a nos campos em baixo.",
@@ -1541,7 +1523,7 @@ export default {
             "district_available": "DISPONÍVEL",
             "district_coming_soon": "EM BREVE",
             "city_active": "Ativa",
-            "city_coming_soon": "Em breve",
+            "city_coming_soon": "Em breve"
         },
         "documents": {
             "submitted": "Enviado",
@@ -1619,10 +1601,6 @@ export default {
       "edit": "editar",
       "settings_schedule": "Definições de agendamento",
       "repeat": "Repetir",
-      "auto_acceptance": "Auto-Aceitação",
-      "auto_accept_on": "Ativa — respondes automaticamente aos convites nos horários livres.",
-      "auto_accept_off": "Desativada — respondes a cada convite.",
-      "auto_accept_enable": "Ativar",
       "availability_schedule": "Disponibilidade de agendamento",
       "continue": "Guardar",
       "calendar": {
@@ -1631,7 +1609,7 @@ export default {
       },
       "availability_range": {
         "title": "Intervalo de disponibilidade",
-        "subtitle": "Escolhe o horário em que aceitas serviços agendados.",
+        "subtitle": "Escolhe as horas em que a auto-aceitação pode responder por ti. Convites continuas a receber a qualquer hora.",
         "from": "A partir das",
         "to": "Até às",
         "invalid": "A hora inicial tem de ser anterior à hora final",
@@ -1652,14 +1630,12 @@ export default {
         "city": "Cidade",
         "placeholder_city": "Ex: Lisboa",
         "cancel": "Cancelar",
-        "save": "Guardar",
+        "save": "Guardar"
       },
       "confirmation": {
         "repeat_title": "Alterar a repetição da agenda",
         "enable_repeat_subtitle": "Ao ativares a repetição, a disponibilidade desta semana passa a repetir-se em todas as semanas seguintes e substitui os horários que tenhas adicionado à mão. Queres continuar?",
-        "disable_repeat_subtitle": "Ao desativares a repetição, todos os horários ainda sem serviço marcado, a partir da próxima semana, são apagados. Queres continuar?",
-        "auto_accept_title": "Ativar a Auto-Aceitação?",
-        "auto_accept_subtitle": "Respondes automaticamente aos convites nos horários que tens livres. Entras na seleção sem fazer nada — quem o cliente vê são os 3 melhores por avaliação, preço e distância.",
+        "disable_repeat_subtitle": "Ao desativares a repetição, todos os horários ainda sem serviço marcado, a partir da próxima semana, são apagados. Queres continuar?"
       },
       "days": {
         "Mo": "Segunda-feira",
@@ -1682,13 +1658,13 @@ export default {
       "date_label": {
         "today": "Hoje",
         "tomorrow": "Amanhã",
-        "week": "Esta semana",
+        "week": "Esta semana"
       },
       "filters": {
         "all": "Todos",
         "today": "Hoje",
         "tomorrow": "Amanhã",
-        "week": "Esta semana",
+        "week": "Esta semana"
       },
       "schedules": "Agendamentos",
       "schedules_today": "Agendados hoje",
@@ -1703,6 +1679,7 @@ export default {
       "times_up": "O tempo terminou",
       "remaining_time": "Tempo restante",
       "empty": "Agenda livre",
+      "empty_hint": "Os serviços que aceitares aparecem aqui e no separador Agenda.",
       "section_title": "A tua agenda",
       "today_count_one": "{{count}} serviço hoje",
       "today_count_other": "{{count}} serviços hoje",
@@ -1722,9 +1699,7 @@ export default {
       "incoming_request_title": "Novo pedido recebido",
       "incoming_request_window_immediate": "Tens 60 segundos para aceitar.",
       "incoming_request_window_scheduled": "Tens 20 minutos para aceitar.",
-      "services_count_one": "serviço agendado",
-      "services_count_other": "serviços agendados",
-      "customer_notes": "Observações do cliente",
+      "customer_notes": "Observações do cliente"
     },
     // Notificação fixa do serviço em curso (useOngoingServiceNotification).
     // Convites de seleção de profissional. O copy existe sobretudo para uma

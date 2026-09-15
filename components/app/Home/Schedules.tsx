@@ -136,21 +136,30 @@ const Schedules = () => {
       ) : upcoming ? (
         <Row title={t("schedules.next_service")} when={upcomingWhen} value={upcomingPrice} />
       ) : (
-        // Estado vazio: ilustração + texto centrados, cartão tocável.
+        // Estado vazio: uma linha curta ("Agenda livre") deixava o cartão a
+        // parecer um erro de carregamento e não dizia o passo seguinte. Fica
+        // com a mesma anatomia dos outros cartões — ícone, título, explicação —
+        // e diz onde aparecem os serviços quando chegarem.
         <TouchOpacity
           onPress={goToSchedules}
           bgColor="card"
           rounded="2xl"
           border
           borderColor="line"
-          otherClasses="flex-row items-center justify-center p-5"
+          otherClasses="flex-row items-center p-5"
         >
-          <View className="mr-3">
+          <View className="mr-3.5">
             <AgendaFree color={Colors.muted} accent={Colors.success} size={40} />
           </View>
-          <CustomText color="secondary" boldness="semiBold" size="medium">
-            {t("schedules.empty")}
-          </CustomText>
+          <View className="flex-1">
+            <CustomText color="secondary" boldness="bold" size="medium">
+              {t("schedules.empty")}
+            </CustomText>
+            <CustomText color="muted" size="small" classes="mt-1" numberOfLines={2}>
+              {t("schedules.empty_hint")}
+            </CustomText>
+          </View>
+          <Feather name="chevron-right" size={18} color={Colors.muted} />
         </TouchOpacity>
       )}
     </View>

@@ -32,11 +32,11 @@ export default {
       "button": "Save password",
       "success": {
         "title": "Password changed",
-        "subtitle": "You can now sign in with your new password.",
+        "subtitle": "You can now sign in with your new password."
       },
       "errors": {
         "password_used_before": "You've used this password before. Choose a different one.",
-        "token_invalid": "This link has expired. Request a new email to set your password.",
+        "token_invalid": "This link has expired. Request a new email to set your password."
       }
     },
     "sign_in": {
@@ -88,14 +88,14 @@ export default {
         "no_skills_found": "No skills to show yet. Check your connection and try again.",
         "error_must_select": {
           "title": "Pick at least one skill",
-          "subtitle": "Choose at least one skill to continue.",
+          "subtitle": "Choose at least one skill to continue."
         }
       },
       "services_types_selection": {
         "title": "Pick the jobs you want to take",
         "subtitle": "The more you pick, the more requests you get.",
         "no_services_found": "No service types to show yet. Check your connection and try again.",
-        "loading_services": "Loading services...",
+        "loading_services": "Loading services..."
       },
       "documents": {
         "title": "Your documents",
@@ -113,15 +113,15 @@ export default {
           title: "Pick a file",
           camera: "Take a photo",
           library: "Choose from library",
-          files: "Choose from files",
+          files: "Choose from files"
         },
         submit: {
           success: {
             title: "Document sent",
-            subtitle: "We'll review it and let you know as soon as it's validated.",
+            subtitle: "We'll review it and let you know as soon as it's validated."
           },
           error: "We couldn't send the document. Check your connection and try again.",
-          "error_file_too_big": "The file is too large. The limit is 2 MB — take a lower-quality photo or send a smaller PDF.",
+          "error_file_too_big": "The file is too large. The limit is 2 MB — take a lower-quality photo or send a smaller PDF."
         }
       },
       "price_rate": {
@@ -131,13 +131,13 @@ export default {
         "market_range": "Most pros charge {{min}}–{{max}}/h.",
         "market_within": "Within the platform average.",
         "market_below": "Below average — you may be leaving money on the table.",
-        "market_above": "Above average — you may get fewer requests.",
+        "market_above": "Above average — you may get fewer requests."
       },
       "advise": {
         "agree": "By creating an account, you accept our",
         "terms_of_use": "Terms and Conditions",
         "and": "and",
-        "privacy_policy": "Privacy Policy.",
+        "privacy_policy": "Privacy Policy."
       }
     }
   },
@@ -150,7 +150,7 @@ export default {
       "empty": "As soon as there's news about requests, payments or schedules, it shows up here.",
       "empty_title": "No notifications",
       "today": "Today",
-      "yesterday": "Yesterday",
+      "yesterday": "Yesterday"
     },
     "sms": {
       "header": "Verify phone",
@@ -159,14 +159,14 @@ export default {
         "subtitle": "You'll get a code by SMS on this number.",
         "edit_phone_number": "Change phone number",
           "edit_phone_number_short": "Change",
-        "send_sms": "Send code",
+        "send_sms": "Send code"
       },
       "sent": {
         "title": "We've sent you a code by SMS",
         "subtitle": "Enter the code to confirm your number.",
         "code": "Code",
         "resend_code": "Resend code",
-        "verify": "Verify",
+        "verify": "Verify"
       },
       "verified": {
         "title": "Phone verified",
@@ -176,11 +176,11 @@ export default {
         "title": "Couldn't verify your phone",
         "subtitle": "Check your connection and request a new code.",
         "close": "Close",
-        "code_invalid": "Wrong code. Check the SMS or request a new code.",
+        "code_invalid": "Wrong code. Check the SMS or request a new code."
       },
       "already_sent": {
         "title": "We've already sent the code",
-        "subtitle": "Check your phone messages. If it doesn't arrive, request a new code in a minute.",
+        "subtitle": "Check your phone messages. If it doesn't arrive, request a new code in a minute."
       }
     },
     "confirm_email": {
@@ -221,7 +221,7 @@ export default {
       "success": {
         "title": "Logged out",
         "subtitle_timeout": "We logged you out after a long time away. Sign in again to continue.",
-        "subtitle_error": "We couldn't refresh your session. Sign in again to continue.",
+        "subtitle_error": "We couldn't refresh your session. Sign in again to continue."
       }
     },
     "status": {
@@ -233,6 +233,8 @@ export default {
       "blocked_label": "Profile incomplete",
       "online": "Online",
       "offline": "Offline",
+      "on_hint": "You get both immediate and scheduled requests.",
+      "off_hint": "You get no requests, immediate or scheduled."
     }
   },
   "services": {
@@ -297,7 +299,7 @@ export default {
       },
       "error": {
         "title": "Couldn't cancel the service",
-        "subtitle": "Check your connection and try again. The service is still booked.",
+        "subtitle": "Check your connection and try again. The service is still booked."
       }
     },
     "close": {
@@ -370,7 +372,7 @@ export default {
         "no_distance": "Distance unavailable",
         "cancel": "Cancel",
         "status": "Service status",
-        "arrived": "You've arrived",
+        "arrived": "You've arrived"
       },
       "pending": "Request waiting for your reply",
       "status": {
@@ -476,10 +478,10 @@ export default {
           "km": "Km",
           "kilometers": "Kilometres",
           "received_value": "Amount received",
-          "date": "Date",
+          "date": "Date"
         },
         "download_invoice": "Invoice",
-        "rate_service": "Rate service",
+        "rate_service": "Rate service"
       }
     },
     "no_services_found": "No services to show here yet.",
@@ -560,9 +562,9 @@ export default {
       "at_user": {
         "update": {
           "title": "Tax Authority details updated",
-          "subtitle": "We can now issue the invoices for your services.",
+          "subtitle": "We can now issue the invoices for your services."
         },
-        "wrong_credentials": "Your Tax Authority details aren't right. Make sure you used the sub-user password — not the phone access code.",
+        "wrong_credentials": "Your Tax Authority details aren't right. Make sure you used the sub-user password — not the phone access code."
       },
       "at_invalid": {
         "banner": "Your Tax Authority details aren't working. Tap to update them.",
@@ -957,20 +959,20 @@ export default {
     "company_address_required": "Enter the billing address",
     "yes": "Yes",
     "no": "No",
-    "cancel": "Cancel",
+    "cancel": "Cancel"
   },
   "wallet": {
     "balance": {
       "name": "Balance"
     },
     "service": {
-      "no_price_provided": "No amount set",
+      "no_price_provided": "No amount set"
     }
   },
   "delete_account": {
     "header": "Delete account",
     "submit": "Delete account",
-    "submit_loading": "Deleting account...",
+    "submit_loading": "Deleting account..."
   },
   "my_services": {
     "duration": "Estimated duration: {{value}}",
@@ -978,7 +980,7 @@ export default {
     "hour_rate_label": "Your hourly rate",
     "hour_rate_value": "{{value}}/hour",
     "change_rate": "Change",
-    "earnings_hint": "The amount per service is calculated from your hourly rate and the job duration. Travel and out-of-hours work can increase it.",
+    "earnings_hint": "The amount per service is calculated from your hourly rate and the job duration. Travel and out-of-hours work can increase it."
   },
   "home": {
     "my_areas": "My areas",
@@ -1071,23 +1073,6 @@ export default {
     "step_approved": "Account approved",
     "see_documents": "See documents"
   },
-  "auto_acceptance": {
-    "title": "Auto-Acceptance",
-    "state": {
-      "on_title": "Auto-Acceptance on",
-      "on_subtitle": "You answer invitations automatically during your free hours — without opening the app.",
-      "off_title": "Auto-Acceptance off",
-      "off_subtitle": "Without it, an invitation you don't answer in time is left out."
-    },
-    "how_it_works": {
-      "title": "How it works",
-      "availability": "You are only invited for slots you have free in your availability.",
-      "notification": "You get a notification for every invitation you answered.",
-      "customer": "The client sees the best 3 of those who are available, by rating, price and distance — and chooses.",
-      "responsibility": "If you are the one chosen, the service is yours and you are responsible for carrying it out."
-    },
-    "warning": "Answering an invitation does not book your calendar. Cancelling a service after it is assigned to you may lead to a penalty."
-  },
   "history": {
     "title": "History",
     "error_title": "Couldn't load your history",
@@ -1139,11 +1124,10 @@ export default {
     }
   },
   "document_expiry": {
-    "expiring_title_one": "Your {{name}} expires tomorrow",
-    "expiring_title_other": "Your {{name}} expires in {{count}} days",
-    "expiring_subtitle": "Renew it to keep accepting jobs. Tap to upload the new document.",
-    "expired_title": "Your {{name}} has expired",
-    "expired_subtitle": "You can't accept jobs until you upload a valid document."
+    "expiring_today": "Today is the last valid day of your {{name}}. Update the document.",
+    "expiring_one": "Tomorrow your {{name}} becomes invalid. Update the document.",
+    "expiring_other": "In {{count}} days your {{name}} becomes invalid. Update the document.",
+    "expired": "Your {{name}} has expired. You won't get requests until you update it."
   },
   "notifications_disabled": {
     "title": "Notifications are off",
@@ -1206,10 +1190,6 @@ export default {
         "payments": {
           "q": "How do I get paid?",
           "a": "Payments build up weekly and are paid every Monday to your IBAN."
-        },
-        "auto_accept": {
-          "q": "What is Auto-Acceptance?",
-          "a": "Answers invitations automatically during your free hours. You enter the selection; the client sees the best 3 by rating, price and distance."
         },
         "hourly_rate": {
           "q": "How does the hourly rate work?",
@@ -1364,6 +1344,11 @@ export default {
     "more_other": "{{count}} more notices"
   },
   "home_today": {
+    "next_title": "UPCOMING",
+    "see_all": "See all",
+    "tomorrow": "TOMORROW",
+    "count_more_one": "+{{count}} today",
+    "count_more_other": "+{{count}} today",
     "title": "TODAY",
     "service": "service",
     "services": "services",
@@ -1374,9 +1359,6 @@ export default {
     "title": "Time to head out 🚗",
     "body": "Leave now to arrive on time: {{service}} at {{time}}.",
     "fallback_service": "your service"
-  },
-  "auto_accept_lost": {
-    "week": "This week {{count}} invitations passed you by because you didn't answer in time."
   },
   "documents_validating": {
     "pending": "We're validating your documents. We'll let you know as soon as it's done.",
@@ -1392,13 +1374,13 @@ export default {
       "empty": "No service types to pick yet. Check your connection and try again.",
       "none_selected": "None selected",
       "selected_count_one": "{{count}} selected",
-      "selected_count_other": "{{count}} selected",
+      "selected_count_other": "{{count}} selected"
     },
     "update": {
       "title": "Update working areas",
       "subtitle": "Do you want to save the areas you picked?",
       "cancel": "Cancel",
-      "confirm": "Confirm",
+      "confirm": "Confirm"
     }
   },
   "documents": {
@@ -1429,13 +1411,13 @@ export default {
         "android_subtitle": "To go online on Android, you need to allow background location in the app settings.",
         "error": {
           "title": "Couldn't turn location on",
-          "subtitle": "Set location to \"Always\" in your phone Settings and try again.",
+          "subtitle": "Set location to \"Always\" in your phone Settings and try again."
         }
       },
       "tracking": {
         "error": {
           "title": "Couldn't start location tracking",
-          "subtitle": "Set location to \"Always\" in your phone Settings and try again.",
+          "subtitle": "Set location to \"Always\" in your phone Settings and try again."
         }
       }
     }
@@ -1445,7 +1427,7 @@ export default {
     "permission_description": "You need location on to go online and receive requests near you.",
     "permission_button": "Turn on",
     "settings_dialog_cancel": "Not now",
-    "settings_dialog_confirm": "Open Settings",
+    "settings_dialog_confirm": "Open Settings"
   },
   "address": {
     "search_empty": "We couldn't find that address. Type it in the fields below.",
@@ -1541,7 +1523,7 @@ export default {
       "district_available": "AVAILABLE",
       "district_coming_soon": "COMING SOON",
       "city_active": "Active",
-      "city_coming_soon": "Coming soon",
+      "city_coming_soon": "Coming soon"
     },
     "documents": {
       "submitted": "Sent",
@@ -1552,7 +1534,7 @@ export default {
         "criminal_record": "Request on the justice portal",
         "activity_declaration": "Get it on the tax portal"
       }
-    },
+    }
   },
   "no_shows": {
     "title": "No-shows",
@@ -1619,10 +1601,6 @@ export default {
     "edit": "edit",
     "settings_schedule": "Schedule settings",
     "repeat": "Repeat",
-    "auto_acceptance": "Auto-Acceptance",
-    "auto_accept_on": "On — you answer invitations automatically in your free hours.",
-    "auto_accept_off": "Off — you answer each invitation.",
-    "auto_accept_enable": "Turn on",
     "availability_schedule": "Availability schedule",
     "continue": "Save",
     "calendar": {
@@ -1631,7 +1609,7 @@ export default {
     },
     "availability_range": {
       "title": "Availability range",
-      "subtitle": "Pick the hours in which you take scheduled services.",
+      "subtitle": "Pick the hours when auto-accept can answer for you. You'll still get invitations at any hour.",
       "from": "From",
       "to": "Until",
       "invalid": "The start time must be before the end time",
@@ -1657,9 +1635,7 @@ export default {
     "confirmation": {
       "repeat_title": "Change schedule repeat",
       "enable_repeat_subtitle": "Turning repeat on makes this week's availability repeat every following week, replacing any hours you added manually. Do you want to continue?",
-      "disable_repeat_subtitle": "Turning repeat off deletes every time slot with no service booked, from next week onwards. Do you want to continue?",
-      "auto_accept_title": "Turn on Auto-Acceptance?",
-      "auto_accept_subtitle": "You answer invitations automatically in the hours you have free. You enter the selection without doing anything — the client sees the best 3 by rating, price and distance."
+      "disable_repeat_subtitle": "Turning repeat off deletes every time slot with no service booked, from next week onwards. Do you want to continue?"
     },
     "days": {
       "Mo": "Monday",
@@ -1703,6 +1679,7 @@ export default {
     "times_up": "Time is up",
     "remaining_time": "Remaining time",
     "empty": "Free agenda",
+    "empty_hint": "The services you accept show up here and in the Agenda tab.",
     "section_title": "Your agenda",
     "today_count_one": "{{count}} service today",
     "today_count_other": "{{count}} services today",
@@ -1722,8 +1699,6 @@ export default {
     "incoming_request_title": "New request received",
     "incoming_request_window_immediate": "You have 60 seconds to accept.",
     "incoming_request_window_scheduled": "You have 20 minutes to accept.",
-    "services_count_one": "scheduled service",
-    "services_count_other": "scheduled services",
     "customer_notes": "Client notes"
   },
     // Ongoing service sticky notification (useOngoingServiceNotification).

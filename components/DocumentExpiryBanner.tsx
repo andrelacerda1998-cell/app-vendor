@@ -34,20 +34,26 @@ const DocumentExpiryBanner = () => {
   const expired = worst.is_expired || (worst.days_to_expire ?? 1) < 0;
   const tone = expired ? Colors.danger : Colors.warning;
 
-  const title = expired
-    ? t('document_expiry.expired_title', { name: worst.name })
-    : t('document_expiry.expiring_title', { name: worst.name, count: worst.days_to_expire ?? 0 });
+  const days = worst.days_to_expire ?? 0;
 
-  const subtitle = expired
-    ? t('document_expiry.expired_subtitle')
-    : t('document_expiry.expiring_subtitle');
+  // Uma frase: o que acontece e o que fazer. Eram duas linhas — titulo e
+  // subtitulo — a dizer a mesma coisa por outras palavras, e o aviso ocupava
+  // meio ecra por cima da agenda.
+  //
+  // O ultimo dia de validade tem frase propria: a pluralizacao do i18next nao
+  // tem categoria "zero" em portugues e a contagem daria "Daqui a 0 dias".
+  const message = expired
+    ? t('document_expiry.expired', { name: worst.name })
+    : days === 0
+      ? t('document_expiry.expiring_today', { name: worst.name })
+      : t('document_expiry.expiring', { name: worst.name, count: days });
 
   return (
     <View className="px-5">
       <TouchableOpacity
         activeOpacity={0.9}
         accessibilityRole="button"
-        accessibilityLabel={`${title}. ${subtitle}`}
+        accessibilityLabel={message}
         onPress={() => router.push('/(app)/(pages)/(mydocuments)/mydocuments')}
       >
         <LinearGradient
@@ -58,22 +64,14 @@ const DocumentExpiryBanner = () => {
         >
           <View className="flex-row items-center p-4">
             <View
-              className="w-11 h-11 rounded-full items-center justify-center mr-3"
+              className="w-9 h-9 rounded-full items-center justify-center mr-3"
               style={{ backgroundColor: tone }}
             >
-              <Feather name={expired ? 'alert-circle' : 'clock'} size={20} color={Colors.strongest} />
+              <Feather name={expired ? 'alert-circle' : 'clock'} size={17} color={Colors.strongest} />
             </View>
             <View className="flex-1">
-              <CustomText size="medium" color="secondary" boldness="bolder" numberOfLines={2}>
-                {title}
-              </CustomText>
-              <CustomText
-                size="small"
-                color="secondary"
-                numberOfLines={2}
-                classes="mt-0.5 opacity-80"
-              >
-                {subtitle}
+              <CustomText size="small" color="secondary" boldness="semiBold" numberOfLines={3}>
+                {message}
               </CustomText>
             </View>
             <Feather name="chevron-right" size={20} color={tone} />

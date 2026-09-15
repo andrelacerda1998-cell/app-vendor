@@ -5,7 +5,7 @@ import { Colors } from '@/constants/Colors';
 import {AntDesign, Entypo, Feather, Ionicons} from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { View, ScrollView, Animated, TouchableOpacity, Platform } from 'react-native';
+import { View, ScrollView, Animated, TouchableOpacity, Platform, RefreshControl } from 'react-native';
 import { FlatList, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CustomText } from '@/components/CustomText';
@@ -16,7 +16,7 @@ import { useService } from "@/contexts/ServiceContext";
 import OpenService from "@/components/services/OpenService";
 
 
-import Schedules from "@/components/app/Home/Schedules";
+import TodayCard from "@/components/app/Home/TodayCard";
 import {useSession} from "@/contexts/SessionContext";
 import { useTranslation } from "react-i18next";
 import XIcon from "@/assets/icons/x";
@@ -31,18 +31,21 @@ import WeekStats from "@/components/app/Home/WeekStats";
 import PendingRequestsCard from "@/components/app/Home/PendingRequestsCard";
 import MatchingInvitationsCard from "@/components/app/Home/MatchingInvitationsCard";
 import HomeShortcuts from "@/components/app/Home/HomeShortcuts";
-import AutoAcceptCard from "@/components/app/Home/AutoAcceptCard";
 import NotificationsDisabledBanner from "@/components/NotificationsDisabledBanner";
 import DocumentExpiryBanner from "@/components/DocumentExpiryBanner";
 import { useDepartureReminders } from "@/hooks/useDepartureReminders";
 import { useNotificationPermission } from "@/contexts/NotificationsContext";
+import { useSchedule } from "@/contexts/ScheduleContext";
+import { useVendorStats } from "@/hooks/useVendorStats";
 
 const Home = () => {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const { api } = useApi();
   const { vendorData, vendorStatus, setVendorStatus, getWalletInfo, wallet, isLoadingUserData, session } = useSession();
-  const { getOperationAreas, myOperationAreas, openService, pendingService, setActiveService, activeService } = useService();
+  const { getOperationAreas, myOperationAreas, openService, pendingService, setActiveService, activeService, getPendingServices } = useService();
+  const { getScheduledServices } = useSchedule();
+  const { refresh: refreshStats } = useVendorStats();
   const { openDialog } = useDialog();
   const params = useLocalSearchParams();
   // const [wallet, setWallet] = useState<WalletInterface | null>(null);
@@ -62,6 +65,32 @@ const Home = () => {
   const { permissionDenied: notificationsDenied } = useNotificationPermission();
   // Avisos para lá dos 2 primeiros ficam recolhidos atrás de "mais N avisos".
   const [showAllBanners, setShowAllBanners] = useState(false);
+
+  /**
+   * Puxar para atualizar.
+   *
+   * A Home era o unico separador sem isto — e e o ecra em que o tecnico fica
+   * a espera de trabalho. Sem forma de recarregar, so trocando de separador e
+   * voltando, ou fechando a app. Recarrega tudo o que a Home mostra numa so
+   * passagem, em paralelo.
+   */
+  const [refreshing, setRefreshing] = useState(false);
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await Promise.allSettled([
+        getWalletInfo(),
+        getOperationAreas(),
+        getPendingServices(),
+        vendorData ? getScheduledServices(vendorData) : Promise.resolve(),
+        refreshStats(),
+      ]);
+      getVendorStatus();
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const handleRequestGeolocationPermission = async () => {
     setGeoLoading(true);
@@ -275,6 +304,9 @@ const Home = () => {
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ flexGrow: 1, paddingTop: 16, paddingBottom: tabBarContentPadding(insets.bottom), gap: 16 }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={Colors.brand} />
+        }
       >
         {/* AVISOS, por ordem de impacto, no máximo 2 à vista.
             Num dia mau (documentos + localização + notificações + AT + perfil)
@@ -399,20 +431,19 @@ const Home = () => {
         <PendingRequestsCard />
         <MatchingInvitationsCard />
 
-        {/* 3. O que aí vem hoje. */}
-        <Schedules />
+        {/* 3. HOJE: o proximo servico em concreto — hora, o que e, onde,
+            quem, quanto rende — com a confirmacao de presenca la dentro.
+            Eram dois cartoes encostados a falar da mesma agenda. */}
+        <TodayCard />
 
-        {/* 4. Retrospetivo: já aconteceu, pode esperar. */}
-        <View className="px-5 mt-3">
+        {/* 4. Retrospetivo: ja aconteceu, pode esperar. Desceu para debaixo
+            do que ha a fazer — nao ha nada a decidir com tres numeros de uma
+            semana que ja passou, e estavam a meio do ecra. */}
+        <View className="px-5">
           <WeekStats />
         </View>
 
-        {/* 5. Definições e atalhos. A auto-aceitação configura-se uma vez e
-            nunca mais se toca — não justifica lugar nobre. O sítio certo seria
-            o ecrã de Disponibilidade, onde vive a agenda semanal a que ela na
-            verdade se aplica; fica aqui em baixo até essa mudança se decidir. */}
-        <AutoAcceptCard />
-
+        {/* 5. Atalhos para o que vive enterrado no Perfil. */}
         <HomeShortcuts />
       </ScrollView>
       {/* {openService && <ServiceInProgress isHome />} */}
