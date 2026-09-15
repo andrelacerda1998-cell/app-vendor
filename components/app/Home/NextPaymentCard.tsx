@@ -40,6 +40,7 @@ const NextPaymentCard = () => {
   if (!stats?.next_payment_date) return null;
 
   const pending = stats.pending_payment_amount ?? 0;
+  const totalEarned = stats.total_earned ?? stats.total_paid ?? 0;
   const iban = maskIban(vendorData?.iban);
 
   return (
@@ -56,37 +57,42 @@ const NextPaymentCard = () => {
         borderColor="line"
         otherClasses="p-4"
       >
-        {/* Linha do valor: rótulo à esquerda, montante à direita, como num
-            extrato. Antes era uma coluna encostada ao ícone, com metade da
-            largura do cartão vazia à direita — o número mais importante do
-            ecrã a viver num canto. */}
-        <View className="flex-row items-end justify-between">
+        {/* Duas colunas: o que esta por transferir e o que ja se ganhou
+            desde sempre. So com o valor a receber, a metade direita do cartao
+            ficava vazia — e num tecnico novo, ou numa semana paga, o cartao
+            inteiro era um "0,00 €" sozinho no meio do nada. O total ganho da
+            contexto ao zero: nao e "isto nao funciona", e "ja recebeste". */}
+        <View className="flex-row items-center">
           <View className="flex-1 pr-3">
-            {/* Sem rótulo aqui dentro: o cabeçalho da secção já diz "A
-                receber", e repeti-lo a dois centímetros era a mesma frase
-                duas vezes a roubar espaço ao número. */}
-            {/* Âmbar só quando há dinheiro: a cor da marca num 0,00 € celebra
-                o nada, e de tanto aparecer deixa de significar alguma coisa.
-                Mesma regra dos números da semana aqui em cima. */}
+            {/* Sem rotulo aqui: o cabecalho da seccao ja diz "A receber". */}
+            {/* Ambar so quando ha dinheiro: a cor da marca num 0,00 € celebra
+                o nada e, de tanto aparecer, deixa de significar alguma coisa.
+                Mesma regra dos numeros da semana aqui em cima. */}
             <CustomText
               size="extraLarge"
               color={pending > 0 ? 'brand' : 'secondary'}
               boldness="bolder"
-              classes="mt-0.5"
               numberOfLines={1}
             >
               {renderMoney(pending) || '0,00 €'}
             </CustomText>
-          </View>
-          {/* Quantos serviços compõem o valor — em pastilha, junto ao número
-              a que diz respeito. Só quando há algum. */}
-          {pending > 0 && (stats.pending_payment_count ?? 0) > 0 && (
-            <View className="rounded-full px-2.5 py-1 mb-1" style={{ backgroundColor: Colors.card_high }}>
-              <CustomText size="extraSmall" color="muted" boldness="semiBold" numberOfLines={1}>
+            {pending > 0 && (stats.pending_payment_count ?? 0) > 0 && (
+              <CustomText size="extraSmall" color="muted" classes="mt-0.5" numberOfLines={1}>
                 {t('home.payment.services_count', { count: stats.pending_payment_count })}
               </CustomText>
-            </View>
-          )}
+            )}
+          </View>
+
+          <View style={{ width: 1, height: 34, backgroundColor: Colors.line }} />
+
+          <View className="flex-1 pl-3 items-end">
+            <CustomText size="extraSmall" color="muted" numberOfLines={1}>
+              {t('home.payment.total_earned')}
+            </CustomText>
+            <CustomText size="medium" color="secondary" boldness="bold" classes="mt-0.5" numberOfLines={1}>
+              {renderMoney(totalEarned) || '0,00 €'}
+            </CustomText>
+          </View>
         </View>
 
         {/* Linha do pagamento: quando entra e para onde. */}

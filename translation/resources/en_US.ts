@@ -988,6 +988,7 @@ export default {
     "my_areas_change": "Change areas",
     "payment": {
         "title": "To receive",
+        "total_earned": "Earned so far",
         "on_date": "Paid on {{date}}",
         "services_count_one": "{{count}} service",
         "services_count_other": "{{count}} services"

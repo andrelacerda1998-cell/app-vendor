@@ -8,6 +8,7 @@ export interface VendorStats {
   total_services: number;
   rating: number | null;
   total_earned?: number;
+  total_paid?: number;
   pending_payment_amount?: number;
   pending_payment_count?: number;
   next_payment_date?: string;
