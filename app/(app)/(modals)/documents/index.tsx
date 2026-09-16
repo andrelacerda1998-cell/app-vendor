@@ -220,7 +220,7 @@ export default function Documents(){
                 style={{ flex: 1, paddingBottom: 20 }}
             >
                 <ScrollView
-                    className="space-y-4"
+                    className="gap-y-4"
                     contentContainerStyle={{
                         flexGrow: 1,
                         padding: 20,
@@ -529,7 +529,7 @@ const DocumentSelectionPopup = ({
                                 <Feather name="camera" size={24} color={Colors.secondary} />
                             )}
                             itemsCenter={false}
-                            classes="space-x-3"
+                            classes="gap-x-3"
                         />
                     </View>
                     <View className="mb-2 border-b-[2px] border-b-gray_strong">
@@ -544,7 +544,7 @@ const DocumentSelectionPopup = ({
                                 <Feather name="image" size={24} color={Colors.secondary} />
                             )}
                             itemsCenter={false}
-                            classes="space-x-3"
+                            classes="gap-x-3"
                         />
                     </View>
                     <CustomTouchableOpacity
@@ -558,7 +558,7 @@ const DocumentSelectionPopup = ({
                             <Feather name="folder" size={24} color={Colors.secondary} />
                         )}
                         itemsCenter={false}
-                        classes="space-x-3"
+                        classes="gap-x-3"
                     />
                 </View>
             </DynamicSizingSheet>

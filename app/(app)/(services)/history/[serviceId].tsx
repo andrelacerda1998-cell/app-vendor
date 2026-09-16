@@ -117,7 +117,7 @@ const Status = () => {
         className="px-5"
       >
         <View className="flex-1">
-          <View className="items-center space-y-2 py-6">
+          <View className="items-center gap-y-2 py-6">
             {isLoading ? (
               <View className="rounded-full overflow-hidden w-14 h-14 ">
                 <View className="w-full h-full" style={{ backgroundColor: Colors.card }}></View>
@@ -249,7 +249,7 @@ const Status = () => {
       </ScrollView>
       <View className="p-5">
         {service?.rating_by_vendor !== null && service?.rating_by_vendor !== undefined && service?.rating_by_vendor >= 0 ? (
-          <View className="items-center flex-row space-x-2 justify-center mb-5">
+          <View className="items-center flex-row gap-x-2 justify-center mb-5">
             <AntDesign name="star" size={40} color={service?.rating_by_vendor >= 1 ? Colors.support_primary : Colors.gray_medium} />
             <AntDesign name="star" size={40} color={service?.rating_by_vendor >= 2 ? Colors.support_primary : Colors.gray_medium} />
             <AntDesign name="star" size={40} color={service?.rating_by_vendor >= 3 ? Colors.support_primary : Colors.gray_medium} />
@@ -263,7 +263,7 @@ const Status = () => {
             textColor="primary"
             textBoldness="bold"
             text={t('services.service.history.rate_service')}
-            classes="space-x-2 mb-5"
+            classes="gap-x-2 mb-5"
             onPress={() => {
               if(service) goToRateService(service);
             }}
@@ -277,7 +277,7 @@ const Status = () => {
             textColor="secondary"
             textBoldness="semiBold"
             text={t('services.service.history.download_invoice')}
-            classes="space-x-2"
+            classes="gap-x-2"
             Icon={() => (
               <FontAwesome5 name="file-image" size={24} color={Colors.support_primary} />
             )}
