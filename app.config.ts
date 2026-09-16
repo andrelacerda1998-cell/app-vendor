@@ -31,6 +31,17 @@ export default ({config}: ConfigContext):ExpoConfig => {
         owner: process.env.EAS_OWNER || "piquet-technologies",
         userInterfaceStyle: "automatic",
         jsEngine: "hermes",
+        // Arquitectura antiga, declarada de proposito.
+        //
+        // Ate ao SDK 52 era o defeito e ninguem tinha de escrever nada. No 54
+        // o defeito inverte-se: quem nao declara nada acorda na New
+        // Architecture. Nao queremos isso agora — o `react-native-background-
+        // timer`, que corre o cronometro do servico em `components/Timer.tsx`,
+        // esta marcado como nao testado nela e nao ha versao nova desde 2022.
+        //
+        // O SDK 54 e o ultimo que da esta escolha: no 55 a opcao desaparece.
+        // Ate la ha que substituir o background-timer e voltar aqui.
+        newArchEnabled: false,
         runtimeVersion: version,
         updates: {
             url: "https://u.expo.dev/20ae14b2-f775-4cab-b460-3fe740ae20bc",
