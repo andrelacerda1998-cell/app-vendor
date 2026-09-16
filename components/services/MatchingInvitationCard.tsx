@@ -6,8 +6,7 @@ import { CustomText } from '@/components/CustomText';
 import { Colors } from '@/constants/Colors';
 import { renderMoney } from '@/utils/money';
 import { MatchingInvitation } from '@/types/matching';
-import useExpiryCountdown from '@/hooks/useExpiryCountdown';
-import { urgencyInk } from '@/utils/urgencyColor';
+import useElapsedSince from '@/hooks/useElapsedSince';
 
 /**
  * Um convite de seleção — NÃO é um pedido adjudicado.
@@ -35,10 +34,10 @@ const MatchingInvitationCard = ({
   busy?: boolean;
 }) => {
   const { t } = useTranslation();
-  const { label: countdown, remainingRatio, tone, expired } = useExpiryCountdown(
-    invitation.expires_at,
-    invitation.notified_at,
-  );
+  // `expired` continua a vir do prazo real: o convite deixa de valer quando a
+  // janela fecha, mesmo que o ecra ja nao a mostre em contagem decrescente.
+  const expired = !!invitation.expires_at && new Date(invitation.expires_at).getTime() <= Date.now();
+  const elapsed = useElapsedSince(invitation.notified_at);
 
   const earn = renderMoney(invitation.amount_for_vendor ?? null);
 
@@ -71,36 +70,22 @@ const MatchingInvitationCard = ({
       className="rounded-2xl border p-5 mb-3"
       style={{ borderColor: Colors.line, backgroundColor: Colors.card }}
     >
-      {/* Contador e barra, tal como na Home: a mesma informação com a mesma
-          cara nos dois sítios. Ver dois tratamentos diferentes para o mesmo
-          número faz duvidar de ambos. */}
-      {!!countdown && (
-        <View className="mb-4">
-          <View className="flex-row items-baseline mb-2">
-            <CustomText
-              size="medium"
-              boldness="bolder"
-              color="secondary"
-              style={{ color: urgencyInk(tone), fontVariant: ['tabular-nums'] }}
-            >
-              {countdown}
-            </CustomText>
-            <CustomText size="extraSmall" color="secondary" classes="ml-1.5" style={{ color: Colors.muted }}>
-              {t('matching.invitation.window')}
-            </CustomText>
-          </View>
-
-          {remainingRatio !== null && (
-            <View className="rounded-full overflow-hidden" style={{ height: 3, backgroundColor: Colors.card_high }}>
-              <View
-                style={{
-                  height: 3,
-                  width: `${Math.max(2, remainingRatio * 100)}%`,
-                  backgroundColor: urgencyInk(tone),
-                }}
-              />
-            </View>
-          )}
+      {/* HA QUANTO TEMPO o pedido foi feito — e nao quanto falta.
+          A contagem decrescente prometia uma coisa que este ecra nao pode
+          cumprir: que responder a tempo da o trabalho. Nao da. Quem escolhe e
+          o cliente, e o convite fecha assim que tres profissionais responderem,
+          mesmo com a janela por acabar.
+          "Ha 2 min" ajuda a decidir (ainda vale a pena) sem criar pressa
+          artificial; "faltam 18m 54s" so criava stress por uma decisao que nao
+          e dele. */}
+      {!!elapsed && (
+        <View className="flex-row items-center mb-4">
+          <Feather name="clock" size={13} color={Colors.muted} />
+          <CustomText size="small" color="secondary" classes="ml-1.5" style={{ color: Colors.muted }}>
+            {elapsed.minutes < 1
+              ? t('matching.invitation.asked_just_now')
+              : t('matching.invitation.asked_ago', { count: elapsed.minutes })}
+          </CustomText>
         </View>
       )}
 

@@ -40,6 +40,16 @@ export default function AppLayout() {
           gestureEnabled: false,
         }}
       />
+      {/* O convite de selecao fecha-se ao gesto, ao contrario do pedido
+          direto: dizer que se esta disponivel nao e ficar com o trabalho, por
+          isso nao ha nada a perder por o fechar. */}
+      <Stack.Screen
+        name="matching-invitation/[candidateId]"
+        options={{
+          presentation: 'modal',
+          animation: 'slide_from_bottom',
+        }}
+      />
     </Stack>
   );
 }

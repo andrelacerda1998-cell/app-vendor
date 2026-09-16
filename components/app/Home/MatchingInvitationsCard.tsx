@@ -63,7 +63,17 @@ const MatchingInvitationsCard = () => {
     <View className="px-5 mt-3">
       <TouchableOpacity
         activeOpacity={0.9}
-        onPress={() => router.push('/(app)/(bottom-sheets)/(services)/matching')}
+        // Com UM convite vai direto ao ecra dele: obrigar a passar por uma
+        // lista de um elemento e um toque a mais para chegar a mesma decisao.
+        // Com varios, a lista e que e o sitio certo.
+        onPress={() =>
+          invitations.length === 1
+            ? router.push({
+                pathname: '/(app)/(modals)/matching-invitation/[candidateId]',
+                params: { candidateId: String(invitations[0].candidate_id) },
+              })
+            : router.push('/(app)/(bottom-sheets)/(services)/matching')
+        }
         className="rounded-2xl border overflow-hidden"
         style={{
           borderColor: tone === 'calm' ? Colors.line : `${accent}59`,

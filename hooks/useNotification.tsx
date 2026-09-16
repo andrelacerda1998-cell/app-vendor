@@ -111,6 +111,17 @@ export function NotificationObserverHandler() {
         return;
       }
 
+      // Convite de seleção: ecrã próprio, com a decisão lá dentro. Não passa
+      // pelo `incoming-request`, que é o da adjudicação direta e tem contagem
+      // decrescente — aqui não há prazo a correr contra ele.
+      if (open_type === 'matching_invitation' && open_id) {
+        router.push({
+          pathname: '/(app)/(modals)/matching-invitation/[candidateId]',
+          params: { candidateId: String(open_id) },
+        });
+        return;
+      }
+
       // Notificações de vendor: levam o técnico direto ao sítio certo.
       if (open_type === 'request') {
         // Com o id, abre o ecrã full-screen do pedido (countdown + aceitar/
