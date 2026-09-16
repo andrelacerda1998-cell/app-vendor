@@ -23,6 +23,7 @@ import ServiceExtras, { ServiceExtrasActions, type ExtrasSheet } from "@/compone
 import ServicePhotos from "@/components/services/ServicePhotos";
 import ServiceCountdown from "@/components/services/ServiceCountdown";
 import { Card, ErrorState, SkeletonList } from "@/components/ui";
+import { capitalizeFirst } from "@/utils";
 import { formatEstimatedDuration } from "@/utils/serviceDetails";
 import { useNavChooser } from "@/hooks/useNavChooser";
 import ServiceRouteMap from "@/components/services/ServiceRouteMap";
@@ -641,14 +642,14 @@ const Status = () => {
             bloco inteiro a comunicar ausência de conteúdo. */}
         {((servicesDetail?.includes?.length ?? 0) > 0 || (servicesDetail?.excludes?.length ?? 0) > 0) && (
         <View className="border rounded-2xl p-4 mt-3" style={{ backgroundColor: Colors.card,  borderColor: Colors.line }}>
-          <CustomText color="muted" boldness="bold" size="extraSmall">{t('services.includes')}</CustomText>
+          <CustomText color="muted" boldness="bold" size="small">{t('services.includes')}</CustomText>
           <View className="mt-2">
             {servicesDetail?.includes?.length > 0 ? (
               servicesDetail.includes.map((item: any, i: number) => (
-                <View className="flex-row items-start mb-1.5" key={i}>
-                  <Ionicons name="checkmark-circle" size={17} color={Colors.success} style={{ marginTop: 1 }} />
-                  <CustomText color="secondary" size="small" classes="ml-2 flex-1">
-                    {typeof item === 'string' ? item : t('services.no_info')}
+                <View className="flex-row items-start mb-2.5" key={i}>
+                  <Ionicons name="checkmark-circle" size={19} color={Colors.success} style={{ marginTop: 2 }} />
+                  <CustomText color="secondary" size="medium" classes="ml-2 flex-1">
+                    {typeof item === 'string' ? capitalizeFirst(item) : t('services.no_info')}
                   </CustomText>
                 </View>
               ))
@@ -659,14 +660,14 @@ const Status = () => {
 
           <View className="h-px my-3" style={{ backgroundColor: Colors.line }} />
 
-          <CustomText color="muted" boldness="bold" size="extraSmall">{t('services.excludes')}</CustomText>
+          <CustomText color="muted" boldness="bold" size="small">{t('services.excludes')}</CustomText>
           <View className="mt-2">
             {servicesDetail?.excludes?.length > 0 ? (
               servicesDetail.excludes.map((item: any, i: number) => (
-                <View className="flex-row items-start mb-1.5" key={i}>
-                  <Ionicons name="close-circle" size={17} color={Colors.muted} style={{ marginTop: 1 }} />
-                  <CustomText color="secondary" size="small" classes="ml-2 flex-1">
-                    {typeof item === 'string' ? item : t('services.no_info')}
+                <View className="flex-row items-start mb-2.5" key={i}>
+                  <Ionicons name="close-circle" size={19} color={Colors.muted} style={{ marginTop: 2 }} />
+                  <CustomText color="secondary" size="medium" classes="ml-2 flex-1">
+                    {typeof item === 'string' ? capitalizeFirst(item) : t('services.no_info')}
                   </CustomText>
                 </View>
               ))
