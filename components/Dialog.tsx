@@ -31,9 +31,26 @@ const Dialog: React.FC = () => {
       isVisible={isOpen}
       animationIn="slideInUp"
       animationOut="slideOutDown"
-      backdropColor="rgba(0, 0, 0, 0.7)"
+      backdropColor="rgba(0, 0, 0, 0.85)"
     >
-      <View className="items-center justify-center rounded-3xl" style={{ backgroundColor: Colors.primary }}>
+      {/* O dialogo tem de se DESCOLAR do ecra.
+          Estava em Colors.primary (#1B1B1B) — praticamente a mesma cor do
+          fundo da app (#0C0C0E) e dos cartoes (#1A1A1D) —, sem borda nem
+          sombra. Num ecra quase preto lia-se como uma mancha, nao como uma
+          coisa por cima. Passa ao tom mais claro da escala (card_high), com
+          borda e sombra, e o escurecimento por tras sobe de 0.7 para 0.85. */}
+      <View
+        className="items-center justify-center rounded-3xl border"
+        style={{
+          backgroundColor: Colors.card_high,
+          borderColor: 'rgba(255,255,255,0.12)',
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 12 },
+          shadowOpacity: 0.55,
+          shadowRadius: 28,
+          elevation: 16,
+        }}
+      >
         <StatusBar style="light" backgroundColor="rgba(0, 0, 0, 0.5)" animated />
 
         {content && (
@@ -44,15 +61,27 @@ const Dialog: React.FC = () => {
             >
               {content.icon && (
                 <View className="items-center justify-center">
-                  <View className="w-10 h-10 p-3 rounded-full" style={{ backgroundColor: Colors.support_primary }}>
+                  <View className="w-12 h-12 p-3.5 rounded-full items-center justify-center" style={{ backgroundColor: Colors.brand }}>
                     {content.icon}
                   </View>
                 </View>
               )}
               <View className="space-y-3">
                 <CustomText size="large" color="secondary" boldness="bolder" className="text-center">{content.title}</CustomText>
+                {/* Era `muted` a small: passava no contraste mas lia-se mal —
+                    e este texto costuma trazer a informacao que interessa (a
+                    hora a que ficou de aparecer). Sobe para o branco a 85% e
+                    um tamanho acima. */}
                 {content.subtitle && (
-                  <CustomText size="small" color="muted" boldness="regular" className="text-center" style={{ lineHeight: 20 }}>{content.subtitle}</CustomText>
+                  <CustomText
+                    size="medium"
+                    color="secondary"
+                    boldness="regular"
+                    className="text-center"
+                    style={{ lineHeight: 22, opacity: 0.85 }}
+                  >
+                    {content.subtitle}
+                  </CustomText>
                 )}
               </View>
               {content.successButtonText && content.cancelButtonText && (
