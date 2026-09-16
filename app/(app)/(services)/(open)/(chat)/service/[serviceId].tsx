@@ -38,7 +38,7 @@ interface Message {
 const VendorMessage = ({message, time, isRead}: { message: string, time: string, isRead?: boolean }) => {
     const { t } = useTranslation();
     return (
-        <View className="space-y-2 self-end mb-5">
+        <View className="gap-y-2 self-end mb-5">
             <View className="p-6 w-full rounded-3xl rounded-br-none" style={{ backgroundColor: Colors.gray_light }}>
                 <CustomText size="small" color="primary" boldness="regular">
                     {message}
@@ -62,7 +62,7 @@ const VendorMessage = ({message, time, isRead}: { message: string, time: string,
 
 const CustomerMessage = ({message, time}: { message: string, time: string }) => {
     return (
-        <View className="space-y-2 self-start mb-5">
+        <View className="gap-y-2 self-start mb-5">
             <View className="p-6 w-full rounded-3xl rounded-bl-none" style={{ backgroundColor: Colors.gray_strong }}>
                 <CustomText size="small" color="secondary" boldness="regular">
                     {message}
@@ -315,7 +315,7 @@ const Service = () => {
         <SafeAreaView className="flex-1" style={{ backgroundColor: Colors.bg }}>
             <View className="flex-1" style={{ backgroundColor: Colors.primary }}>
                 {/* <StatusBar backgroundColor="black" barStyle="light-content"/> */}
-                <View className="py-8 px-5 space-y-8 z-10 rounded-b-3xl" style={{ backgroundColor: Colors.bg }}>
+                <View className="py-8 px-5 gap-y-8 z-10 rounded-b-3xl" style={{ backgroundColor: Colors.bg }}>
                     <BackHeader
                         backButtonColor="secondary"
                         middleItem={() => (
@@ -334,7 +334,7 @@ const Service = () => {
                 <View className="flex-1 px-5 overflow-hidden">
                     {loadingMessages ? (
                         <View className="flex-1 justify-end">
-                            <View className="space-y-5">
+                            <View className="gap-y-5">
                                 <View className="rounded-3xl rounded-bl-none overflow-hidden w-[50%]">
                                     <View className="w-full h-16 bg-[#111215]"></View>
                                 </View>
@@ -380,7 +380,7 @@ const Service = () => {
                             inverted={groupedMessages.length > 0}
                             renderItem={({item}) => {
                                 return (
-                                    <View className="space-y-2">
+                                    <View className="gap-y-2">
                                         <View className="items-center p-5">
                                             <CustomText
                                                 size="extraSmall"

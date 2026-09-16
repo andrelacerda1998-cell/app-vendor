@@ -17,7 +17,7 @@ const FilterChip = ({
     onPress={onPress}
     rounded="lg"
     itemsCenter
-    otherClasses="px-5 py-2 flex-row space-x-2 mr-2"
+    otherClasses="px-5 py-2 flex-row gap-x-2 mr-2"
     bgColor={active ? "support_primary" : null}
     border
     borderColor={active ? "support_primary" : "gray_strong"}

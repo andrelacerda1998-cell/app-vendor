@@ -255,7 +255,7 @@ const ScheduleProposalBottomSheet = () => {
               />
             </View>
 
-            <View className="justify-end items-center space-y-2 py-2">
+            <View className="justify-end items-center gap-y-2 py-2">
               <JobDetail
                 label={t("schedules.schedule_for", { defaultValue: "Agendado para" })}
                 value={scheduleTime || "—"}

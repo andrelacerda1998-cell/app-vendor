@@ -304,7 +304,7 @@ const EditProfile = () => {
             />
 
             <KeyboardAwareScrollView bottomOffset={20}>
-                <View className="flex-1 p-5 space-y-8">
+                <View className="flex-1 p-5 gap-y-8">
                     <View>
                         <CustomText color="secondary" boldness="semiBold" numberOfLines={1}>
                             {t('general.avatar')}

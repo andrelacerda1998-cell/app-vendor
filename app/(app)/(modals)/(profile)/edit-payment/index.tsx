@@ -142,7 +142,7 @@ const EditPayment = () => {
                 otherClasses="p-5"
             />
             <KeyboardAwareScrollView bottomOffset={20}>
-                <View className="space-y-8 flex-1 p-5">
+                <View className="gap-y-8 flex-1 p-5">
                     <View>
                         <CustomText color="secondary" boldness="semiBold" numberOfLines={1}>
                             {t('general.iban')}

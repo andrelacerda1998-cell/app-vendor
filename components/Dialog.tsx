@@ -40,7 +40,7 @@ const Dialog: React.FC = () => {
           content.customContent ? content.customContent : (
             <View
               ref={content?.closeOnClickOutside ? dropDownRef : undefined}
-              className="w-full space-y-8 p-8"
+              className="w-full gap-y-8 p-8"
             >
               {content.icon && (
                 <View className="items-center justify-center">
@@ -49,7 +49,7 @@ const Dialog: React.FC = () => {
                   </View>
                 </View>
               )}
-              <View className="space-y-3">
+              <View className="gap-y-3">
                 <CustomText size="large" color="secondary" boldness="bolder" className="text-center">{content.title}</CustomText>
                 {content.subtitle && (
                   <CustomText size="small" color="muted" boldness="regular" className="text-center" style={{ lineHeight: 20 }}>{content.subtitle}</CustomText>
