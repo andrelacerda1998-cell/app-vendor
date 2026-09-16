@@ -200,7 +200,7 @@ const History = () => {
                     </IconTile>
                     <View className="flex-1 ml-3">
                       <CustomText color="secondary" boldness="semiBold" size="medium" numberOfLines={1}>
-                        {s?.service_type?.name ?? '—'}
+                        {s?.service_type?.name ?? s?.custom?.description ?? '—'}
                       </CustomText>
                       <CustomText color="muted" size="extraSmall" classes="mt-0.5" numberOfLines={1}>
                         {[s?.customer?.name, fmtDate(s?.created_at)].filter(Boolean).join(' · ')}

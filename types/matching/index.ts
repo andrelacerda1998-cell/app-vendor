@@ -22,6 +22,16 @@ export interface MatchingInvitation {
     name: string;
     time?: number | null;
   } | null;
+  /**
+   * Pedido personalizado: nao ha tipo de catalogo. E a descricao do cliente
+   * que diz o trabalho, e a duracao vem do backoffice. null num pedido normal.
+   */
+  custom: {
+    description: string | null;
+    duration_minutes: number | null;
+  } | null;
+  /** Duracao a mostrar, seja de onde vier (tipo ou backoffice). */
+  duration_minutes?: number | null;
   address: {
     city: string | null;
     postal_code: string | null;

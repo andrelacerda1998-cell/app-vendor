@@ -186,9 +186,9 @@ const Status = () => {
                 <Feather name="tool" size={90} color={Colors.secondary} />
                 </View>
                 <View className="mt-4">
-                  {service?.service_type?.name && (
+                  {(service?.service_type?.name || service?.custom?.description) && (
                     <CustomText color="support_primary" boldness="semiBold" size="large" numberOfLines={2} classes="text-center">
-                      {service?.service_type?.name}
+                      {service?.service_type?.name ?? service?.custom?.description}
                     </CustomText>
                   )}
                   <CustomText color="gray_medium" boldness="regular" size="small" numberOfLines={2} classes="text-center">
