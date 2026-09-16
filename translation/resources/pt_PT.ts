@@ -1746,6 +1746,9 @@ export default {
     },
     "ongoing_service": {
         "title_fallback": "Serviço a decorrer",
+        "state_running": "Em execução",
+        "state_overdue": "Tempo excedido",
+        "overdue": "Terminava às {{time}}",
         "ends_at": "Termina às {{time}}",
         "started_at": "Em curso desde as {{time}}"
     }

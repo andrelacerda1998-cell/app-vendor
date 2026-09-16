@@ -47,12 +47,26 @@ export function useOngoingServiceNotification() {
   // tinha quando o técnico bloqueou o ecrã — mentiria com ar de verdade.
   // "Termina às 19:10" continua correto sem ninguém lhe tocar. O contador a
   // mexer só é possível com a Live Activity.
-  const endsAtLabel = (() => {
+  const endsAt = (() => {
     if (!startedAt || !Number.isFinite(estimated) || estimated <= 0) return null;
     const end = new Date(new Date(startedAt).getTime() + estimated * 60000);
-    if (isNaN(end.getTime())) return null;
-    return hhmm(end);
+    return isNaN(end.getTime()) ? null : end;
   })();
+  const endsAtLabel = endsAt ? hhmm(endsAt) : null;
+
+  /**
+   * O tempo estimado ja passou?
+   *
+   * Sem isto a notificacao dizia "Termina as 10:23" as 10:56 — uma frase no
+   * futuro sobre uma hora que ja passou. Nao e so inexato: esconde do tecnico
+   * precisamente o momento em que ele tem de decidir alguma coisa (pedir mais
+   * tempo ou concluir).
+   *
+   * Avaliado no momento em que a notificacao e escrita. Como ela e reemitida
+   * de cada vez que a app vai para segundo plano, apanha a mudanca na
+   * proxima vez que o tecnico guarda o telemovel.
+   */
+  const overdue = !!endsAt && endsAt.getTime() < Date.now();
 
   // Sem estimativa de duração (services_types.time em falta) mostramos a hora
   // de início: menos útil, mas nunca uma notificação vazia.
@@ -96,22 +110,36 @@ export function useOngoingServiceNotification() {
       // Assinatura do conteúdo: só se reescreve quando algo muda mesmo. Sem
       // isto, cada render da app repunha a notificação e ela saltava para o
       // topo da barra sem motivo.
-      const signature = [serviceId, customer, serviceName, endsAtLabel, startedAtLabel].join('|');
+      const signature = [serviceId, customer, serviceName, endsAtLabel, startedAtLabel, overdue].join('|');
       if (shownForRef.current === signature) return;
 
-      // Hierarquia: o serviço identifica o trabalho, o cliente identifica a
-      // casa, a hora diz quando acaba. No iOS o cliente cabe no `subtitle`,
-      // linha própria; no Android não há subtitle, por isso vai no corpo —
-      // antes do tempo, para não ser cortado quando o texto é longo.
-      const timeLine = endsAtLabel
-        ? t('ongoing_service.ends_at', { time: endsAtLabel })
-        : startedAtLabel
-          ? t('ongoing_service.started_at', { time: startedAtLabel })
-          : null;
+      // Hierarquia: o serviço identifica o trabalho, o ESTADO diz o que aquilo
+      // é, o cliente identifica a casa, a hora diz quando acaba.
+      //
+      // Faltava o estado. Sem ele, "Reparar uma torneira a pingar / Marta
+      // Silva / Termina às 10:23" lê-se, de relance na barra, como um pedido
+      // novo ou uma marcação — e não como o trabalho que ele tem entre mãos.
+      //
+      // No iOS o `subtitle` é uma linha própria a negrito: leva o estado e o
+      // cliente. No Android não há subtitle, por isso ambos vão no corpo.
+      const timeLine = overdue
+        ? t('ongoing_service.overdue', { time: endsAtLabel })
+        : endsAtLabel
+          ? t('ongoing_service.ends_at', { time: endsAtLabel })
+          : startedAtLabel
+            ? t('ongoing_service.started_at', { time: startedAtLabel })
+            : null;
+
+      const stateLine = overdue
+        ? t('ongoing_service.state_overdue')
+        : t('ongoing_service.state_running');
 
       const title = serviceName || t('ongoing_service.title_fallback');
       const isIOS = Platform.OS === 'ios';
-      const body = (isIOS ? [timeLine] : [customer, timeLine])
+      const subtitle = [stateLine, customer].filter(Boolean).join(' · ');
+      // Sem "Toca para abrir": tocar numa notificação para a abrir é a coisa
+      // mais sabida de um telemóvel, e a linha gastava metade da largura.
+      const body = (isIOS ? [timeLine] : [subtitle, timeLine])
         .filter(Boolean)
         .join(' · ');
 
@@ -120,7 +148,7 @@ export function useOngoingServiceNotification() {
           identifier: ONGOING_ID,
           content: {
             title,
-            ...(isIOS && customer ? { subtitle: customer } : {}),
+            ...(isIOS && subtitle ? { subtitle } : {}),
             body,
             sticky: true,      // Android: não sai ao deslizar
             autoDismiss: false,
@@ -139,7 +167,7 @@ export function useOngoingServiceNotification() {
     })();
 
     return () => { cancelled = true; };
-  }, [isRunning, serviceId, customer, serviceName, endsAtLabel, startedAtLabel, background, t]);
+  }, [isRunning, serviceId, customer, serviceName, endsAtLabel, startedAtLabel, overdue, background, t]);
 
   // Ao desmontar (logout, fecho), garante que não fica uma notificação órfã.
   useEffect(() => {
