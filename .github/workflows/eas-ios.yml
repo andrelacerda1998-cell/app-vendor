@@ -35,7 +35,7 @@ jobs:
           test -n "$EAS_PROJECT_ID" || { echo "::error::Falta a variable EAS_PROJECT_ID (corre 'eas init' localmente e mete o id)"; exit 1; }
 
       - name: Instalar dependências
-        run: yarn install --frozen-lockfile
+        run: npm ci
 
       - name: Build iOS
         run: |
