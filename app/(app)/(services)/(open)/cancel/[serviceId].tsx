@@ -118,7 +118,7 @@ const CancelService = () => {
         backButtonColor="secondary"
         middleItem={() => (
           <CustomText color="secondary" boldness="bold" numberOfLines={1}>
-            {openService?.service_type?.name || ''}
+            {openService?.service_type?.name || openService?.custom?.description || ''}
           </CustomText>
         )}
         otherClasses="p-5"

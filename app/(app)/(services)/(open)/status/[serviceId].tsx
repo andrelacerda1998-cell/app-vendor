@@ -528,7 +528,7 @@ const Status = () => {
           <View className="flex-row items-start">
             <View className="flex-1 pr-3">
               <CustomText color="secondary" boldness="bolder" size="medium" numberOfLines={2}>
-                {svc?.service_type?.name}
+                {svc?.service_type?.name ?? svc?.custom?.description}
               </CustomText>
               {!!category && (
                 <CustomText color="muted" size="small" numberOfLines={1} classes="mt-0.5">{category}</CustomText>

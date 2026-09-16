@@ -27,6 +27,8 @@ export interface OpenServiceInterface {
   amount_for_vendor: number,
   distance: number,
   service_type: ServiceTypeInterface | null,
+  /** Pedido personalizado: sem tipo, a descricao do cliente e o nome do trabalho. */
+  custom?: { description: string | null; duration_minutes: number | null } | null,
   service_area: OperationArea,
   customer: UserInterface,
   vendor: VendorDataInterface,
@@ -39,6 +41,8 @@ export interface ServiceInterface {
   rate: number,
   distance: number,
   service_type: ServiceTypeInterface | null,
+  /** Pedido personalizado: sem tipo, a descricao do cliente e o nome do trabalho. */
+  custom?: { description: string | null; duration_minutes: number | null } | null,
   service_area: OperationArea,
   amount: number,
   amount_for_vendor: number,
