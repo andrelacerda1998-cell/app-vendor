@@ -1719,6 +1719,7 @@ export default {
         "fallback_title": "Pedido de serviço",
         "window": "para responder",
         "immediate": "Agora",
+        "asked_label": "PEDIDO FEITO HÁ",
         "asked_just_now": "Pedido feito agora mesmo",
         "asked_ago_one": "Pedido feito há {{count}} minuto",
         "asked_ago_other": "Pedido feito há {{count}} minutos",

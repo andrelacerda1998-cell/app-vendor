@@ -70,21 +70,24 @@ const MatchingInvitationCard = ({
       className="rounded-2xl border p-5 mb-3"
       style={{ borderColor: Colors.line, backgroundColor: Colors.card }}
     >
-      {/* HA QUANTO TEMPO o pedido foi feito — e nao quanto falta.
-          A contagem decrescente prometia uma coisa que este ecra nao pode
-          cumprir: que responder a tempo da o trabalho. Nao da. Quem escolhe e
-          o cliente, e o convite fecha assim que tres profissionais responderem,
-          mesmo com a janela por acabar.
-          "Ha 2 min" ajuda a decidir (ainda vale a pena) sem criar pressa
-          artificial; "faltam 18m 54s" so criava stress por uma decisao que nao
-          e dele. */}
+      {/* HA QUANTO TEMPO o pedido foi feito — em destaque, e a correr.
+          Nao e quanto FALTA: a contagem decrescente prometia que responder a
+          tempo dava o trabalho, e nao da — quem escolhe e o cliente, e o
+          convite fecha assim que tres responderem.
+          O que conta para decidir e ha quanto tempo o pedido esta em cima da
+          mesa: ha 2 minutos ainda vale a pena, ha 18 ja ha gente a frente. */}
       {!!elapsed && (
-        <View className="flex-row items-center mb-4">
-          <Feather name="clock" size={13} color={Colors.muted} />
-          <CustomText size="small" color="secondary" classes="ml-1.5" style={{ color: Colors.muted }}>
-            {elapsed.minutes < 1
-              ? t('matching.invitation.asked_just_now')
-              : t('matching.invitation.asked_ago', { count: elapsed.minutes })}
+        <View className="items-center mb-5">
+          <CustomText size="extraSmall" color="muted" boldness="bold" classes="mb-1">
+            {t('matching.invitation.asked_label')}
+          </CustomText>
+          <CustomText
+            size="headline"
+            boldness="bolder"
+            color="secondary"
+            style={{ fontVariant: ['tabular-nums'] }}
+          >
+            {elapsed.label}
           </CustomText>
         </View>
       )}
@@ -187,8 +190,7 @@ const MatchingInvitationCard = ({
           className="flex-1 flex-row rounded-2xl py-3.5 items-center justify-center mr-2.5"
           style={{ backgroundColor: `${Colors.danger}1A`, opacity: busy ? 0.5 : 1 }}
         >
-          <Feather name="x" size={15} color={Colors.danger} />
-          <CustomText boldness="bold" color="secondary" classes="ml-1.5" style={{ color: Colors.danger }}>
+          <CustomText boldness="bold" color="secondary" style={{ color: Colors.danger }}>
             {t('matching.invitation.decline')}
           </CustomText>
         </TouchableOpacity>
@@ -198,10 +200,12 @@ const MatchingInvitationCard = ({
           disabled={busy}
           accessibilityRole="button"
           className="flex-[1.4] flex-row rounded-2xl py-3.5 items-center justify-center"
-          style={{ backgroundColor: Colors.support_primary, opacity: busy ? 0.5 : 1 }}
+          // Verde, e nao ambar: dizer que se esta disponivel e um "sim", da
+          // mesma familia do visto de confirmado. O ambar da marca fica para o
+          // dinheiro e para os avisos.
+          style={{ backgroundColor: Colors.success, opacity: busy ? 0.5 : 1 }}
         >
-          <Feather name="check" size={15} color={Colors.on_brand} />
-          <CustomText boldness="bolder" color="secondary" classes="ml-1.5" style={{ color: Colors.on_brand }}>
+          <CustomText boldness="bolder" color="secondary" style={{ color: Colors.strongest }}>
             {t('matching.invitation.accept')}
           </CustomText>
         </TouchableOpacity>

@@ -1718,6 +1718,7 @@ export default {
         "fallback_title": "Service request",
         "window": "to reply",
         "immediate": "Now",
+    "asked_label": "REQUESTED",
     "asked_just_now": "Requested just now",
     "asked_ago_one": "Requested {{count}} minute ago",
     "asked_ago_other": "Requested {{count}} minutes ago",

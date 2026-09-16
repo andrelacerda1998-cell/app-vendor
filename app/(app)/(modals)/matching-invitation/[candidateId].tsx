@@ -64,13 +64,9 @@ const MatchingInvitationScreen = () => {
         <CustomText size="subtitle" color="secondary" boldness="bolder">
           {t('matching.invitation.screen_title')}
         </CustomText>
-        {/* A regra do jogo, dita antes de ele decidir. */}
-        <CustomText size="small" color="muted" classes="mt-1" numberOfLines={2}>
-          {t('matching.invitation.screen_subtitle')}
-        </CustomText>
       </View>
 
-      <ScrollView className="flex-1 px-5" contentContainerStyle={{ paddingBottom: 24 }}>
+      <ScrollView className="flex-1 px-5" contentContainerStyle={{ paddingBottom: 16 }}>
         <MatchingInvitationCard
           invitation={invitation}
           busy={submitting === invitation.candidate_id}
@@ -78,6 +74,20 @@ const MatchingInvitationScreen = () => {
           onDecline={async () => { await decline(invitation.candidate_id); close(); }}
         />
       </ScrollView>
+
+      {/* A REGRA DO JOGO, fixa no fundo.
+          Estava por baixo do titulo, onde se le uma vez e nunca mais — e e
+          precisamente o que responde a duvida que surge DEPOIS de ler a
+          proposta: "se eu disser que sim, fico preso a isto?". Em baixo, fica
+          debaixo dos olhos no momento em que ele pousa o dedo nos botoes. */}
+      <View
+        className="px-5 pt-3 pb-5"
+        style={{ borderTopWidth: 1, borderTopColor: Colors.line, backgroundColor: Colors.bg }}
+      >
+        <CustomText size="small" color="muted" classes="text-center" numberOfLines={3}>
+          {t('matching.invitation.screen_subtitle')}
+        </CustomText>
+      </View>
     </SafeAreaView>
   );
 };

@@ -16,9 +16,9 @@ export const useElapsedSince = (iso?: string | null): { label: string; minutes: 
   const [agora, setAgora] = useState(() => Date.now());
 
   useEffect(() => {
-    // De 30 em 30 segundos: o rotulo so muda ao minuto, e um intervalo de 1s
-    // acordava a app 60 vezes por minuto para escrever o mesmo texto.
-    const id = setInterval(() => setAgora(Date.now()), 30_000);
+    // Ao segundo: o contador esta a vista e em destaque, e um numero de
+    // segundos parado le-se como ecra congelado.
+    const id = setInterval(() => setAgora(Date.now()), 1_000);
     return () => clearInterval(id);
   }, []);
 
@@ -27,9 +27,15 @@ export const useElapsedSince = (iso?: string | null): { label: string; minutes: 
   const desde = new Date(iso).getTime();
   if (isNaN(desde)) return null;
 
-  const minutos = Math.max(0, Math.floor((agora - desde) / 60_000));
+  const total = Math.max(0, Math.floor((agora - desde) / 1_000));
+  const minutos = Math.floor(total / 60);
+  const segundos = total % 60;
 
-  return { label: String(minutos), minutes: minutos };
+  // "4:07" — o formato de um cronometro, que se le sem instrucoes.
+  return {
+    label: `${minutos}:${String(segundos).padStart(2, '0')}`,
+    minutes: minutos,
+  };
 };
 
 export default useElapsedSince;
