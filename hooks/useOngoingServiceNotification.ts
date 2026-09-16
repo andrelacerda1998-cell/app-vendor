@@ -113,15 +113,20 @@ export function useOngoingServiceNotification() {
       const signature = [serviceId, customer, serviceName, endsAtLabel, startedAtLabel, overdue].join('|');
       if (shownForRef.current === signature) return;
 
-      // Hierarquia: o serviço identifica o trabalho, o ESTADO diz o que aquilo
-      // é, o cliente identifica a casa, a hora diz quando acaba.
+      // O ESTADO no título, o trabalho no corpo. Duas linhas.
       //
-      // Faltava o estado. Sem ele, "Reparar uma torneira a pingar / Marta
-      // Silva / Termina às 10:23" lê-se, de relance na barra, como um pedido
-      // novo ou uma marcação — e não como o trabalho que ele tem entre mãos.
+      // Estava ao contrário: o nome do serviço em cima, o estado espremido na
+      // segunda linha entre o cliente, e a hora numa terceira. Quem olha de
+      // relance para a barra lê a primeira linha — e a primeira linha não
+      // dizia que aquilo era um trabalho a decorrer.
       //
-      // No iOS o `subtitle` é uma linha própria a negrito: leva o estado e o
-      // cliente. No Android não há subtitle, por isso ambos vão no corpo.
+      // O nome do cliente saiu. Não ajuda a decidir nada aqui: o técnico já
+      // está em casa dele. O que ele quer saber ao acordar o telemóvel é se
+      // ainda está dentro do tempo.
+      const title = overdue
+        ? t('ongoing_service.state_overdue')
+        : t('ongoing_service.state_running');
+
       const timeLine = overdue
         ? t('ongoing_service.overdue', { time: endsAtLabel })
         : endsAtLabel
@@ -130,16 +135,7 @@ export function useOngoingServiceNotification() {
             ? t('ongoing_service.started_at', { time: startedAtLabel })
             : null;
 
-      const stateLine = overdue
-        ? t('ongoing_service.state_overdue')
-        : t('ongoing_service.state_running');
-
-      const title = serviceName || t('ongoing_service.title_fallback');
-      const isIOS = Platform.OS === 'ios';
-      const subtitle = [stateLine, customer].filter(Boolean).join(' · ');
-      // Sem "Toca para abrir": tocar numa notificação para a abrir é a coisa
-      // mais sabida de um telemóvel, e a linha gastava metade da largura.
-      const body = (isIOS ? [timeLine] : [subtitle, timeLine])
+      const body = [serviceName || t('ongoing_service.title_fallback'), timeLine]
         .filter(Boolean)
         .join(' · ');
 
@@ -148,13 +144,12 @@ export function useOngoingServiceNotification() {
           identifier: ONGOING_ID,
           content: {
             title,
-            ...(isIOS && subtitle ? { subtitle } : {}),
             body,
             sticky: true,      // Android: não sai ao deslizar
             autoDismiss: false,
             sound: false,      // silenciosa: é informação, não alerta
             priority: Notifications.AndroidNotificationPriority.LOW,
-            ...(isIOS ? {} : { channelId: ONGOING_CHANNEL_ID }),
+            ...(Platform.OS === 'ios' ? {} : { channelId: ONGOING_CHANNEL_ID }),
             data: { open_type: 'service', open_id: serviceId },
           },
           trigger: null,       // imediata
