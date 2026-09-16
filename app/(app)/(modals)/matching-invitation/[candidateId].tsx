@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { Platform, ScrollView, Vibration, View } from 'react-native';
+import { Platform, ScrollView, TouchableOpacity, Vibration, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { Feather } from '@expo/vector-icons';
 import { CustomText } from '@/components/CustomText';
 import { Colors } from '@/constants/Colors';
 import MatchingInvitationCard from '@/components/services/MatchingInvitationCard';
@@ -60,10 +61,24 @@ const MatchingInvitationScreen = () => {
 
   return (
     <SafeAreaView className="flex-1" style={{ backgroundColor: Colors.bg }}>
-      <View className="px-5 pt-4 pb-2">
-        <CustomText size="subtitle" color="secondary" boldness="bolder">
+      {/* Fechar explicito. O ecra e um modal e arrasta-se para baixo, mas isso
+          e um gesto que se descobre por acaso — e quem nao o descobre fica
+          preso num ecra sem saida aparente. Fechar aqui nao perde nada: o
+          convite continua vivo e volta a estar na Home. */}
+      <View className="flex-row items-center px-5 pt-4 pb-2">
+        <CustomText size="subtitle" color="secondary" boldness="bolder" classes="flex-1">
           {t('matching.invitation.screen_title')}
         </CustomText>
+        <TouchableOpacity
+          onPress={close}
+          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+          accessibilityRole="button"
+          accessibilityLabel={t('general.close', { defaultValue: 'Fechar' })}
+          className="w-9 h-9 rounded-full items-center justify-center"
+          style={{ backgroundColor: Colors.card_high }}
+        >
+          <Feather name="x" size={18} color={Colors.secondary} />
+        </TouchableOpacity>
       </View>
 
       <ScrollView className="flex-1 px-5" contentContainerStyle={{ paddingBottom: 16 }}>

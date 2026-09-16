@@ -6,8 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { CustomText } from '@/components/CustomText'
 import { Colors } from '@/constants/Colors'
 import useMatchingInvitations from '@/hooks/useMatchingInvitations'
-import useExpiryCountdown from '@/hooks/useExpiryCountdown'
-import { urgencyInk, urgencyOnInk, urgencyTint } from '@/utils/urgencyColor'
+import useElapsedSince from '@/hooks/useElapsedSince'
 
 /**
  * Atalho para os pedidos de serviço à espera de resposta.
@@ -46,18 +45,25 @@ const MatchingInvitationsCard = () => {
     return live[0] ?? null;
   }, [invitations]);
 
-  const { label, remainingRatio, tone } = useExpiryCountdown(
-    soonest?.expires_at,
-    soonest?.notified_at,
-  );
+  // O MESMO numero do ecra do convite: ha quanto tempo o pedido foi feito.
+  //
+  // Aqui mostrava-se o que FALTA e la o que ja PASSOU — dois numeros
+  // diferentes para o mesmo convite, e nenhum deles explicava o outro. Quem
+  // visse "18m para responder" na Home e "0:41" ao abrir ficava sem saber em
+  // qual acreditar.
+  const elapsed = useElapsedSince(soonest?.notified_at);
+  const label = elapsed?.label ?? null;
 
   const count = invitations.length;
   if (count === 0) return null;
 
-  // A cor progride ao longo da janela toda: verde enquanto vai a tempo, âmbar
-  // a meio, vermelho no fim. Responder cedo é melhor para o cliente, por isso o
-  // aviso não pode ficar todo para o último minuto.
-  const accent = urgencyInk(tone);
+  // Uma cor só, e é a da marca.
+  //
+  // A cor progredia com a janela — verde, âmbar, vermelho — e a barra
+  // esvaziava-se. Era a mesma promessa da contagem decrescente noutra forma:
+  // que o tempo estava a correr CONTRA ele. Não está; o que corre é a fila de
+  // quem já respondeu, e isso a cor não sabe mostrar.
+  const accent = Colors.brand;
 
   return (
     <View className="px-5 mt-3">
@@ -76,7 +82,7 @@ const MatchingInvitationsCard = () => {
         }
         className="rounded-2xl border overflow-hidden"
         style={{
-          borderColor: tone === 'calm' ? Colors.line : `${accent}59`,
+          borderColor: Colors.line,
           backgroundColor: Colors.card,
         }}
       >
@@ -115,8 +121,8 @@ const MatchingInvitationsCard = () => {
                   style={{ color: Colors.muted }}
                 >
                   {count === 1
-                    ? t('matching.invitation.home_expires_suffix')
-                    : t('matching.invitation.home_expires_suffix_soonest')}
+                    ? t('matching.invitation.home_elapsed_suffix')
+                    : t('matching.invitation.home_elapsed_suffix_soonest')}
                 </CustomText>
               </View>
             )}
@@ -137,25 +143,12 @@ const MatchingInvitationsCard = () => {
               size="small"
               boldness="bolder"
               color="secondary"
-              style={{ color: urgencyOnInk(tone) }}
+              style={{ color: Colors.on_brand }}
             >
               {t('matching.invitation.home_cta')}
             </CustomText>
           </View>
         </View>
-
-        {/* A barra encosta às margens do cartão e esvazia-se à vista. */}
-        {remainingRatio !== null && (
-          <View style={{ height: 4, backgroundColor: Colors.card_high }}>
-            <View
-              style={{
-                height: 4,
-                width: `${Math.max(2, remainingRatio * 100)}%`,
-                backgroundColor: accent,
-              }}
-            />
-          </View>
-        )}
       </TouchableOpacity>
     </View>
   )
