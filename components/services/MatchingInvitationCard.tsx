@@ -7,7 +7,6 @@ import { Colors } from '@/constants/Colors';
 import { renderMoney } from '@/utils/money';
 import { MatchingInvitation } from '@/types/matching';
 import useExpiryCountdown from '@/hooks/useExpiryCountdown';
-import { urgencyInk } from '@/utils/urgencyColor';
 
 /**
  * Um convite de seleção — NÃO é um pedido adjudicado.
@@ -35,10 +34,20 @@ const MatchingInvitationCard = ({
   busy?: boolean;
 }) => {
   const { t } = useTranslation();
-  const { label: countdown, remainingRatio, tone, expired } = useExpiryCountdown(
-    invitation.expires_at,
-    invitation.notified_at,
-  );
+  const countdown = useExpiryCountdown(invitation.expires_at, invitation.notified_at);
+  const expired = countdown.expired;
+
+  /**
+   * A cor progride ao longo de TODA a janela, e nao so no ultimo instante:
+   * responder cedo e melhor para o cliente, que escolhe mais depressa e espera
+   * menos. Guardar o aviso para o fim seria premiar quem responde tarde.
+   */
+  const urgencyColor =
+    countdown.tone === 'critical'
+      ? Colors.danger
+      : countdown.tone === 'warning'
+        ? Colors.warning
+        : Colors.brand;
 
   const earn = renderMoney(invitation.amount_for_vendor ?? null);
 
@@ -72,32 +81,45 @@ const MatchingInvitationCard = ({
       className="rounded-2xl border p-5 mb-3"
       style={{ borderColor: Colors.line, backgroundColor: Colors.card }}
     >
-      {/* Contador e barra, tal como na Home: a mesma informação com a mesma
-          cara nos dois sítios. Ver dois tratamentos diferentes para o mesmo
-          número faz duvidar de ambos. */}
-      {!!countdown && (
-        <View className="mb-4">
-          <View className="flex-row items-baseline mb-2">
-            <CustomText
-              size="medium"
-              boldness="bolder"
-              color="secondary"
-              style={{ color: urgencyInk(tone), fontVariant: ['tabular-nums'] }}
-            >
-              {countdown}
-            </CustomText>
-            <CustomText size="extraSmall" color="secondary" classes="ml-1.5" style={{ color: Colors.muted }}>
-              {t('matching.invitation.window')}
-            </CustomText>
-          </View>
+      {/* QUANTO FALTA para o convite fechar.
+          Esta decisao ja foi ao contrario: houve uma versao a mostrar ha quanto
+          TEMPO o pedido tinha sido feito, com o argumento de que uma contagem
+          decrescente promete que responder a tempo da o trabalho — e nao da,
+          porque quem escolhe e o cliente.
+          O argumento continua certo; o remedio e que estava errado. Esconder o
+          relogio nao desfaz a promessa, so tira ao tecnico a unica informacao
+          que ele nao consegue adivinhar. E a janela real sao minutos, nao meia
+          hora: com "ha 2 minutos" num convite que fecha aos 3, ele nao sabe que
+          lhe resta um.
+          A falsa promessa desfaz-se com PALAVRAS — o subtitulo do ecra e o
+          aviso aqui em baixo dizem que o cliente escolhe entre os primeiros a
+          responder. O relogio fica a dizer o que so ele sabe. */}
+      {!!countdown.label && (
+        <View className="items-center mb-5">
+          <CustomText
+            size="headline"
+            boldness="bolder"
+            color="secondary"
+            style={{ color: urgencyColor, fontVariant: ['tabular-nums'] }}
+          >
+            {countdown.label}
+          </CustomText>
+          <CustomText size="extraSmall" color="muted" boldness="bold" classes="mt-1">
+            {t('matching.invitation.window')}
+          </CustomText>
 
-          {remainingRatio !== null && (
-            <View className="rounded-full overflow-hidden" style={{ height: 3, backgroundColor: Colors.card_high }}>
+          {/* A barra diz o que o numero sozinho nao diz: "40s" e muito ou pouco
+              conforme a janela seja de tres minutos ou de sessenta segundos. */}
+          {countdown.remainingRatio !== null && (
+            <View
+              className="w-full rounded-full overflow-hidden mt-3"
+              style={{ height: 4, backgroundColor: Colors.line }}
+            >
               <View
                 style={{
-                  height: 3,
-                  width: `${Math.max(2, remainingRatio * 100)}%`,
-                  backgroundColor: urgencyInk(tone),
+                  width: `${Math.round(countdown.remainingRatio * 100)}%`,
+                  height: '100%',
+                  backgroundColor: urgencyColor,
                 }}
               />
             </View>
@@ -212,8 +234,7 @@ const MatchingInvitationCard = ({
           className="flex-1 flex-row rounded-2xl py-3.5 items-center justify-center mr-2.5"
           style={{ backgroundColor: `${Colors.danger}1A`, opacity: busy ? 0.5 : 1 }}
         >
-          <Feather name="x" size={15} color={Colors.danger} />
-          <CustomText boldness="bold" color="secondary" classes="ml-1.5" style={{ color: Colors.danger }}>
+          <CustomText boldness="bold" color="secondary" style={{ color: Colors.danger }}>
             {t('matching.invitation.decline')}
           </CustomText>
         </TouchableOpacity>
@@ -223,10 +244,12 @@ const MatchingInvitationCard = ({
           disabled={busy}
           accessibilityRole="button"
           className="flex-[1.4] flex-row rounded-2xl py-3.5 items-center justify-center"
-          style={{ backgroundColor: Colors.support_primary, opacity: busy ? 0.5 : 1 }}
+          // Verde, e nao ambar: dizer que se esta disponivel e um "sim", da
+          // mesma familia do visto de confirmado. O ambar da marca fica para o
+          // dinheiro e para os avisos.
+          style={{ backgroundColor: Colors.success, opacity: busy ? 0.5 : 1 }}
         >
-          <Feather name="check" size={15} color={Colors.on_brand} />
-          <CustomText boldness="bolder" color="secondary" classes="ml-1.5" style={{ color: Colors.on_brand }}>
+          <CustomText boldness="bolder" color="secondary" style={{ color: Colors.strongest }}>
             {t('matching.invitation.accept')}
           </CustomText>
         </TouchableOpacity>

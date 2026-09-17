@@ -7,7 +7,6 @@ import { CustomText } from '@/components/CustomText'
 import { Colors } from '@/constants/Colors'
 import useMatchingInvitations from '@/hooks/useMatchingInvitations'
 import useExpiryCountdown from '@/hooks/useExpiryCountdown'
-import { urgencyInk, urgencyOnInk, urgencyTint } from '@/utils/urgencyColor'
 
 /**
  * Atalho para os pedidos de serviço à espera de resposta.
@@ -46,27 +45,50 @@ const MatchingInvitationsCard = () => {
     return live[0] ?? null;
   }, [invitations]);
 
-  const { label, remainingRatio, tone } = useExpiryCountdown(
-    soonest?.expires_at,
-    soonest?.notified_at,
-  );
+  // O MESMO numero do ecra do convite, e do mesmo hook.
+  //
+  // O que nao pode acontecer e a Home dizer uma coisa e o convite outra —
+  // quem visse "18m" aqui e "0:41" ao abrir ficava sem saber em qual
+  // acreditar. `soonest` ja e o convite que fecha PRIMEIRO, por isso o numero
+  // da Home e o prazo mais apertado que ele tem em cima da mesa.
+  const countdown = useExpiryCountdown(soonest?.expires_at, soonest?.notified_at);
+  const label = countdown.label;
 
   const count = invitations.length;
   if (count === 0) return null;
 
-  // A cor progride ao longo da janela toda: verde enquanto vai a tempo, âmbar
-  // a meio, vermelho no fim. Responder cedo é melhor para o cliente, por isso o
-  // aviso não pode ficar todo para o último minuto.
-  const accent = urgencyInk(tone);
+  // A cor acompanha a urgencia, como no cartao do convite.
+  //
+  // Houve uma versao com uma cor so, argumentando que o tempo nao corre contra
+  // o tecnico — corre a fila de quem ja respondeu. Com janelas de meia hora
+  // fazia sentido; com janelas de minutos nao faz: o convite fecha mesmo, e
+  // uma Home que nao distingue "faltam 2 minutos" de "faltam 20 segundos"
+  // obriga-o a abrir para saber.
+  const accent =
+    countdown.tone === 'critical'
+      ? Colors.danger
+      : countdown.tone === 'warning'
+        ? Colors.warning
+        : Colors.brand;
 
   return (
     <View className="px-5 mt-3">
       <TouchableOpacity
         activeOpacity={0.9}
-        onPress={() => router.push('/(app)/(bottom-sheets)/(services)/matching')}
+        // Com UM convite vai direto ao ecra dele: obrigar a passar por uma
+        // lista de um elemento e um toque a mais para chegar a mesma decisao.
+        // Com varios, a lista e que e o sitio certo.
+        onPress={() =>
+          invitations.length === 1
+            ? router.push({
+                pathname: '/(app)/(modals)/matching-invitation/[candidateId]',
+                params: { candidateId: String(invitations[0].candidate_id) },
+              })
+            : router.push('/(app)/(bottom-sheets)/(services)/matching')
+        }
         className="rounded-2xl border overflow-hidden"
         style={{
-          borderColor: tone === 'calm' ? Colors.line : `${accent}59`,
+          borderColor: Colors.line,
           backgroundColor: Colors.card,
         }}
       >
@@ -105,8 +127,8 @@ const MatchingInvitationsCard = () => {
                   style={{ color: Colors.muted }}
                 >
                   {count === 1
-                    ? t('matching.invitation.home_expires_suffix')
-                    : t('matching.invitation.home_expires_suffix_soonest')}
+                    ? t('matching.invitation.home_remaining_suffix')
+                    : t('matching.invitation.home_remaining_suffix_soonest')}
                 </CustomText>
               </View>
             )}
@@ -127,25 +149,12 @@ const MatchingInvitationsCard = () => {
               size="small"
               boldness="bolder"
               color="secondary"
-              style={{ color: urgencyOnInk(tone) }}
+              style={{ color: Colors.on_brand }}
             >
               {t('matching.invitation.home_cta')}
             </CustomText>
           </View>
         </View>
-
-        {/* A barra encosta às margens do cartão e esvazia-se à vista. */}
-        {remainingRatio !== null && (
-          <View style={{ height: 4, backgroundColor: Colors.card_high }}>
-            <View
-              style={{
-                height: 4,
-                width: `${Math.max(2, remainingRatio * 100)}%`,
-                backgroundColor: accent,
-              }}
-            />
-          </View>
-        )}
       </TouchableOpacity>
     </View>
   )
