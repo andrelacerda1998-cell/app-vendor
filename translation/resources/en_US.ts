@@ -1750,6 +1750,9 @@ export default {
     },
     "ongoing_service": {
         "title_fallback": "Service in progress",
+    "state_running": "Service in progress",
+    "state_overdue": "Over time",
+    "overdue": "Was due at {{time}}",
         "ends_at": "Ends at {{time}}",
         "started_at": "Running since {{time}}"
     }
