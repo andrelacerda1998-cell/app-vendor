@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { CustomText } from '@/components/CustomText'
 import { Colors } from '@/constants/Colors'
 import useMatchingInvitations from '@/hooks/useMatchingInvitations'
-import useElapsedSince from '@/hooks/useElapsedSince'
+import useExpiryCountdown from '@/hooks/useExpiryCountdown'
 
 /**
  * Atalho para os pedidos de serviço à espera de resposta.
@@ -45,25 +45,31 @@ const MatchingInvitationsCard = () => {
     return live[0] ?? null;
   }, [invitations]);
 
-  // O MESMO numero do ecra do convite: ha quanto tempo o pedido foi feito.
+  // O MESMO numero do ecra do convite, e do mesmo hook.
   //
-  // Aqui mostrava-se o que FALTA e la o que ja PASSOU — dois numeros
-  // diferentes para o mesmo convite, e nenhum deles explicava o outro. Quem
-  // visse "18m para responder" na Home e "0:41" ao abrir ficava sem saber em
-  // qual acreditar.
-  const elapsed = useElapsedSince(soonest?.notified_at);
-  const label = elapsed?.label ?? null;
+  // O que nao pode acontecer e a Home dizer uma coisa e o convite outra —
+  // quem visse "18m" aqui e "0:41" ao abrir ficava sem saber em qual
+  // acreditar. `soonest` ja e o convite que fecha PRIMEIRO, por isso o numero
+  // da Home e o prazo mais apertado que ele tem em cima da mesa.
+  const countdown = useExpiryCountdown(soonest?.expires_at, soonest?.notified_at);
+  const label = countdown.label;
 
   const count = invitations.length;
   if (count === 0) return null;
 
-  // Uma cor só, e é a da marca.
+  // A cor acompanha a urgencia, como no cartao do convite.
   //
-  // A cor progredia com a janela — verde, âmbar, vermelho — e a barra
-  // esvaziava-se. Era a mesma promessa da contagem decrescente noutra forma:
-  // que o tempo estava a correr CONTRA ele. Não está; o que corre é a fila de
-  // quem já respondeu, e isso a cor não sabe mostrar.
-  const accent = Colors.brand;
+  // Houve uma versao com uma cor so, argumentando que o tempo nao corre contra
+  // o tecnico — corre a fila de quem ja respondeu. Com janelas de meia hora
+  // fazia sentido; com janelas de minutos nao faz: o convite fecha mesmo, e
+  // uma Home que nao distingue "faltam 2 minutos" de "faltam 20 segundos"
+  // obriga-o a abrir para saber.
+  const accent =
+    countdown.tone === 'critical'
+      ? Colors.danger
+      : countdown.tone === 'warning'
+        ? Colors.warning
+        : Colors.brand;
 
   return (
     <View className="px-5 mt-3">
@@ -121,8 +127,8 @@ const MatchingInvitationsCard = () => {
                   style={{ color: Colors.muted }}
                 >
                   {count === 1
-                    ? t('matching.invitation.home_elapsed_suffix')
-                    : t('matching.invitation.home_elapsed_suffix_soonest')}
+                    ? t('matching.invitation.home_remaining_suffix')
+                    : t('matching.invitation.home_remaining_suffix_soonest')}
                 </CustomText>
               </View>
             )}

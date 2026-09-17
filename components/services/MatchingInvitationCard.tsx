@@ -6,7 +6,7 @@ import { CustomText } from '@/components/CustomText';
 import { Colors } from '@/constants/Colors';
 import { renderMoney } from '@/utils/money';
 import { MatchingInvitation } from '@/types/matching';
-import useElapsedSince from '@/hooks/useElapsedSince';
+import useExpiryCountdown from '@/hooks/useExpiryCountdown';
 
 /**
  * Um convite de seleção — NÃO é um pedido adjudicado.
@@ -34,10 +34,20 @@ const MatchingInvitationCard = ({
   busy?: boolean;
 }) => {
   const { t } = useTranslation();
-  // `expired` continua a vir do prazo real: o convite deixa de valer quando a
-  // janela fecha, mesmo que o ecra ja nao a mostre em contagem decrescente.
-  const expired = !!invitation.expires_at && new Date(invitation.expires_at).getTime() <= Date.now();
-  const elapsed = useElapsedSince(invitation.notified_at);
+  const countdown = useExpiryCountdown(invitation.expires_at, invitation.notified_at);
+  const expired = countdown.expired;
+
+  /**
+   * A cor progride ao longo de TODA a janela, e nao so no ultimo instante:
+   * responder cedo e melhor para o cliente, que escolhe mais depressa e espera
+   * menos. Guardar o aviso para o fim seria premiar quem responde tarde.
+   */
+  const urgencyColor =
+    countdown.tone === 'critical'
+      ? Colors.danger
+      : countdown.tone === 'warning'
+        ? Colors.warning
+        : Colors.brand;
 
   const earn = renderMoney(invitation.amount_for_vendor ?? null);
 
@@ -71,25 +81,49 @@ const MatchingInvitationCard = ({
       className="rounded-2xl border p-5 mb-3"
       style={{ borderColor: Colors.line, backgroundColor: Colors.card }}
     >
-      {/* HA QUANTO TEMPO o pedido foi feito — em destaque, e a correr.
-          Nao e quanto FALTA: a contagem decrescente prometia que responder a
-          tempo dava o trabalho, e nao da — quem escolhe e o cliente, e o
-          convite fecha assim que tres responderem.
-          O que conta para decidir e ha quanto tempo o pedido esta em cima da
-          mesa: ha 2 minutos ainda vale a pena, ha 18 ja ha gente a frente. */}
-      {!!elapsed && (
+      {/* QUANTO FALTA para o convite fechar.
+          Esta decisao ja foi ao contrario: houve uma versao a mostrar ha quanto
+          TEMPO o pedido tinha sido feito, com o argumento de que uma contagem
+          decrescente promete que responder a tempo da o trabalho — e nao da,
+          porque quem escolhe e o cliente.
+          O argumento continua certo; o remedio e que estava errado. Esconder o
+          relogio nao desfaz a promessa, so tira ao tecnico a unica informacao
+          que ele nao consegue adivinhar. E a janela real sao minutos, nao meia
+          hora: com "ha 2 minutos" num convite que fecha aos 3, ele nao sabe que
+          lhe resta um.
+          A falsa promessa desfaz-se com PALAVRAS — o subtitulo do ecra e o
+          aviso aqui em baixo dizem que o cliente escolhe entre os primeiros a
+          responder. O relogio fica a dizer o que so ele sabe. */}
+      {!!countdown.label && (
         <View className="items-center mb-5">
-          <CustomText size="extraSmall" color="muted" boldness="bold" classes="mb-1">
-            {t('matching.invitation.asked_label')}
-          </CustomText>
           <CustomText
             size="headline"
             boldness="bolder"
             color="secondary"
-            style={{ fontVariant: ['tabular-nums'] }}
+            style={{ color: urgencyColor, fontVariant: ['tabular-nums'] }}
           >
-            {elapsed.label}
+            {countdown.label}
           </CustomText>
+          <CustomText size="extraSmall" color="muted" boldness="bold" classes="mt-1">
+            {t('matching.invitation.window')}
+          </CustomText>
+
+          {/* A barra diz o que o numero sozinho nao diz: "40s" e muito ou pouco
+              conforme a janela seja de tres minutos ou de sessenta segundos. */}
+          {countdown.remainingRatio !== null && (
+            <View
+              className="w-full rounded-full overflow-hidden mt-3"
+              style={{ height: 4, backgroundColor: Colors.line }}
+            >
+              <View
+                style={{
+                  width: `${Math.round(countdown.remainingRatio * 100)}%`,
+                  height: '100%',
+                  backgroundColor: urgencyColor,
+                }}
+              />
+            </View>
+          )}
         </View>
       )}
 
