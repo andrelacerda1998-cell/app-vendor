@@ -79,3 +79,20 @@ export const toTimestampMs = (raw?: string) => {
 
   return Number.isFinite(ms) ? ms : 0;
 };
+/**
+ * Primeira letra em maiuscula, o resto como esta.
+ *
+ * O catalogo de servicos vem escrito em minusculas ("mao de obra do
+ * tecnico"), porque foi pensado para se ler a seguir a "Inclui:". Numa lista
+ * com marcadores cada linha le-se como uma frase — e uma frase comeca por
+ * maiuscula. Faz-se na apresentacao e nao nos dados: sao 144 tipos de servico
+ * e nenhum deles precisa de ser reescrito para isto.
+ *
+ * `charAt(0).toUpperCase()` e nao `text-transform: capitalize`: aquele poria
+ * maiuscula em TODAS as palavras ("Mao De Obra Do Tecnico").
+ */
+export const capitalizeFirst = (text?: string | null): string => {
+  const t = String(text ?? '').trim();
+  if (!t) return '';
+  return t.charAt(0).toUpperCase() + t.slice(1);
+};

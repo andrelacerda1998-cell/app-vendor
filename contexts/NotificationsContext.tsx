@@ -33,7 +33,8 @@ export const ONGOING_CHANNEL_ID = 'ongoing_service';
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
-        shouldShowAlert: true,
+        shouldShowBanner: true,
+        shouldShowList: true,
         // Som ligado: um pedido silencioso é um pedido perdido.
         shouldPlaySound: true,
         shouldSetBadge: false,
@@ -56,8 +57,8 @@ export function NotificationsProvider({ children }: PropsWithChildren){
     const [notification, setNotification] = useState<Notifications.Notification | undefined>(
         undefined
     );
-    const notificationListener = useRef<Notifications.Subscription>();
-    const responseListener = useRef<Notifications.Subscription>();
+    const notificationListener = useRef<Notifications.Subscription | undefined>(undefined);
+    const responseListener = useRef<Notifications.Subscription | undefined>(undefined);
     const { api } = useApi();
     const {session } = useSession();
 
@@ -78,10 +79,8 @@ export function NotificationsProvider({ children }: PropsWithChildren){
         });
 
         return () => {
-            notificationListener.current &&
-            Notifications.removeNotificationSubscription(notificationListener.current);
-            responseListener.current &&
-            Notifications.removeNotificationSubscription(responseListener.current);
+            notificationListener.current?.remove();
+            responseListener.current?.remove();
         };
     }, []);
 

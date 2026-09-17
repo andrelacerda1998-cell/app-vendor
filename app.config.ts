@@ -26,9 +26,22 @@ export default ({config}: ConfigContext):ExpoConfig => {
         orientation: "portrait",
         icon: ICON,
         scheme: scheme,
-        owner: "piquet",
+        // Org EAS antiga `piquet` ficou órfã no handoff (ver memória/acessos).
+        // Passa para a org da Piquet Technologies (André); slug via env.
+        owner: process.env.EAS_OWNER || "piquet-technologies",
         userInterfaceStyle: "automatic",
         jsEngine: "hermes",
+        // Arquitectura antiga, declarada de proposito.
+        //
+        // Ate ao SDK 52 era o defeito e ninguem tinha de escrever nada. No 54
+        // o defeito inverte-se: quem nao declara nada acorda na New
+        // Architecture. Nao queremos isso agora — o `react-native-background-
+        // timer`, que corre o cronometro do servico em `components/Timer.tsx`,
+        // esta marcado como nao testado nela e nao ha versao nova desde 2022.
+        //
+        // O SDK 54 e o ultimo que da esta escolha: no 55 a opcao desaparece.
+        // Ate la ha que substituir o background-timer e voltar aqui.
+        newArchEnabled: false,
         runtimeVersion: version,
         updates: {
             url: "https://u.expo.dev/20ae14b2-f775-4cab-b460-3fe740ae20bc",
@@ -128,7 +141,9 @@ export default ({config}: ConfigContext):ExpoConfig => {
             API_URL: apiEndpoint,
             API_PROTOCOL: apiProtocol,
             eas: {
-                "projectId": "20ae14b2-f775-4cab-b460-3fe740ae20bc"
+                // O id antigo (20ae14b2-…) era da org órfã `piquet`. O projeto novo
+                // é criado por `eas init` na org nova (workflow) e o id vem por env.
+                "projectId": process.env.EAS_PROJECT_ID || undefined
             }
         },
     }

@@ -291,7 +291,7 @@ const DocumentsProfileStep = ({ onNext }: { onNext: () => void }) => {
                   text={opt.label}
                   onPress={opt.onPress}
                   itemsCenter={false}
-                  classes="space-x-3"
+                  classes="gap-x-3"
                   Icon={() => <Feather name={opt.icon as any} size={22} color={Colors.brand} />}
                 />
               ))}

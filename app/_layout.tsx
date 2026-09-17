@@ -1,4 +1,7 @@
 import React from 'react';
+// O NativeWind v4 carrega os estilos a partir deste ficheiro; tem de ser
+// importado uma vez, na raiz. Sem ele nenhum `className` pinta nada.
+import '../global.css';
 import {ApiProvider} from '@/contexts/ApiContext';
 import {SessionProvider} from '@/contexts/SessionContext';
 import {Slot} from 'expo-router';

@@ -1,0 +1,61 @@
+# Build + (opcional) submit da app-vendor iOS via EAS, disparado à mão.
+# Pré-requisitos: secrets EXPO_TOKEN, ASC_KEY_BASE64, ASC_KEY_ID, ASC_ISSUER_ID
+# e a variable EAS_PROJECT_ID (id do `eas init` local na org piquet-technologies).
+name: EAS iOS (vendor)
+
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: "Perfil EAS (eas.json)"
+        default: "production"
+      submit:
+        description: "Submeter ao TestFlight depois do build"
+        type: boolean
+        default: true
+
+jobs:
+  ios:
+    runs-on: ubuntu-latest
+    env:
+      EAS_OWNER: piquet-technologies
+      EAS_PROJECT_ID: ${{ vars.EAS_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Verificar EAS_PROJECT_ID
+        run: |
+          test -n "$EAS_PROJECT_ID" || { echo "::error::Falta a variable EAS_PROJECT_ID (corre 'eas init' localmente e mete o id)"; exit 1; }
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Build iOS
+        run: |
+          WAIT_FLAG="--no-wait"
+          [ "${{ inputs.submit }}" = "true" ] && WAIT_FLAG="--wait"
+          npx eas-cli@latest build --platform ios --profile "${{ inputs.profile }}" --non-interactive $WAIT_FLAG
+
+      - name: Preparar chave ASC
+        if: ${{ inputs.submit }}
+        env:
+          ASC_KEY_BASE64: ${{ secrets.ASC_KEY_BASE64 }}
+        run: printf '%s' "$ASC_KEY_BASE64" | base64 -d > "$RUNNER_TEMP/asc_key.p8"
+
+      - name: Submeter ao TestFlight
+        if: ${{ inputs.submit }}
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        run: |
+          npx eas-cli@latest submit --platform ios --latest --non-interactive \
+            --asc-api-key-path "$RUNNER_TEMP/asc_key.p8" \
+            --asc-api-key-id "$ASC_KEY_ID" \
+            --asc-api-key-issuer-id "$ASC_ISSUER_ID"

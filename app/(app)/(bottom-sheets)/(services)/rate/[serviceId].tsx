@@ -153,7 +153,7 @@ const RateServiceBottomSheet = () => {
 
           {/* Cinco botões idênticos e sem nome liam-se como "botão, botão…" num
               leitor de ecrã. Cada estrela anuncia agora quantas atribui. */}
-          <View className="items-center flex-row space-x-2 justify-center mt-8">
+          <View className="items-center flex-row gap-x-2 justify-center mt-8">
             {[1, 2, 3, 4, 5].map((value) => {
               const disabled = loadingSubmit || alreadyRated;
               return (

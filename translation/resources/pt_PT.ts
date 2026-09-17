@@ -1490,7 +1490,12 @@ export default {
                 "open_portal": "Abrir o Portal das Finanças"
             }
         },
-        "iban": {
+        "schedule_address": {
+                "title": "De onde sais para os serviços marcados?",
+                "subtitle": "Nos serviços marcados a distância conta a partir daqui — não de onde estás no momento. É o que define o valor da deslocação.",
+                "prefilled": "Preenchemos com a tua morada de faturação. Se sais de outro sítio para trabalhar, altera."
+            },
+            "iban": {
             "title": "Como te pagamos",
             "subtitle": "Todas as segundas transferimos o que ganhaste na semana anterior.",
             "address_section": "Morada de faturação",
@@ -1752,6 +1757,9 @@ export default {
     },
     "ongoing_service": {
         "title_fallback": "Serviço a decorrer",
+        "state_running": "Serviço a decorrer",
+        "state_overdue": "Tempo excedido",
+        "overdue": "Terminava às {{time}}",
         "ends_at": "Termina às {{time}}",
         "started_at": "Em curso desde as {{time}}"
     }

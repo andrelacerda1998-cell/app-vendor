@@ -23,6 +23,7 @@ import ServiceExtras, { ServiceExtrasActions, type ExtrasSheet } from "@/compone
 import ServicePhotos from "@/components/services/ServicePhotos";
 import ServiceCountdown from "@/components/services/ServiceCountdown";
 import { Card, ErrorState, SkeletonList } from "@/components/ui";
+import { capitalizeFirst } from "@/utils";
 import { formatEstimatedDuration } from "@/utils/serviceDetails";
 import { useNavChooser } from "@/hooks/useNavChooser";
 import ServiceRouteMap from "@/components/services/ServiceRouteMap";
@@ -528,7 +529,7 @@ const Status = () => {
           <View className="flex-row items-start">
             <View className="flex-1 pr-3">
               <CustomText color="secondary" boldness="bolder" size="medium" numberOfLines={2}>
-                {svc?.service_type?.name}
+                {svc?.service_type?.name ?? svc?.custom?.description}
               </CustomText>
               {!!category && (
                 <CustomText color="muted" size="small" numberOfLines={1} classes="mt-0.5">{category}</CustomText>
@@ -626,6 +627,55 @@ const Status = () => {
           <Card className="mt-3">
             <Stepper steps={steps} currentRank={currentRank} />
           </Card>
+        )}
+
+        {/* Incluído / Não incluído — a seguir ao estado, e não no fundo.
+            Estava depois do mapa, das observações e dos botões de contacto.
+            Para um serviço que ainda não começou, é o que decide o que o
+            técnico leva na carrinha e o que diz ao cliente à porta — e o que
+            evita a discussão a meio do trabalho sobre o que estava combinado.
+            Quem já está no local raramente volta a lê-la; quem ainda vai a
+            caminho precisa dela antes de sair.
+
+            Continua a só aparecer quando o catálogo tem mesmo conteúdo: com
+            ambos vazios, o cartão dizia "Sem informação" duas vezes — um
+            bloco inteiro a comunicar ausência de conteúdo. */}
+        {((servicesDetail?.includes?.length ?? 0) > 0 || (servicesDetail?.excludes?.length ?? 0) > 0) && (
+        <View className="border rounded-2xl p-4 mt-3" style={{ backgroundColor: Colors.card,  borderColor: Colors.line }}>
+          <CustomText color="muted" boldness="bold" size="small">{t('services.includes')}</CustomText>
+          <View className="mt-2">
+            {servicesDetail?.includes?.length > 0 ? (
+              servicesDetail.includes.map((item: any, i: number) => (
+                <View className="flex-row items-start mb-2.5" key={i}>
+                  <Ionicons name="checkmark-circle" size={19} color={Colors.success} style={{ marginTop: 2 }} />
+                  <CustomText color="secondary" size="medium" classes="ml-2 flex-1">
+                    {typeof item === 'string' ? capitalizeFirst(item) : t('services.no_info')}
+                  </CustomText>
+                </View>
+              ))
+            ) : (
+              <CustomText color="muted" size="small">{t('services.no_info')}</CustomText>
+            )}
+          </View>
+
+          <View className="h-px my-3" style={{ backgroundColor: Colors.line }} />
+
+          <CustomText color="muted" boldness="bold" size="small">{t('services.excludes')}</CustomText>
+          <View className="mt-2">
+            {servicesDetail?.excludes?.length > 0 ? (
+              servicesDetail.excludes.map((item: any, i: number) => (
+                <View className="flex-row items-start mb-2.5" key={i}>
+                  <Ionicons name="close-circle" size={19} color={Colors.muted} style={{ marginTop: 2 }} />
+                  <CustomText color="secondary" size="medium" classes="ml-2 flex-1">
+                    {typeof item === 'string' ? capitalizeFirst(item) : t('services.no_info')}
+                  </CustomText>
+                </View>
+              ))
+            ) : (
+              <CustomText color="muted" size="small">{t('services.no_info')}</CustomText>
+            )}
+          </View>
+        </View>
         )}
 
         {/* Cliente. Em execução reduz-se a uma linha + chat: o técnico já está
@@ -800,47 +850,6 @@ const Status = () => {
         )}
 
         {/* O valor a receber subiu para o cabeçalho — ver comentário lá. */}
-
-        {/* Incluído / Não incluído — só quando o catálogo tem mesmo conteúdo.
-            Com ambos vazios, o cartão dizia "Sem informação" duas vezes:
-            um bloco inteiro a comunicar ausência de conteúdo. */}
-        {((servicesDetail?.includes?.length ?? 0) > 0 || (servicesDetail?.excludes?.length ?? 0) > 0) && (
-        <View className="border rounded-2xl p-4 mt-3" style={{ backgroundColor: Colors.card,  borderColor: Colors.line }}>
-          <CustomText color="muted" boldness="bold" size="extraSmall">{t('services.includes')}</CustomText>
-          <View className="mt-2">
-            {servicesDetail?.includes?.length > 0 ? (
-              servicesDetail.includes.map((item: any, i: number) => (
-                <View className="flex-row items-start mb-1.5" key={i}>
-                  <Ionicons name="checkmark-circle" size={17} color={Colors.success} style={{ marginTop: 1 }} />
-                  <CustomText color="secondary" size="small" classes="ml-2 flex-1">
-                    {typeof item === 'string' ? item : t('services.no_info')}
-                  </CustomText>
-                </View>
-              ))
-            ) : (
-              <CustomText color="muted" size="small">{t('services.no_info')}</CustomText>
-            )}
-          </View>
-
-          <View className="h-px my-3" style={{ backgroundColor: Colors.line }} />
-
-          <CustomText color="muted" boldness="bold" size="extraSmall">{t('services.excludes')}</CustomText>
-          <View className="mt-2">
-            {servicesDetail?.excludes?.length > 0 ? (
-              servicesDetail.excludes.map((item: any, i: number) => (
-                <View className="flex-row items-start mb-1.5" key={i}>
-                  <Ionicons name="close-circle" size={17} color={Colors.muted} style={{ marginTop: 1 }} />
-                  <CustomText color="secondary" size="small" classes="ml-2 flex-1">
-                    {typeof item === 'string' ? item : t('services.no_info')}
-                  </CustomText>
-                </View>
-              ))
-            ) : (
-              <CustomText color="muted" size="small">{t('services.no_info')}</CustomText>
-            )}
-          </View>
-        </View>
-        )}
 
       </ScrollView>
 

@@ -10,7 +10,7 @@
  *
  * Torna estas correções reproduzíveis a cada `expo prebuild` (o ios/ é gerado).
  */
-const { withDangerousMod } = require("@expo/config-plugins");
+const { withDangerousMod } = require("expo/config-plugins");
 const fs = require("fs");
 const path = require("path");
 

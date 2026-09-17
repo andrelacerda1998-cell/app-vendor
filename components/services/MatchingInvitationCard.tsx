@@ -61,7 +61,8 @@ const MatchingInvitationCard = ({
       : label;
   }, [invitation.schedule]);
 
-  const durationMinutes = invitation.service_type?.time ?? null;
+  // Num personalizado a duracao vem do backoffice, nao do tipo.
+  const durationMinutes = invitation.duration_minutes ?? invitation.service_type?.time ?? null;
 
   if (expired) return null;
 
@@ -92,8 +93,17 @@ const MatchingInvitationCard = ({
         </View>
       )}
 
-      <CustomText size="medium" boldness="bolder" color="secondary">
-        {invitation.service_type?.name ?? t('matching.invitation.fallback_title')}
+      {/* Num personalizado o titulo E a descricao do cliente: e o unico sitio
+          onde o profissional fica a saber o que e o trabalho. */}
+      <CustomText
+        size="medium"
+        boldness="bolder"
+        color="secondary"
+        numberOfLines={invitation.custom ? 3 : undefined}
+      >
+        {invitation.custom?.description
+          ?? invitation.service_type?.name
+          ?? t('matching.invitation.fallback_title')}
       </CustomText>
       <View className="flex-row items-center mt-1.5 mb-5">
         <Feather name="map-pin" size={12} color={Colors.muted} />

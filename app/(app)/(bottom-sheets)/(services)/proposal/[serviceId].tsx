@@ -70,8 +70,8 @@ const ServiceProposalBottomSheet = () => {
 
   useEffect(() => {
     const onBackPress = () => true; // Prevent going back
-    BackHandler.addEventListener('hardwareBackPress', onBackPress);
-    return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => subscription.remove();
   }, []);
 
   const onAcceptService = () => {
@@ -208,7 +208,7 @@ const ServiceProposalBottomSheet = () => {
           }} />
         </View>
 
-        <View className="justify-end items-center space-y-2 py-2">
+        <View className="justify-end items-center gap-y-2 py-2">
           {pendingService?.schedule && (
             <JobDetail
               label={t('schedules.schedule_for')}

@@ -1490,7 +1490,12 @@ export default {
         "open_portal": "Open the tax portal"
       }
     },
-    "iban": {
+    "schedule_address": {
+                "title": "Where do you set out from for booked jobs?",
+                "subtitle": "For booked jobs the distance is measured from here — not from where you happen to be. It sets the travel amount.",
+                "prefilled": "We filled this in with your billing address. If you set out from somewhere else, change it."
+            },
+            "iban": {
       "title": "How we pay you",
       "subtitle": "Every Monday we transfer what you earned the week before.",
       "address_section": "Billing address",
@@ -1751,6 +1756,9 @@ export default {
     },
     "ongoing_service": {
         "title_fallback": "Service in progress",
+    "state_running": "Service in progress",
+    "state_overdue": "Over time",
+    "overdue": "Was due at {{time}}",
         "ends_at": "Ends at {{time}}",
         "started_at": "Running since {{time}}"
     }
