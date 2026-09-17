@@ -72,6 +72,9 @@ export const API_ROUTES = {
     VENDOR_GET_SCHEDULES: `${API_BASE_URL}/vendor/schedule/schedules`,
     VENDOR_GET_SCHEDULE_SETTINGS: (id: Number) => `${API_BASE_URL}/vendor/schedule/settings/${id}`,
     VENDOR_UPDATE_SCHEDULE_SETTINGS: `${API_BASE_URL}/vendor/schedule/update`,
+    // So a morada de onde o tecnico sai para um agendado. O endpoint acima
+    // exige tambem os dias da semana.
+    VENDOR_SCHEDULE_ADDRESS: `${API_BASE_URL}/vendor/schedule/address`,
     VENDOR_UPDATE_SCHEDULE_AVAILABILITY: `${API_BASE_URL}/vendor/schedule/update-availability`,
     VENDOR_ACCEPT_SCHEDULED_SERVICE: `${API_BASE_URL}/vendor/schedule/accept`,
     VENDOR_UNAVAILABLE_DAYS: `${API_BASE_URL}/vendor/schedule/unavailable-days`,

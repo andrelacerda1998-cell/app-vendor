@@ -1490,7 +1490,11 @@ export default {
         "open_portal": "Open the tax portal"
       }
     },
-    "iban": {
+    "schedule_address": {
+                "title": "Where do you set out from for booked jobs?",
+                "subtitle": "For booked jobs the distance is measured from here — not from where you happen to be. It sets the travel amount."
+            },
+            "iban": {
       "title": "How we pay you",
       "subtitle": "Every Monday we transfer what you earned the week before.",
       "address_section": "Billing address",

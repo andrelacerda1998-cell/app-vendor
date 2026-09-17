@@ -12,6 +12,7 @@ import ProgressBar from "@/components/auth/signup/ProgressBar";
 import BillingStep from "@/components/complete-profile/Steps/BillingStep";
 import ContactsStep from "@/components/complete-profile/Steps/ContactsStep";
 import IbanStep from "@/components/complete-profile/Steps/IbanStep";
+import ScheduleAddressStep from "@/components/complete-profile/Steps/ScheduleAddressStep";
 import CitySurveyStep from "@/components/complete-profile/Steps/CitySurveyStep";
 import DocumentsProfileStep from "@/components/complete-profile/Steps/DocumentsProfileStep";
 import { VendorDataInterface } from "@/types/session";
@@ -40,6 +41,9 @@ enum VerifySteps {
     'contacts' = 3,
     'citySurvey' = 4,
     'documents' = 5,
+    // Morada de onde sai para um agendado. Vive a parte da de faturacao: uma
+    // serve as faturas, esta e a base da distancia (e do preco) dos agendados.
+    'scheduleAddress' = 6,
 }
 
 /**
@@ -55,6 +59,9 @@ const DISPLAY_ORDER: VerifySteps[] = [
     VerifySteps.contacts,
     VerifySteps.citySurvey,
     VerifySteps.iban,
+    // A seguir a de faturacao de proposito: e o mesmo formulario, e assim o
+    // tecnico so tem de perceber a diferenca entre as duas moradas uma vez.
+    VerifySteps.scheduleAddress,
     VerifySteps.billing,
     VerifySteps.documents,
 ];
@@ -107,6 +114,7 @@ const CompleteProfile = () => {
         if (
             !vendorData?.at_user ||
             !vendorData?.company_address ||
+            !vendorData?.schedule_address ||
             !vendorData?.iban ||
             vendorData?.user?.phone_number_verified_at === null ||
             vendorData?.user?.email_verified_at === null
@@ -154,6 +162,11 @@ const CompleteProfile = () => {
         } else if ((!data?.iban || !data?.company_address) && !adiados.includes(VerifySteps.iban)) {
             // 3) Pagamento + morada de faturação.
             setStep(VerifySteps.iban);
+        } else if (!data?.schedule_address && !adiados.includes(VerifySteps.scheduleAddress)) {
+            // 4) Morada de agendamento. A seguir a de faturacao de proposito:
+            // vem com o mesmo formulario na cabeca, e o tecnico so tem de
+            // perceber a diferenca entre as duas uma vez.
+            setStep(VerifySteps.scheduleAddress);
         } else if (!data?.at_user && !adiados.includes(VerifySteps.billing)) {
             // 4) Acesso à AT (sai da app para o Portal das Finanças).
             setStep(VerifySteps.billing);
@@ -209,6 +222,12 @@ const CompleteProfile = () => {
                     <IbanStep
                         onNext={(data: VendorDataInterface) => handleNextStep(data)}
                         onSkip={() => skipStep(VerifySteps.iban)}
+                    />
+                )}
+                {step === VerifySteps.scheduleAddress && (
+                    <ScheduleAddressStep
+                        onNext={(data: VendorDataInterface) => handleNextStep(data)}
+                        onSkip={() => skipStep(VerifySteps.scheduleAddress)}
                     />
                 )}
                 {step === VerifySteps.contacts && (

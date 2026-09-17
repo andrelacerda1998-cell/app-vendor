@@ -28,6 +28,12 @@ export interface VendorDataInterface {
   company_name: string | null;
   nif: string | null;
   company_address: string | null;
+  /**
+   * Morada de onde o tecnico sai para um servico AGENDADO — a base da
+   * distancia, e logo do preco, de todos os agendados. Distinta da fiscal,
+   * que serve a facturacao.
+   */
+  schedule_address?: string | null;
   at_user: string | null;
   /**
    * Pedidos criados na zona do técnico nos últimos 7 dias. Só vem preenchido

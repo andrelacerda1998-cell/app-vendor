@@ -1490,7 +1490,11 @@ export default {
                 "open_portal": "Abrir o Portal das Finanças"
             }
         },
-        "iban": {
+        "schedule_address": {
+                "title": "De onde sais para os serviços marcados?",
+                "subtitle": "Nos serviços marcados a distância conta a partir daqui — não de onde estás no momento. É o que define o valor da deslocação."
+            },
+            "iban": {
             "title": "Como te pagamos",
             "subtitle": "Todas as segundas transferimos o que ganhaste na semana anterior.",
             "address_section": "Morada de faturação",
