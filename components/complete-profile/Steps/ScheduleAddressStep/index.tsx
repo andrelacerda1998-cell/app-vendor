@@ -13,8 +13,17 @@
  * O formulario e o mesmo da morada de faturacao (autocomplete do Google, com
  * saida manual): e a mesma tarefa, e duas maneiras diferentes de pedir a mesma
  * coisa no mesmo registo so confundem.
+ *
+ * Chega PRE-PREENCHIDO com a morada de faturacao. Para a maioria dos tecnicos
+ * independentes e a mesma casa, e um formulario vazio a seguir a outro
+ * identico e um passo que se adia — quando na verdade so havia uma pergunta a
+ * fazer: sais daqui, ou de outro sitio?
+ *
+ * Pre-preenchido e nao copiado em silencio: o aviso diz de onde veio. Copiar
+ * sem dizer enterrava a morada do contabilista dentro do preco de todos os
+ * agendados, sem ninguem reparar.
  */
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
@@ -70,6 +79,34 @@ const ScheduleAddressStep = ({
   });
 
   const [manualAddress, setManualAddress] = useState(false);
+  /** A morada veio da de faturacao e ainda nao foi tocada. */
+  const [prefilled, setPrefilled] = useState(false);
+
+  // Uma vez so: se o tecnico voltar atras depois de editar, nao lhe queremos
+  // escrever por cima do que ele acabou de corrigir.
+  const alreadyFetched = useRef(false);
+
+  useEffect(() => {
+    if (alreadyFetched.current) return;
+    alreadyFetched.current = true;
+
+    api
+      .get(API_ROUTES.GET_COMPANY_ADDRESS)
+      .then((response: any) => {
+        const fiscal = response?.data?.data;
+        if (!fiscal?.street_name || !fiscal?.postal_code || !fiscal?.city) return;
+
+        setValue('street_name', fiscal.street_name, { shouldValidate: true });
+        setValue('street_number', String(fiscal.street_number ?? ''), { shouldValidate: true });
+        setValue('postal_code', fiscal.postal_code, { shouldValidate: true });
+        setValue('city', fiscal.city, { shouldValidate: true });
+        setPrefilled(true);
+      })
+      // Sem morada de faturacao — ou sem rede — fica o formulario vazio, que e
+      // o que havia antes. Nao vale um erro no ecra: nao falhou nada do que o
+      // tecnico pediu.
+      .catch(() => {});
+  }, [api, setValue]);
   const postal = watch('postal_code');
   const city = watch('city');
   const addressCaptured = !manualAddress && !!postal && !!city;
@@ -77,6 +114,7 @@ const ScheduleAddressStep = ({
   const suggestions = useAddressSuggestions(watch('street_name'));
   const applySuggestion = (s: AddressSuggestion) => {
     suggestions.dismiss();
+    setPrefilled(false);
     if (s.street_name) setValue('street_name', s.street_name, { shouldValidate: true });
     if (s.street_number) setValue('street_number', s.street_number, { shouldValidate: true });
     if (s.postal_code) setValue('postal_code', s.postal_code, { shouldValidate: true });
@@ -125,6 +163,18 @@ const ScheduleAddressStep = ({
           {t('complete_profile.schedule_address.subtitle')}
         </CustomText>
 
+        {prefilled && (
+          <View
+            className="flex-row items-start rounded-2xl px-4 py-3 mt-4"
+            style={{ backgroundColor: Colors.card, borderWidth: 1, borderColor: Colors.line }}
+          >
+            <Feather name="info" size={16} color={Colors.muted} style={{ marginTop: 2 }} />
+            <CustomText color="muted" size="small" classes="flex-1 ml-3" numberOfLines={3}>
+              {t('complete_profile.schedule_address.prefilled')}
+            </CustomText>
+          </View>
+        )}
+
         <View className="mt-7" style={{ gap: 20 }}>
           <Controller
             control={control}
@@ -135,7 +185,7 @@ const ScheduleAddressStep = ({
                 <CustomTextInput
                   {...field}
                   size="large"
-                  onChangeText={field.onChange}
+                  onChangeText={(value: string) => { setPrefilled(false); field.onChange(value); }}
                   placeholder={t('general.street_name_placeholder')}
                   autoCorrect={false}
                   error={errors.street_name && errors.street_name.message}
