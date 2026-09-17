@@ -1492,7 +1492,8 @@ export default {
     },
     "schedule_address": {
                 "title": "Where do you set out from for booked jobs?",
-                "subtitle": "For booked jobs the distance is measured from here — not from where you happen to be. It sets the travel amount."
+                "subtitle": "For booked jobs the distance is measured from here — not from where you happen to be. It sets the travel amount.",
+                "prefilled": "We filled this in with your billing address. If you set out from somewhere else, change it."
             },
             "iban": {
       "title": "How we pay you",

@@ -1492,7 +1492,8 @@ export default {
         },
         "schedule_address": {
                 "title": "De onde sais para os serviços marcados?",
-                "subtitle": "Nos serviços marcados a distância conta a partir daqui — não de onde estás no momento. É o que define o valor da deslocação."
+                "subtitle": "Nos serviços marcados a distância conta a partir daqui — não de onde estás no momento. É o que define o valor da deslocação.",
+                "prefilled": "Preenchemos com a tua morada de faturação. Se sais de outro sítio para trabalhar, altera."
             },
             "iban": {
             "title": "Como te pagamos",
