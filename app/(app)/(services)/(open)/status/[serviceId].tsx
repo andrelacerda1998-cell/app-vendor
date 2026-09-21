@@ -788,11 +788,6 @@ const Status = () => {
             </View>
           )}
 
-          {/* Também durante a execução, e não só ao aceitar: já no local, a foto
-              do que o cliente mostrou é a referência para confirmar que se está
-              a olhar para o problema certo. */}
-          <CustomerPhotos photos={svc?.customer_photos} />
-
           <View className="flex-row mt-3" style={{ gap: 10 }}>
             {/* Navegar: abre o Maps/Waze do telemóvel com o destino já preenchido. */}
             <TouchableOpacity
@@ -846,6 +841,26 @@ const Status = () => {
             </TouchableOpacity>
           </View>
 
+          </Card>
+        )}
+
+        {/* Fotografias do cliente, FORA do ternário acima.
+            
+            Estavam dentro do ramo "ainda não chegou". Assim que o técnico
+            marcava que tinha chegado, o cartão trocava para o outro ramo e as
+            fotos desapareciam — exatamente no momento em que passam a servir
+            para alguma coisa: ele está à frente do problema e é aí que compara
+            com o que o cliente fotografou.
+            
+            O comentário que as acompanhava dizia isso mesmo ("também durante a
+            execução, e não só ao aceitar") e o código fazia o contrário.
+            
+            Aqui fora existem uma vez só, nos dois estados, e não há como os
+            dois ramos voltarem a divergir. O guard evita um cartão vazio: o
+            componente devolve `null` sem fotos, mas o Card à volta não. */}
+        {Array.isArray(svc?.customer_photos) && svc.customer_photos.length > 0 && (
+          <Card className="mt-3">
+            <CustomerPhotos photos={svc.customer_photos} />
           </Card>
         )}
 
