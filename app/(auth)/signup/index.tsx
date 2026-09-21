@@ -252,32 +252,47 @@ const SignUp = () => {
     }
 
     const signUpVendor = async (data: SignUpData) => {
-        const formData = new FormData();
-
-        Object.entries(data).forEach(([key, value]) => {
-            formData.append(key, value as any);
-        })
-        documents.forEach((document, index) => {
-            if (document.file){
-                formData.append(`documents[${index}][file]`, {
-                    uri: document.file.uri,
-                    name: document.file.name??'Image',
-                    type: document.file.mimeType,
-                } as any);
-                formData.append(`documents[${index}][document_id]`, String(document.id));
-            }
-        })
-
-        selectedServicesTypes.map(type => formData.append(`services_types[]`, type.toString()));
-
-        formData.set('date_birthday', data.date_birthday.toISOString().split('T')[0]);
-        formData.set('phone_number', data.phone_number.replace('+351', '+351-'));
-        formData.set('language', i18n.language === 'pt_PT' ? 'pt-pt' : 'en');
-        formData.set('gender_id', data.gender_id !== undefined && data.gender_id !== null ? String(data.gender_id) : '');
-
         setIsSigningUp(true);
         if (signUpError) setSignUpError(null);
         try {
+            const formData = new FormData();
+
+            // O FormData do React Native tem `append`, `getAll` e `getParts` — e
+            // mais nada. NÃO tem `set` nem `delete`.
+            //
+            // Estes quatro campos eram acrescentados em bruto pelo ciclo abaixo e
+            // depois "corrigidos" com `formData.set(...)`. Como o método não
+            // existe, a primeira dessas linhas atirava
+            // `formData.set is not a function` — e o bloco vivia FORA do
+            // try/catch, por isso o erro escapava inteiro. Resultado: carregar em
+            // "criar conta" não criava conta nenhuma.
+            //
+            // Sem `set` para substituir depois, a única forma correta é não os
+            // acrescentar em bruto: ficam de fora aqui e entram já formatados.
+            const formatadosMaisAbaixo = ['date_birthday', 'phone_number', 'language', 'gender_id'];
+
+            Object.entries(data).forEach(([key, value]) => {
+                if (formatadosMaisAbaixo.includes(key)) return;
+                formData.append(key, value as any);
+            })
+            documents.forEach((document, index) => {
+                if (document.file){
+                    formData.append(`documents[${index}][file]`, {
+                        uri: document.file.uri,
+                        name: document.file.name??'Image',
+                        type: document.file.mimeType,
+                    } as any);
+                    formData.append(`documents[${index}][document_id]`, String(document.id));
+                }
+            })
+
+            selectedServicesTypes.map(type => formData.append(`services_types[]`, type.toString()));
+
+            formData.append('date_birthday', data.date_birthday.toISOString().split('T')[0]);
+            formData.append('phone_number', data.phone_number.replace('+351', '+351-'));
+            formData.append('language', i18n.language === 'pt_PT' ? 'pt-pt' : 'en');
+            formData.append('gender_id', data.gender_id !== undefined && data.gender_id !== null ? String(data.gender_id) : '');
+
             const response = await api.post(API_ROUTES.AUTH_REGISTER, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
@@ -305,6 +320,14 @@ const SignUp = () => {
         } catch(error) {
             if (axios.isAxiosError(error)) {
                 handleFinalErrorAndGoToStep(error);
+            } else {
+                // Um erro que não venha da rede — como o `formData.set` que aqui
+                // rebentava — não pode desaparecer em silêncio. Foi exatamente
+                // isso que tornou este bug invisível durante tanto tempo: o
+                // utilizador carregava em "criar conta" e não acontecia nada
+                // visível, sem erro, sem ecrã seguinte.
+                console.error('[signup] falha inesperada ao criar conta:', error);
+                setSignUpError(t('errors.occurred_an_error'));
             }
         }
         setIsSigningUp(false);
