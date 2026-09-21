@@ -44,7 +44,13 @@ export default ({config}: ConfigContext):ExpoConfig => {
         newArchEnabled: false,
         runtimeVersion: version,
         updates: {
-            url: "https://u.expo.dev/20ae14b2-f775-4cab-b460-3fe740ae20bc",
+            // O id 20ae14b2-… era o projeto da org antiga órfã `piquet` (ver
+            // memória/acessos). Numa build de release o expo-updates ia buscar o
+            // manifesto a esse projeto (que não controlamos) e crashava no arranque.
+            // Aponta para o projeto novo (mesmo id do EAS_PROJECT_ID), que fica
+            // vazio de updates → o check devolve "sem update" e a app corre o
+            // bundle embutido. O id vem por env para não voltar a divergir.
+            url: `https://u.expo.dev/${process.env.EAS_PROJECT_ID || "43fc0c02-837d-432e-a9df-1d30c44d976f"}`,
             enabled: environment !== "development",
             checkAutomatically: "ON_LOAD",
             fallbackToCacheTimeout: 0,
