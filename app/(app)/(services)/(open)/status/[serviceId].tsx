@@ -392,7 +392,13 @@ const Status = () => {
   const earn = renderMoney(svc?.amount_for_vendor ?? null);
   // "~45 min" / "~1h30" — o helper já trata da unidade; a chave i18n antiga
   // imprimia só o número ("Duração estimada: 45"), sem dizer de quê.
-  const durationLabel = formatEstimatedDuration(svc?.service_type?.time);
+  // `duration_minutes` traz a duração real, já com as unidades que o cliente
+  // pediu. O `service_type.time` é o tempo de UMA unidade: dizia "1 hora" num
+  // trabalho de três, e o cronómetro de execução dava "tempo excedido" ao
+  // minuto 60 — com atalho para pedir ao cliente que pagasse horas que já
+  // tinha comprado. Fica como recurso para respostas antigas.
+  const duracaoReal = svc?.duration_minutes ?? svc?.service_type?.time;
+  const durationLabel = formatEstimatedDuration(duracaoReal);
   const category = svc?.service_type?.operation_area?.name;
 
   // Dia + hora do serviço. A hora vem do agendamento (`schedule`), porque
@@ -596,7 +602,7 @@ const Status = () => {
         {status === ServiceStatus.ARRIVED && (
           <ServiceCountdown
             startedAt={svc?.arrived_at}
-            estimatedMinutes={svc?.service_type?.time}
+            estimatedMinutes={duracaoReal}
             // Mesma folha do botão do rodapé — um só caminho para a ação.
             onRequestExtraTime={() => setExtrasSheet('time')}
           />
