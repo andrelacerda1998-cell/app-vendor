@@ -1451,6 +1451,8 @@ export default {
       "subtitle": "Confirm your phone and email to start receiving requests.",
       "verified": "Confirmed",
             "edit": "Edit",
+            "cancel": "Cancel",
+            "save_email": "Save and send link",
       "progress_single": "{{done}} of 2 confirmed",
       "progress_multi": "{{done}} of 2 confirmed",
       "privacy_note": "We only use these contacts to alert you to new requests and so the client can reach you on the day.",

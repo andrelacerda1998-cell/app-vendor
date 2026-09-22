@@ -19,6 +19,7 @@ export const API_ROUTES = {
     AUTH_UPDATE_PROFILE: `${API_BASE_URL}/auth/profile/update`,
     AUTH_LOCALE: `${API_BASE_URL}/auth/locale`,
     EMAIL_VERIFY: `${API_BASE_URL}/auth/email/send-confirmation`,
+    EMAIL_CHANGE: `${API_BASE_URL}/auth/email`,
     GET_SMS_VALIDATION: `${API_BASE_URL}/auth/sms-validation`,
     POST_SMS_VALIDATION: `${API_BASE_URL}/auth/sms-validation`,
 
