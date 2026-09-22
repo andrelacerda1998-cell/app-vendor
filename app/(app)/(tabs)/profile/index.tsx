@@ -87,7 +87,11 @@ const Profile = () => {
     { label: t('profile.activity.documents'), tab: 'Documents', icon: <Feather name="file-text" size={20} color={Colors.secondary} /> },
     // Faltas: penalizações por não comparecer. Fica visível mesmo com zero —
     // saber que a regra existe é metade de não faltar.
-    { label: t('profile.activity.no_shows'), tab: 'No Shows', icon: <Feather name="user-x" size={20} color={Colors.secondary} /> },
+    // "Faltas" saiu da lista do perfil: e uma contagem de castigos, e por-se
+    // entre "Avaliacoes" e "Historico" fazia dela uma seccao permanente do
+    // perfil de toda a gente, inclusive de quem nunca faltou. O ecra continua
+    // a existir — as notificacoes de falta levam la diretamente, que e quando
+    // a informacao faz falta.
     { label: t('history.title'), tab: 'History', icon: <Feather name="clock" size={20} color={Colors.secondary} /> },
   ];
 
@@ -145,9 +149,6 @@ const Profile = () => {
         break;
       case "Reviews":
         router.navigate({ pathname: "/(app)/(pages)/(reviews)/reviews" });
-        break;
-      case "No Shows":
-        router.navigate({ pathname: "/(app)/(pages)/(no-shows)/no-shows" });
         break;
       case "Documents":
         router.navigate({ pathname: "/(app)/(pages)/(mydocuments)/mydocuments" });

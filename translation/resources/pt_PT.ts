@@ -1451,6 +1451,8 @@ export default {
             "subtitle": "Confirma o telemóvel e o email para começares a receber pedidos.",
             "verified": "Confirmado",
             "edit": "Editar",
+            "cancel": "Cancelar",
+            "save_email": "Guardar e enviar link",
             "progress_single": "{{done}} de 2 confirmado",
             "progress_multi": "{{done}} de 2 confirmados",
             "privacy_note": "Usamos estes contactos só para te avisar de novos pedidos e para o cliente te contactar no dia do serviço.",

@@ -19,6 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
 
 import { CustomText } from '@/components/CustomText';
+import CustomTextInput from '@/components/CustomTextInput';
 import CustomTouchableOpacity from '@/components/CustomTouchableOpacity';
 import { Colors } from '@/constants/Colors';
 import { API_ROUTES } from '@/constants/ApiRoutes';
@@ -125,6 +126,16 @@ const ContactsStep = ({
   const [emailStage, setEmailStage] = useState<'idle' | 'sent'>('idle');
   const [emailBusy, setEmailBusy] = useState(false);
   const [emailPending, setEmailPending] = useState(false);
+  /**
+   * Correção do endereço, antes de pedir o link.
+   *
+   * O email só era definido no registo e não havia como o mudar. Quem se
+   * enganasse a escrevê-lo ficava a pedir confirmação para um endereço que não
+   * é o dele — e sem email confirmado não fica apto, logo não recebe pedidos.
+   */
+  const [emailEditing, setEmailEditing] = useState(false);
+  const [emailDraft, setEmailDraft] = useState('');
+  const [emailError, setEmailError] = useState<string | null>(null);
 
   // A confirmacao de email/telefone pode chegar por fora (link, refresh de
   // dados): mantemos os sinais locais alinhados com o vendorData.
@@ -189,6 +200,31 @@ const ContactsStep = ({
         }
       })
       .finally(() => setEmailBusy(false));
+  };
+
+  const saveEmail = async () => {
+    const novo = emailDraft.trim().toLowerCase();
+    if (!novo) return;
+
+    setEmailBusy(true);
+    setEmailError(null);
+    try {
+      await api.put(API_ROUTES.EMAIL_CHANGE, { email: novo });
+      setVendorData({
+        ...vendorData,
+        user: { ...vendorData?.user, email: novo, email_verified_at: null },
+      });
+      // O servidor já mandou o link novo ao gravar: o cartão passa direto ao
+      // "confirma na tua caixa de correio" em vez de pedir outro toque.
+      setEmailEditing(false);
+      setEmailStage('sent');
+      setEmailPending(false);
+    } catch (e: any) {
+      const validacao = e?.response?.data?.errors?.email?.[0];
+      setEmailError(validacao ?? e?.response?.data?.message ?? t('errors.occurred_an_error'));
+    } finally {
+      setEmailBusy(false);
+    }
   };
 
   const bothVerified = phoneOk && emailOk;
@@ -293,8 +329,62 @@ const ContactsStep = ({
 
         {/* Email */}
         <View className="mt-4">
-          <ContactCard icon="mail" label={t('general.email')} value={vendorData?.user?.email} verified={emailOk}>
-            {emailStage === 'idle' ? (
+          <ContactCard
+            icon="mail"
+            label={t('general.email')}
+            value={vendorData?.user?.email}
+            verified={emailOk}
+            onEdit={() => {
+              setEmailDraft(vendorData?.user?.email ?? '');
+              setEmailError(null);
+              setEmailEditing(true);
+            }}
+          >
+            {emailEditing ? (
+              <View>
+                <CustomTextInput
+                  size="medium"
+                  fontSize="medium"
+                  textBoldness="regular"
+                  textColor="secondary"
+                  text={emailDraft}
+                  onChangeText={(v: string) => { setEmailDraft(v); setEmailError(null); }}
+                  placeholder={t('general.email')}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                />
+                {!!emailError && (
+                  <CustomText color="danger" size="small" classes="mt-1.5">
+                    {emailError}
+                  </CustomText>
+                )}
+                <View className="flex-row mt-3" style={{ gap: 8 }}>
+                  <View className="flex-1">
+                    <CustomTouchableOpacity
+                      size="large"
+                      type="secondary_outline"
+                      textColor="secondary"
+                      textBoldness="semiBold"
+                      text={t('complete_profile.contacts.cancel')}
+                      onPress={() => { setEmailEditing(false); setEmailError(null); }}
+                      disabled={emailBusy}
+                    />
+                  </View>
+                  <View className="flex-1">
+                    <CustomTouchableOpacity
+                      size="large"
+                      type="support_primary"
+                      textColor="on_brand"
+                      textBoldness="semiBold"
+                      text={emailBusy ? t('complete_profile.contacts.sending') : t('complete_profile.contacts.save_email')}
+                      onPress={saveEmail}
+                      disabled={emailBusy || !emailDraft.trim()}
+                    />
+                  </View>
+                </View>
+              </View>
+            ) : emailStage === 'idle' ? (
               <CustomTouchableOpacity
                 size="large"
                 type="support_primary"
