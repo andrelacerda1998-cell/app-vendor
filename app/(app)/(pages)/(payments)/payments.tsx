@@ -1,5 +1,5 @@
 import React from "react";
-import { SafeAreaView, Platform, TouchableOpacity } from "react-native";
+import { SafeAreaView, TouchableOpacity } from "react-native";
 import {useRouter} from "expo-router";
 import Payment from "@/components/app/Profile/Payment";
 import BackHeader from "@/components/app/BackHeader";
@@ -16,7 +16,15 @@ const Payments = () => {
 
   return (
     <SafeAreaView
-      className={`flex-1 ${ Platform.OS === "ios" && "h-full" } flex-1`} style={{ backgroundColor: Colors.bg }}
+      /*
+       * `flex: 1` no `style` e nao no `className`.
+       *
+       * O `SafeAreaView` do react-native nao passa pelo NativeWind v4: o
+       * `className` e aceite sem erro e ignorado em silencio. Sem altura, um
+       * `ScrollView` filho fica com zero e o ecra aparece completamente
+       * vazio — foi o que aconteceu as Definicoes e aos Pagamentos.
+       */
+      style={{ flex: 1, backgroundColor: Colors.bg }}
     >
       <BackHeader
         backButtonColor="secondary"

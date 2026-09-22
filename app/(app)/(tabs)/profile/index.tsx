@@ -104,7 +104,12 @@ const Profile = () => {
       label: t('profile.my_profile.labels.payments'),
       tab: 'Payments',
       icon: <Feather name="credit-card" size={20} color={Colors.secondary} />,
-      value: vendorData?.iban ? maskIban(vendorData.iban) : t('profile.payments.empty_iban'),
+      // Sem IBAN nao vai texto nenhum. O aviso "Adiciona o teu IBAN para
+      // receberes" ocupava a coluna da direita, que e estreita, e empurrava o
+      // rotulo para duas linhas — a linha aparecia partida ao meio como
+      // "Pagam / entos". Quem entra no ecra ve la o aviso, no sitio onde o
+      // pode resolver; na lista basta o nome.
+      value: vendorData?.iban ? maskIban(vendorData.iban) : undefined,
     },
     { label: t('profile.my_profile.labels.settings'), tab: 'Settings', icon: <GearIcon size={20} color={Colors.secondary} /> },
     { label: t('profile.activity.support'), tab: 'Support', icon: <Feather name="life-buoy" size={20} color={Colors.secondary} /> },

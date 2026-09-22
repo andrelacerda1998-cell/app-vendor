@@ -12,10 +12,11 @@
  * seguir (o que falta continua no aviso da Home).
  */
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, StyleSheet, KeyboardAvoidingView, Platform, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { OtpInput } from 'react-native-otp-entry';
 import { useTranslation } from 'react-i18next';
+import { useRouter } from 'expo-router';
 
 import { CustomText } from '@/components/CustomText';
 import CustomTouchableOpacity from '@/components/CustomTouchableOpacity';
@@ -33,12 +34,14 @@ const ContactCard = ({
   label,
   value,
   verified,
+  onEdit,
   children,
 }: {
   icon: any;
   label: string;
   value?: string | null;
   verified: boolean;
+  onEdit?: () => void;
   children?: React.ReactNode;
 }) => {
   const styles = makeStyles();
@@ -72,11 +75,25 @@ const ContactCard = ({
             {value || '—'}
           </CustomText>
         </View>
-        {verified && (
+        {verified ? (
           <CustomText color="success" size="small" boldness="bold">
             {t('complete_profile.contacts.verified')}
           </CustomText>
-        )}
+        ) : onEdit ? (
+          /*
+           * Corrigir ANTES de pedir o codigo.
+           *
+           * O contacto era so texto: quem se enganasse a escrever o telemovel
+           * no registo ficava a pedir SMS para um numero que nao e o dele,
+           * sem forma de o mudar — e o passo 1 de 6 tornava-se um beco sem
+           * saida logo a entrada.
+           */
+          <TouchableOpacity onPress={onEdit} hitSlop={10} accessibilityRole="button">
+            <CustomText color="brand" size="small" boldness="bold">
+              {t('complete_profile.contacts.edit')}
+            </CustomText>
+          </TouchableOpacity>
+        ) : null}
       </View>
       {!verified && !!children && <View className="mt-4">{children}</View>}
     </View>
@@ -94,6 +111,7 @@ const ContactsStep = ({
   const { t } = useTranslation();
   const { api } = useApi();
   const { vendorData, setVendorData, fetchAndSaveUserData } = useSession();
+  const router = useRouter();
   const { openDialog } = useDialog();
 
   const [phoneOk, setPhoneOk] = useState(!!vendorData?.user?.phone_number_verified_at);
@@ -215,7 +233,13 @@ const ContactsStep = ({
         </View>
 
         {/* Telemóvel */}
-        <ContactCard icon="smartphone" label={t('general.phone_number')} value={vendorData?.user?.phone_number} verified={phoneOk}>
+        <ContactCard
+          icon="smartphone"
+          label={t('general.phone_number')}
+          value={vendorData?.user?.phone_number}
+          verified={phoneOk}
+          onEdit={() => router.push('/(app)/(modals)/(profile)/edit-profile')}
+        >
           {phoneStage === 'idle' ? (
             <CustomTouchableOpacity
               size="large"
