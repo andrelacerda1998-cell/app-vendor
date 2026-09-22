@@ -54,7 +54,19 @@ export const useTheme = () => useContext(ThemeContext);
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const systemScheme = useColorScheme();
-  const [mode, setModeState] = useState<ThemeMode>('system');
+  /**
+   * O escuro é o predefinido, e não o do sistema.
+   *
+   * A app do técnico é usada em obra, garagens e caves, e foi desenhada em
+   * escuro — o claro existe para quem o quiser, não como ponto de partida.
+   * Seguir o sistema fazia com que a maioria dos técnicos (telemóvel em claro)
+   * visse uma variante que recebe muito menos atenção de design, e é onde
+   * estão os problemas de contraste.
+   *
+   * Continua a ser só um valor INICIAL: quem escolher 'light' ou 'system' nas
+   * definições fica com essa escolha guardada.
+   */
+  const [mode, setModeState] = useState<ThemeMode>('dark');
   /**
    * Enquanto a escolha guardada não chega do disco, mostramos o escuro (o tema
    * de sempre) sem a marcar como decisão: sem isto, quem escolheu claro via a
@@ -74,7 +86,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
         }
       })
       .catch(() => {
-        // Sem preferência guardada seguimos o sistema, que é o valor inicial.
+        // Sem preferência guardada fica o escuro, que é o valor inicial.
       })
       .finally(() => {
         if (!cancelled) setLoaded(true);

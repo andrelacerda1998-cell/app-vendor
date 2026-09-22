@@ -24,16 +24,37 @@ const CitySurveyStep = ({ onNext }: { onNext: () => void }) => {
     const [query, setQuery] = useState('');
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
+    /**
+     * O pedido nao tinha `.catch()`: uma falha punha `loading` a false e o
+     * ecra ficava com o titulo, a caixa de pesquisa e nada por baixo — sem
+     * lista, sem erro e sem nada em que tocar. Quem chegava ali via um passo
+     * do registo vazio e nao tinha como saber se era a app, a ligacao ou se
+     * simplesmente nao havia cidades.
+     */
+    const [erro, setErro] = useState(false);
+    const [tentativa, setTentativa] = useState(0);
 
     useEffect(() => {
+        let vivo = true;
+        setLoading(true);
+        setErro(false);
+
         api.get(API_ROUTES.VENDOR_CITIES_GET)
             .then((res) => {
+                if (!vivo) return;
                 const data = res.data.data;
                 setCatalog(data.cities ?? []);
                 setAvailableIds(data.selected?.available_city_ids ?? []);
             })
-            .finally(() => setLoading(false));
-    }, []);
+            .catch(() => {
+                if (vivo) setErro(true);
+            })
+            .finally(() => {
+                if (vivo) setLoading(false);
+            });
+
+        return () => { vivo = false; };
+    }, [tentativa]);
 
     const byId = useMemo(() => {
         const m = new Map<number, CityInterface>();
@@ -196,6 +217,29 @@ const CitySurveyStep = ({ onNext }: { onNext: () => void }) => {
         );
     }
 
+    if (erro) {
+        return (
+            <View className="flex-1 p-5 items-center justify-center">
+                <CustomText size="medium" color="secondary" boldness="bold" classes="text-center">
+                    {t('complete_profile.cities.load_error_title')}
+                </CustomText>
+                <CustomText size="small" color="muted" boldness="regular" classes="mt-2 text-center">
+                    {t('complete_profile.cities.load_error_subtitle')}
+                </CustomText>
+                <TouchableOpacity
+                    onPress={() => setTentativa((n) => n + 1)}
+                    activeOpacity={0.85}
+                    className="mt-5 rounded-xl px-6 py-3"
+                    style={{ backgroundColor: Colors.support_primary }}
+                >
+                    <CustomText size="medium" color="on_brand" boldness="bold">
+                        {t('complete_profile.cities.load_error_retry')}
+                    </CustomText>
+                </TouchableOpacity>
+            </View>
+        );
+    }
+
     // ---------- FASE 1: disponíveis ----------
     return (
         <View className="flex-1 p-5">
@@ -248,7 +292,16 @@ const CitySurveyStep = ({ onNext }: { onNext: () => void }) => {
                         </CustomText>
                     )
                 ) : (
-                    // Sugeridas em destaque, agrupadas por distrito
+                    // Sugeridas em destaque, agrupadas por distrito. Um
+                    // catalogo sem nenhuma sugerida deixava aqui um vazio
+                    // mudo; e melhor dizer para usar a pesquisa.
+                    groupedSuggested.length === 0 ? (
+                        <CustomText size="small" color="muted" boldness="regular">
+                            {catalog.length === 0
+                                ? t('complete_profile.cities.catalog_empty')
+                                : t('complete_profile.cities.no_suggestions')}
+                        </CustomText>
+                    ) : (
                     <View style={{ gap: 20 }}>
                         {groupedSuggested.map(([district, cities]) => (
                             <View key={district}>
@@ -268,6 +321,7 @@ const CitySurveyStep = ({ onNext }: { onNext: () => void }) => {
                             </View>
                         ))}
                     </View>
+                    )
                 )}
             </ScrollView>
 

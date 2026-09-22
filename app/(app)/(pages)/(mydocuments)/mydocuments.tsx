@@ -4,7 +4,7 @@
  * Espelha o ecrã Flutter piquet_pro/lib/screens/account/documents_screen.dart
  */
 import React, { useCallback, useState } from 'react';
-import { View, ScrollView, RefreshControl, TextInput, Linking } from 'react-native';
+import { View, ScrollView, RefreshControl, TextInput, Linking, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useFocusEffect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -324,6 +324,53 @@ const MyDocuments = () => {
           <CustomText color="muted" size="small" classes="mt-1" numberOfLines={6}>
             {t('documents_help.at.description')}
           </CustomText>
+
+          {/*
+            * Os passos, e nao so a instrucao.
+            *
+            * O cartao dizia "cria um subutilizador com permissao para
+            * comunicar faturas e series" e deixava o tecnico sozinho com
+            * isso. Quem nunca mexeu no Portal das Financas nao sabe onde fica
+            * a gestao de utilizadores nem que permissoes ha de dar — e este e
+            * um dos seis requisitos sem os quais nao recebe um unico pedido.
+            *
+            * So aparece enquanto nao estiver configurado: depois e ruido.
+            */}
+          {(!atConfigured || atEditing) && (
+            <View className="mt-4 rounded-xl p-3" style={{ backgroundColor: Colors.bg }}>
+              <CustomText color="secondary" size="extraSmall" boldness="bold" classes="mb-2 tracking-widest">
+                {t('documents_help.at.steps_title').toUpperCase()}
+              </CustomText>
+
+              {[1, 2, 3, 4, 5, 6].map((n) => (
+                <View key={n} className="flex-row mb-2">
+                  <View
+                    className="w-5 h-5 rounded-full items-center justify-center mr-2.5 mt-0.5"
+                    style={{ backgroundColor: Colors.card_high }}
+                  >
+                    <CustomText color="muted" size="extraSmall" boldness="bold">
+                      {String(n)}
+                    </CustomText>
+                  </View>
+                  <CustomText color="muted" size="small" classes="flex-1">
+                    {t(`documents_help.at.step_${n}`)}
+                  </CustomText>
+                </View>
+              ))}
+
+              <TouchableOpacity
+                onPress={() => Linking.openURL('https://www.portaldasfinancas.gov.pt/')}
+                activeOpacity={0.8}
+                className="flex-row items-center mt-1"
+                hitSlop={8}
+              >
+                <Feather name="external-link" size={14} color={Colors.brand} />
+                <CustomText color="brand" size="small" boldness="bold" classes="ml-1.5">
+                  {t('documents_help.at.open_portal')}
+                </CustomText>
+              </TouchableOpacity>
+            </View>
+          )}
 
           {atConfigured && !atEditing ? (
             <View className="mt-3">

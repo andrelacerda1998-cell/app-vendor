@@ -88,7 +88,9 @@ const Availability = ({ visible, onClose, onSave, initialStart = "08:00", initia
               onPress={() => isValid && onSave({ start: formatHM(start), end: formatHM(end) })}
               disabled={!isValid}
             >
-              <Text style={styles.primaryText}>{t("schedules.availability_range.save")}</Text>
+              <Text style={[styles.primaryText, !isValid && styles.primaryTextDisabled]}>
+                {t("schedules.availability_range.save")}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>

@@ -72,7 +72,7 @@ const MatchingInvitations = () => {
   }, [acceptAll, openDialog, closeDialog, t]);
 
   return (
-    <SafeAreaView className="flex-1" style={{ backgroundColor: Colors.bg }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.bg }}>
       {/* Envolver em flex-1 e replicar o cabeçalho de 3 partes do ecrã de
           pedidos: sem este wrapper o conteúdo era empurrado para o meio do
           ecrã, com um vazio enorme por cima do primeiro cartão. */}
