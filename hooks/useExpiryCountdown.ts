@@ -12,8 +12,30 @@ const pad = (n: number) => String(n).padStart(2, '0');
  * Nunca devolve algo como "18:44": isso lê-se como HORA DO DIA, perigoso numa
  * app cheia de horários de serviços. A unidade é sempre explícita.
  */
-export function useExpiryCountdown(expiresAt?: string | null, startedAt?: string | null) {
-  const [now, setNow] = useState(() => Date.now());
+export function useExpiryCountdown(
+  expiresAt?: string | null,
+  startedAt?: string | null,
+  serverTime?: string | null,
+) {
+  /**
+   * Desvio entre o relógio do telemóvel e o do servidor.
+   *
+   * O prazo (`expiresAt`) é do SERVIDOR e era comparado com o `Date.now()` do
+   * TELEMÓVEL. Num convite com janela de 60 segundos, 30 segundos de desvio
+   * comiam metade do tempo visível — e chegado a zero o sintoma não era um
+   * cartão que desaparece limpo: ficava "0s" a vermelho na Home, o modal abria
+   * vazio, e o botão continuava a agir sobre uma lista invisível.
+   *
+   * Mesmo padrão do Timer.tsx, que já o fazia com os outros payloads. Calcula-se
+   * uma vez: recalcular a cada render fazia o contador saltar.
+   */
+  const [clockOffset] = useState(() => {
+    if (!serverTime) return 0;
+    const servidor = new Date(serverTime).getTime();
+    return Number.isFinite(servidor) ? servidor - Date.now() : 0;
+  });
+
+  const [now, setNow] = useState(() => Date.now() + clockOffset);
 
   const target = useMemo(() => {
     if (!expiresAt) return 0;
@@ -29,9 +51,9 @@ export function useExpiryCountdown(expiresAt?: string | null, startedAt?: string
   // em vez de logo.
   useEffect(() => {
     if (!target || expired) return;
-    const id = setInterval(() => setNow(Date.now()), 1000);
+    const id = setInterval(() => setNow(Date.now() + clockOffset), 1000);
     return () => clearInterval(id);
-  }, [target, expired]);
+  }, [target, expired, clockOffset]);
 
   /**
    * Unidade sempre explícita — "28m 45s" e nunca "28:45".
