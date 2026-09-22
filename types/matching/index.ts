@@ -17,6 +17,14 @@ export interface MatchingInvitation {
   notified_at: string | null;
   /** Quando a janela fecha. Visível de propósito — ver o card. */
   expires_at: string | null;
+  /**
+   * "Agora" segundo o SERVIDOR, no instante em que este convite foi servido.
+   *
+   * O prazo é do servidor; sem esta referência o contador comparava-o com o
+   * relógio do telemóvel, e um desvio de 30 segundos comia metade de uma
+   * janela de 60.
+   */
+  server_time?: string | null;
   service_type: {
     id: number;
     name: string;

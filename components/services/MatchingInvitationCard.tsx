@@ -34,7 +34,7 @@ const MatchingInvitationCard = ({
   busy?: boolean;
 }) => {
   const { t } = useTranslation();
-  const countdown = useExpiryCountdown(invitation.expires_at, invitation.notified_at);
+  const countdown = useExpiryCountdown(invitation.expires_at, invitation.notified_at, invitation.server_time);
   const expired = countdown.expired;
 
   /**

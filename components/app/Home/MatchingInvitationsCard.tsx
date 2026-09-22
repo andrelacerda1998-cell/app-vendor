@@ -37,13 +37,30 @@ const MatchingInvitationsCard = () => {
   );
 
   /** O que expira primeiro é o que manda no aviso. */
-  const soonest = useMemo(() => {
-    const live = invitations
-      .filter((i) => !!i.expires_at)
-      .sort((a, b) => String(a.expires_at).localeCompare(String(b.expires_at)));
+  /**
+   * Convites ainda de pé, pelo relógio do SERVIDOR.
+   *
+   * Filtrava-se só por ter `expires_at`, não por ele ainda não ter passado. Um
+   * convite expirado continuava a contar: a Home dizia "N pedidos · 0s" a
+   * vermelho, o ecrã abria vazio, e o botão agia sobre uma lista invisível.
+   *
+   * O corte é pelo relógio do servidor porque o prazo também é dele — com o do
+   * telemóvel, um desvio de 30 segundos escondia convites ainda válidos ou
+   * mostrava convites já fechados.
+   */
+  const vivos = useMemo(() => {
+    const referencia = invitations.find((i) => !!i.server_time)?.server_time;
+    const desvio = referencia
+      ? new Date(referencia).getTime() - Date.now()
+      : 0;
+    const agora = Date.now() + (Number.isFinite(desvio) ? desvio : 0);
 
-    return live[0] ?? null;
+    return invitations
+      .filter((i) => !!i.expires_at && new Date(i.expires_at as string).getTime() > agora)
+      .sort((a, b) => String(a.expires_at).localeCompare(String(b.expires_at)));
   }, [invitations]);
+
+  const soonest = vivos[0] ?? null;
 
   // O MESMO numero do ecra do convite, e do mesmo hook.
   //
@@ -51,10 +68,12 @@ const MatchingInvitationsCard = () => {
   // quem visse "18m" aqui e "0:41" ao abrir ficava sem saber em qual
   // acreditar. `soonest` ja e o convite que fecha PRIMEIRO, por isso o numero
   // da Home e o prazo mais apertado que ele tem em cima da mesa.
-  const countdown = useExpiryCountdown(soonest?.expires_at, soonest?.notified_at);
+  const countdown = useExpiryCountdown(soonest?.expires_at, soonest?.notified_at, soonest?.server_time);
   const label = countdown.label;
 
-  const count = invitations.length;
+  // Conta só os que ainda dá para responder. Um cartão que anuncia trabalho
+  // que já fechou é pior do que cartão nenhum.
+  const count = vivos.length;
   if (count === 0) return null;
 
   // A cor acompanha a urgencia, como no cartao do convite.
@@ -79,10 +98,10 @@ const MatchingInvitationsCard = () => {
         // lista de um elemento e um toque a mais para chegar a mesma decisao.
         // Com varios, a lista e que e o sitio certo.
         onPress={() =>
-          invitations.length === 1
+          vivos.length === 1
             ? router.push({
                 pathname: '/(app)/(modals)/matching-invitation/[candidateId]',
-                params: { candidateId: String(invitations[0].candidate_id) },
+                params: { candidateId: String(vivos[0].candidate_id) },
               })
             : router.push('/(app)/(bottom-sheets)/(services)/matching')
         }
