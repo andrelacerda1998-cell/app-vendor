@@ -150,41 +150,60 @@ const ScheduleProposalBottomSheet = () => {
       });
   };
 
-  const onRefuseSchedule = () => {
-    const serviceRef = resolvedServiceId;
-
-    if (!serviceRef) {
-      // Still remove from pending list and close
-      removePendingSchedule();
-      onClose();
-      return;
-    }
-
+  /**
+   * Recusar tem de chegar ao servidor. Sempre.
+   *
+   * Aceitar manda `schedule_id` e por isso funciona em qualquer caso; recusar
+   * precisa do `service_id`, e quando ele faltava a folha fechava em silêncio
+   * — o técnico via "recusado" e o servidor nunca soubera de nada. O pedido
+   * continuava dele, com o cliente já cobrado, até o prazo o cancelar 20
+   * minutos depois a dizer que ninguém tinha respondido.
+   *
+   * O servidor passou a mandar o `service_id` no aviso, mas há builds
+   * antigas e eventos perdidos: se por alguma razão ele não estiver cá,
+   * pergunta-se à marcação qual é o serviço antes de desistir. E se nem
+   * assim, mostra-se o erro em vez de fingir que correu bem.
+   */
+  const onRefuseSchedule = async () => {
     setIsLoading(true);
-    api.post(API_ROUTES.POST_REFUSE_SERVICE(String(serviceRef)))
-      .then(() => {
-        removePendingSchedule();
-        getPendingServices();
-        openDialog({
-          title: t("services.service.channel.refused.title"),
-          subtitle: t("services.service.channel.refused.subtitle"),
-          closeAfterMSeconds: 3000,
-          closeOnClickOutside: true,
-        });
-        onClose();
-      })
-      .catch((error: any) => {
-        openDialog({
-          icon: <XIcon color={Colors.primary} />,
-          title: t("errors.service_refuse.title"),
-          subtitle: t("errors.service_refuse.subtitle"),
-          closeAfterMSeconds: 2000,
-          closeOnClickOutside: true,
-        });
-      })
-      .finally(() => {
-        setIsLoading(false);
+
+    try {
+      let serviceRef = resolvedServiceId;
+
+      if (!serviceRef && scheduleId) {
+        const resposta = await api.get(API_ROUTES.VENDOR_GET_SCHEDULED_DETAILS(String(scheduleId)));
+        const encontrado = Number(resposta?.data?.data?.id);
+        if (encontrado > 0) serviceRef = encontrado;
+      }
+
+      if (!serviceRef) {
+        throw new Error("Sem service_id para recusar");
+      }
+
+      await api.post(API_ROUTES.POST_REFUSE_SERVICE(String(serviceRef)));
+
+      removePendingSchedule();
+      getPendingServices();
+      openDialog({
+        title: t("services.service.channel.refused.title"),
+        subtitle: t("services.service.channel.refused.subtitle"),
+        closeAfterMSeconds: 3000,
+        closeOnClickOutside: true,
       });
+      onClose();
+    } catch {
+      // A lista NÃO é limpa aqui: se o servidor não confirmou a recusa, o
+      // pedido continua a existir e tem de continuar à vista.
+      openDialog({
+        icon: <XIcon color={Colors.primary} />,
+        title: t("errors.service_refuse.title"),
+        subtitle: t("errors.service_refuse.subtitle"),
+        closeAfterMSeconds: 2000,
+        closeOnClickOutside: true,
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleRefuseSchedule = () => {
