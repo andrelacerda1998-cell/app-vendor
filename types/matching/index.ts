@@ -7,6 +7,9 @@
  * aceitar é ficar com o trabalho e sente-se enganado quando perde.
  */
 export interface MatchingInvitation {
+  /** O que o cliente escreveu sobre o problema ao abrir o pedido. Opcional:
+   *  o campo não trava quem só quer carregar em "Pedir agora". */
+  customer_notes?: string | null;
   candidate_id: number;
   service_id: number;
   status: string;

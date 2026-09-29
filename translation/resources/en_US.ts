@@ -1736,6 +1736,7 @@ export default {
         "home_remaining_suffix": "left to respond",
         "home_remaining_suffix_soonest": "on the most urgent request",
         "list_title": "Service requests",
+        "customer_notes": "Customer's description",
         "fallback_title": "Service request",
         "window": "to reply",
         "immediate": "Now",

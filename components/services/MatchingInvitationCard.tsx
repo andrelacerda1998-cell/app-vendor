@@ -139,6 +139,33 @@ const MatchingInvitationCard = ({
           ?? invitation.service_type?.name
           ?? t('matching.invitation.fallback_title')}
       </CustomText>
+      {/* O QUE O CLIENTE ESCREVEU sobre o problema.
+          Sem isto o convite dizia o tipo de serviço, o valor e a distância — e
+          o profissional decidia às cegas se aquilo lhe dava meia hora ou uma
+          tarde. "A torneira pinga há dois dias e já molhou o armário" é a
+          diferença entre aceitar e não aceitar.
+
+          Num personalizado não aparece: ali a descrição JÁ É o título, e
+          repeti-la logo por baixo era dizer o mesmo duas vezes. */}
+      {!invitation.custom && !!invitation.customer_notes?.trim() && (
+        <View
+          className="rounded-xl px-3 py-2.5 mt-2.5"
+          style={{ backgroundColor: Colors.card_high }}
+        >
+          <View className="flex-row items-center mb-1">
+            <Feather name="message-square" size={11} color={Colors.muted} />
+            <CustomText size="extraSmall" boldness="bold" color="secondary" classes="ml-1.5" style={{ color: Colors.muted }}>
+              {t('matching.invitation.customer_notes')}
+            </CustomText>
+          </View>
+          {/* Quatro linhas chegam para decidir. O resto lê-se depois de
+              aceitar, no ecrã do serviço, onde há espaço para tudo. */}
+          <CustomText size="small" color="secondary" numberOfLines={4}>
+            {invitation.customer_notes}
+          </CustomText>
+        </View>
+      )}
+
       <View className="flex-row items-center mt-1.5 mb-5">
         <Feather name="map-pin" size={12} color={Colors.muted} />
         <CustomText size="small" color="secondary" classes="ml-1.5" style={{ color: Colors.muted }}>
