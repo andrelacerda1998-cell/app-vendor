@@ -1766,6 +1766,12 @@ export default {
         "empty_subtitle": "Quando um cliente procurar um serviço teu, aparece aqui. Mantém as notificações ligadas para não perderes nenhum.",
         "error_title": "Não foi possível carregar os pedidos",
         "error_subtitle": "Verifica a ligação à internet e tenta outra vez."
+      },
+      "outcome": {
+        "lost_title": "O cliente escolheu outro profissional",
+        "lost_subtitle": "Este pedido foi para outra pessoa. A tua agenda continua livre.",
+        "closed_title": "O pedido foi cancelado",
+        "closed_subtitle": "O cliente não concluiu o pagamento a tempo. A tua agenda continua livre."
       }
     },
     "ongoing_service": {

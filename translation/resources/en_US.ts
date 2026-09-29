@@ -1765,6 +1765,12 @@ export default {
         "empty_subtitle": "When a client looks for one of your services, it shows up here. Keep notifications on so you don't miss any.",
         "error_title": "Couldn't load requests",
         "error_subtitle": "Check your internet connection and try again."
+      },
+      "outcome": {
+        "lost_title": "The customer chose someone else",
+        "lost_subtitle": "This request went to another professional. Your calendar is still free.",
+        "closed_title": "The request was cancelled",
+        "closed_subtitle": "The customer didn't complete the payment in time. Your calendar is still free."
       }
     },
     "ongoing_service": {

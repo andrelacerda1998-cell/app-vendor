@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useApi } from '@/contexts/ApiContext';
+import { useDialog } from '@/contexts/DialogContext';
 import { useSession } from '@/contexts/SessionContext';
 import useEcho from '@/hooks/echo';
 import { API_ROUTES } from '@/constants/ApiRoutes';
@@ -12,11 +14,23 @@ import { MatchingInvitation } from '@/types/matching';
  * profissional que diz que sim e fica sem resposta aprende a não responder mais.
  * Por isso o convite desaparece da lista assim que o pedido fecha ou ele perde,
  * em vez de ficar lá a apodrecer até ele tocar e levar um erro.
+ *
+ * Só que tirar o cartão da lista ERA todo o tratamento que os dois eventos de
+ * desfecho levavam: `remove(candidate_id)` e mais nada. Silêncio, portanto — e
+ * ainda pior do que o cartão a apodrecer, porque o ecrã do "ficaste na lista"
+ * promete "avisamos-te assim que o cliente decidir". Um cartão que desaparece
+ * sozinho não é um aviso; é uma app que parece ter perdido o pedido.
+ *
+ * Note-se que no caso mais comum — aceitou e perdeu — o `remove` não remove
+ * nada: a lista só tem convites por responder, e o dele já saiu de lá quando
+ * aceitou. A mensagem é a única coisa que ele recebe.
  */
 export function useMatchingInvitations() {
   const { api } = useApi();
   const { vendorData } = useSession();
   const echo = useEcho();
+  const { openDialog } = useDialog();
+  const { t } = useTranslation();
 
   const [invitations, setInvitations] = useState<MatchingInvitation[]>([]);
   const [loading, setLoading] = useState(true);
@@ -81,8 +95,35 @@ export function useMatchingInvitations() {
     if (!channel) return;
 
     const onInvite = () => fetch();
-    const onClosed = (data: any) => remove(data?.candidate_id);
-    const onLost = (data: any) => remove(data?.candidate_id);
+
+    /**
+     * Diálogo que se fecha sozinho, em vez de um que exige toque: é informação,
+     * não uma decisão. O DialogContext põe-nos em fila e descarta duplicados,
+     * por isso o hook estar montado em três sítios ao mesmo tempo (Home, lista e
+     * modal) não dá três avisos iguais.
+     */
+    const aviso = (title: string, subtitle: string) => openDialog({
+      title,
+      subtitle,
+      closeAfterMSeconds: 4000,
+      closeOnClickOutside: true,
+    });
+
+    const onClosed = (data: any) => {
+      remove(data?.candidate_id);
+      aviso(
+        t('matching.outcome.closed_title'),
+        t('matching.outcome.closed_subtitle'),
+      );
+    };
+
+    const onLost = (data: any) => {
+      remove(data?.candidate_id);
+      aviso(
+        t('matching.outcome.lost_title'),
+        t('matching.outcome.lost_subtitle'),
+      );
+    };
 
     channel.listen('.MatchingInvitationEvent', onInvite);
     channel.listen('.MatchingRequestClosedEvent', onClosed);
@@ -93,7 +134,7 @@ export function useMatchingInvitations() {
       channel.stopListening('.MatchingRequestClosedEvent', onClosed);
       channel.stopListening('.MatchingCandidateLostEvent', onLost);
     };
-  }, [echo, vendorData, fetch, remove]);
+  }, [echo, vendorData, fetch, remove, openDialog, t]);
 
   const accept = useCallback(async (candidateId: number) => {
     if (submitting) return { ok: false as const, message: null };
