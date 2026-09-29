@@ -27,11 +27,23 @@ const MatchingInvitationCard = ({
   onAccept,
   onDecline,
   busy,
+  hideCountdown = false,
 }: {
   invitation: MatchingInvitation;
   onAccept: () => void;
   onDecline: () => void;
   busy?: boolean;
+  /**
+   * O ecra do convite mostra o contador no topo, fixo e fora do scroll. La o
+   * cartao nao o repete — dois relogios do mesmo prazo no mesmo ecra obrigam a
+   * compara-los, e ao primeiro segundo de diferenca entre eles deixa de se
+   * acreditar em nenhum.
+   *
+   * Nas LISTAS (Home, lista de pedidos) nao ha barra nenhuma em cima, e ali o
+   * contador do cartao continua a ser o unico. Por isso e uma opcao e nao uma
+   * remocao.
+   */
+  hideCountdown?: boolean;
 }) => {
   const { t } = useTranslation();
   const countdown = useExpiryCountdown(invitation.expires_at, invitation.notified_at, invitation.server_time);
@@ -94,7 +106,7 @@ const MatchingInvitationCard = ({
           A falsa promessa desfaz-se com PALAVRAS — o subtitulo do ecra e o
           aviso aqui em baixo dizem que o cliente escolhe entre os primeiros a
           responder. O relogio fica a dizer o que so ele sabe. */}
-      {!!countdown.label && (
+      {!hideCountdown && !!countdown.label && (
         <View className="items-center mb-5">
           <CustomText
             size="headline"
