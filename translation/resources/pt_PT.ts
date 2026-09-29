@@ -1737,6 +1737,7 @@ export default {
         "home_remaining_suffix": "para responder",
         "home_remaining_suffix_soonest": "no pedido mais urgente",
         "list_title": "Pedidos de serviços",
+        "customer_notes": "Descrição do cliente",
         "fallback_title": "Pedido de serviço",
         "window": "para responder",
         "immediate": "Agora",
