@@ -1335,10 +1335,24 @@ export default {
     "completed_title": "Completed this week",
     "completed_empty": "The services you complete this week show up here. Go online to get requests.",
     "completed_empty_title": "No services yet",
-    "on_hold_title": "On hold until you give Tax Authority access",
-    "on_hold_subtitle": "The work is done and the money is yours. To transfer it we have to issue the invoice, and for that the Tax Authority sub-user is missing.",
-    "on_hold_action": "Give Tax Authority access",
-    "next_payment_blocked": "As soon as you give Tax Authority access",
+    "on_hold": {
+      "at_user_missing": {
+        "title": "On hold until you give Tax Authority access",
+        "subtitle": "The work is done and the money is yours. To transfer it we have to issue the invoice, and for that the Tax Authority sub-user is missing.",
+        "action": "Give Tax Authority access"
+      },
+      "fiscal_address_missing": {
+        "title": "On hold until you give your billing address",
+        "subtitle": "The work is done and the money is yours. To transfer it we have to issue the invoice, and an invoice needs your billing address.",
+        "action": "Give my billing address"
+      },
+      "iban_missing": {
+        "title": "On hold until you give your IBAN",
+        "subtitle": "The work is done and the money is yours. We just have nowhere to send it.",
+        "action": "Give my IBAN"
+      }
+    },
+    "next_payment_blocked": "As soon as you sort out what is missing",
   },
   "user_header": {
     "welcome_back": "Welcome back,",

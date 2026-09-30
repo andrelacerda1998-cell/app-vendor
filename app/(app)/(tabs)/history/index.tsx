@@ -18,7 +18,7 @@ import { renderMoney } from '@/utils/money';
 import { Card, HeroCard, IconTile, EmptyState, ErrorState, SkeletonBlock, SkeletonList } from '@/components/ui';
 import { useIsOnline } from '@/hooks/useIsOnline';
 import { formatShortDate as shortDate, formatLongDate as longDate } from '@/utils/date';
-import { dinheiroRetidoPelaAt } from '@/utils/atPayout';
+import { dinheiroRetido } from '@/utils/atPayout';
 
 interface WeekRow { week_start: string; week_end: string; earnings: number; services: number }
 interface CompletedRow { id: number; service_type: string | null; amount_for_vendor: number; completed_at: string | null }
@@ -30,8 +30,9 @@ interface Stats {
   total_transferred?: number;
   pending_payment_amount?: number;
   pending_payment_count?: number;
-  /** Dinheiro na carteira que nao sai por falta do subutilizador da AT. */
-  payout_blocked_by_at?: boolean;
+  /** Dinheiro na carteira que nao sai enquanto nao se puder faturar. */
+  payout_blocked?: boolean;
+  payout_blocker?: PayoutBlocker;
   payout_on_hold_amount?: number;
   last_weeks: WeekRow[];
   last_4_weeks_earnings: number;
@@ -39,6 +40,23 @@ interface Stats {
   completed_this_week: CompletedRow[];
 }
 
+
+/**
+ * As tres razoes pelas quais o dinheiro nao sai, e para onde se vai resolver cada
+ * uma. O codigo vem do servidor (`Vendor::payoutBlocker()`), a frase e daqui.
+ *
+ * Isto existia so para a AT, e mandava toda a gente ao ecra do subutilizador. A
+ * quem faltasse a morada fiscal, o cartao dizia "falta o subutilizador da
+ * Autoridade Tributaria" -- uma frase errada sobre o dinheiro dele, a apontar
+ * para um ecra onde nao havia nada a fazer.
+ */
+type PayoutBlocker = 'iban_missing' | 'fiscal_address_missing' | 'at_user_missing' | null;
+
+const DESTINO_DA_RETENCAO: Record<string, string> = {
+  iban_missing: '/(app)/(modals)/(profile)/edit-payment',
+  fiscal_address_missing: '/(app)/(modals)/(profile)/edit-company-address',
+  at_user_missing: '/(app)/(modals)/(profile)/edit-at-user',
+};
 
 /** PT50 0000 0000 0000 0000 0000 0 → "PT5000 •••• 0154" */
 const maskIban = (iban?: string | null) => {
@@ -186,12 +204,16 @@ const Earnings = () => {
             onde se resolve é só uma má notícia.
 
             Só aparece a partir do 3.º serviço concluído: é o servidor que
-            decide isso (`payout_blocked_by_at`), não a app — ver
-            `dinheiroRetidoPelaAt` para o porquê de não ser um `!`. */}
-        {dinheiroRetidoPelaAt(stats?.payout_blocked_by_at) && (
+            decide isso (`payout_blocked`), não a app — ver `dinheiroRetido`
+            para o porquê de não ser um `!`. A razão em concreto também vem de
+            lá; o fallback para a AT existe só para servidores que ainda não
+            mandem o código. */}
+        {dinheiroRetido(stats?.payout_blocked) && (
           <TouchableOpacity
             activeOpacity={0.85}
-            onPress={() => router.push('/(app)/(modals)/(profile)/edit-at-user')}
+            onPress={() => router.push(
+              (DESTINO_DA_RETENCAO[stats?.payout_blocker ?? ''] ?? DESTINO_DA_RETENCAO.at_user_missing) as never
+            )}
             accessibilityRole="button"
           >
             <Card
@@ -203,12 +225,12 @@ const Earnings = () => {
                   <Feather name="lock" size={19} color={Colors.danger} />
                 </IconTile>
                 <CustomText color="secondary" boldness="semiBold" size="medium" classes="flex-1 ml-3">
-                  {t('earnings.on_hold_title')}
+                  {t(`earnings.on_hold.${stats?.payout_blocker ?? 'at_user_missing'}.title`)}
                 </CustomText>
               </View>
 
               <CustomText color="muted" size="extraSmall" classes="mt-2">
-                {t('earnings.on_hold_subtitle')}
+                {t(`earnings.on_hold.${stats?.payout_blocker ?? 'at_user_missing'}.subtitle`)}
               </CustomText>
 
               <View
@@ -216,7 +238,7 @@ const Earnings = () => {
                 style={{ borderTopWidth: 1, borderTopColor: Colors.line }}
               >
                 <CustomText color="brand" boldness="bold" size="small" classes="flex-1">
-                  {t('earnings.on_hold_action')}
+                  {t(`earnings.on_hold.${stats?.payout_blocker ?? 'at_user_missing'}.action`)}
                 </CustomText>
                 <Feather name="chevron-right" size={18} color={Colors.brand} />
               </View>
@@ -296,7 +318,7 @@ const Earnings = () => {
             layout: o técnico acredita no verde, espera pela segunda-feira e não
             recebe nada. Quando está travado, esta caixa diz a data que interessa
             — a de quando ele resolver a AT. */}
-        {dinheiroRetidoPelaAt(stats?.payout_blocked_by_at) ? (
+        {dinheiroRetido(stats?.payout_blocked) ? (
           <View
             className="rounded-2xl border p-4 mt-3 flex-row items-center"
             style={{ backgroundColor: Colors.card, borderColor: Colors.line }}

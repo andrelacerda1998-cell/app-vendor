@@ -1335,10 +1335,24 @@ export default {
         "completed_title": "Concluídos esta semana",
         "completed_empty": "Os serviços que concluíres esta semana aparecem aqui. Fica online para receberes pedidos.",
         "completed_empty_title": "Ainda sem serviços",
-        "on_hold_title": "Retido até dares o acesso à AT",
-        "on_hold_subtitle": "O trabalho está feito e o dinheiro é teu. Para o transferirmos temos de emitir a fatura, e para isso falta o subutilizador da Autoridade Tributária.",
-        "on_hold_action": "Dar o acesso à AT",
-        "next_payment_blocked": "Assim que deres o acesso à AT",
+        "on_hold": {
+            "at_user_missing": {
+                "title": "Retido até dares o acesso à AT",
+                "subtitle": "O trabalho está feito e o dinheiro é teu. Para o transferirmos temos de emitir a fatura, e para isso falta o subutilizador da Autoridade Tributária.",
+                "action": "Dar o acesso à AT"
+            },
+            "fiscal_address_missing": {
+                "title": "Retido até dares a morada de faturação",
+                "subtitle": "O trabalho está feito e o dinheiro é teu. Para o transferirmos temos de emitir a fatura, e uma fatura precisa da tua morada de faturação.",
+                "action": "Dar a morada de faturação"
+            },
+            "iban_missing": {
+                "title": "Retido até dares o teu IBAN",
+                "subtitle": "O trabalho está feito e o dinheiro é teu. Só não temos para onde o transferir.",
+                "action": "Dar o meu IBAN"
+            }
+        },
+        "next_payment_blocked": "Assim que resolveres o que falta",
     },
     "user_header": {
         "welcome_back": "Bem-vindo de volta,",

@@ -16,8 +16,8 @@
  * nenhuma a acontecer, e um aviso a dizer que o dinheiro dele está preso seria
  * falso — e é o pior tipo de falso, porque é sobre o dinheiro dele.
  */
-export const dinheiroRetidoPelaAt = (payoutBlockedByAt?: boolean): boolean =>
-  payoutBlockedByAt === true;
+export const dinheiroRetido = (payoutBlocked?: boolean): boolean =>
+  payoutBlocked === true;
 
 /**
  * O "completa o teu perfil" deve contar a AT como coisa em falta?

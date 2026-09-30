@@ -13,13 +13,14 @@ export interface VendorStats {
   pending_payment_count?: number;
   next_payment_date?: string;
   /**
-   * Dinheiro que é dele, está no saldo, e não sai: falta o subutilizador da AT.
+   * Dinheiro que é dele, está no saldo, e não sai enquanto não se puder faturar.
    *
    * Distinto do `pending_payment_*` acima — esse é trabalho ainda não fechado, e
    * passa com o tempo. Este já foi cobrado ao cliente e só passa se ele agir.
    * Em cêntimos, como tudo o que este endpoint devolve.
    */
-  payout_blocked_by_at?: boolean;
+  payout_blocked?: boolean;
+  payout_blocker?: 'iban_missing' | 'fiscal_address_missing' | 'at_user_missing' | null;
   payout_on_hold_amount?: number;
 }
 

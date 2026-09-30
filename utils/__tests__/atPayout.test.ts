@@ -1,18 +1,18 @@
-import { dinheiroRetidoPelaAt, jaExecutouServicos, pedeAtNoPerfil } from '../atPayout';
+import { dinheiroRetido, jaExecutouServicos, pedeAtNoPerfil } from '../atPayout';
 
-describe('dinheiroRetidoPelaAt', () => {
+describe('dinheiroRetido', () => {
   it('avisa quando o servidor afirma que está retido', () => {
-    expect(dinheiroRetidoPelaAt(true)).toBe(true);
+    expect(dinheiroRetido(true)).toBe(true);
   });
 
   it('não avisa quando o servidor diz que não está', () => {
-    expect(dinheiroRetidoPelaAt(false)).toBe(false);
+    expect(dinheiroRetido(false)).toBe(false);
   });
 
   // O caso que justifica o `=== true`: servidor antigo, campo ausente. Nada está
   // retido, e dizer ao técnico que o dinheiro dele está preso seria mentira.
   it('não avisa quando o servidor não manda o campo', () => {
-    expect(dinheiroRetidoPelaAt(undefined)).toBe(false);
+    expect(dinheiroRetido(undefined)).toBe(false);
   });
 });
 

@@ -8,7 +8,7 @@ import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next"
 import { cardShadow } from "@/components/ui"
 import { useSession } from "@/contexts/SessionContext"
-import { dinheiroRetidoPelaAt, jaExecutouServicos, pedeAtNoPerfil } from "@/utils/atPayout"
+import { dinheiroRetido, jaExecutouServicos, pedeAtNoPerfil } from "@/utils/atPayout"
 
 /**
  * Aviso de perfil incompleto — bloqueia a receção de pedidos, por isso tem de
@@ -89,7 +89,7 @@ const CompleteYourProfile = () => {
    * Ganha a prioridade sobre a procura na zona quando as duas sao verdade:
    * pedidos que PODIAM aparecer valem menos do que dinheiro que ja e dele.
    */
-  const dinheiroRetido = dinheiroRetidoPelaAt(vendorData?.payout_blocked_by_at);
+  const retido = dinheiroRetido(vendorData?.payout_blocked);
 
   /**
    * Com dinheiro retido o cartao INTEIRO passa a vermelho.
@@ -105,8 +105,8 @@ const CompleteYourProfile = () => {
    */
   const VERMELHO = '255,90,95';   // Colors.danger
   const AMBAR = '250,187,91';     // Colors.brand
-  const tom = dinheiroRetido ? VERMELHO : AMBAR;
-  const corPrincipal = dinheiroRetido ? Colors.danger : Colors.brand;
+  const tom = retido ? VERMELHO : AMBAR;
+  const corPrincipal = retido ? Colors.danger : Colors.brand;
 
   return (
     <TouchableOpacity
@@ -162,9 +162,9 @@ const CompleteYourProfile = () => {
             oposta -- uma e oportunidade ("podias estar a ganhar"), a outra e
             perda a acontecer ("ja ganhaste e nao o tens") -- e e por isso que
             so a segunda pinta o cartao. */}
-        {(dinheiroRetido || zoneRequests > 0) && (
+        {(retido || zoneRequests > 0) && (
           <View
-            className={`flex-row items-center px-4 py-2.5 ${dinheiroRetido ? 'justify-center' : ''}`}
+            className={`flex-row items-center px-4 py-2.5 ${retido ? 'justify-center' : ''}`}
             style={{ borderTopWidth: 1, borderTopColor: `rgba(${tom},0.34)` }}
           >
             {/* A linha do dinheiro vai CENTRADA; a da procura na zona fica
@@ -180,16 +180,16 @@ const CompleteYourProfile = () => {
                 espaco todo depois do icone e o "centro" ficava a direita do
                 centro real do cartao. Assim o par icone+frase centra-se como um
                 bloco, e encolhe se algum dia precisar. */}
-            <Feather name={dinheiroRetido ? 'lock' : 'trending-up'} size={15} color={corPrincipal} />
+            <Feather name={retido ? 'lock' : 'trending-up'} size={15} color={corPrincipal} />
             <CustomText
               size="small"
               color="secondary"
               boldness="semiBold"
-              classes={dinheiroRetido ? 'ml-2' : 'ml-2 flex-1'}
-              numberOfLines={dinheiroRetido ? 1 : 2}
-              style={dinheiroRetido ? { flexShrink: 1 } : undefined}
+              classes={retido ? 'ml-2' : 'ml-2 flex-1'}
+              numberOfLines={retido ? 1 : 2}
+              style={retido ? { flexShrink: 1 } : undefined}
             >
-              {dinheiroRetido
+              {retido
                 ? t('complete_profile.money_on_hold')
                 : t('complete_profile.zone_demand', { count: zoneRequests })}
             </CustomText>
