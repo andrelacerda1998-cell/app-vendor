@@ -46,6 +46,15 @@ export interface VendorDataInterface {
   /** Quantos serviços ainda pode fazer antes de a AT o travar. 0 = já trava. */
   services_until_at_required?: number;
   /**
+   * O dinheiro dos serviços já feitos está na carteira e não sai: falta a AT.
+   *
+   * Vem à parte do `account_blocker` porque o blocker devolve só a PRIMEIRA
+   * coisa que falta. A um técnico a quem também falte a morada fiscal, o
+   * blocker diz `fiscal_address_missing` — e o dinheiro está retido do mesmo
+   * modo. Mesma regra do `at_required`: comparar com `=== true`.
+   */
+  payout_blocked_by_at?: boolean;
+  /**
    * Pedidos criados na zona do técnico nos últimos 7 dias. Só vem preenchido
    * para quem ainda não pode aceitar serviços — para os aprovados é `null`.
    */

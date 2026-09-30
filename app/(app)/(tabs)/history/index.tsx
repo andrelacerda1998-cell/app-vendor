@@ -18,6 +18,7 @@ import { renderMoney } from '@/utils/money';
 import { Card, HeroCard, IconTile, EmptyState, ErrorState, SkeletonBlock, SkeletonList } from '@/components/ui';
 import { useIsOnline } from '@/hooks/useIsOnline';
 import { formatShortDate as shortDate, formatLongDate as longDate } from '@/utils/date';
+import { dinheiroRetidoPelaAt } from '@/utils/atPayout';
 
 interface WeekRow { week_start: string; week_end: string; earnings: number; services: number }
 interface CompletedRow { id: number; service_type: string | null; amount_for_vendor: number; completed_at: string | null }
@@ -29,6 +30,9 @@ interface Stats {
   total_transferred?: number;
   pending_payment_amount?: number;
   pending_payment_count?: number;
+  /** Dinheiro na carteira que nao sai por falta do subutilizador da AT. */
+  payout_blocked_by_at?: boolean;
+  payout_on_hold_amount?: number;
   last_weeks: WeekRow[];
   last_4_weeks_earnings: number;
   next_payment_date: string;
@@ -169,6 +173,64 @@ const Earnings = () => {
             </CustomText>
           </View>
         </HeroCard>
+
+        {/* RETIDO POR FALTA DA AT.
+            O dinheiro é dele e está no saldo — o trabalho foi feito e o cliente
+            foi cobrado. O que falta é o subutilizador da AT: sem ele não se
+            emite fatura, e sem fatura não se transfere.
+
+            Acima do "Por receber" de propósito: as duas esperas parecem iguais
+            e não são. Aquela passa sozinha com o tempo; esta só passa se ele
+            fizer algo. O que exige uma ação vai primeiro, e leva o caminho para
+            essa ação dentro do cartão — um aviso que diz o que falta sem dizer
+            onde se resolve é só uma má notícia.
+
+            Só aparece a partir do 3.º serviço concluído: é o servidor que
+            decide isso (`payout_blocked_by_at`), não a app — ver
+            `dinheiroRetidoPelaAt` para o porquê de não ser um `!`. */}
+        {dinheiroRetidoPelaAt(stats?.payout_blocked_by_at) && (
+          <TouchableOpacity
+            activeOpacity={0.85}
+            onPress={() => router.push('/(app)/(modals)/(profile)/edit-at-user')}
+            accessibilityRole="button"
+          >
+            <Card
+              className="mt-3"
+              style={{ borderWidth: 1, borderColor: 'rgba(218,64,64,0.45)' }}
+            >
+              <View className="flex-row items-center">
+                <IconTile size={44} tint="rgba(218,64,64,0.16)">
+                  <Feather name="lock" size={19} color={Colors.danger} />
+                </IconTile>
+                <View className="flex-1 ml-3">
+                  <CustomText color="secondary" boldness="semiBold" size="medium">
+                    {t('earnings.on_hold_title')}
+                  </CustomText>
+                  <CustomText color="muted" size="extraSmall" classes="mt-0.5" numberOfLines={3}>
+                    {t('earnings.on_hold_subtitle')}
+                  </CustomText>
+                </View>
+                {/* O valor só aparece quando há valor: um "0,00 €" ao lado de
+                    "está retido" leria-se como se nada estivesse em causa. */}
+                {!!stats?.payout_on_hold_amount && (
+                  <CustomText color="secondary" boldness="bolder" size="medium" style={{ color: Colors.danger }}>
+                    {renderMoney(stats.payout_on_hold_amount) || '0,00 €'}
+                  </CustomText>
+                )}
+              </View>
+
+              <View
+                className="flex-row items-center mt-3 pt-3"
+                style={{ borderTopWidth: 1, borderTopColor: Colors.line }}
+              >
+                <CustomText color="brand" boldness="bold" size="small" classes="flex-1">
+                  {t('earnings.on_hold_action')}
+                </CustomText>
+                <Feather name="chevron-right" size={18} color={Colors.brand} />
+              </View>
+            </Card>
+          </TouchableOpacity>
+        )}
 
         {/* Por receber: serviços já feitos que ainda não foram pagos. Antes
             desapareciam — só se via o total ganho, como se estivesse tudo pago. */}

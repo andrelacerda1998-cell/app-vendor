@@ -1075,7 +1075,7 @@ export default {
         "step_at_user": "Subutilizador AT",
         "step_at_user_optional_one": "Podes deixar para depois: falta {{count}} serviço até ser preciso.",
         "step_at_user_optional_other": "Podes deixar para depois: faltam {{count}} serviços até ser preciso.",
-        "step_at_user_optional_zero": "Já é preciso para continuares a receber pedidos.",
+        "step_at_user_optional_zero": "Já é preciso: sem isto não recebes novos pedidos e o dinheiro dos serviços que fizeste fica retido.",
         "step_approved": "Conta aprovada",
         "see_documents": "Ver documentos"
     },
@@ -1334,7 +1334,11 @@ export default {
         "week_services": "Serviços desta semana",
         "completed_title": "Concluídos esta semana",
         "completed_empty": "Os serviços que concluíres esta semana aparecem aqui. Fica online para receberes pedidos.",
-        "completed_empty_title": "Ainda sem serviços"
+        "completed_empty_title": "Ainda sem serviços",
+        "on_hold_title": "Retido até dares o acesso à AT",
+        "on_hold_subtitle": "O trabalho está feito e o dinheiro é teu. Para o transferirmos temos de emitir a fatura, e para isso falta o subutilizador da Autoridade Tributária.",
+        "on_hold_action": "Dar o acesso à AT",
+        "on_hold_banner": "O teu dinheiro está retido: falta o subutilizador da AT."
     },
     "user_header": {
         "welcome_back": "Bem-vindo de volta,",

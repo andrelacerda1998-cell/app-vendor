@@ -60,9 +60,14 @@ const AccountStatus = () => {
       // Antes dos três primeiros serviços a AT não trava nada, e a lista tem
       // de o dizer: um passo por fazer numa lista de "o que falta para
       // trabalhar" lê-se como impedimento, e este não é. A nota diz quantos
-      // serviços ainda pode fazer sem ela.
+      // serviços ainda pode fazer sem ela -- e, quando chega a zero, o que
+      // passou a travar: os pedidos E o dinheiro que já está na carteira.
+      //
+      // A nota aparece enquanto a AT não estiver dada, em qualquer das duas
+      // fases. Antes só aparecia na fase adiável, o que deixava o plural `_zero`
+      // — precisamente a frase da fase que trava — impossível de alcançar.
       hint:
-        vendorData?.at_required === false
+        !vendorData?.at_user && vendorData?.at_required !== undefined
           ? t('account_status.step_at_user_optional', {
               count: vendorData?.services_until_at_required ?? 0,
             })

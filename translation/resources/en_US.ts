@@ -1075,7 +1075,7 @@ export default {
     "step_at_user": "Tax Authority sub-user",
     "step_at_user_optional_one": "You can leave this for later: {{count}} job to go before it is needed.",
     "step_at_user_optional_other": "You can leave this for later: {{count}} jobs to go before it is needed.",
-    "step_at_user_optional_zero": "You need this now to keep receiving jobs.",
+    "step_at_user_optional_zero": "You need this now: without it you get no new jobs and the money from the jobs you did stays on hold.",
     "step_approved": "Account approved",
     "see_documents": "See documents"
   },
@@ -1334,7 +1334,11 @@ export default {
     "week_services": "This week's services",
     "completed_title": "Completed this week",
     "completed_empty": "The services you complete this week show up here. Go online to get requests.",
-    "completed_empty_title": "No services yet"
+    "completed_empty_title": "No services yet",
+    "on_hold_title": "On hold until you give Tax Authority access",
+    "on_hold_subtitle": "The work is done and the money is yours. To transfer it we have to issue the invoice, and for that the Tax Authority sub-user is missing.",
+    "on_hold_action": "Give Tax Authority access",
+    "on_hold_banner": "Your money is on hold: the Tax Authority sub-user is missing."
   },
   "user_header": {
     "welcome_back": "Welcome back,",

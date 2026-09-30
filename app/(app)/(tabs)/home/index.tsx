@@ -37,6 +37,7 @@ import { useDepartureReminders } from "@/hooks/useDepartureReminders";
 import { useNotificationPermission } from "@/contexts/NotificationsContext";
 import { useSchedule } from "@/contexts/ScheduleContext";
 import { useVendorStats } from "@/hooks/useVendorStats";
+import { dinheiroRetidoPelaAt, pedeAtNoPerfil } from "@/utils/atPayout";
 
 const Home = () => {
   const insets = useSafeAreaInsets();
@@ -338,9 +339,41 @@ const Home = () => {
             )});
           }
 
+          // 1b) Dinheiro retido por falta da AT — ele já trabalhou e já tem
+          // saldo, e é isso que torna este aviso diferente de "completa o
+          // perfil": não é papelada por fazer, é dinheiro dele à espera.
+          if (dinheiroRetidoPelaAt(vendorData?.payout_blocked_by_at)) {
+            banners.push({ key: 'at_payout', node: (
+              <View className="px-5">
+                <TouchableOpacity
+                  onPress={() => router.push('/(app)/(modals)/(profile)/edit-at-user')}
+                  activeOpacity={0.85}
+                  className="flex-row items-center rounded-xl p-3"
+                  style={{ backgroundColor: Colors.card, borderWidth: 1, borderColor: 'rgba(218,64,64,0.45)' }}
+                  accessibilityRole="button"
+                >
+                  <Feather name="lock" size={18} color={Colors.danger} />
+                  <CustomText color="secondary" size="small" classes="ml-2.5 flex-1" numberOfLines={3}>
+                    {t('earnings.on_hold_banner')}
+                  </CustomText>
+                  <Feather name="chevron-right" size={18} color={Colors.danger} />
+                </TouchableOpacity>
+              </View>
+            )});
+          }
+
           // 2) Perfil incompleto — sem isto não recebe serviços.
+          //
+          // A AT entra nesta conta SÓ quando já é exigida. Antes disso o técnico
+          // pode trabalhar sem ela (os três primeiros serviços), e um banner
+          // "completa o teu perfil" que não sai do ecrã por causa de um campo
+          // que ainda não é preciso ensina-o a ignorar os banners todos — e o
+          // próximo é a AT a bloquear a sério.
+          //
+          // A assimetria dos dois testes de AT desta função (um `=== true`, o
+          // outro `!== false`) está explicada em `utils/atPayout.ts`.
           if (
-            !vendorData?.at_user ||
+            pedeAtNoPerfil(vendorData?.at_user, vendorData?.at_required) ||
             !vendorData?.company_address ||
             !vendorData?.iban ||
             (vendorData?.missing_documents?.length ?? 0) > 0 ||
