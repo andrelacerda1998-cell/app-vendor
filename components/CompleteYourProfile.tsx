@@ -134,14 +134,27 @@ const CompleteYourProfile = () => {
             <Feather name="alert-triangle" size={22} color={Colors.on_brand} />
           </View>
           <View className="flex-1">
-            <CustomText size="medium" color="secondary" boldness="bolder" numberOfLines={2}>
+            <CustomText size="medium" color="secondary" boldness="bolder" numberOfLines={2} classes="text-center">
               {t('complete_profile.notice')}
             </CustomText>
-            <CustomText size="small" color="secondary" boldness="regular" numberOfLines={3} classes="mt-0.5 opacity-80">
+            <CustomText size="small" color="secondary" boldness="regular" numberOfLines={3} classes="mt-0.5 opacity-80 text-center">
               {subtitle}
             </CustomText>
           </View>
-          <Feather name="chevron-right" size={22} color={corPrincipal} />
+          {/* O chevron leva um bloco com a LARGURA DO ICONE (44 + 12 de margem),
+              e nao os seus 22 soltos.
+
+              Sem isto, a coluna do meio fica entre 56 a esquerda e 22 a direita,
+              e um `text-center` centra o texto no meio dessa coluna torta -- 17px
+              a direita do centro real do cartao. Passava despercebido sozinho,
+              mas a linha do dinheiro aqui em baixo esta centrada a serio, e as
+              duas lado a lado denunciavam-se uma a outra.
+
+              `items-end` mantem o chevron encostado a direita, onde ja estava:
+              o bloco existe para equilibrar a conta, nao para o mover. */}
+          <View className="w-14 items-end">
+            <Feather name="chevron-right" size={22} color={corPrincipal} />
+          </View>
         </View>
 
         {/* A cor ja veio de cima (o cartao todo), por isso aqui basta o traco a
