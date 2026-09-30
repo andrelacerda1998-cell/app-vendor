@@ -7,6 +7,7 @@ import { Feather } from '@expo/vector-icons';
 import { CustomText } from '@/components/CustomText';
 import { Colors } from '@/constants/Colors';
 import MatchingInvitationCard from '@/components/services/MatchingInvitationCard';
+import MatchingInvitationDeadlineBar from '@/components/services/MatchingInvitationDeadlineBar';
 import useMatchingInvitations from '@/hooks/useMatchingInvitations';
 
 /**
@@ -17,9 +18,19 @@ import useMatchingInvitations from '@/hooks/useMatchingInvitations';
  * primeiro que ha uma lista, abri-la, e so entao ler. O ecra vem ter com ele.
  *
  * DIFERENCA PARA O `incoming-request`, que e o equivalente da adjudicacao
- * direta: este NAO tem contagem decrescente e FECHA-SE ao gesto. Aceitar aqui
- * nao e ficar com o trabalho — e dizer que se esta disponivel. Nao ha nada a
- * perder por fechar, nem motivo para o prender ao ecra.
+ * direta: este FECHA-SE ao gesto. Aceitar aqui nao e ficar com o trabalho — e
+ * dizer que se esta disponivel. Nao ha nada a perder por fechar, nem motivo
+ * para o prender ao ecra.
+ *
+ * TEM contagem decrescente, e em cima. Isto esteve escrito ao contrario aqui
+ * durante algum tempo: o cartao ganhou um contador entretanto, mas a meio do
+ * scroll, a seguir ao preco — so se via depois de rolar a proposta inteira, e
+ * quem rola ja gastou parte daquilo que o contador esta a contar.
+ *
+ * A janela sao 120 segundos, iguais no imediato e no agendado. Nao o prender ao
+ * ecra continua a valer; esconder-lhe quanto tempo tem, nao. Sao coisas
+ * diferentes: uma e nao o obrigar a decidir ali, a outra e nao lhe dizer que ha
+ * um prazo.
  */
 const MatchingInvitationScreen = () => {
   const { t } = useTranslation();
@@ -81,9 +92,14 @@ const MatchingInvitationScreen = () => {
         </TouchableOpacity>
       </View>
 
-      <ScrollView className="flex-1 px-5" contentContainerStyle={{ paddingBottom: 16 }}>
+      {/* Fora do scroll, de proposito: um prazo que se descobre a rolar nao e
+          um prazo. */}
+      <MatchingInvitationDeadlineBar invitation={invitation} />
+
+      <ScrollView className="flex-1 px-5" contentContainerStyle={{ paddingTop: 16, paddingBottom: 16 }}>
         <MatchingInvitationCard
           invitation={invitation}
+          hideCountdown
           busy={submitting === invitation.candidate_id}
           onAccept={async () => { await accept(invitation.candidate_id); close(); }}
           onDecline={async () => { await decline(invitation.candidate_id); close(); }}
