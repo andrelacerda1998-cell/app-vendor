@@ -1352,6 +1352,9 @@ export default {
         "action": "Give my IBAN"
       }
     },
+    "on_hold_deadline_one": "You have 1 day to give access. After that, you lose this money.",
+    "on_hold_deadline_other": "You have {{count}} days to give access. After that, you lose this money.",
+    "on_hold_deadline_last_day": "Today is the last day. If you do not give access, you lose this money.",
     "next_payment_blocked": "As soon as you sort out what is missing",
   },
   "user_header": {
@@ -1505,6 +1508,9 @@ export default {
         "company_address": "billing address",
         "iban": "IBAN"
     },
+    "money_on_hold_deadline_one": "1 day left to give Tax Authority access or you lose the money.",
+    "money_on_hold_deadline_other": "{{count}} days left to give Tax Authority access or you lose the money.",
+    "money_on_hold_last_day": "Today: give Tax Authority access or you lose the money.",
     "money_on_hold": "Your money is on hold.",
     "notice": "Complete your profile",
     "subtitle": "You won't receive requests until it's complete.",

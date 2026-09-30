@@ -1,4 +1,4 @@
-import { dinheiroRetido, jaExecutouServicos, pedeAtNoPerfil } from '../atPayout';
+import { diasAteAoPrazoDaAt, dinheiroRetido, jaExecutouServicos, pedeAtNoPerfil } from '../atPayout';
 
 describe('dinheiroRetido', () => {
   it('avisa quando o servidor afirma que está retido', () => {
@@ -57,5 +57,34 @@ describe('jaExecutouServicos', () => {
   // Servidor antigo: assume o texto de entrada, que é o que a app sempre disse.
   it('sem os campos assume que não executou', () => {
     expect(jaExecutouServicos(undefined, undefined)).toBe(false);
+  });
+});
+
+describe("diasAteAoPrazoDaAt", () => {
+  const AGORA = Date.parse("2026-09-30T12:00:00Z");
+  const emDias = (d: number) => new Date(AGORA + d * 86_400_000).toISOString();
+
+  it("conta os dias que faltam", () => {
+    expect(diasAteAoPrazoDaAt(emDias(5), AGORA)).toBe(5);
+    expect(diasAteAoPrazoDaAt(emDias(1), AGORA)).toBe(1);
+  });
+
+  // 18 horas são "falta 1 dia", não "faltam 0": dizer zero a quem ainda tem
+  // tempo é dizer-lhe que já perdeu.
+  it("arredonda para cima as horas que sobram", () => {
+    expect(diasAteAoPrazoDaAt(emDias(0.75), AGORA)).toBe(1);
+  });
+
+  it("nunca é negativo depois de o prazo passar", () => {
+    expect(diasAteAoPrazoDaAt(emDias(-3), AGORA)).toBe(0);
+  });
+
+  it("sem prazo não há contagem", () => {
+    expect(diasAteAoPrazoDaAt(null, AGORA)).toBeNull();
+    expect(diasAteAoPrazoDaAt(undefined, AGORA)).toBeNull();
+  });
+
+  it("uma data inválida não rebenta nem inventa um número", () => {
+    expect(diasAteAoPrazoDaAt("nem-data-e", AGORA)).toBeNull();
   });
 });

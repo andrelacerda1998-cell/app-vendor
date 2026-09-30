@@ -8,7 +8,7 @@ import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next"
 import { cardShadow } from "@/components/ui"
 import { useSession } from "@/contexts/SessionContext"
-import { dinheiroRetido, jaExecutouServicos, pedeAtNoPerfil } from "@/utils/atPayout"
+import { diasAteAoPrazoDaAt, dinheiroRetido, jaExecutouServicos, pedeAtNoPerfil } from "@/utils/atPayout"
 
 /**
  * Aviso de perfil incompleto — bloqueia a receção de pedidos, por isso tem de
@@ -90,6 +90,12 @@ const CompleteYourProfile = () => {
    * pedidos que PODIAM aparecer valem menos do que dinheiro que ja e dele.
    */
   const retido = dinheiroRetido(vendorData?.payout_blocked);
+  /**
+   * Com prazo a correr, a linha deixa de dizer "está retido" e passa a dizer
+   * quanto tempo falta. "Retido" é um estado; um prazo é uma ameaça com data —
+   * e é a segunda que o faz abrir a app.
+   */
+  const diasDoPrazo = diasAteAoPrazoDaAt(vendorData?.at_deadline_ends_at);
 
   /**
    * Com dinheiro retido o cartao INTEIRO passa a vermelho.
@@ -190,7 +196,11 @@ const CompleteYourProfile = () => {
               style={retido ? { flexShrink: 1 } : undefined}
             >
               {retido
-                ? t('complete_profile.money_on_hold')
+                ? (diasDoPrazo === null
+                    ? t('complete_profile.money_on_hold')
+                    : diasDoPrazo === 0
+                      ? t('complete_profile.money_on_hold_last_day')
+                      : t('complete_profile.money_on_hold_deadline', { count: diasDoPrazo }))
                 : t('complete_profile.zone_demand', { count: zoneRequests })}
             </CustomText>
           </View>
