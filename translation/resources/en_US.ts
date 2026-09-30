@@ -1073,6 +1073,9 @@ export default {
     "step_submit_documents": "Send documents",
     "step_review": "Piquet review",
     "step_at_user": "Tax Authority sub-user",
+    "step_at_user_optional_one": "You can leave this for later: {{count}} job to go before it is needed.",
+    "step_at_user_optional_other": "You can leave this for later: {{count}} jobs to go before it is needed.",
+    "step_at_user_optional_zero": "You need this now: without it you get no new jobs and the money from the jobs you did stays on hold.",
     "step_approved": "Account approved",
     "see_documents": "See documents"
   },
@@ -1331,7 +1334,25 @@ export default {
     "week_services": "This week's services",
     "completed_title": "Completed this week",
     "completed_empty": "The services you complete this week show up here. Go online to get requests.",
-    "completed_empty_title": "No services yet"
+    "completed_empty_title": "No services yet",
+    "on_hold": {
+      "at_user_missing": {
+        "title": "On hold until you give Tax Authority access",
+        "subtitle": "The work is done and the money is yours. To transfer it we have to issue the invoice, and for that the Tax Authority sub-user is missing.",
+        "action": "Give Tax Authority access"
+      },
+      "fiscal_address_missing": {
+        "title": "On hold until you give your billing address",
+        "subtitle": "The work is done and the money is yours. To transfer it we have to issue the invoice, and an invoice needs your billing address.",
+        "action": "Give my billing address"
+      },
+      "iban_missing": {
+        "title": "On hold until you give your IBAN",
+        "subtitle": "The work is done and the money is yours. We just have nowhere to send it.",
+        "action": "Give my IBAN"
+      }
+    },
+    "next_payment_blocked": "As soon as you sort out what is missing",
   },
   "user_header": {
     "welcome_back": "Welcome back,",
@@ -1473,6 +1494,8 @@ export default {
     "zone_demand_one": "{{count}} request in your area this week",
     "zone_demand_other": "{{count}} requests in your area this week",
     "missing_one": "1 step left before you can receive requests.",
+    "missing_again_one": "1 step left before you can receive requests again.",
+    "missing_again_many": "{{count}} steps left before you can receive requests again.",
     "missing_many": "{{count}} steps left before you can receive requests.",
     "missing": {
         "documents": "documents",
@@ -1482,6 +1505,7 @@ export default {
         "company_address": "billing address",
         "iban": "IBAN"
     },
+    "money_on_hold": "Your money is on hold.",
     "notice": "Complete your profile",
     "subtitle": "You won't receive requests until it's complete.",
     "header": "Complete your profile",

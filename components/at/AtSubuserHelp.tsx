@@ -23,9 +23,17 @@ import { Colors } from '@/constants/Colors';
 /** Portal das Financas: dai segue-se para Todos os Servicos > Gestao de Utilizadores. */
 export const PORTAL_FINANCAS_URL = 'https://www.portaldasfinancas.gov.pt';
 
-export const AtSubuserHelp = () => {
+/**
+ * `defaultOpen` — os passos comecam abertos.
+ *
+ * No onboarding vem fechado: a pessoa esta a preencher um formulario e ja sabe
+ * onde esta. Quem chega aqui pelo banner do dinheiro retido vem de outro sitio
+ * e com outra pergunta ("o que e isto que me esta a travar o dinheiro?"), e
+ * abrir um ecra so com dois campos vazios nao responde a nada.
+ */
+export const AtSubuserHelp = ({ defaultOpen = false }: { defaultOpen?: boolean }) => {
   const { t } = useTranslation();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
 
   const steps = ['portal', 'menu', 'new', 'permissions', 'password'] as const;
 

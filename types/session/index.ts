@@ -36,6 +36,27 @@ export interface VendorDataInterface {
   schedule_address?: string | null;
   at_user: string | null;
   /**
+   * O acesso à AT já é exigido — os três primeiros serviços acabaram.
+   *
+   * Opcional porque um servidor anterior a 30/09/2026 não manda o campo. Quem o
+   * lê deve comparar com `=== true` / `=== false`, nunca com `!`: um `undefined`
+   * tratado como "não exigido" abria o portão a toda a gente.
+   */
+  at_required?: boolean;
+  /** Quantos serviços ainda pode fazer antes de a AT o travar. 0 = já trava. */
+  services_until_at_required?: number;
+  /**
+   * O dinheiro dos serviços já feitos está na carteira e não sai.
+   *
+   * Vem à parte do `account_blocker`: esse responde "o que te falta para
+   * trabalhares", que é uma lista maior. O dinheiro só fica retido pelo que
+   * impede FATURAR — IBAN, morada fiscal, AT. Mesma regra do `at_required`:
+   * comparar com `=== true`.
+   */
+  payout_blocked?: boolean;
+  /** Qual dos três: `iban_missing` | `fiscal_address_missing` | `at_user_missing`. */
+  payout_blocker?: 'iban_missing' | 'fiscal_address_missing' | 'at_user_missing' | null;
+  /**
    * Pedidos criados na zona do técnico nos últimos 7 dias. Só vem preenchido
    * para quem ainda não pode aceitar serviços — para os aprovados é `null`.
    */

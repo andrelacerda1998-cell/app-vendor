@@ -18,6 +18,7 @@ import { renderMoney } from '@/utils/money';
 import { Card, HeroCard, IconTile, EmptyState, ErrorState, SkeletonBlock, SkeletonList } from '@/components/ui';
 import { useIsOnline } from '@/hooks/useIsOnline';
 import { formatShortDate as shortDate, formatLongDate as longDate } from '@/utils/date';
+import { dinheiroRetido } from '@/utils/atPayout';
 
 interface WeekRow { week_start: string; week_end: string; earnings: number; services: number }
 interface CompletedRow { id: number; service_type: string | null; amount_for_vendor: number; completed_at: string | null }
@@ -29,12 +30,33 @@ interface Stats {
   total_transferred?: number;
   pending_payment_amount?: number;
   pending_payment_count?: number;
+  /** Dinheiro na carteira que nao sai enquanto nao se puder faturar. */
+  payout_blocked?: boolean;
+  payout_blocker?: PayoutBlocker;
+  payout_on_hold_amount?: number;
   last_weeks: WeekRow[];
   last_4_weeks_earnings: number;
   next_payment_date: string;
   completed_this_week: CompletedRow[];
 }
 
+
+/**
+ * As tres razoes pelas quais o dinheiro nao sai, e para onde se vai resolver cada
+ * uma. O codigo vem do servidor (`Vendor::payoutBlocker()`), a frase e daqui.
+ *
+ * Isto existia so para a AT, e mandava toda a gente ao ecra do subutilizador. A
+ * quem faltasse a morada fiscal, o cartao dizia "falta o subutilizador da
+ * Autoridade Tributaria" -- uma frase errada sobre o dinheiro dele, a apontar
+ * para um ecra onde nao havia nada a fazer.
+ */
+type PayoutBlocker = 'iban_missing' | 'fiscal_address_missing' | 'at_user_missing' | null;
+
+const DESTINO_DA_RETENCAO: Record<string, string> = {
+  iban_missing: '/(app)/(modals)/(profile)/edit-payment',
+  fiscal_address_missing: '/(app)/(modals)/(profile)/edit-company-address',
+  at_user_missing: '/(app)/(modals)/(profile)/edit-at-user',
+};
 
 /** PT50 0000 0000 0000 0000 0000 0 → "PT5000 •••• 0154" */
 const maskIban = (iban?: string | null) => {
@@ -170,6 +192,60 @@ const Earnings = () => {
           </View>
         </HeroCard>
 
+        {/* RETIDO POR FALTA DA AT.
+            O dinheiro é dele e está no saldo — o trabalho foi feito e o cliente
+            foi cobrado. O que falta é o subutilizador da AT: sem ele não se
+            emite fatura, e sem fatura não se transfere.
+
+            Acima do "Por receber" de propósito: as duas esperas parecem iguais
+            e não são. Aquela passa sozinha com o tempo; esta só passa se ele
+            fizer algo. O que exige uma ação vai primeiro, e leva o caminho para
+            essa ação dentro do cartão — um aviso que diz o que falta sem dizer
+            onde se resolve é só uma má notícia.
+
+            Só aparece a partir do 3.º serviço concluído: é o servidor que
+            decide isso (`payout_blocked`), não a app — ver `dinheiroRetido`
+            para o porquê de não ser um `!`. A razão em concreto também vem de
+            lá; o fallback para a AT existe só para servidores que ainda não
+            mandem o código. */}
+        {dinheiroRetido(stats?.payout_blocked) && (
+          <TouchableOpacity
+            activeOpacity={0.85}
+            onPress={() => router.push(
+              (DESTINO_DA_RETENCAO[stats?.payout_blocker ?? ''] ?? DESTINO_DA_RETENCAO.at_user_missing) as never
+            )}
+            accessibilityRole="button"
+          >
+            <Card
+              className="mt-3"
+              style={{ borderWidth: 1, borderColor: 'rgba(218,64,64,0.45)' }}
+            >
+              <View className="flex-row items-center">
+                <IconTile size={44} tint="rgba(218,64,64,0.16)">
+                  <Feather name="lock" size={19} color={Colors.danger} />
+                </IconTile>
+                <CustomText color="secondary" boldness="semiBold" size="medium" classes="flex-1 ml-3">
+                  {t(`earnings.on_hold.${stats?.payout_blocker ?? 'at_user_missing'}.title`)}
+                </CustomText>
+              </View>
+
+              <CustomText color="muted" size="extraSmall" classes="mt-2">
+                {t(`earnings.on_hold.${stats?.payout_blocker ?? 'at_user_missing'}.subtitle`)}
+              </CustomText>
+
+              <View
+                className="flex-row items-center mt-3 pt-3"
+                style={{ borderTopWidth: 1, borderTopColor: Colors.line }}
+              >
+                <CustomText color="brand" boldness="bold" size="small" classes="flex-1">
+                  {t(`earnings.on_hold.${stats?.payout_blocker ?? 'at_user_missing'}.action`)}
+                </CustomText>
+                <Feather name="chevron-right" size={18} color={Colors.brand} />
+              </View>
+            </Card>
+          </TouchableOpacity>
+        )}
+
         {/* Por receber: serviços já feitos que ainda não foram pagos. Antes
             desapareciam — só se via o total ganho, como se estivesse tudo pago. */}
         {!!stats?.pending_payment_amount && (
@@ -233,23 +309,47 @@ const Earnings = () => {
         </Card>
 
         {/* Próximo pagamento */}
-        <View
-          className="rounded-2xl border p-4 mt-3 flex-row items-center"
-          style={{ backgroundColor: 'rgba(35,230,158,0.08)', borderColor: 'rgba(35,230,158,0.25)' }}
-        >
-          <Ionicons name="calendar-clear" size={24} color={Colors.success} />
-          <View className="flex-1 ml-3">
-            <CustomText size="small" color="muted">{t('earnings.next_payment')}</CustomText>
-            <CustomText size="medium" color="secondary" boldness="bolder" classes="mt-0.5" numberOfLines={1}>
-              {t('earnings.next_payment_on', { date: longDate(stats?.next_payment_date) })}
-            </CustomText>
-            <CustomText size="small" color="muted" classes="mt-0.5" numberOfLines={1}>
-              {iban
-                ? t('earnings.to_iban', { iban })
-                : t('earnings.next_payment_hint')}
-            </CustomText>
+        {/* PRÓXIMO PAGAMENTO — em verde, com data e IBAN, a dizer que o dinheiro
+            sai na segunda.
+
+            Com o pagamento retido isso é falso, e é falso logo a seguir ao
+            cartão que acabou de dizer o contrário. Dois cartões encostados a
+            contradizerem-se sobre o dinheiro de alguém não é um detalhe de
+            layout: o técnico acredita no verde, espera pela segunda-feira e não
+            recebe nada. Quando está travado, esta caixa diz a data que interessa
+            — a de quando ele resolver a AT. */}
+        {dinheiroRetido(stats?.payout_blocked) ? (
+          <View
+            className="rounded-2xl border p-4 mt-3 flex-row items-center"
+            style={{ backgroundColor: Colors.card, borderColor: Colors.line }}
+          >
+            <Ionicons name="calendar-clear" size={24} color={Colors.muted} />
+            <View className="flex-1 ml-3">
+              <CustomText size="small" color="muted">{t('earnings.next_payment')}</CustomText>
+              <CustomText size="medium" color="secondary" boldness="bolder" classes="mt-0.5">
+                {t('earnings.next_payment_blocked')}
+              </CustomText>
+            </View>
           </View>
-        </View>
+        ) : (
+          <View
+            className="rounded-2xl border p-4 mt-3 flex-row items-center"
+            style={{ backgroundColor: 'rgba(35,230,158,0.08)', borderColor: 'rgba(35,230,158,0.25)' }}
+          >
+            <Ionicons name="calendar-clear" size={24} color={Colors.success} />
+            <View className="flex-1 ml-3">
+              <CustomText size="small" color="muted">{t('earnings.next_payment')}</CustomText>
+              <CustomText size="medium" color="secondary" boldness="bolder" classes="mt-0.5" numberOfLines={1}>
+                {t('earnings.next_payment_on', { date: longDate(stats?.next_payment_date) })}
+              </CustomText>
+              <CustomText size="small" color="muted" classes="mt-0.5" numberOfLines={1}>
+                {iban
+                  ? t('earnings.to_iban', { iban })
+                  : t('earnings.next_payment_hint')}
+              </CustomText>
+            </View>
+          </View>
+        )}
 
         {/* Serviços desta semana */}
         <CustomText size="medium" color="secondary" boldness="bold" classes="mt-6 mb-3">

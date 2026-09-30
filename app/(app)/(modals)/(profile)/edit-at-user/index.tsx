@@ -20,8 +20,20 @@ import CheckMark from "@/assets/icons/check-mark";
 import XIcon from "@/assets/icons/x";
 import { useTranslation } from "react-i18next";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
+import AtSubuserHelp from "@/components/at/AtSubuserHelp";
 
-const EditCompanyAddress = () => {
+/**
+ * Subutilizador da AT — o ecra que o tecnico abre quando o dinheiro esta retido.
+ *
+ * Nasceu copiado do ecra da morada de faturacao e ficou com o nome e o TITULO
+ * dele: dizia "Alterar morada de faturacao" por cima de dois campos que nao tem
+ * nada que ver com moradas. Quem chegava aqui pelo banner do dinheiro retido
+ * lia um titulo sobre outro assunto e dois campos vazios sem explicacao nenhuma.
+ *
+ * O passo a passo nao e novo — o `AtSubuserHelp` ja existia e ja estava no
+ * onboarding. Faltava estar TAMBEM aqui, que e para onde o aviso aponta.
+ */
+const EditAtUser = () => {
     const { t } = useTranslation();
     const {api} = useApi();
     const {vendorData, setVendorData} = useSession();
@@ -112,13 +124,18 @@ const EditCompanyAddress = () => {
                 backButtonColor="secondary"
                 middleItem={() => (
                     <CustomText color="secondary" boldness="medium" numberOfLines={1}>
-                        {t('general.company_address_change')}
+                        {t('general.at_user_change')}
                     </CustomText>
                 )}
                 otherClasses="p-5"
             />
             <KeyboardAwareScrollView bottomOffset={20}>
                 <View className="gap-y-8 p-5 flex-1">
+
+                    {/* O aviso e os passos ANTES dos campos: a primeira duvida de
+                        quem chega aqui nao e o que escrever, e o que isto e e
+                        porque e que nao se usa o acesso pessoal das Financas. */}
+                    <AtSubuserHelp defaultOpen />
 
                     <View>
                         <CustomText color="secondary" boldness="semiBold" numberOfLines={1}>
@@ -259,5 +276,5 @@ const EditCompanyAddress = () => {
     )
 }
 
-export default EditCompanyAddress
+export default EditAtUser
 

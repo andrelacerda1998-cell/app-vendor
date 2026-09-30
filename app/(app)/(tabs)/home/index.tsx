@@ -37,6 +37,7 @@ import { useDepartureReminders } from "@/hooks/useDepartureReminders";
 import { useNotificationPermission } from "@/contexts/NotificationsContext";
 import { useSchedule } from "@/contexts/ScheduleContext";
 import { useVendorStats } from "@/hooks/useVendorStats";
+import { pedeAtNoPerfil } from "@/utils/atPayout";
 
 const Home = () => {
   const insets = useSafeAreaInsets();
@@ -339,8 +340,17 @@ const Home = () => {
           }
 
           // 2) Perfil incompleto — sem isto não recebe serviços.
+          //
+          // A AT entra nesta conta SÓ quando já é exigida. Antes disso o técnico
+          // pode trabalhar sem ela (os três primeiros serviços), e um banner
+          // "completa o teu perfil" que não sai do ecrã por causa de um campo
+          // que ainda não é preciso ensina-o a ignorar os banners todos — e o
+          // próximo é a AT a bloquear a sério.
+          //
+          // A assimetria dos dois testes de AT desta função (um `=== true`, o
+          // outro `!== false`) está explicada em `utils/atPayout.ts`.
           if (
-            !vendorData?.at_user ||
+            pedeAtNoPerfil(vendorData?.at_user, vendorData?.at_required) ||
             !vendorData?.company_address ||
             !vendorData?.iban ||
             (vendorData?.missing_documents?.length ?? 0) > 0 ||

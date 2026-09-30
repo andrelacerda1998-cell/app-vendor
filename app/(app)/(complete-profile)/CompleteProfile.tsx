@@ -112,7 +112,7 @@ const CompleteProfile = () => {
 
     const handleGoBack = () => {
         if (
-            !vendorData?.at_user ||
+            (!vendorData?.at_user && vendorData?.at_required === true) ||
             !vendorData?.company_address ||
             !vendorData?.schedule_address ||
             !vendorData?.iban ||
@@ -167,8 +167,17 @@ const CompleteProfile = () => {
             // vem com o mesmo formulario na cabeca, e o tecnico so tem de
             // perceber a diferenca entre as duas uma vez.
             setStep(VerifySteps.scheduleAddress);
-        } else if (!data?.at_user && !adiados.includes(VerifySteps.billing)) {
+        } else if (!data?.at_user && data?.at_required === true && !adiados.includes(VerifySteps.billing)) {
             // 4) Acesso à AT (sai da app para o Portal das Finanças).
+            //
+            // SÓ quando o servidor diz que já é exigida — a partir do quarto
+            // serviço. Antes disso é o passo de maior fricção do registo (obriga
+            // a sair da app, entrar no Portal das Finanças e voltar) e estava a
+            // travar gente ANTES de ela ter ganho um único euro.
+            //
+            // `=== true` e não `!data?.at_required`: um servidor antigo não
+            // manda o campo, e `undefined` faria o passo desaparecer para toda
+            // a gente. Na dúvida, mantém-se o comportamento de sempre.
             setStep(VerifySteps.billing);
         } else if (!docsDone) {
             // 5) Documentos (o mais pesado; muitas vezes fica para depois).
