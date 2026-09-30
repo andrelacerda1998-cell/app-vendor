@@ -30,22 +30,3 @@ export const dinheiroRetidoPelaAt = (payoutBlockedByAt?: boolean): boolean =>
  */
 export const pedeAtNoPerfil = (atUser?: string | null, atRequired?: boolean): boolean =>
   !atUser && atRequired !== false;
-
-/**
- * Este técnico já executou algum serviço?
- *
- * Não há contagem de serviços no perfil, mas há duas coisas que a implicam:
- * `at_required` só fica verdadeiro ao 3.º concluído, e
- * `services_until_at_required` é `3 - concluídos` — abaixo de 3 significa que
- * pelo menos um serviço já foi feito.
- *
- * Serve para o "completa o teu perfil" não dizer "para COMEÇARES a receber
- * pedidos" a quem já recebeu e já trabalhou. Para esse, o perfil incompleto não
- * é a porta de entrada: é uma porta que se fechou.
- *
- * Na dúvida (servidor antigo, campos ausentes) assume que NÃO trabalhou — o
- * texto de entrada é o que a app sempre disse, e errar para o lado conhecido é
- * melhor do que dizer "volta a receber" a quem nunca recebeu nada.
- */
-export const jaExecutouServicos = (atRequired?: boolean, servicosAteAAt?: number): boolean =>
-  atRequired === true || (typeof servicosAteAAt === 'number' && servicosAteAAt < 3);

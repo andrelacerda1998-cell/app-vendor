@@ -1,4 +1,4 @@
-import { dinheiroRetidoPelaAt, jaExecutouServicos, pedeAtNoPerfil } from '../atPayout';
+import { dinheiroRetidoPelaAt, pedeAtNoPerfil } from '../atPayout';
 
 describe('dinheiroRetidoPelaAt', () => {
   it('avisa quando o servidor afirma que está retido', () => {
@@ -38,24 +38,5 @@ describe('pedeAtNoPerfil', () => {
 
   it('trata string vazia como não dada', () => {
     expect(pedeAtNoPerfil('', true)).toBe(true);
-  });
-});
-
-describe('jaExecutouServicos', () => {
-  it('um técnico novo ainda não executou nada', () => {
-    expect(jaExecutouServicos(false, 3)).toBe(false);
-  });
-
-  it('ao primeiro serviço concluído já executou', () => {
-    expect(jaExecutouServicos(false, 2)).toBe(true);
-  });
-
-  it('com a AT já exigida executou de certeza', () => {
-    expect(jaExecutouServicos(true, 0)).toBe(true);
-  });
-
-  // Servidor antigo: assume o texto de entrada, que é o que a app sempre disse.
-  it('sem os campos assume que não executou', () => {
-    expect(jaExecutouServicos(undefined, undefined)).toBe(false);
   });
 });
