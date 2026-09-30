@@ -151,16 +151,30 @@ const CompleteYourProfile = () => {
             so a segunda pinta o cartao. */}
         {(dinheiroRetido || zoneRequests > 0) && (
           <View
-            className="flex-row items-center px-4 py-2.5"
+            className={`flex-row items-center px-4 py-2.5 ${dinheiroRetido ? 'justify-center' : ''}`}
             style={{ borderTopWidth: 1, borderTopColor: `rgba(${tom},0.34)` }}
           >
+            {/* A linha do dinheiro vai CENTRADA; a da procura na zona fica
+                encostada a esquerda.
+
+                Nao e inconsistencia: a do dinheiro sao quatro palavras e cabe
+                sempre numa linha, e centrada le-se como um selo. A da zona
+                cresce com o numero ("houve 12 pedidos na tua zona") e passa a
+                duas linhas -- centrar texto que embrulha da um bloco com as
+                pontas irregulares, que e pior do que alinhado.
+
+                `flexShrink` em vez de `flex-1`: com `flex-1` o texto ocupava o
+                espaco todo depois do icone e o "centro" ficava a direita do
+                centro real do cartao. Assim o par icone+frase centra-se como um
+                bloco, e encolhe se algum dia precisar. */}
             <Feather name={dinheiroRetido ? 'lock' : 'trending-up'} size={15} color={corPrincipal} />
             <CustomText
               size="small"
               color="secondary"
               boldness="semiBold"
-              classes="ml-2 flex-1"
-              numberOfLines={2}
+              classes={dinheiroRetido ? 'ml-2' : 'ml-2 flex-1'}
+              numberOfLines={dinheiroRetido ? 1 : 2}
+              style={dinheiroRetido ? { flexShrink: 1 } : undefined}
             >
               {dinheiroRetido
                 ? t('complete_profile.money_on_hold')
