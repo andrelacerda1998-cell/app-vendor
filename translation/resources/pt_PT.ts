@@ -1339,7 +1339,6 @@ export default {
         "on_hold_subtitle": "O trabalho está feito e o dinheiro é teu. Para o transferirmos temos de emitir a fatura, e para isso falta o subutilizador da Autoridade Tributária.",
         "on_hold_action": "Dar o acesso à AT",
         "next_payment_blocked": "Assim que deres o acesso à AT",
-        "on_hold_banner": "Dinheiro retido: falta o acesso à AT"
     },
     "user_header": {
         "welcome_back": "Bem-vindo de volta,",
@@ -1490,6 +1489,7 @@ export default {
             "company_address": "morada de faturação",
             "iban": "IBAN"
         },
+        "money_on_hold": "O dinheiro que já ganhaste está retido até deres o acesso à AT.",
         "notice": "Completa o teu perfil",
         "subtitle": "Enquanto não estiver completo não recebes pedidos.",
         "header": "Completar o teu perfil",

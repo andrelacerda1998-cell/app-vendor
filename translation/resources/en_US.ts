@@ -1339,7 +1339,6 @@ export default {
     "on_hold_subtitle": "The work is done and the money is yours. To transfer it we have to issue the invoice, and for that the Tax Authority sub-user is missing.",
     "on_hold_action": "Give Tax Authority access",
     "next_payment_blocked": "As soon as you give Tax Authority access",
-    "on_hold_banner": "Money on hold: no Tax Authority access"
   },
   "user_header": {
     "welcome_back": "Welcome back,",
@@ -1490,6 +1489,7 @@ export default {
         "company_address": "billing address",
         "iban": "IBAN"
     },
+    "money_on_hold": "The money you have already earned is on hold until you give Tax Authority access.",
     "notice": "Complete your profile",
     "subtitle": "You won't receive requests until it's complete.",
     "header": "Complete your profile",

@@ -8,6 +8,7 @@ import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next"
 import { cardShadow } from "@/components/ui"
 import { useSession } from "@/contexts/SessionContext"
+import { dinheiroRetidoPelaAt, pedeAtNoPerfil } from "@/utils/atPayout"
 
 /**
  * Aviso de perfil incompleto — bloqueia a receção de pedidos, por isso tem de
@@ -35,7 +36,10 @@ const CompleteYourProfile = () => {
   if ((vendorData?.missing_documents?.length ?? 0) > 0) missing.push(t('complete_profile.missing.documents'));
   if (!vendorData?.user?.phone_number_verified_at) missing.push(t('complete_profile.missing.phone'));
   if (!vendorData?.user?.email_verified_at) missing.push(t('complete_profile.missing.email'));
-  if (!vendorData?.at_user) missing.push(t('complete_profile.missing.at_user'));
+  // A AT so conta como passo em falta quando ja e exigida (a partir do 3.o
+  // servico concluido). Antes disso somava um passo que o tecnico nao tem de
+  // dar, e a contagem mentia: "faltam 2" quando so falta 1.
+  if (pedeAtNoPerfil(vendorData?.at_user, vendorData?.at_required)) missing.push(t('complete_profile.missing.at_user'));
   if (!vendorData?.company_address) missing.push(t('complete_profile.missing.company_address'));
   if (!vendorData?.iban) missing.push(t('complete_profile.missing.iban'));
 
@@ -58,6 +62,20 @@ const CompleteYourProfile = () => {
    * procura, o backend manda 0/null e não se inventa nada.
    */
   const zoneRequests = vendorData?.zone_recent_requests ?? 0;
+
+  /**
+   * Dinheiro dele, ja ganho, parado a espera da AT.
+   *
+   * Tinha banner proprio, a vermelho, mesmo por cima deste. Eram duas caixas a
+   * falar do MESMO passo em falta e a competir pelo mesmo toque -- e a vermelha
+   * ganhava por cor, nao por importancia. Passa a ser a faixa de baixo deste
+   * cartao, que e exactamente o sitio que ja existia para "o que estas a perder
+   * por nao completares isto".
+   *
+   * Ganha a prioridade sobre a procura na zona quando as duas sao verdade:
+   * pedidos que PODIAM aparecer valem menos do que dinheiro que ja e dele.
+   */
+  const dinheiroRetido = dinheiroRetidoPelaAt(vendorData?.payout_blocked_by_at);
 
   return (
     <TouchableOpacity
@@ -91,14 +109,16 @@ const CompleteYourProfile = () => {
           <Feather name="chevron-right" size={22} color={Colors.brand} />
         </View>
 
-        {zoneRequests > 0 && (
+        {(dinheiroRetido || zoneRequests > 0) && (
           <View
             className="flex-row items-center px-4 py-2.5"
             style={{ borderTopWidth: 1, borderTopColor: 'rgba(250,187,91,0.28)' }}
           >
-            <Feather name="trending-up" size={15} color={Colors.brand} />
+            <Feather name={dinheiroRetido ? 'lock' : 'trending-up'} size={15} color={Colors.brand} />
             <CustomText size="small" color="secondary" boldness="semiBold" classes="ml-2 flex-1" numberOfLines={2}>
-              {t('complete_profile.zone_demand', { count: zoneRequests })}
+              {dinheiroRetido
+                ? t('complete_profile.money_on_hold')
+                : t('complete_profile.zone_demand', { count: zoneRequests })}
             </CustomText>
           </View>
         )}

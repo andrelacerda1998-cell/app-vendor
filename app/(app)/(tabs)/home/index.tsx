@@ -37,7 +37,7 @@ import { useDepartureReminders } from "@/hooks/useDepartureReminders";
 import { useNotificationPermission } from "@/contexts/NotificationsContext";
 import { useSchedule } from "@/contexts/ScheduleContext";
 import { useVendorStats } from "@/hooks/useVendorStats";
-import { dinheiroRetidoPelaAt, pedeAtNoPerfil } from "@/utils/atPayout";
+import { pedeAtNoPerfil } from "@/utils/atPayout";
 
 const Home = () => {
   const insets = useSafeAreaInsets();
@@ -334,29 +334,6 @@ const Home = () => {
                       {t('profile.edit.at_invalid.banner')}
                     </CustomText>
                   </View>
-                </TouchableOpacity>
-              </View>
-            )});
-          }
-
-          // 1b) Dinheiro retido por falta da AT — ele já trabalhou e já tem
-          // saldo, e é isso que torna este aviso diferente de "completa o
-          // perfil": não é papelada por fazer, é dinheiro dele à espera.
-          if (dinheiroRetidoPelaAt(vendorData?.payout_blocked_by_at)) {
-            banners.push({ key: 'at_payout', node: (
-              <View className="px-5">
-                <TouchableOpacity
-                  onPress={() => router.push('/(app)/(modals)/(profile)/edit-at-user')}
-                  activeOpacity={0.85}
-                  className="flex-row items-center rounded-xl p-3"
-                  style={{ backgroundColor: Colors.card, borderWidth: 1, borderColor: 'rgba(218,64,64,0.45)' }}
-                  accessibilityRole="button"
-                >
-                  <Feather name="lock" size={18} color={Colors.danger} />
-                  <CustomText color="secondary" size="small" boldness="semiBold" classes="ml-2.5 flex-1" numberOfLines={1}>
-                    {t('earnings.on_hold_banner')}
-                  </CustomText>
-                  <Feather name="chevron-right" size={18} color={Colors.danger} />
                 </TouchableOpacity>
               </View>
             )});

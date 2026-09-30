@@ -198,11 +198,6 @@ const Earnings = () => {
               className="mt-3"
               style={{ borderWidth: 1, borderColor: 'rgba(218,64,64,0.45)' }}
             >
-              {/* O valor fica na LINHA DO TÍTULO, não ao lado do parágrafo.
-                  Ao lado, um valor de largura fixa espremia uma explicação de
-                  três linhas até ela cortar a meio de "Autoridade Tribu…" — e a
-                  frase que explica porque é que o dinheiro não saiu é a única
-                  coisa deste cartão que não se pode dar ao luxo de ser cortada. */}
               <View className="flex-row items-center">
                 <IconTile size={44} tint="rgba(218,64,64,0.16)">
                   <Feather name="lock" size={19} color={Colors.danger} />
@@ -210,13 +205,6 @@ const Earnings = () => {
                 <CustomText color="secondary" boldness="semiBold" size="medium" classes="flex-1 ml-3">
                   {t('earnings.on_hold_title')}
                 </CustomText>
-                {/* O valor só aparece quando há valor: um "0,00 €" ao lado de
-                    "está retido" leria-se como se nada estivesse em causa. */}
-                {!!stats?.payout_on_hold_amount && (
-                  <CustomText color="secondary" boldness="bolder" size="medium" classes="ml-2" style={{ color: Colors.danger }}>
-                    {renderMoney(stats.payout_on_hold_amount) || '0,00 €'}
-                  </CustomText>
-                )}
               </View>
 
               <CustomText color="muted" size="extraSmall" classes="mt-2">
