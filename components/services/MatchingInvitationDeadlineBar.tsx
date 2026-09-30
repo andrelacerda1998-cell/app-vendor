@@ -62,7 +62,9 @@ const MatchingInvitationDeadlineBar = ({ invitation }: { invitation: MatchingInv
       <View className="flex-row items-center justify-center">
         <Feather name={countdown.urgent ? 'alert-circle' : 'clock'} size={16} color={cor} />
         <CustomText
-          size="subtitle"
+          // O mesmo tamanho da barra do cliente. Sao o mesmo momento visto dos
+          // dois lados e nao ha razao para um dos numeros ser maior.
+          size="extraLarge"
           boldness="bolder"
           color="secondary"
           classes="ml-2"
