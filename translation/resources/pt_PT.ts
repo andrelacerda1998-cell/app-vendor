@@ -1073,6 +1073,9 @@ export default {
         "step_submit_documents": "Enviar documentos",
         "step_review": "Análise da Piquet",
         "step_at_user": "Subutilizador AT",
+        "step_at_user_optional_one": "Podes deixar para depois: falta {{count}} serviço até ser preciso.",
+        "step_at_user_optional_other": "Podes deixar para depois: faltam {{count}} serviços até ser preciso.",
+        "step_at_user_optional_zero": "Já é preciso para continuares a receber pedidos.",
         "step_approved": "Conta aprovada",
         "see_documents": "Ver documentos"
     },

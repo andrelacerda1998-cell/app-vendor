@@ -1073,6 +1073,9 @@ export default {
     "step_submit_documents": "Send documents",
     "step_review": "Piquet review",
     "step_at_user": "Tax Authority sub-user",
+    "step_at_user_optional_one": "You can leave this for later: {{count}} job to go before it is needed.",
+    "step_at_user_optional_other": "You can leave this for later: {{count}} jobs to go before it is needed.",
+    "step_at_user_optional_zero": "You need this now to keep receiving jobs.",
     "step_approved": "Account approved",
     "see_documents": "See documents"
   },

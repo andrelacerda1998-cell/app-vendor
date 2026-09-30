@@ -36,6 +36,16 @@ export interface VendorDataInterface {
   schedule_address?: string | null;
   at_user: string | null;
   /**
+   * O acesso à AT já é exigido — os três primeiros serviços acabaram.
+   *
+   * Opcional porque um servidor anterior a 30/09/2026 não manda o campo. Quem o
+   * lê deve comparar com `=== true` / `=== false`, nunca com `!`: um `undefined`
+   * tratado como "não exigido" abria o portão a toda a gente.
+   */
+  at_required?: boolean;
+  /** Quantos serviços ainda pode fazer antes de a AT o travar. 0 = já trava. */
+  services_until_at_required?: number;
+  /**
    * Pedidos criados na zona do técnico nos últimos 7 dias. Só vem preenchido
    * para quem ainda não pode aceitar serviços — para os aprovados é `null`.
    */

@@ -54,7 +54,20 @@ const AccountStatus = () => {
   const steps: { label: string; done: boolean; hint?: string }[] = [
     { label: t('account_status.step_create_account'), done: true },
     { label: t('account_status.step_submit_documents'), done: submitted || approved },
-    { label: t('account_status.step_at_user'), done: !!vendorData?.at_user },
+    {
+      label: t('account_status.step_at_user'),
+      done: !!vendorData?.at_user,
+      // Antes dos três primeiros serviços a AT não trava nada, e a lista tem
+      // de o dizer: um passo por fazer numa lista de "o que falta para
+      // trabalhar" lê-se como impedimento, e este não é. A nota diz quantos
+      // serviços ainda pode fazer sem ela.
+      hint:
+        vendorData?.at_required === false
+          ? t('account_status.step_at_user_optional', {
+              count: vendorData?.services_until_at_required ?? 0,
+            })
+          : undefined,
+    },
     { label: t('account_status.step_review'), done: approved },
     { label: t('account_status.step_approved'), done: approved },
   ];
