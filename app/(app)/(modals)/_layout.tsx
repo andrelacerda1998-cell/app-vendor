@@ -7,6 +7,17 @@ export default function AppLayout() {
         headerShown: false,
       }}
     >
+      {/* Aceitação dos Termos. `gestureEnabled: false` e sem fecho: o passo é
+          obrigatório, e um modal que se arrasta para baixo transformava um
+          consentimento numa coisa que se dispensa sem querer. */}
+      <Stack.Screen
+        name="(legal)/accept-terms"
+        options={{
+          presentation: 'modal',
+          animation: 'slide_from_bottom',
+          gestureEnabled: false,
+        }}
+      />
       <Stack.Screen
         name="(profile)"
         options={{

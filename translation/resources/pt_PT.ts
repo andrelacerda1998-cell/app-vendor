@@ -1313,6 +1313,23 @@ export default {
       "free_day_title": "Dia livre",
         "free_day": "Não tens serviços agendados para este dia."
     },
+    "legal": {
+        "accept": {
+            "title": "Uma alteração aos Termos",
+            "subtitle": "Atualizámos os Termos para Prestadores. Há uma cláusula nova sobre o teu dinheiro, e queremos que a leias antes de aceitares.",
+            "clause_heading": "Prazo de 5 dias para o acesso à AT",
+            "clause_body": "A partir do terceiro serviço concluído, o dinheiro que ganhares fica retido enquanto não deres o subutilizador da AT — sem ele não conseguimos emitir a fatura. Tens 5 dias para o dar, contados da conclusão do serviço. Avisamos-te a 3 dias, a 1 dia e no último dia. Se o prazo passar sem o acesso, perdes o valor retido. O crédito promocional não é afetado, e podes contestar junto do suporte em 30 dias.",
+            "read_full": "Ler os Termos completos",
+            "checkbox": "Li e aceito os Termos para Prestadores, incluindo a cláusula acima sobre a perda do valor retido.",
+            "confirm": "Aceitar",
+            "saving": "A guardar…",
+            "version": "Versão {{version}}"
+        },
+        "accept_error": {
+            "title": "Não conseguimos guardar",
+            "subtitle": "Tenta outra vez. Se continuar, fala com o suporte."
+        }
+    },
     "earnings": {
         "this_week": "Ganhos desta semana",
         "error_title": "Não foi possível carregar os teus ganhos",
