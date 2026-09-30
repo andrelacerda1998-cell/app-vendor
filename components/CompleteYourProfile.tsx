@@ -91,25 +91,46 @@ const CompleteYourProfile = () => {
    */
   const dinheiroRetido = dinheiroRetidoPelaAt(vendorData?.payout_blocked_by_at);
 
+  /**
+   * Com dinheiro retido o cartao INTEIRO passa a vermelho.
+   *
+   * Ate aqui era so a faixa de baixo, e a leitura saia trocada: um cartao ambar
+   * le-se como "tarefa por acabar, trata disso quando puderes", e e exactamente
+   * o que ele NAO deve pensar quando ja trabalhou e tem dinheiro parado. Ambar
+   * e a versao de quem ainda nao perdeu nada.
+   *
+   * O vermelho sai do token da app (`Colors.danger`, #FF5A5F) e nao de um hex
+   * escrito a mao. A faixa usava `rgba(218,64,64,…)`, que e do banner da AT
+   * invalida -- dois vermelhos parecidos e diferentes no mesmo ecra.
+   */
+  const VERMELHO = '255,90,95';   // Colors.danger
+  const AMBAR = '250,187,91';     // Colors.brand
+  const tom = dinheiroRetido ? VERMELHO : AMBAR;
+  const corPrincipal = dinheiroRetido ? Colors.danger : Colors.brand;
+
   return (
     <TouchableOpacity
       activeOpacity={0.9}
       onPress={() => router.push('/(app)/(complete-profile)/CompleteProfile')}
     >
       <LinearGradient
-        colors={['rgba(250,187,91,0.26)', 'rgba(250,187,91,0.08)']}
+        colors={[`rgba(${tom},0.26)`, `rgba(${tom},0.08)`]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={[
-          { borderRadius: 16, borderWidth: 1.5, borderColor: 'rgba(250,187,91,0.50)' },
+          { borderRadius: 16, borderWidth: 1.5, borderColor: `rgba(${tom},0.52)` },
           cardShadow,
         ]}
       >
         <View className="flex-row items-center p-4">
           <View
             className="w-11 h-11 rounded-full items-center justify-center mr-3"
-            style={{ backgroundColor: Colors.support_primary }}
+            style={{ backgroundColor: corPrincipal }}
           >
+            {/* Triangulo e nao cadeado: o titulo continua a ser uma tarefa
+                por acabar. O cadeado e da linha do dinheiro, la em baixo --
+                dois cadeados no mesmo cartao seriam o mesmo simbolo a dizer
+                duas coisas. */}
             <Feather name="alert-triangle" size={22} color={Colors.on_brand} />
           </View>
           <View className="flex-1">
@@ -120,41 +141,26 @@ const CompleteYourProfile = () => {
               {subtitle}
             </CustomText>
           </View>
-          <Feather name="chevron-right" size={22} color={Colors.brand} />
+          <Feather name="chevron-right" size={22} color={corPrincipal} />
         </View>
 
-        {/* A faixa do dinheiro vai a VERMELHO; a da procura na zona fica ambar.
-            Sao coisas de natureza diferente e a cor tem de o dizer: a procura e
-            uma oportunidade ("podias estar a ganhar"), o dinheiro retido e uma
-            perda a acontecer ("ja ganhaste e nao o tens"). O cartao continua
-            ambar -- o vermelho e so da linha que o merece.
-
-            O raio e 14.5 e nao 16: a moldura do cartao tem 1.5 de espessura, e
-            um filho com o raio do PAI deixa um fio ambar a espreitar nos cantos
-            de baixo. */}
+        {/* A cor ja veio de cima (o cartao todo), por isso aqui basta o traco a
+            separar. Procura na zona e dinheiro retido sao coisas de natureza
+            oposta -- uma e oportunidade ("podias estar a ganhar"), a outra e
+            perda a acontecer ("ja ganhaste e nao o tens") -- e e por isso que
+            so a segunda pinta o cartao. */}
         {(dinheiroRetido || zoneRequests > 0) && (
           <View
             className="flex-row items-center px-4 py-2.5"
-            style={{
-              borderTopWidth: 1,
-              borderTopColor: dinheiroRetido ? 'rgba(218,64,64,0.45)' : 'rgba(250,187,91,0.28)',
-              backgroundColor: dinheiroRetido ? 'rgba(218,64,64,0.14)' : 'transparent',
-              borderBottomLeftRadius: 14.5,
-              borderBottomRightRadius: 14.5,
-            }}
+            style={{ borderTopWidth: 1, borderTopColor: `rgba(${tom},0.34)` }}
           >
-            <Feather
-              name={dinheiroRetido ? 'lock' : 'trending-up'}
-              size={15}
-              color={dinheiroRetido ? Colors.danger : Colors.brand}
-            />
+            <Feather name={dinheiroRetido ? 'lock' : 'trending-up'} size={15} color={corPrincipal} />
             <CustomText
               size="small"
               color="secondary"
               boldness="semiBold"
               classes="ml-2 flex-1"
               numberOfLines={2}
-              style={dinheiroRetido ? { color: Colors.danger } : undefined}
             >
               {dinheiroRetido
                 ? t('complete_profile.money_on_hold')
