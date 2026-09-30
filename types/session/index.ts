@@ -57,6 +57,15 @@ export interface VendorDataInterface {
   /** Qual dos três: `iban_missing` | `fiscal_address_missing` | `at_user_missing`. */
   payout_blocker?: 'iban_missing' | 'fiscal_address_missing' | 'at_user_missing' | null;
   /**
+   * Quando acaba o prazo para dar a AT antes de o dinheiro se perder (ISO 8601).
+   *
+   * Vem a DATA e não os dias que faltam: um número calculado no servidor
+   * congela no momento do pedido, e a app que fique aberta ao virar da
+   * meia-noite continuava a dizer "faltam 2" quando já só falta 1. Com a data,
+   * quem conta é quem mostra.
+   */
+  at_deadline_ends_at?: string | null;
+  /**
    * Pedidos criados na zona do técnico nos últimos 7 dias. Só vem preenchido
    * para quem ainda não pode aceitar serviços — para os aprovados é `null`.
    */

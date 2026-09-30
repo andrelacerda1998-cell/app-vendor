@@ -49,3 +49,22 @@ export const pedeAtNoPerfil = (atUser?: string | null, atRequired?: boolean): bo
  */
 export const jaExecutouServicos = (atRequired?: boolean, servicosAteAAt?: number): boolean =>
   atRequired === true || (typeof servicosAteAAt === 'number' && servicosAteAAt < 3);
+
+/**
+ * Dias inteiros que faltam até o dinheiro se perder. `null` = não há prazo.
+ *
+ * Conta na APP e não no servidor de propósito: um número vindo de lá congela no
+ * momento do pedido, e a app que fique aberta ao virar da meia-noite continuava
+ * a dizer "faltam 2" quando já só falta 1.
+ *
+ * Arredonda para CIMA, como o servidor: dizer "falta 1 dia" a quem tem 18 horas
+ * é mais seguro do que dizer "faltam 0" e ele julgar que já perdeu.
+ */
+export const diasAteAoPrazoDaAt = (fimISO?: string | null, agora = Date.now()): number | null => {
+  if (!fimISO) return null;
+
+  const fim = Date.parse(fimISO);
+  if (Number.isNaN(fim)) return null;
+
+  return Math.max(0, Math.ceil((fim - agora) / 86_400_000));
+};

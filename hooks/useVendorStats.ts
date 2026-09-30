@@ -21,6 +21,8 @@ export interface VendorStats {
    */
   payout_blocked?: boolean;
   payout_blocker?: 'iban_missing' | 'fiscal_address_missing' | 'at_user_missing' | null;
+  /** Fim do prazo para dar a AT, em ISO 8601. Ver `types/session`. */
+  at_deadline_ends_at?: string | null;
   payout_on_hold_amount?: number;
 }
 
