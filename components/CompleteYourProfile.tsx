@@ -8,7 +8,7 @@ import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next"
 import { cardShadow } from "@/components/ui"
 import { useSession } from "@/contexts/SessionContext"
-import { dinheiroRetidoPelaAt, pedeAtNoPerfil } from "@/utils/atPayout"
+import { dinheiroRetidoPelaAt, jaExecutouServicos, pedeAtNoPerfil } from "@/utils/atPayout"
 
 /**
  * Aviso de perfil incompleto — bloqueia a receção de pedidos, por isso tem de
@@ -48,10 +48,24 @@ const CompleteYourProfile = () => {
    * no cartao: cortava a meio ("morada de faturacao…") e o tecnico nem chegava
    * a ler o que faltava. O detalhe esta a um toque, no ecra seguinte.
    */
+  /**
+   * "COMECARES a receber pedidos" nao serve a quem ja recebeu.
+   *
+   * Este cartao nasceu para o onboarding, e o texto era so o de entrada. Mas com
+   * a regra da AT ele aparece tambem a quem ja concluiu tres servicos -- e
+   * dizer-lhe "completa o perfil para comecares a receber pedidos" e negar o
+   * trabalho que ele ja fez. Para esse, o perfil incompleto nao e a porta de
+   * entrada: e uma porta que se fechou. Dai "VOLTARES a receber".
+   */
+  const jaTrabalhou = jaExecutouServicos(vendorData?.at_required, vendorData?.services_until_at_required);
+
   const subtitle = missing.length > 0
-    ? t(missing.length === 1 ? 'complete_profile.missing_one' : 'complete_profile.missing_many', {
-        count: missing.length,
-      })
+    ? t(
+        jaTrabalhou
+          ? (missing.length === 1 ? 'complete_profile.missing_again_one' : 'complete_profile.missing_again_many')
+          : (missing.length === 1 ? 'complete_profile.missing_one' : 'complete_profile.missing_many'),
+        { count: missing.length },
+      )
     : t('complete_profile.subtitle');
 
   /**
@@ -109,13 +123,39 @@ const CompleteYourProfile = () => {
           <Feather name="chevron-right" size={22} color={Colors.brand} />
         </View>
 
+        {/* A faixa do dinheiro vai a VERMELHO; a da procura na zona fica ambar.
+            Sao coisas de natureza diferente e a cor tem de o dizer: a procura e
+            uma oportunidade ("podias estar a ganhar"), o dinheiro retido e uma
+            perda a acontecer ("ja ganhaste e nao o tens"). O cartao continua
+            ambar -- o vermelho e so da linha que o merece.
+
+            O raio e 14.5 e nao 16: a moldura do cartao tem 1.5 de espessura, e
+            um filho com o raio do PAI deixa um fio ambar a espreitar nos cantos
+            de baixo. */}
         {(dinheiroRetido || zoneRequests > 0) && (
           <View
             className="flex-row items-center px-4 py-2.5"
-            style={{ borderTopWidth: 1, borderTopColor: 'rgba(250,187,91,0.28)' }}
+            style={{
+              borderTopWidth: 1,
+              borderTopColor: dinheiroRetido ? 'rgba(218,64,64,0.45)' : 'rgba(250,187,91,0.28)',
+              backgroundColor: dinheiroRetido ? 'rgba(218,64,64,0.14)' : 'transparent',
+              borderBottomLeftRadius: 14.5,
+              borderBottomRightRadius: 14.5,
+            }}
           >
-            <Feather name={dinheiroRetido ? 'lock' : 'trending-up'} size={15} color={Colors.brand} />
-            <CustomText size="small" color="secondary" boldness="semiBold" classes="ml-2 flex-1" numberOfLines={2}>
+            <Feather
+              name={dinheiroRetido ? 'lock' : 'trending-up'}
+              size={15}
+              color={dinheiroRetido ? Colors.danger : Colors.brand}
+            />
+            <CustomText
+              size="small"
+              color="secondary"
+              boldness="semiBold"
+              classes="ml-2 flex-1"
+              numberOfLines={2}
+              style={dinheiroRetido ? { color: Colors.danger } : undefined}
+            >
               {dinheiroRetido
                 ? t('complete_profile.money_on_hold')
                 : t('complete_profile.zone_demand', { count: zoneRequests })}

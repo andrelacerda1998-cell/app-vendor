@@ -1480,6 +1480,8 @@ export default {
     "zone_demand_one": "{{count}} request in your area this week",
     "zone_demand_other": "{{count}} requests in your area this week",
     "missing_one": "1 step left before you can receive requests.",
+    "missing_again_one": "1 step left before you can receive requests again.",
+    "missing_again_many": "{{count}} steps left before you can receive requests again.",
     "missing_many": "{{count}} steps left before you can receive requests.",
     "missing": {
         "documents": "documents",
@@ -1489,7 +1491,7 @@ export default {
         "company_address": "billing address",
         "iban": "IBAN"
     },
-    "money_on_hold": "The money you have already earned is on hold until you give Tax Authority access.",
+    "money_on_hold": "Your money is on hold.",
     "notice": "Complete your profile",
     "subtitle": "You won't receive requests until it's complete.",
     "header": "Complete your profile",
