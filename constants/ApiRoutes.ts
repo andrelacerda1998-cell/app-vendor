@@ -47,6 +47,7 @@ export const API_ROUTES = {
     VENDOR_GET_STATUS: `${API_BASE_URL}/vendor/status`,
     VENDOR_GET_WALLET: `${API_BASE_URL}/vendor/wallet`,
     VENDOR_GET_STATS: `${API_BASE_URL}/vendor/stats`,
+    VENDOR_ACCEPT_TERMS: `${API_BASE_URL}/vendor/terms/accept`,
     VENDOR_GET_REVIEWS: `${API_BASE_URL}/vendor/reviews`,
     GET_DOCUMENTS: `${API_BASE_URL}/vendor/documents`,
     VENDOR_SERVICE_EXTRAS: (id: number | string) => `${API_BASE_URL}/vendor/services/${id}/extras`,

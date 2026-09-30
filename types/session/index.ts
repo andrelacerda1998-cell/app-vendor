@@ -66,6 +66,15 @@ export interface VendorDataInterface {
    */
   at_deadline_ends_at?: string | null;
   /**
+   * Termos: que versão está em vigor, qual ele aceitou, e se falta aceitar.
+   *
+   * Isto não é decoração legal: o servidor NÃO conta o prazo da perda a quem
+   * não aceitou a versão em vigor. Sem aceitação há retenção, mas não há perda.
+   */
+  terms_version_required?: string | null;
+  terms_version_accepted?: string | null;
+  terms_acceptance_required?: boolean;
+  /**
    * Pedidos criados na zona do técnico nos últimos 7 dias. Só vem preenchido
    * para quem ainda não pode aceitar serviços — para os aprovados é `null`.
    */

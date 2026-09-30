@@ -41,6 +41,31 @@ export default function AppLayout() {
     // Incrementado quando o arranque falha, para repetir o carregamento.
     const [bootRetry, setBootRetry] = useState(0);
 
+    /*
+
+     * Termos por aceitar: abre o passo, uma vez, quando o servidor o pede.
+
+     *
+
+     * Aqui e nao no registo porque isto tambem tem de alcancar quem JA esta
+
+     * registado -- e sao esses que tem dinheiro a ganhar e, sem aceitacao, um
+
+     * prazo que nunca lhes arranca.
+
+     */
+
+    useEffect(() => {
+
+      if (vendorData?.terms_acceptance_required === true) {
+
+        router.push('/(app)/(modals)/(legal)/accept-terms');
+
+      }
+
+    }, [vendorData?.terms_acceptance_required]);
+
+
     useEffect(() => {
         if (appStateStatus !== "active") {
             didFetchRef.current = false;

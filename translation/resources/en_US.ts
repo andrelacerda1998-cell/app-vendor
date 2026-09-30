@@ -1313,6 +1313,23 @@ export default {
     "free_day_title": "Free day",
     "free_day": "You have no services scheduled for this day."
   },
+  "legal": {
+    "accept": {
+      "title": "A change to the Terms",
+      "subtitle": "We have updated the Provider Terms. There is a new clause about your money, and we want you to read it before accepting.",
+      "clause_heading": "5-day deadline for Tax Authority access",
+      "clause_body": "From your third completed job, the money you earn is held until you give the Tax Authority sub-user — without it we cannot issue the invoice. You have 5 days to give it, counted from the job's completion. We warn you at 3 days, 1 day and on the last day. If the deadline passes without it, you lose the held amount. Promotional credit is not affected, and you can dispute it with support within 30 days.",
+      "read_full": "Read the full Terms",
+      "checkbox": "I have read and accept the Provider Terms, including the clause above about losing the held amount.",
+      "confirm": "Accept",
+      "saving": "Saving…",
+      "version": "Version {{version}}"
+    },
+    "accept_error": {
+      "title": "We could not save it",
+      "subtitle": "Try again. If it keeps happening, talk to support."
+    }
+  },
   "earnings": {
     "this_week": "This week's earnings",
     "error_title": "Couldn't load your earnings",
