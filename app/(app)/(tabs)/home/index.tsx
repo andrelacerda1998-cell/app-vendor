@@ -353,7 +353,7 @@ const Home = () => {
                   accessibilityRole="button"
                 >
                   <Feather name="lock" size={18} color={Colors.danger} />
-                  <CustomText color="secondary" size="small" classes="ml-2.5 flex-1" numberOfLines={3}>
+                  <CustomText color="secondary" size="small" boldness="semiBold" classes="ml-2.5 flex-1" numberOfLines={1}>
                     {t('earnings.on_hold_banner')}
                   </CustomText>
                   <Feather name="chevron-right" size={18} color={Colors.danger} />

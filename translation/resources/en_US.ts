@@ -1339,7 +1339,7 @@ export default {
     "on_hold_subtitle": "The work is done and the money is yours. To transfer it we have to issue the invoice, and for that the Tax Authority sub-user is missing.",
     "on_hold_action": "Give Tax Authority access",
     "next_payment_blocked": "As soon as you give Tax Authority access",
-    "on_hold_banner": "Your money is on hold: the Tax Authority sub-user is missing."
+    "on_hold_banner": "Money on hold: no Tax Authority access"
   },
   "user_header": {
     "welcome_back": "Welcome back,",
