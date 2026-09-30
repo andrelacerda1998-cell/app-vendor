@@ -1480,6 +1480,8 @@ export default {
         "zone_demand_one": "{{count}} pedido na tua zona esta semana",
             "zone_demand_other": "{{count}} pedidos na tua zona esta semana",
             "missing_one": "Falta 1 passo para começares a receber pedidos.",
+        "missing_again_one": "Falta 1 passo para voltares a receber pedidos.",
+        "missing_again_many": "Faltam {{count}} passos para voltares a receber pedidos.",
         "missing_many": "Faltam {{count}} passos para começares a receber pedidos.",
         "missing": {
             "documents": "documentos",

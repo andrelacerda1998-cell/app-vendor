@@ -1480,6 +1480,8 @@ export default {
     "zone_demand_one": "{{count}} request in your area this week",
     "zone_demand_other": "{{count}} requests in your area this week",
     "missing_one": "1 step left before you can receive requests.",
+    "missing_again_one": "1 step left before you can receive requests again.",
+    "missing_again_many": "{{count}} steps left before you can receive requests again.",
     "missing_many": "{{count}} steps left before you can receive requests.",
     "missing": {
         "documents": "documents",
