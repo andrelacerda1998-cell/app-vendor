@@ -198,26 +198,30 @@ const Earnings = () => {
               className="mt-3"
               style={{ borderWidth: 1, borderColor: 'rgba(218,64,64,0.45)' }}
             >
+              {/* O valor fica na LINHA DO TÍTULO, não ao lado do parágrafo.
+                  Ao lado, um valor de largura fixa espremia uma explicação de
+                  três linhas até ela cortar a meio de "Autoridade Tribu…" — e a
+                  frase que explica porque é que o dinheiro não saiu é a única
+                  coisa deste cartão que não se pode dar ao luxo de ser cortada. */}
               <View className="flex-row items-center">
                 <IconTile size={44} tint="rgba(218,64,64,0.16)">
                   <Feather name="lock" size={19} color={Colors.danger} />
                 </IconTile>
-                <View className="flex-1 ml-3">
-                  <CustomText color="secondary" boldness="semiBold" size="medium">
-                    {t('earnings.on_hold_title')}
-                  </CustomText>
-                  <CustomText color="muted" size="extraSmall" classes="mt-0.5" numberOfLines={3}>
-                    {t('earnings.on_hold_subtitle')}
-                  </CustomText>
-                </View>
+                <CustomText color="secondary" boldness="semiBold" size="medium" classes="flex-1 ml-3">
+                  {t('earnings.on_hold_title')}
+                </CustomText>
                 {/* O valor só aparece quando há valor: um "0,00 €" ao lado de
                     "está retido" leria-se como se nada estivesse em causa. */}
                 {!!stats?.payout_on_hold_amount && (
-                  <CustomText color="secondary" boldness="bolder" size="medium" style={{ color: Colors.danger }}>
+                  <CustomText color="secondary" boldness="bolder" size="medium" classes="ml-2" style={{ color: Colors.danger }}>
                     {renderMoney(stats.payout_on_hold_amount) || '0,00 €'}
                   </CustomText>
                 )}
               </View>
+
+              <CustomText color="muted" size="extraSmall" classes="mt-2">
+                {t('earnings.on_hold_subtitle')}
+              </CustomText>
 
               <View
                 className="flex-row items-center mt-3 pt-3"
@@ -295,23 +299,47 @@ const Earnings = () => {
         </Card>
 
         {/* Próximo pagamento */}
-        <View
-          className="rounded-2xl border p-4 mt-3 flex-row items-center"
-          style={{ backgroundColor: 'rgba(35,230,158,0.08)', borderColor: 'rgba(35,230,158,0.25)' }}
-        >
-          <Ionicons name="calendar-clear" size={24} color={Colors.success} />
-          <View className="flex-1 ml-3">
-            <CustomText size="small" color="muted">{t('earnings.next_payment')}</CustomText>
-            <CustomText size="medium" color="secondary" boldness="bolder" classes="mt-0.5" numberOfLines={1}>
-              {t('earnings.next_payment_on', { date: longDate(stats?.next_payment_date) })}
-            </CustomText>
-            <CustomText size="small" color="muted" classes="mt-0.5" numberOfLines={1}>
-              {iban
-                ? t('earnings.to_iban', { iban })
-                : t('earnings.next_payment_hint')}
-            </CustomText>
+        {/* PRÓXIMO PAGAMENTO — em verde, com data e IBAN, a dizer que o dinheiro
+            sai na segunda.
+
+            Com o pagamento retido isso é falso, e é falso logo a seguir ao
+            cartão que acabou de dizer o contrário. Dois cartões encostados a
+            contradizerem-se sobre o dinheiro de alguém não é um detalhe de
+            layout: o técnico acredita no verde, espera pela segunda-feira e não
+            recebe nada. Quando está travado, esta caixa diz a data que interessa
+            — a de quando ele resolver a AT. */}
+        {dinheiroRetidoPelaAt(stats?.payout_blocked_by_at) ? (
+          <View
+            className="rounded-2xl border p-4 mt-3 flex-row items-center"
+            style={{ backgroundColor: Colors.card, borderColor: Colors.line }}
+          >
+            <Ionicons name="calendar-clear" size={24} color={Colors.muted} />
+            <View className="flex-1 ml-3">
+              <CustomText size="small" color="muted">{t('earnings.next_payment')}</CustomText>
+              <CustomText size="medium" color="secondary" boldness="bolder" classes="mt-0.5">
+                {t('earnings.next_payment_blocked')}
+              </CustomText>
+            </View>
           </View>
-        </View>
+        ) : (
+          <View
+            className="rounded-2xl border p-4 mt-3 flex-row items-center"
+            style={{ backgroundColor: 'rgba(35,230,158,0.08)', borderColor: 'rgba(35,230,158,0.25)' }}
+          >
+            <Ionicons name="calendar-clear" size={24} color={Colors.success} />
+            <View className="flex-1 ml-3">
+              <CustomText size="small" color="muted">{t('earnings.next_payment')}</CustomText>
+              <CustomText size="medium" color="secondary" boldness="bolder" classes="mt-0.5" numberOfLines={1}>
+                {t('earnings.next_payment_on', { date: longDate(stats?.next_payment_date) })}
+              </CustomText>
+              <CustomText size="small" color="muted" classes="mt-0.5" numberOfLines={1}>
+                {iban
+                  ? t('earnings.to_iban', { iban })
+                  : t('earnings.next_payment_hint')}
+              </CustomText>
+            </View>
+          </View>
+        )}
 
         {/* Serviços desta semana */}
         <CustomText size="medium" color="secondary" boldness="bold" classes="mt-6 mb-3">

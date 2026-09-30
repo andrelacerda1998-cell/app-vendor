@@ -1338,6 +1338,7 @@ export default {
         "on_hold_title": "Retido até dares o acesso à AT",
         "on_hold_subtitle": "O trabalho está feito e o dinheiro é teu. Para o transferirmos temos de emitir a fatura, e para isso falta o subutilizador da Autoridade Tributária.",
         "on_hold_action": "Dar o acesso à AT",
+        "next_payment_blocked": "Assim que deres o acesso à AT",
         "on_hold_banner": "O teu dinheiro está retido: falta o subutilizador da AT."
     },
     "user_header": {
