@@ -15,7 +15,12 @@ const clean = (value?: string | number | null): string | null => {
 };
 
 /**
- * Morada completa em duas partes: "Rua X, 120" + "4000-447 Porto".
+ * Morada em duas partes: "Rua X, 120" + "Porto".
+ *
+ * SEM CÓDIGO POSTAL: ninguém navega por ele, e ocupava a largura que a rua
+ * precisa. O que o técnico lê de relance é a rua; a localidade só serve para
+ * saber de que lado da cidade fica.
+ *
  * Cai para `address_details.name` (morada formatada pelo geocoder) e, em
  * último caso, para a morada curta que já existia (`customer.address`).
  */
@@ -27,9 +32,7 @@ export const formatFullAddress = (
     const street = [clean(details.street_name), clean(details.street_number)]
       .filter(Boolean)
       .join(", ");
-    const locality = [clean(details.postal_code), clean(details.city)]
-      .filter(Boolean)
-      .join(" ");
+    const locality = clean(details.city);
     const composed = [street, locality].filter(Boolean).join(" · ");
 
     if (composed.length) return composed;
@@ -91,6 +94,59 @@ export const formatEstimatedDuration = (minutes?: number | string | null): strin
   const rest = total % 60;
 
   return rest === 0 ? `~${hours}h` : `~${hours}h${String(rest).padStart(2, "0")}`;
+};
+
+/**
+ * A mesma duração, mas por extenso: "1 hora", "45 minutos", "1 hora e 30 minutos".
+ *
+ * O "~1h" cabia na linha de ícones mas não se lia como informação -- parecia
+ * mais um símbolo ao lado dos quilómetros. Num cartão que o técnico tem 60
+ * segundos para decidir, o tempo que o trabalho lhe ocupa merece uma frase.
+ * A forma curta fica para onde o espaço manda (o ecrã do serviço a decorrer).
+ */
+export const formatDurationLong = (minutes?: number | string | null): string | null => {
+  if (minutes === null || minutes === undefined || minutes === "") return null;
+
+  const total = Math.round(Number(minutes));
+  if (!Number.isFinite(total) || total <= 0) return null;
+
+  const horas = Math.floor(total / 60);
+  const mins = total % 60;
+
+  const parteHoras = horas ? `${horas} ${horas === 1 ? "hora" : "horas"}` : null;
+  const parteMinutos = mins ? `${mins} ${mins === 1 ? "minuto" : "minutos"}` : null;
+
+  return [parteHoras, parteMinutos].filter(Boolean).join(" e ");
+};
+
+/**
+ * "sábado, 03 de outubro · 15:00" a partir do dia e da hora do agendamento.
+ *
+ * `scheduled_day` é uma DATE (YYYY-MM-DD) e `scheduled_time_start` uma TIME
+ * (HH:MM:SS). A data tem de vir do DIA -- construir um `Date` só com a hora dá
+ * inválido ("10:00:00" não é uma data), e um agendado aparecia como "para
+ * agora". Sem dia, devolve null e o ecrã omite a linha.
+ *
+ * Vive aqui porque três sítios precisam da MESMA frase: o cartão do convite, o
+ * cartão da Home das candidaturas à espera, e a Agenda.
+ */
+export const formatQuandoAgendado = (
+  dia?: string | null,
+  hora?: string | null,
+  opcoes: { comHora?: boolean } = {},
+): string | null => {
+  const { comHora = true } = opcoes;
+  const d0 = clean(dia);
+  if (!d0) return null;
+
+  const h = clean(hora);
+  const d = new Date(`${d0}T${h ?? "00:00:00"}`);
+  if (Number.isNaN(d.getTime())) return null;
+
+  const label = d.toLocaleDateString("pt-PT", { weekday: "long", day: "2-digit", month: "long" });
+  if (!h || !comHora) return label;
+
+  return `${label} · ${d.toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit" })}`;
 };
 
 /** Observações do cliente, normalizadas (whitespace colapsado). */

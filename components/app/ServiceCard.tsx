@@ -5,12 +5,13 @@ import React from "react";
 import {ServiceRequestedInterface} from "@/types/services";
 import { useTranslation } from "react-i18next";
 import { Feather } from "@expo/vector-icons";
-import { Card, IconTile } from "@/components/ui";
+import { Card } from "@/components/ui";
 import CustomerPhotos from "@/components/app/CustomerPhotos";
 import { formatDistanceKm, isImmediateRequest } from "@/utils/requestTiming";
 import {
   formatAddressExtra,
   formatCustomerNotes,
+  formatDurationLong,
   formatEstimatedDuration,
   formatFullAddress,
 } from "@/utils/serviceDetails";
@@ -89,7 +90,16 @@ const ServiceCard = ({
   const stateLabel = hasScheduleInfo
     ? t('schedules.schedule', { defaultValue: 'Agendamento' })
     : t('schedules.immediate', { defaultValue: 'Imediato' });
-  const stateColor = hasScheduleInfo ? Colors.brand : Colors.success;
+  /**
+   * Imediato = VERMELHO; agendado = âmbar.
+   *
+   * O imediato estava a verde, que na app significa "está tudo bem" (é a cor do
+   * "a receber pedidos" e do contador com tempo de sobra). Mas um pedido
+   * imediato é o contrário disso: é a coisa com menos tempo no ecrã inteiro.
+   * O agendado fica em âmbar porque é mesmo o que é -- tem tempo, mas é uma
+   * tarefa por responder.
+   */
+  const stateColor = hasScheduleInfo ? Colors.brand : Colors.danger;
 
   const distanceLabel = formatDistanceKm(item.distance);
   const countdownColor = urgent ? Colors.danger : Colors.success;
@@ -98,19 +108,31 @@ const ServiceCard = ({
   // não devolver `address_details`, cai para a morada curta que já existia.
   const addressLabel = formatFullAddress(item.address_details, item.customer?.address);
   const addressExtra = formatAddressExtra(item.address_details);
-  const durationLabel = formatEstimatedDuration(item.service_type?.time);
+  /**
+   * `duration_minutes` traz a duração REAL, já multiplicada pelas unidades que
+   * o cliente pediu; `service_type.time` é o tempo de UMA unidade. Mostrar o
+   * segundo dizia "1 hora" num trabalho de três -- o mesmo erro que já tinha
+   * sido corrigido no ecrã do serviço a decorrer. Fica como recurso para
+   * respostas antigas.
+   */
+  const duracaoReal = item.duration_minutes ?? item.service_type?.time;
+  const durationLabel = formatEstimatedDuration(duracaoReal);
+  const duracaoPorExtenso = formatDurationLong(duracaoReal);
   const customerNotes = formatCustomerNotes(item);
 
   return (
   <Card>
-    {/* Linha principal: ícone · serviço + morada · estado */}
+    {/* Linha principal: serviço + morada · estado.
+        SEM ÍCONE à esquerda: o raio e o calendário eram 52 px (mais 12 de
+        margem) a dizer o MESMO que o selo à direita diz por palavras, e era o
+        título -- o que diz ao técnico o que vai fazer -- que pagava a conta,
+        partido a meio em duas linhas. */}
     <View className="flex-row items-center">
-      <IconTile size={52}>
-        <Feather name={hasScheduleInfo ? 'calendar' : 'zap'} size={22} color={Colors.brand} />
-      </IconTile>
-
-      <View className="flex-1 ml-3">
-        <CustomText color="secondary" boldness="bold" size="medium" numberOfLines={1}>
+      <View className="flex-1">
+        {/* Sem o icone a roubar 64 px, o nome cabe numa linha na maioria dos
+            casos. Ficam 2 para os tipos de servico mais compridos -- cortar a
+            meio da palavra era o problema, nao a segunda linha. */}
+        <CustomText color="secondary" boldness="bold" size="medium" numberOfLines={2}>
           {item.service_type?.name}
         </CustomText>
         {/* Morada: o dado mais importante para decidir — 2 linhas, não 1. */}
@@ -124,7 +146,7 @@ const ServiceCard = ({
             {addressExtra}
           </CustomText>
         )}
-        {(!!distanceLabel || !!durationLabel) && (
+        {(!!distanceLabel || (!!durationLabel && hasScheduleInfo)) && (
           <View className="flex-row items-center mt-0.5" style={{ gap: 10 }}>
             {!!distanceLabel && (
               <View className="flex-row items-center">
@@ -134,8 +156,9 @@ const ServiceCard = ({
                 </CustomText>
               </View>
             )}
-            {/* Duração estimada (service_type.time, em minutos). */}
-            {!!durationLabel && (
+            {/* Duração estimada. Só aqui nos AGENDADOS: nos imediatos ela tem
+                caixa própria em baixo, no lugar que o "Quando" deixou vago. */}
+            {!!durationLabel && hasScheduleInfo && (
               <View className="flex-row items-center">
                 <Feather name="clock" size={12} color={Colors.muted} />
                 <CustomText color="muted" size="extraSmall" classes="ml-1" numberOfLines={1}>
@@ -147,27 +170,42 @@ const ServiceCard = ({
         )}
       </View>
 
+      {/* A PALAVRA a vermelho, e nao so o fundo. Branco sobre um fundo
+          avermelhado lia-se como um selo apagado -- a cor ficava no sitio onde
+          ninguem olha. O contorno fecha a pastilha para ela nao desaparecer
+          contra o cartao. */}
       <View
-        className="rounded-full px-2.5 py-1 ml-2"
-        style={{ backgroundColor: `${stateColor}22` }}
+        className="rounded-full px-2.5 py-1 ml-2 border"
+        style={{ backgroundColor: `${stateColor}1f`, borderColor: `${stateColor}66` }}
       >
-        <CustomText size="extraSmall" boldness="bold" color="secondary">
+        <CustomText size="extraSmall" boldness="bold" color={hasScheduleInfo ? 'brand' : 'danger'}>
           {stateLabel}
         </CustomText>
       </View>
     </View>
 
-    {/* As duas peças que decidem: QUANDO e QUANTO RECEBO. */}
+    {/* As duas peças que decidem. QUANTO RECEBO é sempre uma delas; a outra
+        depende do tipo de pedido.
+
+        Num AGENDADO a pergunta é "quando" -- a data é informação a sério.
+        Num IMEDIATO não é: o selo verde já diz "Imediato" a dois centímetros
+        dali, e a caixa respondia "Agora" ao lado dele. Duas peças a dizer o
+        mesmo, e a que faltava -- quanto tempo é que isto me ocupa -- estava
+        encolhida num "~1h" ao lado dos quilómetros, a ler-se como símbolo e
+        não como informação. Trocam de lugar. */}
     <View className="flex-row mt-3" style={{ gap: 10 }}>
       <View
         className="flex-1 rounded-2xl p-3 border"
         style={{ backgroundColor: Colors.card_high, borderColor: Colors.line }}
       >
         <CustomText color="muted" size="extraSmall" boldness="bold">
-          {t('schedules.when', { defaultValue: 'Quando' }).toUpperCase()}
+          {(hasScheduleInfo
+            ? t('schedules.when', { defaultValue: 'Quando' })
+            : t('schedules.estimated_duration', { defaultValue: 'Duração estimada' })
+          ).toUpperCase()}
         </CustomText>
         <CustomText color="secondary" boldness="bold" size="large" numberOfLines={2} classes="mt-1">
-          {whenValue}
+          {hasScheduleInfo ? whenValue : (duracaoPorExtenso || '—')}
         </CustomText>
       </View>
 

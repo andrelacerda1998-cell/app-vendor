@@ -24,7 +24,8 @@ import ServicePhotos from "@/components/services/ServicePhotos";
 import ServiceCountdown from "@/components/services/ServiceCountdown";
 import { Card, ErrorState, SkeletonList } from "@/components/ui";
 import { capitalizeFirst } from "@/utils";
-import { formatEstimatedDuration } from "@/utils/serviceDetails";
+import { formatDurationLong } from "@/utils/serviceDetails";
+import RateCustomerContent from "@/components/services/RateCustomerContent";
 import { useNavChooser } from "@/hooks/useNavChooser";
 import ServiceRouteMap from "@/components/services/ServiceRouteMap";
 import { track, AnalyticsEvent } from "@/utils/analytics";
@@ -115,7 +116,7 @@ const Status = () => {
   const { api } = useApi();
   const { vendorData } = useSession();
   const { openService, setOpenService, unreadMessages, clearUnreadMessages } = useService();
-  const { openDialog } = useDialog();
+  const { openDialog, closeDialog } = useDialog();
   const [loadingFinishService, setLoadingFinishService] = useState(false);
   const [busyCta, setBusyCta] = useState(false);
   // Os botões de extras vivem no rodapé, mas a lista está no conteúdo:
@@ -196,14 +197,74 @@ const Status = () => {
           setOpenService(data.data.service);
         }
         track(AnalyticsEvent.SERVICE_COMPLETED, { service_id: Number(svc?.id) });
+
+        /**
+         * Concluído o trabalho, AVALIAR O CLIENTE.
+         *
+         * O ecrã de avaliação já existia e o endpoint também
+         * (`PUT /vendor/services/{id}/rate`) -- só nunca era aberto aqui.
+         * Chegava-se lá por um `ServiceClosedEvent` do socket, que dispara
+         * quando o serviço FECHA, não quando ele acaba o trabalho: podia ser
+         * minutos depois, com o telemóvel no bolso e a app fechada. Na prática
+         * o técnico quase nunca avaliava, e a nota que a Piquet tem sobre os
+         * clientes ficava só com o lado deles.
+         *
+         * O momento certo é este, com a memória fresca e o telemóvel na mão.
+         *
+         * NÃO É OBRIGATÓRIO: o sheet fecha-se ao gesto e o serviço já está
+         * concluído de qualquer forma -- obrigá-lo a dar uma nota para sair de
+         * um trabalho que já fez seria prendê-lo por uma coisa que é da Piquet,
+         * não dele.
+         */
+        const servicoConcluido = data?.data?.service ?? svc;
+
         openDialog({
           icon: <CheckMark color={Colors.primary} />,
           title: t('services.service.finish.title'),
           subtitle: t('services.service.finish.subtitle'),
-          closeAfterMSeconds: 5000,
+          closeAfterMSeconds: 2500,
           closeOnClickOutside: true,
           onClose: () => {
             router.dismissAll();
+
+            if (!servicoConcluido?.id) return;
+
+            /**
+             * Adiado, e não chamado aqui dentro.
+             *
+             * O `openDialog` corre a partir do `onClose` do diálogo anterior,
+             * portanto o novo entra na FILA do DialogContext e é mostrado logo
+             * a seguir -- mas o `dismissAll()` acima desmonta o ecrã nesse
+             * mesmo instante e o diálogo morre com ele. Testado: o serviço
+             * ficava concluído e a avaliação nunca aparecia.
+             *
+             * Meio segundo chega para a navegação assentar na Home, e é tempo
+             * que ele passa a ver a confirmação do serviço concluído.
+             */
+            setTimeout(() => {
+            // Diálogo CENTRADO, e não o sheet do fundo: é uma pergunta curta,
+            // e aparece onde o olho já está.
+            openDialog({
+              closeOnClickOutside: true,
+              customContent: (
+                <RateCustomerContent
+                  serviceId={servicoConcluido.id}
+                  customerName={servicoConcluido?.customer?.name}
+                  onDone={closeDialog}
+                  onError={() => {
+                    closeDialog();
+                    openDialog({
+                      icon: <XIcon color={Colors.primary} />,
+                      title: t('errors.service_rate.title'),
+                      subtitle: t('errors.service_rate.subtitle'),
+                      closeAfterMSeconds: 2500,
+                      closeOnClickOutside: true,
+                    });
+                  }}
+                />
+              ),
+            });
+            }, 500);
           }
         })
       })
@@ -398,8 +459,7 @@ const Status = () => {
   // minuto 60 — com atalho para pedir ao cliente que pagasse horas que já
   // tinha comprado. Fica como recurso para respostas antigas.
   const duracaoReal = svc?.duration_minutes ?? svc?.service_type?.time;
-  const durationLabel = formatEstimatedDuration(duracaoReal);
-  const category = svc?.service_type?.operation_area?.name;
+  const durationLabel = formatDurationLong(duracaoReal);
 
   // Dia + hora do serviço. A hora vem do agendamento (`schedule`), porque
   // `scheduled_at` traz só o dia — usá-lo sozinho dava sempre "00:00".
@@ -537,9 +597,6 @@ const Status = () => {
               <CustomText color="secondary" boldness="bolder" size="medium" numberOfLines={2}>
                 {svc?.service_type?.name ?? svc?.custom?.description}
               </CustomText>
-              {!!category && (
-                <CustomText color="muted" size="small" numberOfLines={1} classes="mt-0.5">{category}</CustomText>
-              )}
             </View>
             {earn ? (
               <View className="items-end">
@@ -548,14 +605,6 @@ const Status = () => {
                 </CustomText>
                 <CustomText color="brand" boldness="bolder" size="large" classes="mt-0.5">
                   {earn}
-                </CustomText>
-                {/* O valor que ali esta e o dele por inteiro, nao um liquido
-                    depois de descontos. Sem o dizer, um numero sozinho ao lado
-                    da marca faz supor uma comissao retirada — e essa duvida
-                    acaba em suporte. Tres palavras chegam; a regra completa
-                    esta nos Ganhos e no Valor/hora. */}
-                <CustomText color="muted" size="extraSmall" classes="mt-0.5">
-                  {t('services.service.status.value_is_yours')}
                 </CustomText>
               </View>
             ) : null}
@@ -763,7 +812,7 @@ const Status = () => {
           {!!addressLine && (
             <View className="flex-row items-start mt-1">
               <Feather name="map-pin" size={14} color={Colors.muted} style={{ marginTop: 2 }} />
-              <CustomText color="muted" size="small" numberOfLines={2} classes="ml-1.5 flex-1">
+              <CustomText color="secondary" size="small" numberOfLines={2} classes="ml-1.5 flex-1">
                 {addressLine}
               </CustomText>
             </View>

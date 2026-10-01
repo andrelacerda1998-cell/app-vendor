@@ -262,21 +262,22 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
     }
 
     if (!pendingService && service) {
-      const scheduleId = service.schedule_id ?? service.schedule?.id;
+      /**
+       * UM ecrã só para "chegou um pedido".
+       *
+       * Havia três, e o técnico via um diferente consoante por onde o pedido
+       * lhe aparecia: o push abria o `incoming-request`, a lista abria o
+       * cartão, e ABRIR A APP com um pedido pendente abria o `proposal` (ou o
+       * `schedule-proposal`) -- outro desenho, com contagem em círculo, sem
+       * duração, e a repetir "Quando: Agora" ao lado do selo "Imediato".
+       *
+       * A mesma decisão não pode depender da porta por onde se entra. Passa a
+       * ser sempre o `incoming-request`, que já sabe distinguir imediato de
+       * agendado e já usa o cartão partilhado com a lista.
+       */
       setTimeout(() => {
-        if (scheduleId) {
-          router.navigate({
-            pathname: '/(app)/(bottom-sheets)/(services)/schedule-proposal/[scheduleId]',
-            params: {
-              scheduleId: String(scheduleId),
-              serviceId: String(service.id),
-            },
-          });
-        } else {
-          router.navigate(`/(app)/(bottom-sheets)/(services)/proposal/${service.id}`);
-        }
+        router.navigate(`/(app)/(modals)/incoming-request/${service.id}`);
       }, 500);
-    } else {
     }
 
     setPendingService(service || null);
@@ -287,6 +288,19 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
     return api.get(API_ROUTES.VENDOR_GET_PENDING_ALL_SERVICES).then((response) => {
       const { services } = response.data.data;
 
+      /**
+       * ATENÇÃO: isto é uma LISTA FECHADA.
+       *
+       * Campo que o backend acrescente e não esteja aqui é deitado fora em
+       * silêncio — sem erro, sem aviso, e com o TypeScript a achar que está
+       * tudo bem porque a origem é `any`. Já aconteceu duas vezes: o
+       * `duration_minutes` (duração real, com as unidades) e o `expires_at`
+       * (o prazo que o servidor impõe) chegavam da API e morriam aqui, e os
+       * ecrãs caíam em valores de recurso sem ninguém dar por isso.
+       *
+       * Quem acrescentar um campo ao `ServiceRequestedData` tem de o
+       * acrescentar TAMBÉM aqui.
+       */
       const pendingServices: ServiceRequestedInterface[] = services.map((service: any) => {
         return {
           customer: {
@@ -325,6 +339,12 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
             : !service.schedule,
           // Distância em quilómetros (ServiceRequestedData::distance).
           distance: service.distance ?? null,
+          // Duração REAL do trabalho, já com as unidades pedidas. Sem isto o
+          // cartão caía no `service_type.time`, que é o tempo de UMA unidade.
+          duration_minutes: service.duration_minutes ?? null,
+          // O prazo que o SERVIDOR impõe. Sem isto a app voltava a contar pelo
+          // seu próprio relógio contra um prazo que não é dela.
+          expires_at: service.expires_at ?? null,
         }
       });
 

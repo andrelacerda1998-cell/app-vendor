@@ -126,6 +126,17 @@ export interface ServiceRequestedInterface {
   };
   amount?: number | null;
   amount_for_vendor?: number | null;
+  /**
+   * Duração REAL em minutos, já multiplicada pelas unidades que o cliente
+   * pediu (ServiceRequestedData::duration_minutes). O `service_type.time` é o
+   * tempo de UMA unidade — usá-lo dizia "1 hora" num trabalho de três.
+   */
+  duration_minutes?: number | null;
+  /**
+   * Quando o prazo fecha, segundo o SERVIDOR (ISO-8601). É o mesmo instante em
+   * que o backend expira o pedido. Pode faltar em respostas antigas.
+   */
+  expires_at?: string | null;
   schedule: {
     scheduled_day: string;
     date_label: string;

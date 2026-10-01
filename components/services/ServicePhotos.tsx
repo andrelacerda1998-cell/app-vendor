@@ -239,7 +239,7 @@ const ServicePhotos = ({
 
     return (
       <View className="mt-4">
-        <CustomText color="muted" boldness="bold" size="extraSmall">
+        <CustomText color="muted" boldness="bold" size="extraSmall" numberOfLines={1}>
           {collection === 'before' ? t('service_photos.before') : t('service_photos.after')}
         </CustomText>
 
@@ -367,7 +367,18 @@ const ServicePhotos = ({
           />
         </View>
       ) : (
-        COLLECTIONS.map((c) => <Section key={c} collection={c} />)
+        /* ANTES e DEPOIS LADO A LADO, não empilhados.
+           São um par -- fotografa-se um no início e o outro no fim do mesmo
+           trabalho -- e empilhados liam-se como duas tarefas separadas, com o
+           "DEPOIS" a cair abaixo da dobra num cartão que já tem cronómetro,
+           cliente e botões. Lado a lado, vê-se de relance o que falta. */
+        <View className="flex-row" style={{ gap: 12 }}>
+          {COLLECTIONS.map((c) => (
+            <View key={c} className="flex-1">
+              <Section collection={c} />
+            </View>
+          ))}
+        </View>
       )}
 
       {/* Miniatura em grande */}
