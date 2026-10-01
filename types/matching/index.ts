@@ -55,4 +55,11 @@ export interface MatchingInvitation {
     scheduled_day: string | null;
     scheduled_time_start: string | null;
   } | null;
+  /**
+   * Até quando o CLIENTE tem para escolher e pagar (ISO-8601).
+   *
+   * Null enquanto ninguém aceitou — o relógio dele só arranca no primeiro
+   * "tenho disponibilidade". É o mesmo instante que o ecrã do cliente mostra.
+   */
+  customer_deadline?: string | null;
 }

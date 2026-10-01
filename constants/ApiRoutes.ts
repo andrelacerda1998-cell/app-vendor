@@ -64,6 +64,8 @@ export const API_ROUTES = {
     // Aceitar aqui é dizer "estou disponível", NÃO é ficar com o serviço:
     // quem decide é o cliente, de entre quem aceitou.
     VENDOR_MATCHING_INVITATIONS: `${API_BASE_URL}/vendor/services/matching`,
+    /** Candidaturas aceites, à espera de o cliente decidir. */
+    VENDOR_MATCHING_AWAITING: `${API_BASE_URL}/vendor/services/matching/awaiting`,
     VENDOR_MATCHING_INSIGHTS: `${API_BASE_URL}/vendor/services/matching/insights`,
     VENDOR_MATCHING_ACCEPT: (candidateId: number | string) =>
         `${API_BASE_URL}/vendor/services/matching/${candidateId}/accept`,

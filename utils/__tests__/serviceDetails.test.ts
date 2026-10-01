@@ -1,6 +1,7 @@
 import {
   formatAddressExtra,
   formatCustomerNotes,
+  formatDurationLong,
   formatEstimatedDuration,
   formatFullAddress,
   formatStreetLine,
@@ -39,7 +40,7 @@ describe('formatStreetLine', () => {
 });
 
 describe('formatFullAddress', () => {
-  it('junta rua + número e código postal + cidade', () => {
+  it('junta rua + número e cidade', () => {
     expect(
       formatFullAddress({
         street_name: 'Rua de Cedofeita',
@@ -47,13 +48,27 @@ describe('formatFullAddress', () => {
         postal_code: '4050-174',
         city: 'Porto',
       } as any),
-    ).toBe('Rua de Cedofeita, 120 · 4050-174 Porto');
+    ).toBe('Rua de Cedofeita, 120 · Porto');
+  });
+
+  // Decisão de produto, não um esquecimento: o técnico não navega pelo código
+  // postal, e ele roubava largura à rua. Se alguém o puser de volta, este teste
+  // cai e obriga a perguntar porquê.
+  it('NUNCA mostra o código postal, mesmo quando vem no payload', () => {
+    const texto = formatFullAddress({
+      street_name: 'Rua da Prata',
+      street_number: '80',
+      postal_code: '1100-414',
+      city: 'Lisboa',
+    } as any);
+    expect(texto).toBe('Rua da Prata, 80 · Lisboa');
+    expect(texto).not.toContain('1100-414');
   });
 
   it('omite o número quando não existe', () => {
     expect(
       formatFullAddress({ street_name: 'Rua de Cedofeita', postal_code: '4050-174', city: 'Porto' } as any),
-    ).toBe('Rua de Cedofeita · 4050-174 Porto');
+    ).toBe('Rua de Cedofeita · Porto');
   });
 
   it('funciona só com rua', () => {
@@ -90,6 +105,32 @@ describe('formatAddressExtra', () => {
     expect(formatAddressExtra(null)).toBeNull();
     expect(formatAddressExtra({} as any)).toBeNull();
     expect(formatAddressExtra({ additional_info: '  ' } as any)).toBeNull();
+  });
+});
+
+describe('formatDurationLong', () => {
+  it('escreve as horas por extenso', () => {
+    expect(formatDurationLong(60)).toBe('1 hora');
+    expect(formatDurationLong(120)).toBe('2 horas');
+  });
+
+  it('escreve os minutos por extenso', () => {
+    expect(formatDurationLong(45)).toBe('45 minutos');
+    expect(formatDurationLong(1)).toBe('1 minuto');
+  });
+
+  it('junta horas e minutos com "e"', () => {
+    expect(formatDurationLong(90)).toBe('1 hora e 30 minutos');
+    expect(formatDurationLong(150)).toBe('2 horas e 30 minutos');
+    expect(formatDurationLong(61)).toBe('1 hora e 1 minuto');
+  });
+
+  it('devolve null quando não há duração — o cartão mostra "—"', () => {
+    expect(formatDurationLong(null)).toBeNull();
+    expect(formatDurationLong(undefined)).toBeNull();
+    expect(formatDurationLong(0)).toBeNull();
+    expect(formatDurationLong(-30)).toBeNull();
+    expect(formatDurationLong('abc')).toBeNull();
   });
 });
 

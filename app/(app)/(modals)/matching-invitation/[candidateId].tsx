@@ -9,6 +9,8 @@ import { Colors } from '@/constants/Colors';
 import MatchingInvitationCard from '@/components/services/MatchingInvitationCard';
 import MatchingInvitationDeadlineBar from '@/components/services/MatchingInvitationDeadlineBar';
 import useMatchingInvitations from '@/hooks/useMatchingInvitations';
+import MatchingAcceptedContent from '@/components/services/MatchingAcceptedContent';
+import { useDialog } from '@/contexts/DialogContext';
 
 /**
  * Convite de selecao, em ecra proprio por cima de tudo.
@@ -36,6 +38,7 @@ const MatchingInvitationScreen = () => {
   const { t } = useTranslation();
   const { candidateId } = useLocalSearchParams<{ candidateId: string }>();
   const { invitations, accept, decline, submitting, loading } = useMatchingInvitations();
+  const { openDialog, closeDialog } = useDialog();
   const closingRef = useRef(false);
 
   const invitation = useMemo(
@@ -49,6 +52,47 @@ const MatchingInvitationScreen = () => {
     if (router.canGoBack()) router.back();
     else router.replace('/(app)/(tabs)/home');
   }, []);
+
+  /**
+   * O RESULTADO DE ACEITAR TEM DE SER DITO.
+   *
+   * Isto era `await accept(...)` seguido de `close()`, com o resultado deitado
+   * fora. Duas coisas se perdiam, e a segunda é a grave:
+   *
+   *  - a confirmação "Ficaste na lista", que explica que ele ainda não tem o
+   *    trabalho e que a agenda continua livre. O componente já existia e já
+   *    era usado no ecrã da LISTA de convites -- só não aqui, que é o caminho
+   *    de quem tem UM convite, ou seja, o caso normal;
+   *
+   *  - o "este pedido já fechou". Se outro profissional foi mais rápido, ou a
+   *    janela fechou entretanto, o servidor diz que não. O ecrã fechava na
+   *    mesma, em silêncio, e ele ficava a contar com um trabalho em que nunca
+   *    entrou -- e a descobri-lo por nunca mais receber notícias.
+   *
+   * É o mesmo tratamento que o ecrã da lista já dava. Aqui faltava.
+   */
+  const onAccept = useCallback(async () => {
+    if (!invitation) return;
+
+    const result = await accept(invitation.candidate_id);
+
+    if (result?.ok) {
+      close();
+      openDialog({
+        closeOnClickOutside: true,
+        customContent: <MatchingAcceptedContent onClose={closeDialog} />,
+      });
+
+      return;
+    }
+
+    close();
+    openDialog({
+      title: t('matching.invitation.too_late_title'),
+      subtitle: result?.message ?? t('matching.invitation.too_late_subtitle'),
+      closeOnClickOutside: true,
+    });
+  }, [accept, invitation, close, openDialog, closeDialog, t]);
 
   // So vibracao, sem som. Isto e um convite, nao um trabalho a escapar — e o
   // alarme do pedido direto existe porque la ha 60 segundos a correr.
@@ -101,7 +145,7 @@ const MatchingInvitationScreen = () => {
           invitation={invitation}
           hideCountdown
           busy={submitting === invitation.candidate_id}
-          onAccept={async () => { await accept(invitation.candidate_id); close(); }}
+          onAccept={onAccept}
           onDecline={async () => { await decline(invitation.candidate_id); close(); }}
         />
       </ScrollView>

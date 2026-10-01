@@ -8,6 +8,7 @@ import {
   remainingProgress,
   requestExpiresAt,
   requestWindowMs,
+  requestWindowFromServer,
 } from '@/utils/requestTiming';
 
 describe('isImmediateRequest', () => {
@@ -39,14 +40,21 @@ describe('isImmediateRequest', () => {
 });
 
 describe('requestWindowMs', () => {
-  it('dá 60 s ao pedido imediato', () => {
-    expect(requestWindowMs({ is_immediate: true } as any)).toBe(60 * 1000);
-    expect(IMMEDIATE_WINDOW_MS).toBe(60_000);
+  // 120 s, e não 60: é o que o servidor dá desde 29/09/2026
+  // (`matching.vendor_response_seconds_immediate`). Este teste existe para
+  // apanhar quem o volte a baixar sem mexer na definição do servidor — a app
+  // estaria a prometer metade do tempo que o sistema concede.
+  it('dá 120 s ao pedido imediato, como o servidor', () => {
+    expect(requestWindowMs({ is_immediate: true } as any)).toBe(120 * 1000);
+    expect(IMMEDIATE_WINDOW_MS).toBe(120_000);
   });
 
-  it('dá 20 min ao pedido agendado', () => {
-    expect(requestWindowMs({ schedule_id: 7 } as any)).toBe(20 * 60 * 1000);
-    expect(SCHEDULED_WINDOW_MS).toBe(1_200_000);
+  // 120 s, como o imediato: é o que as definições do servidor dizem
+  // (`vendor_response_seconds_scheduled`). Eram 20 minutos aqui -- o mesmo
+  // erro do 60 noutro sítio.
+  it('dá 120 s ao pedido agendado, como o servidor', () => {
+    expect(requestWindowMs({ schedule_id: 7 } as any)).toBe(120 * 1000);
+    expect(SCHEDULED_WINDOW_MS).toBe(120_000);
   });
 });
 
@@ -146,5 +154,73 @@ describe('formatDistanceKm', () => {
     expect(formatDistanceKm(0)).toBeNull();
     expect(formatDistanceKm(-3)).toBeNull();
     expect(formatDistanceKm(Number.NaN)).toBeNull();
+  });
+});
+
+
+/**
+ * Quem manda no prazo é o SERVIDOR.
+ *
+ * A app calculou-o sozinha durante meses e ficou nos 60 s quando o servidor
+ * subiu para 120 — e depois nos 20 minutos para os agendados quando o servidor
+ * já dizia 120 s. Estes testes existem para que a próxima vez que os dois
+ * divirjam seja um teste vermelho, e não um técnico a perder um pedido.
+ */
+describe('o prazo vem do servidor', () => {
+  it('usa `expires_at` em vez da conta local', () => {
+    const criado = Date.UTC(2026, 9, 1, 10, 0, 0);
+    const expira = Date.UTC(2026, 9, 1, 10, 30, 0); // meia hora, nada a ver com as constantes
+
+    const prazo = requestExpiresAt({
+      created_at: Math.floor(criado / 1000),
+      expires_at: new Date(expira).toISOString(),
+      is_immediate: true,
+    } as any);
+
+    expect(prazo).toBe(expira);
+  });
+
+  it('cai na conta local quando o servidor não manda `expires_at`', () => {
+    const criado = Date.UTC(2026, 9, 1, 10, 0, 0);
+
+    const prazo = requestExpiresAt({
+      created_at: Math.floor(criado / 1000),
+      is_immediate: true,
+    } as any);
+
+    expect(prazo).toBe(criado + IMMEDIATE_WINDOW_MS);
+  });
+
+  it('ignora um `expires_at` inválido em vez de rebentar o contador', () => {
+    const criado = Date.UTC(2026, 9, 1, 10, 0, 0);
+
+    const prazo = requestExpiresAt({
+      created_at: Math.floor(criado / 1000),
+      expires_at: 'nao-e-uma-data',
+      is_immediate: true,
+    } as any);
+
+    expect(prazo).toBe(criado + IMMEDIATE_WINDOW_MS);
+  });
+
+  it('a janela anunciada é a do servidor, não a constante', () => {
+    const criado = Date.UTC(2026, 9, 1, 10, 0, 0);
+
+    expect(
+      requestWindowFromServer({
+        created_at: Math.floor(criado / 1000),
+        expires_at: new Date(criado + 300_000).toISOString(),
+        is_immediate: true,
+      } as any),
+    ).toBe(300_000);
+  });
+
+  /**
+   * O agendado tem o MESMO prazo do imediato. Eram 20 minutos aqui enquanto o
+   * servidor dizia 120 segundos.
+   */
+  it('o agendado está alinhado com o imediato', () => {
+    expect(SCHEDULED_WINDOW_MS).toBe(IMMEDIATE_WINDOW_MS);
+    expect(SCHEDULED_WINDOW_MS).toBe(120_000);
   });
 });

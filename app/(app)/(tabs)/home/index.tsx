@@ -30,6 +30,7 @@ import AttentionIcon from "@/assets/icons/attention";
 import WeekStats from "@/components/app/Home/WeekStats";
 import PendingRequestsCard from "@/components/app/Home/PendingRequestsCard";
 import MatchingInvitationsCard from "@/components/app/Home/MatchingInvitationsCard";
+import MatchingAwaitingCard from "@/components/app/Home/MatchingAwaitingCard";
 import HomeShortcuts from "@/components/app/Home/HomeShortcuts";
 import NotificationsDisabledBanner from "@/components/NotificationsDisabledBanner";
 import DocumentExpiryBanner from "@/components/DocumentExpiryBanner";
@@ -304,7 +305,7 @@ const Home = () => {
           trazia o seu próprio padding e as distâncias entre secções variavam. */}
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ flexGrow: 1, paddingTop: 16, paddingBottom: tabBarContentPadding(insets.bottom), gap: 16 }}
+        contentContainerStyle={{ flexGrow: 1, paddingTop: 16, paddingBottom: tabBarContentPadding(insets.bottom), gap: 12 }}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={Colors.brand} />
         }
@@ -440,6 +441,9 @@ const Home = () => {
         {/* 2. O que expira: pedidos adjudicados e pedidos de serviço. */}
         <PendingRequestsCard />
         <MatchingInvitationsCard />
+        {/* A seguir aos convites por responder: aquilo onde ele já respondeu e
+            está à espera. Os que pedem ação dele vêm primeiro. */}
+        <MatchingAwaitingCard />
 
         {/* 3. HOJE: o proximo servico em concreto — hora, o que e, onde,
             quem, quanto rende — com a confirmacao de presenca la dentro.

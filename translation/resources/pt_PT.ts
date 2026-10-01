@@ -458,6 +458,13 @@ export default {
                 "accept": "Aceitar",
                 "slide_to_accept": "Desliza para aceitar"
             },
+            "rate": {
+                "subtitle": "Avalia a tua experiência com este cliente",
+                "submit": "Enviar",
+                "comment_label": "OBSERVAÇÕES",
+                "comment_placeholder": "Queres acrescentar alguma coisa? (opcional)",
+                "skip": "Agora não"
+            },
             "finish": {
                 "title": "Serviço concluído",
                 "subtitle": "Falta o cliente confirmar. Assim que confirmar, o valor entra nos teus ganhos.",
@@ -1016,6 +1023,7 @@ export default {
     },
     "service_extras": {
         "title": "EXTRAS DO SERVIÇO",
+        "add_verb": "Adicionar",
         "extra_time": "Tempo extra",
         "parts": "Peças/materiais",
         "add_time_title": "Adicionar tempo extra",
@@ -1310,6 +1318,9 @@ export default {
       "unavailable_hint": "Toque longo para marcares o dia como indisponível",
       "unavailable_legend": "Toque longo num dia para o marcares como indisponível",
       "overdue_hint": "A hora já passou. Conclui o serviço ou fala com o suporte.",
+      "possible_title_one": "À espera da decisão de {{count}} cliente",
+      "possible_title_other": "À espera da decisão de {{count}} clientes",
+      "possible_hint": "Só ocupa a agenda se o cliente te escolher.",
       "free_day_title": "Dia livre",
         "free_day": "Não tens serviços agendados para este dia."
     },
@@ -1764,12 +1775,17 @@ export default {
       "requests_error_subtitle": "Verifica a ligação à internet e tenta outra vez. Pode haver pedidos à tua espera.",
       "requests_empty_title": "Sem pedidos por responder",
       "requests_empty_subtitle": "Os novos pedidos na tua zona aparecem aqui para aceitares ou recusares. Mantém as notificações ligadas para não os perderes.",
+      "estimated_duration": "Duração estimada",
       "to_accept": "para aceitar",
       "you_receive": "Recebes",
       "close": "Fechar",
       "incoming_request_title": "Novo pedido recebido",
-      "incoming_request_window_immediate": "Tens 60 segundos para aceitar.",
-      "incoming_request_window_scheduled": "Tens 20 minutos para aceitar.",
+      "queue_see_all_hint": "Vê todos antes de decidires",
+      "queue_see_all": "Ver todos os pedidos",
+      "queue_count_one": "Mais {{count}} pedido à espera",
+      "queue_count_other": "Mais {{count}} pedidos à espera",
+      "incoming_request_window_immediate": "Tens {{seconds}} segundos para aceitar.",
+      "incoming_request_window_scheduled": "Tens {{minutes}} minutos para aceitar.",
       "customer_notes": "Observações do cliente"
     },
     // Notificação fixa do serviço em curso (useOngoingServiceNotification).
@@ -1777,6 +1793,14 @@ export default {
     // coisa: deixar claro que aceitar é candidatar-se, não é ficar com o
     // serviço. Sem isso, o técnico assume o que já conhece dos pedidos.
     "matching": {
+      "awaiting": {
+          "title_one": "À espera da decisão de {{count}} cliente",
+          "title_other": "À espera da decisão de {{count}} clientes",
+          "subtitle": "Avisamos-te assim que decidirem. Até lá, a agenda continua livre.",
+          "status_one": "À espera da decisão do cliente",
+          "customer_deadline": "{{time}} para o cliente escolher e pagar",
+          "customer_deadline_over": "O prazo do cliente terminou",
+      },
       "invitation": {
         "home_card_one": "{{count}} pedido de serviço",
         "home_card_other": "{{count}} pedidos de serviço",
