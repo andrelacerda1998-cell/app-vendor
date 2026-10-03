@@ -64,7 +64,6 @@ export interface VendorDataInterface {
    * meia-noite continuava a dizer "faltam 2" quando já só falta 1. Com a data,
    * quem conta é quem mostra.
    */
-  at_deadline_ends_at?: string | null;
   /**
    * Termos: que versão está em vigor, qual ele aceitou, e se falta aceitar.
    *

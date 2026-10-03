@@ -1376,9 +1376,6 @@ export default {
                 "action": "Dar o meu IBAN"
             }
         },
-        "on_hold_deadline_one": "Tens 1 dia para dares o acesso. Depois disso, perdes este dinheiro.",
-        "on_hold_deadline_other": "Tens {{count}} dias para dares o acesso. Depois disso, perdes este dinheiro.",
-        "on_hold_deadline_last_day": "É hoje o último dia. Se não deres o acesso, perdes este dinheiro.",
         "next_payment_blocked": "Assim que resolveres o que falta",
     },
     "user_header": {
@@ -1532,9 +1529,6 @@ export default {
             "company_address": "morada de faturação",
             "iban": "IBAN"
         },
-        "money_on_hold_deadline_one": "Falta 1 dia para dares a AT ou perdes o dinheiro.",
-        "money_on_hold_deadline_other": "Faltam {{count}} dias para dares a AT ou perdes o dinheiro.",
-        "money_on_hold_last_day": "É hoje: dá a AT ou perdes o dinheiro.",
         "money_on_hold": "O teu dinheiro está retido.",
         "notice": "Completa o teu perfil",
         "subtitle": "Enquanto não estiver completo não recebes pedidos.",

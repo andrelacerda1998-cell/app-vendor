@@ -18,7 +18,7 @@ import { renderMoney } from '@/utils/money';
 import { Card, HeroCard, IconTile, EmptyState, ErrorState, SkeletonBlock, SkeletonList } from '@/components/ui';
 import { useIsOnline } from '@/hooks/useIsOnline';
 import { formatShortDate as shortDate, formatLongDate as longDate } from '@/utils/date';
-import { diasAteAoPrazoDaAt, dinheiroRetido } from '@/utils/atPayout';
+import { dinheiroRetido } from '@/utils/atPayout';
 
 interface WeekRow { week_start: string; week_end: string; earnings: number; services: number }
 interface CompletedRow { id: number; service_type: string | null; amount_for_vendor: number; completed_at: string | null }
@@ -33,7 +33,6 @@ interface Stats {
   /** Dinheiro na carteira que nao sai enquanto nao se puder faturar. */
   payout_blocked?: boolean;
   payout_blocker?: PayoutBlocker;
-  at_deadline_ends_at?: string | null;
   payout_on_hold_amount?: number;
   last_weeks: WeekRow[];
   last_4_weeks_earnings: number;
@@ -233,30 +232,6 @@ const Earnings = () => {
               <CustomText color="muted" size="extraSmall" classes="mt-2">
                 {t(`earnings.on_hold.${stats?.payout_blocker ?? 'at_user_missing'}.subtitle`)}
               </CustomText>
-
-              {/* O PRAZO.
-                  Linha própria e a vermelho, separada da explicação: a
-                  explicação diz porque é que o dinheiro não saiu, isto diz o
-                  que acontece se ele não agir. São coisas diferentes e a
-                  segunda tem data marcada. */}
-              {(() => {
-                const dias = diasAteAoPrazoDaAt(stats?.at_deadline_ends_at);
-                if (dias === null) return null;
-
-                return (
-                  <CustomText
-                    color="secondary"
-                    size="extraSmall"
-                    boldness="bold"
-                    classes="mt-2"
-                    style={{ color: Colors.danger }}
-                  >
-                    {dias === 0
-                      ? t('earnings.on_hold_deadline_last_day')
-                      : t('earnings.on_hold_deadline', { count: dias })}
-                  </CustomText>
-                );
-              })()}
 
               <View
                 className="flex-row items-center mt-3 pt-3"
