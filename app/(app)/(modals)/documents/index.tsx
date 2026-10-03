@@ -31,6 +31,27 @@ const assetName = (a: unknown): string | null => {
     return any?.fileName ?? any?.name ?? any?.file?.name ?? null;
 };
 
+/**
+ * O limite do servidor: `max:2048` (KB) no CreateVendorDocumentRequest.
+ * Se mudar lá, muda aqui.
+ */
+const TAMANHO_MAXIMO_BYTES = 2048 * 1024;
+
+/** Tamanho em bytes, venha do seletor de imagens (`fileSize`) ou de ficheiros (`size`). */
+const tamanhoDoFicheiro = (asset: any): number | null => {
+    const n = asset?.fileSize ?? asset?.size;
+    return typeof n === 'number' && n > 0 ? n : null;
+};
+
+/** Porque é que o servidor recusou: 'formato' (mimes) ou 'tamanho' (max), pelo texto do erro. */
+const motivoDaRecusa = (data: any): 'formato' | 'tamanho' | null => {
+    const erros: string[] = data?.errors?.document ?? [];
+    const texto = erros.join(' ').toLowerCase();
+    if (/type|mime|formato|tipo/.test(texto)) return 'formato';
+    if (/kilobytes|size|tamanho|grande|max/.test(texto)) return 'tamanho';
+    return null;
+};
+
 export default function Documents(){
     const { t } = useTranslation();
     const {vendorData, fetchAndSaveUserData} = useSession();
@@ -82,7 +103,12 @@ export default function Documents(){
 
             const result = await ImagePicker.launchCameraAsync({
                 allowsEditing: true,
-                quality: 1,
+                // 0.5 e não 1. Uma foto de telemóvel em qualidade máxima tem
+                // 3 a 6 MB e o servidor aceita no máximo 2 MB: o técnico
+                // fotografava o cartão de cidadão, carregava em enviar e levava
+                // com "ficheiro demasiado grande" -- por uma escolha nossa, não
+                // dele. A galeria já usava 0.4. Um documento lê-se bem assim.
+                quality: 0.5,
                 selectionLimit: 1,
             });
 
@@ -130,7 +156,9 @@ export default function Documents(){
         try {
             const result = await DocumentPicker.getDocumentAsync({
                 type: ['application/pdf', 'image/jpeg', 'image/png'],
-                copyToCacheDirectory: false,
+                // `true`: no iOS, sem cópia, o seletor devolve um endereço com
+                // acesso restrito que o envio multipart pode não conseguir ler.
+                copyToCacheDirectory: true,
             });
 
             if (!result.canceled && result.assets?.length) {
@@ -144,12 +172,39 @@ export default function Documents(){
     };
 
     const handleSubmit = () => {
+        /**
+         * Ver o tamanho ANTES de enviar. O servidor recusa acima de 2 MB
+         * (`max:2048` no CreateVendorDocumentRequest); descobrir isso depois de
+         * subir 5 MB por dados móveis é pior para toda a gente.
+         */
+        const tamanho = tamanhoDoFicheiro(asset);
+        if (tamanho !== null && tamanho > TAMANHO_MAXIMO_BYTES) {
+            openDialog({
+                title: t('errors.documents_submit.title'),
+                subtitle: t('auth.sign_up.documents.submit.error_file_too_big'),
+                icon: <XIcon color={Colors.primary}/>,
+                closeAfterMSeconds: 3000,
+                closeOnClickOutside: true,
+            });
+            return;
+        }
+
         setLoadingSubmit(true);
+        /**
+         * `append` E NÃO `set`. O FormData do React Native (0.81) só implementa
+         * `append`, `getAll` e `getParts` -- não há `set`.
+         *
+         * Com `set`, isto rebentava com TypeError ANTES de o pedido sair, e
+         * fora da promessa: o `.catch` nunca corria (nenhuma mensagem), o
+         * `.finally` nunca corria (o botão ficava a girar para sempre) e nada
+         * chegava ao servidor. Era por isso que não se conseguia enviar
+         * documento nenhum, nem por foto nem por ficheiro.
+         */
         const form = new FormData();
-        form.set('type', String(documentType ?? ''))
+        form.append('type', String(documentType ?? ''))
         // O objeto-ficheiro {uri,name,type} é o formato do FormData do React
         // Native; o tipo DOM só conhece Blob/string, daí o cast.
-        form.set('document', {
+        form.append('document', {
             uri: asset?.uri,
             name: assetName(asset) ?? 'Image',
             type: asset?.mimeType
@@ -171,9 +226,16 @@ export default function Documents(){
             })
             .catch(error => {
                 if (error?.response?.status === 422) {
+                    // Um 422 não é sempre "demasiado grande": também é formato
+                    // errado (o servidor só aceita pdf, jpg e png -- uma foto
+                    // HEIC da galeria cai aqui). Dizer "demasiado grande" a quem
+                    // mandou um ficheiro de 300 KB mandava-o à procura do
+                    // problema errado.
                     openDialog({
                         title: t('errors.documents_submit.title'),
-                        subtitle: t('auth.sign_up.documents.submit.error_file_too_big'),
+                        subtitle: motivoDaRecusa(error?.response?.data) === 'formato'
+                            ? t('auth.sign_up.documents.submit.error_invalid_format')
+                            : t('auth.sign_up.documents.submit.error_file_too_big'),
                         icon: <XIcon color={Colors.primary}/>,
                         closeAfterMSeconds: 2000,
                         closeOnClickOutside: true,

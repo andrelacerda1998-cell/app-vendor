@@ -121,7 +121,8 @@ export default {
             subtitle: "We'll review it and let you know as soon as it's validated."
           },
           error: "We couldn't send the document. Check your connection and try again.",
-          "error_file_too_big": "The file is too large. The limit is 2 MB — take a lower-quality photo or send a smaller PDF."
+          "error_file_too_big": "The file is too large. The limit is 2 MB — take a lower-quality photo or send a smaller PDF.",
+                    "error_invalid_format": "This format is not accepted. Send a JPG or PNG photo, or a PDF."
         }
       },
       "price_rate": {

@@ -121,7 +121,8 @@ export default {
                         subtitle: "Vamos analisá-lo e avisamos-te assim que estiver validado."
                     },
                     error: "Não conseguimos enviar o documento. Verifica a ligação e tenta outra vez.",
-                    "error_file_too_big": "O ficheiro é demasiado grande. O máximo é 2 MB — tira nova foto com menos qualidade ou envia um PDF mais leve."
+                    "error_file_too_big": "O ficheiro é demasiado grande. O máximo é 2 MB — envia um PDF mais leve ou tira outra foto.",
+                    "error_invalid_format": "Este formato não é aceite. Envia uma foto em JPG ou PNG, ou um PDF."
                 }
             },
             "price_rate": {
