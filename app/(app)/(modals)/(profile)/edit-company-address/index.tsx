@@ -19,6 +19,11 @@ import CheckMark from "@/assets/icons/check-mark";
 import XIcon from "@/assets/icons/x";
 import { useTranslation } from "react-i18next";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
+import {
+    AddressSuggestion,
+    AddressSuggestionList,
+    useAddressSuggestions,
+} from '@/components/address/AddressAutocomplete';
 
 const EditCompanyAddress = () => {
     const { t } = useTranslation();
@@ -27,17 +32,39 @@ const EditCompanyAddress = () => {
     const {openDialog} = useDialog();
     const [loading, setLoading] = useState(false);
     const [loadingUpdateLocation, setLoadingUpdateLocation] = useState(false);
-    const {control, handleSubmit, formState: {errors, isLoading, isValid}, getValues, setError, reset} = useForm({
+    /**
+     * Sem DISTRITO e sem PAÍS.
+     *
+     * O distrito aparecia rotulado "Localidade" e era obrigatório: o técnico
+     * preenchia Cidade e depois Localidade sem perceber a diferença, e a segunda
+     * ia parar à coluna do distrito. O país era um campo desactivado a dizer
+     * "Portugal". Só operamos em Portugal -- o onboarding (IbanStep) já manda
+     * `country: 'Portugal'` fixo e nunca pediu distrito, e o backend aceita os
+     * dois em branco.
+     */
+    const {control, handleSubmit, formState: {errors, isLoading, isValid}, getValues, setError, reset, setValue, watch} = useForm({
         mode: 'onChange',
         defaultValues: {
             street_name: "",
             street_number: "",
             postal_code: "",
             city: "",
-            state: "",
-            country: "Portugal",
         },
     });
+
+    /**
+     * Autocomplete da morada, o mesmo do onboarding: escreve-se a rua e as
+     * sugestões trazem número, código postal e cidade. Este ecrã era o único
+     * onde a morada de faturação se escrevia toda à mão.
+     */
+    const suggestions = useAddressSuggestions(watch('street_name'));
+    const applySuggestion = (sugestao: AddressSuggestion) => {
+        suggestions.dismiss();
+        if (sugestao.street_name) setValue('street_name', sugestao.street_name, { shouldValidate: true });
+        if (sugestao.street_number) setValue('street_number', sugestao.street_number, { shouldValidate: true });
+        if (sugestao.postal_code) setValue('postal_code', sugestao.postal_code, { shouldValidate: true });
+        if (sugestao.city) setValue('city', sugestao.city, { shouldValidate: true });
+    };
 
     useEffect(() => {
         getAddress();
@@ -54,8 +81,6 @@ const EditCompanyAddress = () => {
                     street_number: address?.street_number,
                     postal_code: address?.postal_code,
                     city: address?.city,
-                    state: address?.state,
-                    country: address?.country,
                 })
             })
             .catch((error) => {
@@ -86,8 +111,7 @@ const EditCompanyAddress = () => {
             street_number: getValues('street_number'),
             postal_code: getValues('postal_code'),
             city: getValues('city'),
-            state: getValues('state'),
-            country: getValues('country'),
+            country: 'Portugal',
         })
             .then((response) => {
                 const { address } = response.data.data;
@@ -145,7 +169,9 @@ const EditCompanyAddress = () => {
                 otherClasses="p-5"
             />
             <KeyboardAwareScrollView bottomOffset={20}>
-                <View className="gap-y-8 flex-1 p-5">
+                {/* Um só espaçamento, igual ao onboarding. Tinha `gap-y-8` aqui E
+                    `mt-8` em cada campo: 64px entre campos, mais do triplo dos 20 do onboarding. */}
+                <View className="flex-1 p-5" style={{ gap: 20 }}>
                     <View>
                         <CustomText color="secondary" boldness="semiBold" numberOfLines={1}>
                             {t('general.street_name')}
@@ -163,10 +189,17 @@ const EditCompanyAddress = () => {
                                         size="large"
                                         onChangeText={field.onChange}
                                         placeholder={t('general.street_name_placeholder')}
+                                        autoCorrect={false}
                                         error={errors.street_name && errors.street_name.message}
                                         displayErrorIcon={true}
                                         success={!errors.street_name && field.value}
                                         displaySuccessIcon={true}
+                                    />
+                                    <AddressSuggestionList
+                                        results={suggestions.results}
+                                        failed={suggestions.failed}
+                                        showEmpty={suggestions.showEmpty}
+                                        onSelect={applySuggestion}
                                     />
                                 </View>
                             )}
@@ -216,7 +249,7 @@ const EditCompanyAddress = () => {
                         )}
                     </View>
 
-                    <View className="mt-8">
+                    <View>
                         <CustomText color="secondary" boldness="semiBold">
                             {t('general.postal_code')}
                         </CustomText>
@@ -267,7 +300,7 @@ const EditCompanyAddress = () => {
                         )}
                     </View>
 
-                    <View className="mt-8">
+                    <View>
                         <CustomText color="secondary" boldness="semiBold">
                             {t('general.city')}
                         </CustomText>
@@ -304,77 +337,6 @@ const EditCompanyAddress = () => {
                         )}
                     </View>
 
-                    <View className="mt-8">
-                        <CustomText color="secondary" boldness="semiBold">
-                            {t('general.locality')}
-                        </CustomText>
-
-                        <Controller
-                            control={control}
-                            name="state"
-                            rules={{
-                                required: t('general.locality_required'),
-                            }}
-                            render={({ field }) => (
-                                <View className="mt-2">
-                                    <CustomTextInput
-                                        {...field}
-                                        size="large"
-                                        onChangeText={field.onChange}
-                                        placeholder={t('general.locality_placeholder')}
-                                        error={errors.state && errors.state.message}
-                                        displayErrorIcon={true}
-                                        success={!errors.state && field.value}
-                                        displaySuccessIcon={true}
-                                    />
-                                </View>
-                            )}
-                        />
-                        {errors.state && errors.state.message && (
-                            <CustomText
-                                size="small"
-                                color="error"
-                                classes="mt-1"
-                            >
-                                {errors.state.message as string}
-                            </CustomText>
-                        )}
-                    </View>
-
-                    <View>
-                        <CustomText color="secondary" boldness="semiBold">
-                            {t('general.country')}
-                        </CustomText>
-
-                        <Controller
-                            control={control}
-                            name="country"
-                            render={({ field }) => (
-                                <View className="mt-2">
-                                    <CustomTextInput
-                                        {...field}
-                                        size="large"
-                                        onChangeText={field.onChange}
-                                        placeholder={t('general.country_placeholder')}
-                                        disabled
-                                        error={errors.country && errors.country.message}
-                                        displayErrorIcon={true}
-                                        success={!errors.country && field.value}
-                                        displaySuccessIcon={true}
-                                    />
-                                </View>
-                            )}
-                        />
-                        {errors.country && errors.country.message && (
-                            <CustomText
-                                size="small"
-                                color="error"
-                                classes="mt-1"
-                            >
-                            {errors.country.message as string}
-                            </CustomText>
-                        )}
-                    </View>
                 </View>
             </KeyboardAwareScrollView>
             <View className="pb-5 px-5">
