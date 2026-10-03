@@ -182,8 +182,14 @@ const EditProfile = () => {
             return;
         }
 
-        // Fase 2 — IBAN, só se mudou.
-        const ibanChanged = normalizeIban(getValues('iban')) !== normalizeIban(vendorData?.iban);
+        // Fase 2 — IBAN, só se mudou E está preenchido.
+        //
+        // Com o campo opcional, apagá-lo dava `ibanChanged === true` e mandava um
+        // IBAN vazio ao servidor. Um campo deixado em branco aqui quer dizer "não
+        // mexi no IBAN", não "apaga o IBAN para onde me pagam".
+        const ibanPreenchido = normalizeIban(getValues('iban')) !== '';
+        const ibanChanged = ibanPreenchido
+            && normalizeIban(getValues('iban')) !== normalizeIban(vendorData?.iban);
 
         if (ibanChanged) {
             try {
@@ -450,9 +456,22 @@ const EditProfile = () => {
                         <Controller
                             control={control}
                             name="iban"
+                            /**
+                             * OPCIONAL NESTE ECRÃ. Valida-se o formato só se estiver preenchido.
+                             *
+                             * Era `required`, e o `react-hook-form` só submete com TODOS os
+                             * campos válidos: um técnico sem IBAN -- ainda a meio do registo,
+                             * que é precisamente quem mais precisa de corrigir o telefone --
+                             * não conseguia guardar o número de telefone. O gravar já tratava o
+                             * IBAN como opcional ("Fase 2 — só se mudou"); só a validação é que
+                             * não o deixava lá chegar.
+                             *
+                             * O min/maxLength não precisam de mudar: o react-hook-form salta-os
+                             * quando o campo está vazio.
+                             */
                             rules={{
-                                required: t('general.iban_required'),
                                 validate: (value) => {
+                                    if (!value || !value.trim()) return true;
                                     const isValid = IBAN.isValid(value);
                                     if (!isValid) return t('general.iban_invalid');
                                     return true;
