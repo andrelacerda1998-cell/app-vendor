@@ -1,7 +1,7 @@
 import {Colors} from "@/constants/Colors";
 import BackHeader from "@/components/app/BackHeader";
 import {CustomText} from "@/components/CustomText";
-import { Image, KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
+import { Image, KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import {useSession} from "@/contexts/SessionContext";
 import CustomTouchableOpacity from "@/components/CustomTouchableOpacity";
@@ -317,10 +317,20 @@ export default function Documents(){
                         (vendorData?.missing_documents?.length ?? 0) > 0 && (
                             <View className="flex gap-1">
                                 <CustomText color="secondary" size="extraLarge" boldness="bold" numberOfLines={1}>{t('documents.missing_documents')}</CustomText>
+                                {/* `TouchableOpacity` simples e NÃO o `CustomTouchableOpacity`.
+                                    Esse é o BOTÃO da app: tem `flexDirection: 'row'` fixo,
+                                    14px de padding e fundo de botão. Aqui cada linha é
+                                    conteúdo + divisória POR BAIXO -- e dentro do botão
+                                    ficavam LADO A LADO: a divisória `w-full` disputava a
+                                    largura com o nome do documento e esmagava-o. Era o
+                                    "Documentos em falta desconfigurado". A lista de
+                                    documentos em validação, acima, usa uma View simples e
+                                    sempre esteve bem. */}
                                 {
                                     vendorData?.missing_documents.map((item, index) => (
-                                        <CustomTouchableOpacity
+                                        <TouchableOpacity
                                             key={item.id}
+                                            activeOpacity={0.7}
                                             onPress={() => setIsOpen(item?.id)}
                                             disabled={loadingSubmit}
                                         >
@@ -340,7 +350,7 @@ export default function Documents(){
                                                 </View>
                                             </View>
                                             <View className="h-[1px] w-full rounded-full mt-6" style={{ backgroundColor: Colors.line }}></View>
-                                        </CustomTouchableOpacity>
+                                        </TouchableOpacity>
                                     ))
                                 }
                             </View>
@@ -352,8 +362,9 @@ export default function Documents(){
                                 <CustomText color="secondary" size="extraLarge" boldness="bold" numberOfLines={1}>{t('documents.optional_documents')}</CustomText>
                                 {
                                     vendorData?.optional_documents.map((item, index) => (
-                                        <CustomTouchableOpacity
+                                        <TouchableOpacity
                                             key={item.id}
+                                            activeOpacity={0.7}
                                             onPress={() => setIsOpen(item?.id)}
                                         >
                                             <View className="flex flex-row justify-between items-center">
@@ -372,7 +383,7 @@ export default function Documents(){
                                                 </View>
                                             </View>
                                             <View className="h-[1px] w-full rounded-full mt-6" style={{ backgroundColor: Colors.line }}></View>
-                                        </CustomTouchableOpacity>
+                                        </TouchableOpacity>
                                     ))
                                 }
                             </View>
