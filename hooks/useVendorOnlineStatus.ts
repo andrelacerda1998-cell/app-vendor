@@ -5,6 +5,8 @@ import { useApi } from '@/contexts/ApiContext';
 import { useSession } from '@/contexts/SessionContext';
 import { useDialog } from '@/contexts/DialogContext';
 import { useLocation } from '@/contexts/LocationContext';
+import { useNotificationPermission } from '@/contexts/NotificationsContext';
+import { abrirDefinicoesDoSistema } from '@/utils/abrirDefinicoesDoSistema';
 import { API_ROUTES } from '@/constants/ApiRoutes';
 import { Colors } from '@/constants/Colors';
 import { getDeviceId } from '@/utils';
@@ -24,6 +26,7 @@ export const useVendorOnlineStatus = () => {
   const { vendorData, vendorStatus, setVendorStatus } = useSession();
   const { openDialog } = useDialog();
   const { startTracking, stopTracking } = useLocation();
+  const { permissionDenied } = useNotificationPermission();
 
   const [isLoadingStatus, setIsLoadingStatus] = useState(false);
   const [disabled, setDisabled] = useState(false);
@@ -67,6 +70,25 @@ export const useVendorOnlineStatus = () => {
       return;
     }
 
+    /**
+     * SEM NOTIFICAÇÕES NÃO SE VAI ONLINE.
+     *
+     * A localização já era exigida aqui (o `startTracking` recusa sem ela). As
+     * notificações não: o técnico ficava online sem nunca ser avisado de um
+     * pedido, e os 120 segundos de cada um passavam sem ele saber.
+     */
+    if (vendorStatus === 'Offline' && permissionDenied) {
+      openDialog({
+        icon: React.createElement(XIcon, { color: Colors.primary }),
+        title: t('permissions_guard.go_online_title'),
+        subtitle: t('permissions_guard.go_online_notifications'),
+        successButtonText: t('permissions_guard.open_settings'),
+        cancelButtonText: t('common.close'),
+        onSuccess: abrirDefinicoesDoSistema,
+      });
+      return;
+    }
+
     setDisabled(true);
     const deviceId = await getDeviceId();
     let trackingStatus = false;
@@ -84,6 +106,12 @@ export const useVendorOnlineStatus = () => {
     api.put(API_ROUTES.VENDOR_UPDATE_STATUS, {
       status: vendorStatus === 'Online' ? 'Offline' : 'Online',
       device_id: deviceId,
+      // O servidor não vê as permissões do telemóvel: diz-lhas a app, para ele
+      // poder recusar ir online sem elas (segunda linha, além da de cima).
+      // `true` fixo porque, a ir online, só se chega aqui depois de o
+      // `startTracking` ter confirmado a localização; a ir offline não conta.
+      location_enabled: true,
+      notifications_enabled: !permissionDenied,
     })
       .then(() => {
         setVendorStatus(vendorStatus === 'Online' ? 'Offline' : 'Online');

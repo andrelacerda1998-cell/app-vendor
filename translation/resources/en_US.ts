@@ -1,4 +1,16 @@
 export default {
+    "permissions_guard": {
+        "went_offline_title": "You stopped receiving requests",
+        "went_offline_location": "Location is off. Without it the customer can't see you on the way, so you went offline. Turn it on in Settings to receive requests again.",
+        "went_offline_notifications": "Notifications are off. Without them you won't know when a request arrives, so you went offline. Turn them on in Settings to receive requests again.",
+        "go_online_title": "Turn on notifications",
+        "go_online_notifications": "Without notifications you aren't alerted when a request arrives, and each one is only available for 2 minutes. Turn them on in Settings to go online.",
+        "open_settings": "Open Settings",
+        "location_on": "On",
+        "location_off": "Off",
+        "notifications_on": "On",
+        "notifications_off": "Off"
+    },
   "common": {
     "close": "Close"
   },

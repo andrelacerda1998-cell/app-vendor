@@ -1,4 +1,16 @@
 export default {
+    "permissions_guard": {
+        "went_offline_title": "Deixaste de receber pedidos",
+        "went_offline_location": "A localização está desligada. Sem ela o cliente não te vê a caminho, por isso passaste a offline. Liga-a nas Definições para voltares a receber pedidos.",
+        "went_offline_notifications": "As notificações estão desligadas. Sem elas não sabes quando chega um pedido, por isso passaste a offline. Liga-as nas Definições para voltares a receber pedidos.",
+        "go_online_title": "Liga as notificações",
+        "go_online_notifications": "Sem notificações não és avisado quando chega um pedido, e cada um só fica disponível 2 minutos. Liga-as nas Definições para ficares online.",
+        "open_settings": "Abrir Definições",
+        "location_on": "Ativa",
+        "location_off": "Desativada",
+        "notifications_on": "Ativas",
+        "notifications_off": "Desativadas"
+    },
     "common": {
         "close": "Fechar"
     },
