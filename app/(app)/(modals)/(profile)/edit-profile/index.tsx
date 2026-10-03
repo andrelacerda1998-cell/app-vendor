@@ -297,6 +297,18 @@ const EditProfile = () => {
         router.push('/(app)/(modals)/(profile)/edit-company-address');
     }
 
+    // As cidades só se escolhiam no onboarding; depois não havia onde as mudar.
+    const goToCities = () => {
+        router.push('/(app)/(modals)/(profile)/edit-cities');
+    }
+
+    const nCidades = vendorData?.available_cities_count ?? 0;
+    const rotuloCidades = nCidades === 0
+        ? t('profile.edit.cities_empty')
+        : nCidades === 1
+            ? t('profile.edit.cities_count_one')
+            : t('profile.edit.cities_count_other', { count: nCidades });
+
     return (
         <SafeAreaView style={{flex: 1, backgroundColor: Colors.primary}}>
             <BackHeader
@@ -529,6 +541,23 @@ const EditProfile = () => {
                                         key: 'company_address',
                                         label: vendorData?.company_address || t('profile.payments.empty_company_address'),
                                         onPress: goToCompanyAddress,
+                                    },
+                                ]}
+                            />
+                        </View>
+                    </View>
+
+                    <View>
+                        <CustomText color="secondary" boldness="semiBold" numberOfLines={1}>
+                            {t('profile.edit.cities_title')}
+                        </CustomText>
+                        <View className="mt-2">
+                            <ListCard
+                                items={[
+                                    {
+                                        key: 'cities',
+                                        label: rotuloCidades,
+                                        onPress: goToCities,
                                     },
                                 ]}
                             />

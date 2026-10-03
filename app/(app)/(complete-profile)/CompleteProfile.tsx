@@ -142,8 +142,10 @@ const CompleteProfile = () => {
      * tiver à mão adia, com o aviso da Home a relembrar.
      *
      * `contacts`/`iban`/`billing` gerem-se pelo dado + lista de adiados;
-     * `citySurvey` e `documents` não têm sinal persistente, por isso usam flags
-     * de sessão (passados por parâmetro para não apanhar estado obsoleto).
+     * `citySurvey` usa o `available_cities_count` do perfil, mais a flag de
+     * sessão para o caso de acabar de ser guardado. `documents` não tem sinal
+     * persistente e vive só da flag (passadas por parâmetro para não apanhar
+     * estado obsoleto).
      */
     const goToNextDataStep = (
         data: VendorDataInterface,
@@ -156,8 +158,13 @@ const CompleteProfile = () => {
         if ((phoneMissing || emailMissing) && !adiados.includes(VerifySteps.contacts)) {
             // 1) Contactos: telemóvel + email no mesmo ecrã. Rápido, dá o 1.º ✓.
             setStep(VerifySteps.contacts);
-        } else if (!surveyDone) {
+        } else if (!surveyDone && !((data?.available_cities_count ?? 0) > 0)) {
             // 2) Concelhos: leve e motivador.
+            //
+            // `available_cities_count` e o sinal PERSISTENTE. So com a flag de
+            // sessao, o passo reaparecia sempre que este ecra abria -- com as
+            // cidades ja guardadas no servidor. O tecnico preenchia, voltava,
+            // via o passo outra vez e concluia que nao tinha gravado.
             setStep(VerifySteps.citySurvey);
         } else if ((!data?.iban || !data?.company_address) && !adiados.includes(VerifySteps.iban)) {
             // 3) Pagamento + morada de faturação.
