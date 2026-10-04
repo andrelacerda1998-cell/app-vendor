@@ -64,6 +64,19 @@ export default function Documents(){
     const [loadingSubmit, setLoadingSubmit] = useState(false);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
 
+    /**
+     * Pedir o perfil ao servidor ao abrir.
+     *
+     * As listas deste ecrã saem do `vendorData`, que fica guardado no telemóvel
+     * e só é pedido de novo em casos contados. O ecrã de Documentos, mesmo
+     * antes deste, pede os documentos ao servidor -- e mostrava "Por enviar"
+     * enquanto este, com a cópia velha, dizia "Ainda não há documentos para
+     * mostrar". O técnico não chegava a ver o documento que tinha de enviar.
+     */
+    useEffect(() => {
+        fetchAndSaveUserData();
+    }, []);
+
     useEffect(() => {
         if (asset){
             setTimeout(()=> {
@@ -394,7 +407,9 @@ export default function Documents(){
                         vendorData?.missing_documents?.length === 0 &&
                         vendorData?.optional_documents?.length === 0 && (
                             <View className="flex flex-row justify-center items-center">
-                                <CustomText color="secondary" size="large" numberOfLines={1}>{t('documents.no_documents_found')}</CustomText>
+                                {/* Sem `numberOfLines={1}`: a frase tem duas partes e era cortada
+                                    a meio ("Veri…"), sem nunca chegar a dizer o que fazer. */}
+                                <CustomText color="secondary" size="large" classes="text-center">{t('documents.no_documents_found')}</CustomText>
                             </View>
                         )
                     }
