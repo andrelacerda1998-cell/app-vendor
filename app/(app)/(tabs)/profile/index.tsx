@@ -198,7 +198,17 @@ const Profile = () => {
   const avatarSrc = vendorData?.user?.avatar?.src;
 
   return (
-    <SafeAreaView className="flex-1" style={{ backgroundColor: Colors.bg }}>
+    /*
+     * `flex: 1` no `style` e NÃO no `className`.
+     *
+     * Aqui o `className` é ignorado sem erro, o `SafeAreaView` fica sem altura
+     * e o `ScrollView` de dentro cresce até ao tamanho do conteúdo -- deixa de
+     * rolar. A lista ficava cortada a meio, logo a seguir a "Avaliações", e
+     * tudo o que estava por baixo (Definições, Suporte, Terminar sessão) era
+     * inalcançável. É o mesmo defeito que já tinha deixado as Definições e os
+     * Pagamentos vazios.
+     */
+    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.bg }}>
       <BackHeader
         backButtonColor="secondary"
         middleItem={() => (
