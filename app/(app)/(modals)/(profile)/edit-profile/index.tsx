@@ -218,13 +218,19 @@ const EditProfile = () => {
         }
 
         setLoading(false);
-        handleGoBack();
+        // Sucesso PRIMEIRO, voltar atrás no `onClose`. Era ao contrário:
+        // `handleGoBack()` e logo a seguir `openDialog`. Agora que o diálogo é
+        // desenhado dentro deste modal, abri-lo enquanto o modal fechava
+        // deixava-o órfão por cima de tudo -- invisível, a apanhar os toques, e
+        // a app deixava de responder. O `onClose` só corre depois de o diálogo
+        // sair do ecrã (ver DialogContext).
         openDialog({
             icon: <CheckMark color={Colors.primary}/>,
             title: t('profile.edit.success.title'),
             subtitle: t('profile.edit.success.subtitle'),
             closeAfterMSeconds: 2000,
             closeOnClickOutside: true,
+            onClose: handleGoBack,
         });
     }
 

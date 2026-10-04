@@ -29,6 +29,7 @@ import { useSession } from '@/contexts/SessionContext';
 import { useDialog } from '@/contexts/DialogContext';
 import { API_ROUTES } from '@/constants/ApiRoutes';
 import XIcon from '@/assets/icons/x';
+import Dialog from '@/components/Dialog';
 
 const TERMOS_URL = 'https://piquetapp.com/termos-e-condicoes-prestadores-de-servico/';
 
@@ -152,6 +153,9 @@ const AcceptTerms = () => {
           </CustomText>
         )}
       </View>
+      {/* Este ecrã é um modal DENTRO de `(modals)`: precisa do seu próprio
+          anfitrião de diálogo -- ver a pilha em DialogContext. */}
+      <Dialog />
     </SafeAreaView>
   );
 };

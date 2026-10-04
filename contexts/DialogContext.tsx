@@ -1,10 +1,16 @@
-import React, { createContext, useContext, useRef, useState, ReactNode } from 'react';
+import React, { createContext, useCallback, useContext, useRef, useState, ReactNode } from 'react';
 
 interface DialogContextProps {
   isOpen: boolean;
   openDialog: (content: ContentProps) => void;
-  closeDialog: () => void;
+  /** Fecha o diálogo. `depois` corre quando ele acabar de se esconder (ver `dialogEscondido`). */
+  closeDialog: (depois?: () => void) => void;
+  /** Chamado pelo anfitrião quando o diálogo acabou de sair do ecrã. */
+  dialogEscondido: () => void;
   content: ContentProps | null;
+  /** O anfitrião que desenha agora (o mais recente a montar). Ver `registarAnfitriao`. */
+  anfitriaoAtivo: number | null;
+  registarAnfitriao: () => { id: number; sair: () => void };
 }
 
 interface ContentProps {
@@ -51,6 +57,41 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   // fonte de verdade síncrona para as decisões de fila.
   const currentRef = useRef<ContentProps | null>(null);
 
+  /**
+   * PILHA DE ANFITRIÕES: onde é que o diálogo é desenhado.
+   *
+   * O diálogo é um `Modal` nativo, e um `Modal` nativo é apresentado pelo
+   * ecrã que o contém. Havia um só, na raiz da app -- e todos os ecrãs de
+   * `(modals)/` são eles próprios apresentados como modal por cima da raiz.
+   * Com um desses abertos, a raiz já está a apresentar uma coisa e o iOS não a
+   * deixa apresentar outra: o diálogo falhava EM SILÊNCIO.
+   *
+   * Era isso que impedia gravar o Editar perfil e a Morada de faturação: os
+   * dois pedem confirmação antes de gravar, e a confirmação nunca aparecia. O
+   * técnico carregava em "Guardar alterações" e não acontecia nada.
+   *
+   * Cada contexto modal monta o seu `<Dialog/>`, e desenha SÓ o mais recente a
+   * montar -- o mais fundo. Os outros ficam calados, por isso nunca há dois
+   * diálogos nem dois temporizadores a fechar o mesmo. Quando o modal fecha,
+   * o anfitrião dele sai e volta a desenhar o de baixo.
+   */
+  const pilhaRef = useRef<number[]>([]);
+  const proximoIdRef = useRef(1);
+  const [anfitriaoAtivo, setAnfitriaoAtivo] = useState<number | null>(null);
+
+  const registarAnfitriao = useCallback(() => {
+    const id = proximoIdRef.current++;
+    pilhaRef.current = [...pilhaRef.current, id];
+    setAnfitriaoAtivo(id);
+    return {
+      id,
+      sair: () => {
+        pilhaRef.current = pilhaRef.current.filter((x) => x !== id);
+        setAnfitriaoAtivo(pilhaRef.current[pilhaRef.current.length - 1] ?? null);
+      },
+    };
+  }, []);
+
   const sameDialog = (a: ContentProps | null, b: ContentProps) =>
     !!a && a.title === b.title && a.subtitle === b.subtitle && !a.customContent && !b.customContent;
 
@@ -72,22 +113,60 @@ export const DialogProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     queueRef.current.push(next);
   };
 
-  const closeDialog = () => {
+  /**
+   * O QUE O DIÁLOGO MANDA FAZER AO FECHAR CORRE DEPOIS DE ELE SAIR DO ECRÃ.
+   *
+   * O `onClose` (e o `onSuccess`/`onCancel` dos botões) corria antes de o
+   * diálogo começar a esconder-se. Quase sempre é navegação -- "gravado, volta
+   * atrás". Com o diálogo desenhado DENTRO de um modal (ver a pilha de
+   * anfitriões), navegar para trás fechava esse modal com o diálogo ainda a
+   * animar a saída: o diálogo ficava órfão, invisível, por cima de tudo, e a
+   * app deixava de responder a toques. Agora a navegação espera que ele saia.
+   *
+   * Rede de segurança de 700 ms (a animação de saída tem 300): se nenhum
+   * anfitrião avisar -- não havia nenhum a desenhar -- corre na mesma, para
+   * nunca perder um `onClose`.
+   */
+  const pendentesRef = useRef<(() => void)[]>([]);
+  const segurancaRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const correrPendentes = () => {
+    if (segurancaRef.current) {
+      clearTimeout(segurancaRef.current);
+      segurancaRef.current = null;
+    }
+    const pendentes = pendentesRef.current;
+    pendentesRef.current = [];
+    pendentes.forEach((f) => f());
+  };
+
+  const closeDialog = (depois?: () => void) => {
     const closing = currentRef.current;
-    if (closing?.onClose) closing.onClose();
+    const acoes = [closing?.onClose, depois].filter(Boolean) as (() => void)[];
 
     const next = queueRef.current.shift() ?? null;
     if (next) {
+      // Aparece outro no mesmo sítio: o modal não chega a fechar, e não há
+      // saída nenhuma por que esperar.
+      acoes.forEach((f) => f());
       show(next);
       return;
     }
     currentRef.current = null;
     setIsOpen(false);
     setContent(null);
+
+    if (acoes.length > 0) {
+      pendentesRef.current.push(...acoes);
+      if (segurancaRef.current) clearTimeout(segurancaRef.current);
+      segurancaRef.current = setTimeout(correrPendentes, 700);
+    }
   };
 
+  const dialogEscondido = () => correrPendentes();
+
   return (
-    <DialogContext.Provider value={{ isOpen, openDialog, closeDialog, content }}>
+    <DialogContext.Provider value={{ isOpen, openDialog, closeDialog, dialogEscondido, content, anfitriaoAtivo, registarAnfitriao }}>
       {children}
     </DialogContext.Provider>
   );

@@ -72,13 +72,14 @@ const EditPayment = () => {
                     price_rate: data.price_rate,
                     company_name: data.company_name,
                 });
-                handleGoBack();
+                // Sucesso primeiro, voltar no `onClose` -- ver edit-profile.
                 openDialog({
                     icon: <CheckMark color={Colors.primary}/>,
                     title: t('profile.edit.success.title'),
                     subtitle: t('profile.edit.success.subtitle'),
                     closeAfterMSeconds: 2000,
                     closeOnClickOutside: true,
+                    onClose: handleGoBack,
                 })
             })
             .catch((error) => {

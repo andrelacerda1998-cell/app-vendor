@@ -1,5 +1,5 @@
 import { useDialog } from "@/contexts/DialogContext";
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { CustomText } from "./CustomText";
 import CustomTouchableOpacity from "./CustomTouchableOpacity";
@@ -9,12 +9,37 @@ import Modal from "react-native-modal";
 import { Colors } from '@/constants/Colors';
 
 
+/**
+ * Anfitrião do diálogo. Monta-se um por contexto modal (raiz, `(modals)`,
+ * `(profile)`...) e só o mais recente desenha -- ver a pilha de anfitriões em
+ * `DialogContext`. Um `Modal` nativo só aparece se o ecrã que o contém estiver
+ * em condições de o apresentar; na raiz, com um modal aberto por cima, não
+ * está, e o diálogo falhava em silêncio.
+ *
+ * O corpo vive num componente à parte de propósito: um anfitrião calado não
+ * corre o temporizador do `closeAfterMSeconds`. Com dois a contar, o mesmo
+ * diálogo fechava duas vezes e o segundo fecho saltava o diálogo seguinte da
+ * fila.
+ */
 const Dialog: React.FC = () => {
-  const { isOpen, closeDialog, content } = useDialog();
+  const { anfitriaoAtivo, registarAnfitriao } = useDialog();
+  const [id, setId] = useState<number | null>(null);
+
+  useEffect(() => {
+    const { id: meu, sair } = registarAnfitriao();
+    setId(meu);
+    return sair;
+  }, [registarAnfitriao]);
+
+  if (id === null || id !== anfitriaoAtivo) return null;
+  return <CorpoDoDialogo />;
+};
+
+const CorpoDoDialogo: React.FC = () => {
+  const { isOpen, closeDialog, content, dialogEscondido } = useDialog();
 
   const dropDownRef = useClickOutside<View>(() => {
-    if (content?.onCancel) content?.onCancel();
-    closeDialog();
+    closeDialog(content?.onCancel);
   });
 
   useEffect(() => {
@@ -29,6 +54,9 @@ const Dialog: React.FC = () => {
   return (
     <Modal
       isVisible={isOpen}
+      // Só depois de sair do ecrã é que corre o que o diálogo mandou fazer ao
+      // fechar (normalmente navegar) -- ver `closeDialog` em DialogContext.
+      onModalHide={dialogEscondido}
       animationIn="slideInUp"
       animationOut="slideOutDown"
       backdropColor="rgba(0, 0, 0, 0.85)"
@@ -92,10 +120,7 @@ const Dialog: React.FC = () => {
                     textColor={content.dangerCancel ? "danger" : "secondary"}
                     textBoldness="bold"
                     text={content.cancelButtonText}
-                    onPress={() => {
-                      closeDialog();
-                      if (content.onCancel) content.onCancel();
-                    }}
+                    onPress={() => closeDialog(content.onCancel)}
                     textNumberOfLines={2}
                     textClasses="text-center"
                     classes="w-[48%] py-3"
@@ -105,10 +130,7 @@ const Dialog: React.FC = () => {
                     type="support_primary"
                     textColor="primary"
                     text={content.successButtonText}
-                    onPress={() => {
-                      closeDialog();
-                      if (content.onSuccess) content.onSuccess();
-                    }}
+                    onPress={() => closeDialog(content.onSuccess)}
                     textNumberOfLines={2}
                     textBoldness="bolder"
                     textClasses="text-center"
