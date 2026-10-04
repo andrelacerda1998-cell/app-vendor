@@ -57,7 +57,12 @@ const EditCompanyAddress = () => {
      * sugestões trazem número, código postal e cidade. Este ecrã era o único
      * onde a morada de faturação se escrevia toda à mão.
      */
-    const suggestions = useAddressSuggestions(watch('street_name'));
+    // Só se pesquisa DEPOIS de o técnico mexer na rua. A morada guardada entra
+    // no campo ao abrir o ecrã, e o hook tomava isso por escrita dele: abria a
+    // pesquisar a morada que já lá estava e, sem resultado, dizia "Não
+    // encontrámos essa morada" a quem ainda não tinha escrito nada.
+    const [ruaEditada, setRuaEditada] = useState(false);
+    const suggestions = useAddressSuggestions(ruaEditada ? watch('street_name') : '');
     const applySuggestion = (sugestao: AddressSuggestion) => {
         suggestions.dismiss();
         if (sugestao.street_name) setValue('street_name', sugestao.street_name, { shouldValidate: true });
@@ -187,7 +192,7 @@ const EditCompanyAddress = () => {
                                     <CustomTextInput
                                         {...field}
                                         size="large"
-                                        onChangeText={field.onChange}
+                                        onChangeText={(texto: string) => { setRuaEditada(true); field.onChange(texto); }}
                                         placeholder={t('general.street_name_placeholder')}
                                         autoCorrect={false}
                                         error={errors.street_name && errors.street_name.message}
