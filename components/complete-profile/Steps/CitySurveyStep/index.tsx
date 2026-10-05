@@ -12,7 +12,10 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
 
-const MIN_AVAILABLE = 3;
+// Uma chega. Eram três, e quem só trabalha numa cidade tinha de inventar mais
+// duas — e as cidades passaram a decidir os convites (ver o matching no
+// servidor): inventar uma é receber pedidos de onde não se quer ir.
+const MIN_AVAILABLE = 1;
 
 // Pesquisa tolerante a acentos e maiusculas: "sao" encontra "São".
 const normalize = (s: string) =>

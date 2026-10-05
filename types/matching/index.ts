@@ -9,6 +9,8 @@
 export interface MatchingInvitation {
   /** Já fez um serviço a este cliente, e correu bem. */
   knows_customer?: boolean;
+  /** Convidado fora das cidades que escolheu (não havia ninguém dentro). */
+  outside_your_cities?: boolean;
   /** O que o cliente escreveu sobre o problema ao abrir o pedido. Opcional:
    *  o campo não trava quem só quer carregar em "Pedir agora". */
   customer_notes?: string | null;
