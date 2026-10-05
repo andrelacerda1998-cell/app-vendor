@@ -325,6 +325,47 @@ const Status = () => {
   const onTheWay = !!svc?.on_the_way_at;
   const status = svc?.status;
 
+  /**
+   * "O cliente não está". Antes não havia saída: depois de "Cheguei" não podia
+   * cancelar, e antes disso cancelar devolvia tudo ao cliente e a deslocação
+   * saía do bolso dele. Agora o cliente é avisado na hora e a equipa decide.
+   */
+  const [aReportarAusencia, setAReportarAusencia] = useState(false);
+  const ausenciaReportada = svc?.problem_reported_by === 'vendor' && svc?.problem_reason === 'customer_absent';
+  const podeReportarAusencia = !svc?.problem_reported_at && (status === ServiceStatus.ARRIVED || onTheWay);
+
+  const reportarAusencia = () => {
+    openDialog({
+      title: t('services.service.status.customer_absent.confirm_title'),
+      subtitle: t('services.service.status.customer_absent.confirm_subtitle'),
+      successButtonText: t('services.service.status.customer_absent.confirm'),
+      cancelButtonText: t('services.service.status.customer_absent.cancel'),
+      closeOnClickOutside: true,
+      onSuccess: () => {
+        if (aReportarAusencia || !svc?.id) return;
+        setAReportarAusencia(true);
+        api.post(API_ROUTES.POST_CUSTOMER_ABSENT(String(svc.id)))
+          .then(({ data }) => {
+            if (data?.data?.service) setRouteService(data.data.service);
+            openDialog({
+              title: t('services.service.status.customer_absent.sent_title'),
+              subtitle: t('services.service.status.customer_absent.sent_subtitle'),
+              closeOnClickOutside: true,
+            });
+          })
+          .catch(() => {
+            openDialog({
+              title: t('errors.service_status.title'),
+              subtitle: t('errors.service_status.subtitle'),
+              closeOnClickOutside: true,
+              closeAfterMSeconds: 3000,
+            });
+          })
+          .finally(() => setAReportarAusencia(false));
+      },
+    });
+  };
+
   /** Estou a caminho → Cheguei → Concluir */
   const handlePrimaryAction = async () => {
     if (status === ServiceStatus.ARRIVED) {
@@ -886,6 +927,17 @@ const Status = () => {
               onAddPart={() => setExtrasSheet('part')}
             />
           )}
+          {ausenciaReportada && (
+            <View
+              className="flex-row rounded-xl px-3 py-2.5 mb-3"
+              style={{ backgroundColor: Colors.brand_soft, borderWidth: 1, borderColor: `${Colors.brand}55` }}
+            >
+              <Feather name="clock" size={15} color={Colors.brand} style={{ marginTop: 2 }} />
+              <CustomText color="secondary" size="small" classes="ml-2 flex-1">
+                {t('services.service.status.customer_absent.reported')}
+              </CustomText>
+            </View>
+          )}
           <CustomTouchableOpacity
             type="support_primary"
             size="large"
@@ -904,6 +956,19 @@ const Status = () => {
             onPress={handlePrimaryAction}
             disabled={busyCta || loadingFinishService}
           />
+          {podeReportarAusencia && (
+            <TouchableOpacity
+              accessibilityRole="button"
+              onPress={reportarAusencia}
+              disabled={aReportarAusencia}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              className="items-center pt-3"
+            >
+              <CustomText color="muted" size="small" boldness="semiBold">
+                {t('services.service.status.customer_absent.cta')}
+              </CustomText>
+            </TouchableOpacity>
+          )}
         </View>
       )}
     </SafeAreaView>

@@ -404,6 +404,16 @@ export default {
           "in_progress": "In progress",
           "completed": "Completed"
         },
+        "customer_absent": {
+            "cta": "The customer isn't here",
+            "confirm_title": "The customer isn't here?",
+            "confirm_subtitle": "We'll tell the customer you're at the door and the Piquet team takes the case. Don't cancel: if they don't show up, Piquet decides and you won't lose your trip unfairly.",
+            "confirm": "Notify",
+            "cancel": "Back",
+            "sent_title": "We notified the customer",
+            "sent_subtitle": "And the Piquet team has the case. Wait a few minutes; call the customer if you need to.",
+            "reported": "You said the customer wasn't here. The Piquet team is handling it — you don't need to cancel."
+        },
         "on_my_way": "I'm on my way",
             "start_service": "Start job",
             "finish_service": "Complete job",

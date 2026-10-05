@@ -404,6 +404,16 @@ export default {
                     "in_progress": "Em execução",
                     "completed": "Concluído"
                 },
+                "customer_absent": {
+                    "cta": "O cliente não está",
+                    "confirm_title": "O cliente não está?",
+                    "confirm_subtitle": "Avisamos o cliente de que estás à porta e a equipa Piquet fica com o caso. Não canceles: se ele não aparecer, a Piquet decide e não perdes a deslocação injustamente.",
+                    "confirm": "Avisar",
+                    "cancel": "Voltar",
+                    "sent_title": "Avisámos o cliente",
+                    "sent_subtitle": "E a equipa Piquet já tem o caso. Espera uns minutos; se precisares, liga ao cliente.",
+                    "reported": "Disseste que o cliente não estava. A equipa Piquet está a tratar do caso — não precisas de cancelar."
+                },
                 "on_my_way": "Estou a caminho",
                 "start_service": "Iniciar serviço",
                 "finish_service": "Concluir serviço",
