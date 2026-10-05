@@ -290,7 +290,6 @@ export default {
     "cancel": {
       "title": "Cancel service",
       "subtitle": "Do you really want to cancel this service?",
-      "confirm_penalty": "Less than 24 hours before the start, a {{amount}} penalty applies. Do you want to continue?",
       "confirm": "Yes",
       "cancel": "No",
       "you_are_about_to": "You've already accepted this service. Do you really want to cancel it?",
@@ -300,16 +299,13 @@ export default {
       "cancel_service": "Confirm cancellation",
       "confirm_cancellation": "Confirm",
       "canceling": "Cancelling...",
-      "no_penalty": {
-        "title": "No penalty",
-        "body": "There are more than 24 hours until the service starts."
-      },
-      "penalty": {
-        "title": "Late cancellation penalty",
-        "body": "Less than 24 hours before the start, a penalty of 10% of the service value applies, in this case {{amount}}.",
-        "body_now": "There are less than 24 hours until the start, so a 10% penalty of the service value applies: {{amount}}.",
-        "body_no_amount": "Less than 24 hours before the start, a penalty of 10% of the service value applies."
-      },
+      "reliability": {
+                "title_count": "This will be your cancellation number {{number}} this month",
+                "title_pause": "With this cancellation you'll get no invitations for {{hours}} hours",
+                "title_extend": "You're on a pause — canceling extends it",
+                "rule": "At the {{limit}}th cancellation in the same month, you get no invitations for {{hours}} hours. There is no fine.",
+                "customer": "The customer is refunded and we immediately look for another professional."
+            },
       "error": {
         "title": "Couldn't cancel the service",
         "subtitle": "Check your connection and try again. The service is still booked."
@@ -1304,7 +1300,11 @@ export default {
       }
     }
   },
-  "tabs": {
+  "reliability_banner": {
+        "title": "No invitations until {{until}}",
+        "body": "You canceled {{count}} accepted services this month. Invitations come back on their own."
+    },
+    "tabs": {
     "home": "Home",
     "agenda": "Agenda",
     "earnings": "Earnings",
@@ -1818,8 +1818,6 @@ export default {
         "accepted_step_notify": "We'll notify you as soon as they decide.",
         "accepted_step_calendar": "Until then, your calendar stays free.",
         "accepted_cta": "See other requests",
-        "accepted_subtitle_bulk": "You're on the list for {{count}} requests. We'll let you know as each client decides. Your calendar stays free.",
-        "accept_all": "Accept all ({{count}})",
         "too_late_title": "This request is closed",
         "too_late_subtitle": "Another professional replied first. New requests come in throughout the day.",
         "busiest_hours": "More requests usually come in between {{from}}h and {{to}}h.",

@@ -38,6 +38,8 @@ import { useNotificationPermission } from "@/contexts/NotificationsContext";
 import { useSchedule } from "@/contexts/ScheduleContext";
 import { useVendorStats } from "@/hooks/useVendorStats";
 import { pedeAtNoPerfil } from "@/utils/atPayout";
+import ReliabilityPauseBanner from '@/components/ReliabilityPauseBanner';
+import { pausaAte } from '@/utils/fiabilidade';
 
 const Home = () => {
   const insets = useSafeAreaInsets();
@@ -315,6 +317,11 @@ const Home = () => {
             de ver a agenda. Os restantes ficam atrás de "mais N avisos". */}
         {session && !isLoadingUserData && (() => {
           const banners: { key: string; node: React.ReactNode }[] = [];
+          // Primeiro de todos: enquanto durar, nenhum outro aviso explica
+          // porque é que não chegam pedidos.
+          if (pausaAte(vendorData?.reliability)) {
+            banners.push({ key: 'pause', node: <ReliabilityPauseBanner /> });
+          }
 
           // 1) AT inválida — bloqueia ir online: é o mais grave.
           if (vendorData?.at_user && vendorData?.at_valid === false) {

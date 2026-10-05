@@ -290,7 +290,6 @@ export default {
         "cancel": {
             "title": "Cancelar serviço",
             "subtitle": "Queres mesmo cancelar este serviço?",
-            "confirm_penalty": "A menos de 24 horas do início, é aplicada uma penalização de {{amount}}. Pretendes continuar?",
             "confirm": "Sim",
             "cancel": "Não",
             "you_are_about_to": "Este serviço já foi aceite por ti. Queres mesmo cancelá-lo?",
@@ -300,15 +299,12 @@ export default {
             "cancel_service": "Confirmar cancelamento",
             "confirm_cancellation": "Confirmar",
             "canceling": "A cancelar...",
-            "no_penalty": {
-                "title": "Sem penalização",
-                "body": "Faltam mais de 24 horas para o início do serviço."
-            },
-            "penalty": {
-                "title": "Penalização por cancelamento tardio",
-                "body": "A menos de 24 horas do início, é aplicada uma penalização de 10% do valor do serviço, neste caso será de {{amount}}.",
-                "body_now": "Faltam menos de 24 horas para o início, por isso é aplicada uma penalização de 10% do valor do serviço: {{amount}}.",
-                "body_no_amount": "A menos de 24 horas do início, é aplicada uma penalização de 10% do valor do serviço."
+            "reliability": {
+                "title_count": "Este será o teu {{number}}.º cancelamento este mês",
+                "title_pause": "Com este cancelamento ficas {{hours}} horas sem convites",
+                "title_extend": "Estás sem convites — cancelar prolonga a pausa",
+                "rule": "Ao {{limit}}.º cancelamento no mesmo mês, ficas {{hours}} horas sem receber convites. Não há multa.",
+                "customer": "O cliente é reembolsado e procuramos-lhe logo outro técnico."
             },
             "error": {
                 "title": "Não foi possível cancelar o serviço",
@@ -1304,6 +1300,10 @@ export default {
             }
         }
     },
+    "reliability_banner": {
+        "title": "Sem convites até {{until}}",
+        "body": "Cancelaste {{count}} serviços aceites este mês. Os convites voltam sozinhos."
+    },
     "tabs": {
         "home": "Início",
         "agenda": "Agenda",
@@ -1819,8 +1819,6 @@ export default {
         "accepted_step_notify": "Avisamos-te por notificação assim que decidir.",
         "accepted_step_calendar": "Até lá, a tua agenda continua livre.",
         "accepted_cta": "Ver outros pedidos",
-        "accepted_subtitle_bulk": "Entraste na lista de {{count}} pedidos. Avisamos-te à medida que cada cliente decidir. A tua agenda continua livre.",
-        "accept_all": "Aceitar todos ({{count}})",
         "too_late_title": "Este pedido já fechou",
         "too_late_subtitle": "Outro profissional respondeu primeiro. Aparecem novos pedidos ao longo do dia.",
         "busiest_hours": "Costumam entrar mais pedidos entre as {{from}}h e as {{to}}h.",
