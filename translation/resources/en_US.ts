@@ -1800,6 +1800,7 @@ export default {
         "list_title": "Service requests",
         "customer_notes": "Customer's description",
         "fallback_title": "Service request",
+        "knows_customer": "You've served this customer before",
         "window": "to reply",
         "immediate": "Now",
     "screen_title": "You have a request",

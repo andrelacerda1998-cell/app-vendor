@@ -1801,6 +1801,7 @@ export default {
         "list_title": "Pedidos de serviços",
         "customer_notes": "Descrição do cliente",
         "fallback_title": "Pedido de serviço",
+        "knows_customer": "Já atendeste este cliente",
         "window": "para responder",
         "immediate": "Agora",
         "screen_title": "Tens um pedido",
