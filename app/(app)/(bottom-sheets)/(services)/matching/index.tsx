@@ -24,7 +24,7 @@ import { useDialog } from '@/contexts/DialogContext';
 const MatchingInvitations = () => {
   const { t } = useTranslation();
   const { openDialog, closeDialog } = useDialog();
-  const { invitations, loading, failed, submitting, busiestHours, refresh, accept, acceptAll, decline } = useMatchingInvitations();
+  const { invitations, loading, failed, submitting, busiestHours, refresh, accept, decline } = useMatchingInvitations();
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = useCallback(async () => {
@@ -55,21 +55,6 @@ const MatchingInvitations = () => {
     });
   }, [accept, openDialog, t]);
 
-  const runAcceptAll = useCallback(async () => {
-    const { accepted } = await acceptAll();
-    if (accepted > 0) {
-      openDialog({
-        closeOnClickOutside: true,
-        customContent: <MatchingAcceptedContent onClose={closeDialog} count={accepted} />,
-      });
-      return;
-    }
-    // Nenhum entrou — as janelas fecharam entretanto.
-    openDialog({
-      title: t('matching.invitation.too_late_title'),
-      subtitle: t('matching.invitation.too_late_subtitle'),
-    });
-  }, [acceptAll, openDialog, closeDialog, t]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.bg }}>
@@ -126,27 +111,10 @@ const MatchingInvitations = () => {
           </View>
         )}
 
-        {/* Atalho para aceitar todos de uma vez — só faz sentido com mais
-            do que um pedido; com um só, o botão do cartão basta. */}
-        {!loading && !failed && invitations.length > 1 && (
-          <TouchableOpacity
-            onPress={runAcceptAll}
-            disabled={submitting !== null}
-            accessibilityRole="button"
-            className="flex-row items-center justify-center rounded-2xl py-3.5 mb-4 border"
-            style={{
-              backgroundColor: `${Colors.success}1A`,
-              borderColor: `${Colors.success}44`,
-              opacity: submitting !== null ? 0.5 : 1,
-            }}
-          >
-            <Feather name="check-circle" size={16} color={Colors.success} />
-            <CustomText boldness="bold" color="secondary" classes="ml-2" style={{ color: Colors.success }}>
-              {t('matching.invitation.accept_all', { count: invitations.length })}
-            </CustomText>
-          </TouchableOpacity>
-        )}
-
+        {/* Sem "Aceitar todos". Aceitar é dizer "posso ir a este" — e quem
+            aceita tudo num toque não pensou em nenhum. O cliente escolhe entre
+            quem confirmou disponibilidade; um sim às cegas engana-o e deixa
+            o técnico a cancelar depois. */}
         {loading ? (
           <SkeletonList />
         ) : failed ? (

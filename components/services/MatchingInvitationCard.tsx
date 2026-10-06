@@ -151,6 +151,26 @@ const MatchingInvitationCard = ({
           ?? invitation.service_type?.name
           ?? t('matching.invitation.fallback_title')}
       </CustomText>
+      {/* Um regresso: o cliente já o conhece, e foi por isso que foi chamado.
+          Pesa na decisão — e é uma razão para dizer que sim. */}
+      {/* Fora das cidades dele: tem de o saber antes de dizer que sim —
+          foi chamado porque não havia mais ninguém. */}
+      {invitation.outside_your_cities && (
+        <View className="flex-row items-center mt-1.5">
+          <Feather name="map-pin" size={13} color={Colors.muted} />
+          <CustomText color="muted" size="small" boldness="semiBold" classes="ml-1.5">
+            {t('matching.invitation.outside_your_cities')}
+          </CustomText>
+        </View>
+      )}
+      {invitation.knows_customer && (
+        <View className="flex-row items-center mt-1.5">
+          <Feather name="heart" size={13} color={Colors.brand} />
+          <CustomText color="secondary" size="small" boldness="semiBold" classes="ml-1.5" style={{ color: Colors.brand }}>
+            {t('matching.invitation.knows_customer')}
+          </CustomText>
+        </View>
+      )}
       {/* O QUE O CLIENTE ESCREVEU sobre o problema.
           Sem isto o convite dizia o tipo de serviço, o valor e a distância — e
           o profissional decidia às cegas se aquilo lhe dava meia hora ou uma

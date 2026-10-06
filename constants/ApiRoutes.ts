@@ -93,6 +93,7 @@ export const API_ROUTES = {
     POST_FINISH_SERVICE: (id: string) => `${API_BASE_URL}/vendor/services/${id}/finish`,
     POST_CANCEL_SERVICE: (id: string) => `${API_BASE_URL}/vendor/services/${id}/cancel`,
     POST_ARRIVED_AT_DESTINATION_SERVICE: (id: string) => `${API_BASE_URL}/vendor/services/${id}/arrived`,
+    POST_CUSTOMER_ABSENT: (id: string) => `${API_BASE_URL}/vendor/services/${id}/customer-absent`,
     PUT_RATE_SERVICE: (id: string) => `${API_BASE_URL}/vendor/services/${id}/rate`,
     GET_SERVICE_DETAILS: (id: string) => `${API_BASE_URL}/vendor/services/${id}`,
     POST_SERVICES_HISTORY: `${API_BASE_URL}/vendor/services/history`,

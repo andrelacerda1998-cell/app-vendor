@@ -290,7 +290,6 @@ export default {
     "cancel": {
       "title": "Cancel service",
       "subtitle": "Do you really want to cancel this service?",
-      "confirm_penalty": "Less than 24 hours before the start, a {{amount}} penalty applies. Do you want to continue?",
       "confirm": "Yes",
       "cancel": "No",
       "you_are_about_to": "You've already accepted this service. Do you really want to cancel it?",
@@ -300,16 +299,13 @@ export default {
       "cancel_service": "Confirm cancellation",
       "confirm_cancellation": "Confirm",
       "canceling": "Cancelling...",
-      "no_penalty": {
-        "title": "No penalty",
-        "body": "There are more than 24 hours until the service starts."
-      },
-      "penalty": {
-        "title": "Late cancellation penalty",
-        "body": "Less than 24 hours before the start, a penalty of 10% of the service value applies, in this case {{amount}}.",
-        "body_now": "There are less than 24 hours until the start, so a 10% penalty of the service value applies: {{amount}}.",
-        "body_no_amount": "Less than 24 hours before the start, a penalty of 10% of the service value applies."
-      },
+      "reliability": {
+                "title_count": "This will be your cancellation number {{number}} this month",
+                "title_pause": "With this cancellation you'll get no invitations for {{hours}} hours",
+                "title_extend": "You're on a pause — canceling extends it",
+                "rule": "At the {{limit}}th cancellation in the same month, you get no invitations for {{hours}} hours. There is no fine.",
+                "customer": "The customer is refunded and we immediately look for another professional."
+            },
       "error": {
         "title": "Couldn't cancel the service",
         "subtitle": "Check your connection and try again. The service is still booked."
@@ -407,6 +403,16 @@ export default {
           "arrived": "Arrived",
           "in_progress": "In progress",
           "completed": "Completed"
+        },
+        "customer_absent": {
+            "cta": "The customer isn't here",
+            "confirm_title": "The customer isn't here?",
+            "confirm_subtitle": "We'll tell the customer you're at the door and the Piquet team takes the case. Don't cancel: if they don't show up, Piquet decides and you won't lose your trip unfairly.",
+            "confirm": "Notify",
+            "cancel": "Back",
+            "sent_title": "We notified the customer",
+            "sent_subtitle": "And the Piquet team has the case. Wait a few minutes; call the customer if you need to.",
+            "reported": "You said the customer wasn't here. The Piquet team is handling it — you don't need to cancel."
         },
         "on_my_way": "I'm on my way",
             "start_service": "Start job",
@@ -1304,7 +1310,11 @@ export default {
       }
     }
   },
-  "tabs": {
+  "reliability_banner": {
+        "title": "No invitations until {{until}}",
+        "body": "You canceled {{count}} accepted services this month. Invitations come back on their own."
+    },
+    "tabs": {
     "home": "Home",
     "agenda": "Agenda",
     "earnings": "Earnings",
@@ -1575,14 +1585,14 @@ export default {
     },
     "cities": {
       "available_title": "Which cities do you want to work in?",
-      "available_subtitle": "Pick at least 3. Active cities already receive requests.",
+      "available_subtitle": "You only get requests from these cities — and, when nobody there is available, from close by. Pick at least one.",
       "suggested_label": "Main cities",
       "active_label": "Active",
       "search_placeholder": "Search another city",
       "search_results_label": "Results",
       "no_results": "No cities for \"{{query}}\"",
       "selected_label": "Chosen cities",
-      "min_progress": "{{count}} of 3 minimum",
+      "min_progress": "Pick at least one city",
             "load_error_title": "Could not load the cities",
             "save_error_title": "Could not save the cities",
             "save_error_subtitle": "Check your connection and try again.",
@@ -1800,6 +1810,8 @@ export default {
         "list_title": "Service requests",
         "customer_notes": "Customer's description",
         "fallback_title": "Service request",
+        "knows_customer": "You've served this customer before",
+        "outside_your_cities": "Outside your cities",
         "window": "to reply",
         "immediate": "Now",
     "screen_title": "You have a request",
@@ -1818,8 +1830,6 @@ export default {
         "accepted_step_notify": "We'll notify you as soon as they decide.",
         "accepted_step_calendar": "Until then, your calendar stays free.",
         "accepted_cta": "See other requests",
-        "accepted_subtitle_bulk": "You're on the list for {{count}} requests. We'll let you know as each client decides. Your calendar stays free.",
-        "accept_all": "Accept all ({{count}})",
         "too_late_title": "This request is closed",
         "too_late_subtitle": "Another professional replied first. New requests come in throughout the day.",
         "busiest_hours": "More requests usually come in between {{from}}h and {{to}}h.",

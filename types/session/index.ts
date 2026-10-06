@@ -80,6 +80,8 @@ export interface VendorDataInterface {
   zone_recent_requests?: number | null;
   /** Cidades escolhidas para trabalhar. Sinal persistente do passo das cidades no onboarding. */
   available_cities_count?: number | null;
+  /** Regras de fiabilidade e onde o técnico está nelas (ver utils/fiabilidade). */
+  reliability?: ReliabilitySummary | null;
   at_valid: boolean;
 }
 
@@ -139,4 +141,14 @@ export interface WalletInterface {
   decimal_places: number;
   name: string;
   slug: string;
+}
+
+export interface ReliabilitySummary {
+  cancellations_this_month: number;
+  cancellations_limit: number;
+  pause_hours: number;
+  /** ISO. null = não está em pausa. */
+  invites_paused_until: string | null;
+  no_shows_recent: number;
+  no_shows_window_days: number;
 }

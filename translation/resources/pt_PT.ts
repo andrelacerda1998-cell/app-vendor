@@ -290,7 +290,6 @@ export default {
         "cancel": {
             "title": "Cancelar serviço",
             "subtitle": "Queres mesmo cancelar este serviço?",
-            "confirm_penalty": "A menos de 24 horas do início, é aplicada uma penalização de {{amount}}. Pretendes continuar?",
             "confirm": "Sim",
             "cancel": "Não",
             "you_are_about_to": "Este serviço já foi aceite por ti. Queres mesmo cancelá-lo?",
@@ -300,15 +299,12 @@ export default {
             "cancel_service": "Confirmar cancelamento",
             "confirm_cancellation": "Confirmar",
             "canceling": "A cancelar...",
-            "no_penalty": {
-                "title": "Sem penalização",
-                "body": "Faltam mais de 24 horas para o início do serviço."
-            },
-            "penalty": {
-                "title": "Penalização por cancelamento tardio",
-                "body": "A menos de 24 horas do início, é aplicada uma penalização de 10% do valor do serviço, neste caso será de {{amount}}.",
-                "body_now": "Faltam menos de 24 horas para o início, por isso é aplicada uma penalização de 10% do valor do serviço: {{amount}}.",
-                "body_no_amount": "A menos de 24 horas do início, é aplicada uma penalização de 10% do valor do serviço."
+            "reliability": {
+                "title_count": "Este será o teu {{number}}.º cancelamento este mês",
+                "title_pause": "Com este cancelamento ficas {{hours}} horas sem convites",
+                "title_extend": "Estás sem convites — cancelar prolonga a pausa",
+                "rule": "Ao {{limit}}.º cancelamento no mesmo mês, ficas {{hours}} horas sem receber convites. Não há multa.",
+                "customer": "O cliente é reembolsado e procuramos-lhe logo outro técnico."
             },
             "error": {
                 "title": "Não foi possível cancelar o serviço",
@@ -407,6 +403,16 @@ export default {
                     "arrived": "Cheguei",
                     "in_progress": "Em execução",
                     "completed": "Concluído"
+                },
+                "customer_absent": {
+                    "cta": "O cliente não está",
+                    "confirm_title": "O cliente não está?",
+                    "confirm_subtitle": "Avisamos o cliente de que estás à porta e a equipa Piquet fica com o caso. Não canceles: se ele não aparecer, a Piquet decide e não perdes a deslocação injustamente.",
+                    "confirm": "Avisar",
+                    "cancel": "Voltar",
+                    "sent_title": "Avisámos o cliente",
+                    "sent_subtitle": "E a equipa Piquet já tem o caso. Espera uns minutos; se precisares, liga ao cliente.",
+                    "reported": "Disseste que o cliente não estava. A equipa Piquet está a tratar do caso — não precisas de cancelar."
                 },
                 "on_my_way": "Estou a caminho",
                 "start_service": "Iniciar serviço",
@@ -1304,6 +1310,10 @@ export default {
             }
         }
     },
+    "reliability_banner": {
+        "title": "Sem convites até {{until}}",
+        "body": "Cancelaste {{count}} serviços aceites este mês. Os convites voltam sozinhos."
+    },
     "tabs": {
         "home": "Início",
         "agenda": "Agenda",
@@ -1575,14 +1585,14 @@ export default {
         },
         "cities": {
             "available_title": "Em que cidades queres trabalhar?",
-            "available_subtitle": "Escolhe pelo menos 3. As cidades ativas já recebem pedidos.",
+            "available_subtitle": "Só recebes pedidos destas cidades — e, quando lá não houver ninguém disponível, de perto delas. Escolhe pelo menos uma.",
             "suggested_label": "Cidades principais",
             "active_label": "Ativa",
             "search_placeholder": "Pesquisar outra cidade",
             "search_results_label": "Resultados",
             "no_results": "Sem cidades para \"{{query}}\"",
             "selected_label": "Cidades escolhidas",
-            "min_progress": "{{count}} de 3 mínimas",
+            "min_progress": "Escolhe pelo menos uma cidade",
             "load_error_title": "Não foi possível carregar as cidades",
             "save_error_title": "Não foi possível guardar as cidades",
             "save_error_subtitle": "Verifica a ligação e tenta outra vez.",
@@ -1801,6 +1811,8 @@ export default {
         "list_title": "Pedidos de serviços",
         "customer_notes": "Descrição do cliente",
         "fallback_title": "Pedido de serviço",
+        "knows_customer": "Já atendeste este cliente",
+        "outside_your_cities": "Fora das tuas cidades",
         "window": "para responder",
         "immediate": "Agora",
         "screen_title": "Tens um pedido",
@@ -1819,8 +1831,6 @@ export default {
         "accepted_step_notify": "Avisamos-te por notificação assim que decidir.",
         "accepted_step_calendar": "Até lá, a tua agenda continua livre.",
         "accepted_cta": "Ver outros pedidos",
-        "accepted_subtitle_bulk": "Entraste na lista de {{count}} pedidos. Avisamos-te à medida que cada cliente decidir. A tua agenda continua livre.",
-        "accept_all": "Aceitar todos ({{count}})",
         "too_late_title": "Este pedido já fechou",
         "too_late_subtitle": "Outro profissional respondeu primeiro. Aparecem novos pedidos ao longo do dia.",
         "busiest_hours": "Costumam entrar mais pedidos entre as {{from}}h e as {{to}}h.",

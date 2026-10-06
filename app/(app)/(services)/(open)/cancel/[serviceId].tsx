@@ -1,7 +1,7 @@
 import { Colors } from '@/constants/Colors'
 import { MaterialIcons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router'
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView, View } from 'react-native';
 import BackHeader from '@/components/app/BackHeader'
@@ -10,71 +10,38 @@ import { API_ROUTES } from '@/constants/ApiRoutes'
 import useEcho from '@/hooks/echo'
 import CustomTouchableOpacity from "@/components/CustomTouchableOpacity"
 import { CustomText } from "@/components/CustomText"
+import { useSession } from '@/contexts/SessionContext';
+import { avisoDeCancelamento } from '@/utils/fiabilidade';
 import { useService } from "@/contexts/ServiceContext"
 import { useDialog } from "@/contexts/DialogContext"
 import { useTranslation } from "react-i18next"
-import { renderMoney } from "@/utils/money"
 
 const CancelService = () => {
   const { t } = useTranslation();
   const { api } = useApi();
   const echo = useEcho();
   const { openService, setOpenService } = useService();
+  const { vendorData, fetchAndSaveUserData } = useSession();
   const { openDialog } = useDialog();
   // // const [requestError, setRequestError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { serviceId } = useLocalSearchParams();
 
-  // Detalhe completo do serviço: é aqui que vêm o agendamento (para saber a
-  // antecedência) e o `amount_for_vendor`. O `openService` do contexto pode ser
-  // o payload magro, sem estes campos.
-  const [details, setDetails] = useState<any>(null);
-
-  useEffect(() => {
-    if (!serviceId) return;
-    let cancelled = false;
-    api.get(API_ROUTES.GET_SERVICE_DETAILS(String(serviceId)))
-      .then(({ data }) => { if (!cancelled) setDetails(data?.data?.service ?? null); })
-      .catch(() => {});
-    return () => { cancelled = true; };
-  }, [serviceId]);
-
-  const svc: any = details ?? openService;
 
   /**
-   * Regra: cancelar com menos de 24h de antecedência tem penalização de 10% do
-   * valor do serviço (quem a aplica é o backend).
+   * A REGRA REAL, e não a que estava escrita.
    *
-   * `null` = não sabemos a antecedência (serviço sem agendamento ou detalhe
-   * ainda por carregar). Nesse caso enunciamos a regra na condicional, em vez
-   * de afirmar que a penalização se aplica.
+   * Este ecrã prometia "10% de penalização a menos de 24 horas". O servidor
+   * não cobra nada (a taxa está a zero), por isso o técnico era ameaçado com
+   * um custo que não existia — e quem descobrisse deixava de acreditar no
+   * resto. A regra que existe é outra: ao 3.º cancelamento no mês, 48 horas
+   * sem convites. Vem do servidor, já com a contagem dele.
    */
-  const LATE_CANCEL_RATE = 0.1;
-  const LATE_WINDOW_MS = 24 * 60 * 60 * 1000;
+  const aviso = avisoDeCancelamento(vendorData?.reliability);
 
-  const isLate: boolean | null = useMemo(() => {
-    const day = String(svc?.schedule?.scheduled_day ?? '').split('T')[0];
-    const time = String(svc?.schedule?.scheduled_time?.start ?? '').slice(0, 5);
-    const [y, m, d] = day.split('-').map(Number);
-    if (!y || !m || !d) return null;
-    const [hh, mm] = time.split(':').map(Number);
-    const start = new Date(y, m - 1, d, Number.isFinite(hh) ? hh : 0, Number.isFinite(mm) ? mm : 0);
-    if (isNaN(start.getTime())) return null;
-    return start.getTime() - Date.now() < LATE_WINDOW_MS;
-  }, [svc]);
-
-  // SÓ a parte do técnico. Sem recurso ao `amount` (total pago pelo cliente):
-  // cair nele inflacionava a penalização mostrada em ~33%.
-  const amountForVendor: number | null =
-    typeof svc?.amount_for_vendor === 'number' ? svc.amount_for_vendor : null;
-  const penaltyCents = amountForVendor === null ? null : Math.round(amountForVendor * LATE_CANCEL_RATE);
-  const penaltyLabel = penaltyCents === null ? null : renderMoney(penaltyCents);
-
-  const penaltyBody = () => {
-    if (!penaltyLabel) return t('services.cancel.penalty.body_no_amount');
-    if (isLate) return t('services.cancel.penalty.body_now', { amount: penaltyLabel });
-    return t('services.cancel.penalty.body', { amount: penaltyLabel });
-  };
+  // A contagem tem de ser a de agora, não a da cache: pode ter cancelado
+  // outro serviço há minutos.
+  useEffect(() => { fetchAndSaveUserData(); }, []);
 
   /**
    * Executa o cancelamento. Já não abre um diálogo a repetir a penalização: o
@@ -92,6 +59,7 @@ const CancelService = () => {
           closeAfterMSeconds: 3000,
           closeOnClickOutside: false,
           onClose: () => {
+            fetchAndSaveUserData();
             setOpenService(null);
             return router.navigate('/(app)/(tabs)/home');
           }
@@ -150,49 +118,37 @@ const CancelService = () => {
             {t('services.cancel.already_accepted')}
           </CustomText>
 
-          {/* O alarme vermelho só aparece quando a penalização é mesmo possível.
-              Faltando mais de 24h não há penalização nenhuma — mostrar o aviso
-              a toda a hora assustava sem motivo e gastava a credibilidade do
-              alerta para quando ele conta. */}
-          {isLate === false ? (
+          {/* A regra, com o número dele. Vermelho quando este cancelamento é o
+              que o deixa sem convites (ou prolonga a pausa); âmbar antes disso
+              — é um aviso, não um alarme. */}
+          {aviso && (
             <View
               className="mt-6 rounded-2xl p-4"
               style={{
-                backgroundColor: 'rgba(35, 230, 158, 0.10)',
+                backgroundColor: aviso.daPausa ? 'rgba(237, 73, 73, 0.14)' : 'rgba(250, 187, 91, 0.16)',
                 borderWidth: 1,
-                borderColor: Colors.success,
+                borderColor: aviso.daPausa ? Colors.error : Colors.brand,
               }}
             >
               <View className="flex-row items-center">
-                <MaterialIcons name="check-circle" size={20} color={Colors.success} />
+                <MaterialIcons name={aviso.daPausa ? 'warning' : 'info'} size={20} color={aviso.daPausa ? Colors.error : Colors.brand} />
                 <CustomText color="secondary" boldness="semiBold" numberOfLines={2} classes="ml-2 flex-1">
-                  {t('services.cancel.no_penalty.title')}
+                  {aviso.jaEmPausa
+                    ? t('services.cancel.reliability.title_extend')
+                    : aviso.daPausa
+                      ? t('services.cancel.reliability.title_pause', { hours: aviso.horas })
+                      : t('services.cancel.reliability.title_count', { number: aviso.numero })}
                 </CustomText>
               </View>
               <CustomText color="secondary" boldness="regular" numberOfLines={3} classes="mt-1.5">
-                {t('services.cancel.no_penalty.body')}
-              </CustomText>
-            </View>
-          ) : (
-            <View
-              className="mt-6 rounded-2xl p-4"
-              style={{
-                backgroundColor: 'rgba(237, 73, 73, 0.14)',
-                borderWidth: 1,
-                borderColor: Colors.error,
-              }}
-            >
-              <View className="flex-row items-center">
-                <MaterialIcons name="warning" size={20} color={Colors.error} />
-                <CustomText color="secondary" boldness="semiBold" numberOfLines={2} classes="ml-2 flex-1">
-                  {t('services.cancel.penalty.title')}
-                </CustomText>
-              </View>
-              <CustomText color="secondary" boldness="regular" numberOfLines={4} classes="mt-1.5">
-                {penaltyBody()}
+                {t('services.cancel.reliability.rule', { limit: aviso.limite, hours: aviso.horas })}
               </CustomText>
             </View>
           )}
+
+          <CustomText color="muted" size="small" numberOfLines={2} classes="text-center mt-4">
+            {t('services.cancel.reliability.customer')}
+          </CustomText>
         </ScrollView>
 
         {/* A ação segura ("Manter serviço") é a que fica em destaque; cancelar
