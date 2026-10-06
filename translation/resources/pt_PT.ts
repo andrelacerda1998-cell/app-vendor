@@ -971,8 +971,8 @@ export default {
             "placeholder": "Valor/hora",
             "required": "Escreve o teu valor/hora",
             "invalid": "Valor/hora inválido",
-            "min_value": "O valor/hora tem de ser pelo menos 1",
-            "max_value": "O valor/hora não pode ser maior do que 999.999",
+            "min_value": "O valor/hora tem de ser pelo menos {{min}} €",
+            "max_value": "O valor/hora não pode ser maior do que {{max}} €",
             "must_be_number": "O valor/hora tem de ser um número"
         },
         "phone_verification_required": "Falta verificar o teu telefone",
