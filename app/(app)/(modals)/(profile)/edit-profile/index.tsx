@@ -182,8 +182,14 @@ const EditProfile = () => {
             return;
         }
 
-        // Fase 2 — IBAN, só se mudou.
-        const ibanChanged = normalizeIban(getValues('iban')) !== normalizeIban(vendorData?.iban);
+        // Fase 2 — IBAN, só se mudou E está preenchido.
+        //
+        // Com o campo opcional, apagá-lo dava `ibanChanged === true` e mandava um
+        // IBAN vazio ao servidor. Um campo deixado em branco aqui quer dizer "não
+        // mexi no IBAN", não "apaga o IBAN para onde me pagam".
+        const ibanPreenchido = normalizeIban(getValues('iban')) !== '';
+        const ibanChanged = ibanPreenchido
+            && normalizeIban(getValues('iban')) !== normalizeIban(vendorData?.iban);
 
         if (ibanChanged) {
             try {
@@ -212,13 +218,19 @@ const EditProfile = () => {
         }
 
         setLoading(false);
-        handleGoBack();
+        // Sucesso PRIMEIRO, voltar atrás no `onClose`. Era ao contrário:
+        // `handleGoBack()` e logo a seguir `openDialog`. Agora que o diálogo é
+        // desenhado dentro deste modal, abri-lo enquanto o modal fechava
+        // deixava-o órfão por cima de tudo -- invisível, a apanhar os toques, e
+        // a app deixava de responder. O `onClose` só corre depois de o diálogo
+        // sair do ecrã (ver DialogContext).
         openDialog({
             icon: <CheckMark color={Colors.primary}/>,
             title: t('profile.edit.success.title'),
             subtitle: t('profile.edit.success.subtitle'),
             closeAfterMSeconds: 2000,
             closeOnClickOutside: true,
+            onClose: handleGoBack,
         });
     }
 
@@ -290,6 +302,18 @@ const EditProfile = () => {
     const goToCompanyAddress = () => {
         router.push('/(app)/(modals)/(profile)/edit-company-address');
     }
+
+    // As cidades só se escolhiam no onboarding; depois não havia onde as mudar.
+    const goToCities = () => {
+        router.push('/(app)/(modals)/(profile)/edit-cities');
+    }
+
+    const nCidades = vendorData?.available_cities_count ?? 0;
+    const rotuloCidades = nCidades === 0
+        ? t('profile.edit.cities_empty')
+        : nCidades === 1
+            ? t('profile.edit.cities_count_one')
+            : t('profile.edit.cities_count_other', { count: nCidades });
 
     return (
         <SafeAreaView style={{flex: 1, backgroundColor: Colors.primary}}>
@@ -450,9 +474,22 @@ const EditProfile = () => {
                         <Controller
                             control={control}
                             name="iban"
+                            /**
+                             * OPCIONAL NESTE ECRÃ. Valida-se o formato só se estiver preenchido.
+                             *
+                             * Era `required`, e o `react-hook-form` só submete com TODOS os
+                             * campos válidos: um técnico sem IBAN -- ainda a meio do registo,
+                             * que é precisamente quem mais precisa de corrigir o telefone --
+                             * não conseguia guardar o número de telefone. O gravar já tratava o
+                             * IBAN como opcional ("Fase 2 — só se mudou"); só a validação é que
+                             * não o deixava lá chegar.
+                             *
+                             * O min/maxLength não precisam de mudar: o react-hook-form salta-os
+                             * quando o campo está vazio.
+                             */
                             rules={{
-                                required: t('general.iban_required'),
                                 validate: (value) => {
+                                    if (!value || !value.trim()) return true;
                                     const isValid = IBAN.isValid(value);
                                     if (!isValid) return t('general.iban_invalid');
                                     return true;
@@ -510,6 +547,23 @@ const EditProfile = () => {
                                         key: 'company_address',
                                         label: vendorData?.company_address || t('profile.payments.empty_company_address'),
                                         onPress: goToCompanyAddress,
+                                    },
+                                ]}
+                            />
+                        </View>
+                    </View>
+
+                    <View>
+                        <CustomText color="secondary" boldness="semiBold" numberOfLines={1}>
+                            {t('profile.edit.cities_title')}
+                        </CustomText>
+                        <View className="mt-2">
+                            <ListCard
+                                items={[
+                                    {
+                                        key: 'cities',
+                                        label: rotuloCidades,
+                                        onPress: goToCities,
                                     },
                                 ]}
                             />

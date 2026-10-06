@@ -16,6 +16,7 @@ import Echo from "laravel-echo";
 import {useSchedule} from "@/contexts/ScheduleContext";
 import useOngoingServiceNotification from "@/hooks/useOngoingServiceNotification";
 import { useForceDarkTheme } from '@/contexts/ThemeContext';
+import GuardaDasPermissoes from '@/components/GuardaDasPermissoes';
 
 export default function AppLayout() {
     // Já dentro da app, a escolha de tema do técnico volta a mandar: o escuro
@@ -326,6 +327,9 @@ export default function AppLayout() {
     }
 
     return (
+        <>
+        {/* Sem localização ou notificações, passa a offline. Uma vez, aqui. */}
+        <GuardaDasPermissoes />
         <Stack
             screenOptions={{
                 headerShown: false,
@@ -385,5 +389,6 @@ export default function AppLayout() {
                 name="(complete-profile)/CompleteProfile"
             />
         </Stack>
+        </>
     );
 }

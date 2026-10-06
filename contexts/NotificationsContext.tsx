@@ -3,7 +3,7 @@ import { track, AnalyticsEvent } from '@/utils/analytics';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
-import { Platform } from "react-native";
+import { AppState, Platform } from "react-native";
 import {useApi} from "@/contexts/ApiContext";
 import {useSession} from "@/contexts/SessionContext";
 import { Colors } from "@/constants/Colors";
@@ -61,6 +61,31 @@ export function NotificationsProvider({ children }: PropsWithChildren){
     const responseListener = useRef<Notifications.Subscription | undefined>(undefined);
     const { api } = useApi();
     const {session } = useSession();
+
+    /**
+     * RELER A PERMISSÃO SEMPRE QUE A APP VOLTA AO PRIMEIRO PLANO.
+     *
+     * Só se lia uma vez, ao arrancar. Quem ligasse as notificações nas
+     * Definições do sistema e voltasse continuava a ver "desligadas" até
+     * reiniciar a app -- e quem as DESLIGASSE com a app aberta não era detetado,
+     * e continuava online sem ser avisado de pedido nenhum.
+     *
+     * Só lê, não volta a pedir: pedir de novo a cada regresso seria insistir
+     * com quem já disse que não. Num simulador não há permissão a ler.
+     */
+    useEffect(() => {
+        if (!Device.isDevice) return;
+        const sub = AppState.addEventListener('change', async (estado) => {
+            if (estado !== 'active') return;
+            try {
+                const { status } = await Notifications.getPermissionsAsync();
+                setPermissionDenied(status !== 'granted');
+            } catch {
+                // Sem leitura, fica o último estado conhecido.
+            }
+        });
+        return () => sub.remove();
+    }, []);
 
 
     useEffect(() => {

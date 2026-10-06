@@ -1,4 +1,16 @@
 export default {
+    "permissions_guard": {
+        "went_offline_title": "Deixaste de receber pedidos",
+        "went_offline_location": "A localização está desligada. Sem ela o cliente não te vê a caminho, por isso passaste a offline. Liga-a nas Definições para voltares a receber pedidos.",
+        "went_offline_notifications": "As notificações estão desligadas. Sem elas não sabes quando chega um pedido, por isso passaste a offline. Liga-as nas Definições para voltares a receber pedidos.",
+        "go_online_title": "Liga as notificações",
+        "go_online_notifications": "Sem notificações não és avisado quando chega um pedido, e cada um só fica disponível 2 minutos. Liga-as nas Definições para ficares online.",
+        "open_settings": "Abrir Definições",
+        "location_on": "Ativa",
+        "location_off": "Desativada",
+        "notifications_on": "Ativas",
+        "notifications_off": "Desativadas"
+    },
     "common": {
         "close": "Fechar"
     },
@@ -121,7 +133,8 @@ export default {
                         subtitle: "Vamos analisá-lo e avisamos-te assim que estiver validado."
                     },
                     error: "Não conseguimos enviar o documento. Verifica a ligação e tenta outra vez.",
-                    "error_file_too_big": "O ficheiro é demasiado grande. O máximo é 2 MB — tira nova foto com menos qualidade ou envia um PDF mais leve."
+                    "error_file_too_big": "O ficheiro é demasiado grande. O máximo é 2 MB — envia um PDF mais leve ou tira outra foto.",
+                    "error_invalid_format": "Este formato não é aceite. Envia uma foto em JPG ou PNG, ou um PDF."
                 }
             },
             "price_rate": {
@@ -550,6 +563,12 @@ export default {
             "send_reset_email": "Enviar email para alterar a palavra-passe",
             "saving_changes": "A guardar alterações...",
             "save_changes": "Guardar alterações",
+            "cities_title": "Cidades onde trabalho",
+            "cities_empty": "Escolher cidades",
+            "cities_count_one": "1 cidade",
+            "cities_count_other": "{{count}} cidades",
+            "cities_saved_title": "Cidades guardadas",
+            "cities_saved_subtitle": "Vais receber pedidos destas cidades.",
             "updating_location": "A atualizar localização...",
             "update_location": "Definir localização atual",
             "update_location_success": {
@@ -1369,9 +1388,6 @@ export default {
                 "action": "Dar o meu IBAN"
             }
         },
-        "on_hold_deadline_one": "Tens 1 dia para dares o acesso. Depois disso, perdes este dinheiro.",
-        "on_hold_deadline_other": "Tens {{count}} dias para dares o acesso. Depois disso, perdes este dinheiro.",
-        "on_hold_deadline_last_day": "É hoje o último dia. Se não deres o acesso, perdes este dinheiro.",
         "next_payment_blocked": "Assim que resolveres o que falta",
     },
     "user_header": {
@@ -1525,9 +1541,6 @@ export default {
             "company_address": "morada de faturação",
             "iban": "IBAN"
         },
-        "money_on_hold_deadline_one": "Falta 1 dia para dares a AT ou perdes o dinheiro.",
-        "money_on_hold_deadline_other": "Faltam {{count}} dias para dares a AT ou perdes o dinheiro.",
-        "money_on_hold_last_day": "É hoje: dá a AT ou perdes o dinheiro.",
         "money_on_hold": "O teu dinheiro está retido.",
         "notice": "Completa o teu perfil",
         "subtitle": "Enquanto não estiver completo não recebes pedidos.",
@@ -1571,6 +1584,8 @@ export default {
             "selected_label": "Cidades escolhidas",
             "min_progress": "{{count}} de 3 mínimas",
             "load_error_title": "Não foi possível carregar as cidades",
+            "save_error_title": "Não foi possível guardar as cidades",
+            "save_error_subtitle": "Verifica a ligação e tenta outra vez.",
             "load_error_subtitle": "Verifica a ligação e tenta outra vez. Se continuar, fala connosco pelo suporte.",
             "load_error_retry": "Tentar outra vez",
             "catalog_empty": "Ainda não há cidades disponíveis para escolher. Fala connosco pelo suporte.",

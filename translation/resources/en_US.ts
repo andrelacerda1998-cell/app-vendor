@@ -1,4 +1,16 @@
 export default {
+    "permissions_guard": {
+        "went_offline_title": "You stopped receiving requests",
+        "went_offline_location": "Location is off. Without it the customer can't see you on the way, so you went offline. Turn it on in Settings to receive requests again.",
+        "went_offline_notifications": "Notifications are off. Without them you won't know when a request arrives, so you went offline. Turn them on in Settings to receive requests again.",
+        "go_online_title": "Turn on notifications",
+        "go_online_notifications": "Without notifications you aren't alerted when a request arrives, and each one is only available for 2 minutes. Turn them on in Settings to go online.",
+        "open_settings": "Open Settings",
+        "location_on": "On",
+        "location_off": "Off",
+        "notifications_on": "On",
+        "notifications_off": "Off"
+    },
   "common": {
     "close": "Close"
   },
@@ -121,7 +133,8 @@ export default {
             subtitle: "We'll review it and let you know as soon as it's validated."
           },
           error: "We couldn't send the document. Check your connection and try again.",
-          "error_file_too_big": "The file is too large. The limit is 2 MB — take a lower-quality photo or send a smaller PDF."
+          "error_file_too_big": "The file is too large. The limit is 2 MB — take a lower-quality photo or send a smaller PDF.",
+                    "error_invalid_format": "This format is not accepted. Send a JPG or PNG photo, or a PDF."
         }
       },
       "price_rate": {
@@ -550,6 +563,12 @@ export default {
       "send_reset_email": "Send email to change password",
       "saving_changes": "Saving changes...",
       "save_changes": "Save changes",
+      "cities_title": "Cities I work in",
+      "cities_empty": "Choose cities",
+      "cities_count_one": "1 city",
+      "cities_count_other": "{{count}} cities",
+      "cities_saved_title": "Cities saved",
+      "cities_saved_subtitle": "You will get requests from these cities.",
       "updating_location": "Updating location...",
       "update_location": "Set current location",
       "update_location_success": {
@@ -1369,9 +1388,6 @@ export default {
         "action": "Give my IBAN"
       }
     },
-    "on_hold_deadline_one": "You have 1 day to give access. After that, you lose this money.",
-    "on_hold_deadline_other": "You have {{count}} days to give access. After that, you lose this money.",
-    "on_hold_deadline_last_day": "Today is the last day. If you do not give access, you lose this money.",
     "next_payment_blocked": "As soon as you sort out what is missing",
   },
   "user_header": {
@@ -1525,9 +1541,6 @@ export default {
         "company_address": "billing address",
         "iban": "IBAN"
     },
-    "money_on_hold_deadline_one": "1 day left to give Tax Authority access or you lose the money.",
-    "money_on_hold_deadline_other": "{{count}} days left to give Tax Authority access or you lose the money.",
-    "money_on_hold_last_day": "Today: give Tax Authority access or you lose the money.",
     "money_on_hold": "Your money is on hold.",
     "notice": "Complete your profile",
     "subtitle": "You won't receive requests until it's complete.",
@@ -1571,6 +1584,8 @@ export default {
       "selected_label": "Chosen cities",
       "min_progress": "{{count}} of 3 minimum",
             "load_error_title": "Could not load the cities",
+            "save_error_title": "Could not save the cities",
+            "save_error_subtitle": "Check your connection and try again.",
             "load_error_subtitle": "Check your connection and try again. If it keeps failing, contact support.",
             "load_error_retry": "Try again",
             "catalog_empty": "There are no cities to choose from yet. Please contact support.",

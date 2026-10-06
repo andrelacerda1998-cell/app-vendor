@@ -4,6 +4,9 @@ import CustomTouchableOpacity from '@/components/CustomTouchableOpacity';
 import { API_ROUTES } from '@/constants/ApiRoutes';
 import { Colors } from '@/constants/Colors';
 import { useApi } from '@/contexts/ApiContext';
+import { useDialog } from '@/contexts/DialogContext';
+import { useSession } from '@/contexts/SessionContext';
+import XIcon from '@/assets/icons/x';
 import { CityInterface } from '@/types/cities';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,9 +18,16 @@ const MIN_AVAILABLE = 3;
 const normalize = (s: string) =>
     s.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().trim();
 
-const CitySurveyStep = ({ onNext }: { onNext: () => void }) => {
+/**
+ * `submitLabel`: o mesmo passo serve o onboarding ("Continuar") e o ecrã de
+ * editar as cidades depois ("Guardar"). Antes só existia no onboarding -- uma
+ * vez o perfil completo, não havia forma de mudar onde se trabalha.
+ */
+const CitySurveyStep = ({ onNext, submitLabel }: { onNext: () => void; submitLabel?: string }) => {
     const { t } = useTranslation();
     const { api } = useApi();
+    const { openDialog } = useDialog();
+    const { fetchAndSaveUserData } = useSession();
 
     const [catalog, setCatalog] = useState<CityInterface[]>([]);
     const [availableIds, setAvailableIds] = useState<number[]>([]);
@@ -105,7 +115,24 @@ const CitySurveyStep = ({ onNext }: { onNext: () => void }) => {
         api.post(API_ROUTES.VENDOR_CITIES_SAVE, {
             available_city_ids: availableIds,
         })
-            .then(() => onNext())
+            .then(() => {
+                // Refrescar o perfil: é daí que sai o `available_cities_count`
+                // que diz ao onboarding que este passo está feito.
+                fetchAndSaveUserData();
+                onNext();
+            })
+            // NÃO HAVIA `.catch`. Se o servidor recusasse, a promessa rejeitava
+            // em silêncio: o botão parava de girar, o técnico ficava no mesmo
+            // ecrã sem mensagem nenhuma e sem saber se tinha gravado.
+            .catch(() => {
+                openDialog({
+                    icon: <XIcon color={Colors.primary} />,
+                    title: t('complete_profile.cities.save_error_title'),
+                    subtitle: t('complete_profile.cities.save_error_subtitle'),
+                    closeAfterMSeconds: 3000,
+                    closeOnClickOutside: true,
+                });
+            })
             .finally(() => setSubmitting(false));
     };
 
@@ -331,7 +358,7 @@ const CitySurveyStep = ({ onNext }: { onNext: () => void }) => {
                     type="support_primary"
                     textColor="on_brand"
                     textBoldness="bold"
-                    text={t('complete_profile.cities.continue')}
+                    text={submitLabel ?? t('complete_profile.cities.continue')}
                     onPress={submit}
                     disabled={!canContinueAvailable || submitting}
                 />

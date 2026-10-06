@@ -64,7 +64,6 @@ export interface VendorDataInterface {
    * meia-noite continuava a dizer "faltam 2" quando já só falta 1. Com a data,
    * quem conta é quem mostra.
    */
-  at_deadline_ends_at?: string | null;
   /**
    * Termos: que versão está em vigor, qual ele aceitou, e se falta aceitar.
    *
@@ -79,6 +78,8 @@ export interface VendorDataInterface {
    * para quem ainda não pode aceitar serviços — para os aprovados é `null`.
    */
   zone_recent_requests?: number | null;
+  /** Cidades escolhidas para trabalhar. Sinal persistente do passo das cidades no onboarding. */
+  available_cities_count?: number | null;
   at_valid: boolean;
 }
 

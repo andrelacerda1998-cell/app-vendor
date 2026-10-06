@@ -23,6 +23,9 @@ import ClipNotebookIcon from "@/assets/icons/terms";
 import TrashCanIcon from "@/assets/icons/delete";
 import DocumentIcon from "@/assets/icons/documents";
 import LogoutIcon from "@/assets/icons/logout";
+import { useLocation } from '@/contexts/LocationContext';
+import { useNotificationPermission } from '@/contexts/NotificationsContext';
+import { abrirDefinicoesDoSistema } from '@/utils/abrirDefinicoesDoSistema';
 
 type Prefs = Record<string, boolean>;
 
@@ -36,6 +39,8 @@ const Settings = () => {
   const { openDialog } = useDialog();
   const { signOut } = useSession();
   const { mode, setMode } = useTheme();
+  const { locationPermission, permissionsChecked } = useLocation();
+  const { permissionDenied } = useNotificationPermission();
 
   const [prefs, setPrefs] = useState<Prefs>({});
   const [saving, setSaving] = useState<string | null>(null);
@@ -75,18 +80,37 @@ const Settings = () => {
     });
   };
 
+  /**
+   * Localização e notificações: o ESTADO REAL, e um toque que leva às Definições.
+   *
+   * Estas duas linhas eram etiquetas mortas -- ícone, título, subtítulo, e
+   * nenhum interruptor nem `onPress`. Tocar não fazia nada. Uma app não pode
+   * ligar nem desligar as suas próprias permissões, por isso não há
+   * interruptor a fingir que sim: mostra-se se está ativa e leva-se o técnico
+   * ao único sítio onde ele a pode mudar.
+   *
+   * `null` enquanto a localização ainda não foi verificada: dizer "Desativada"
+   * no primeiro segundo do ecrã era mentir.
+   */
   const permissions = [
     {
       key: 'location',
       icon: 'map-pin' as const,
       title: t('settings_screen.permission_items.location.title'),
       subtitle: t('settings_screen.permission_items.location.subtitle'),
+      ativa: permissionsChecked ? locationPermission.foreground : null,
+      // Concordância: "Localização ativa", "Notificações ativas".
+      textoAtiva: t('permissions_guard.location_on'),
+      textoDesativada: t('permissions_guard.location_off'),
     },
     {
       key: 'notifications',
       icon: 'bell' as const,
       title: t('settings_screen.permission_items.notifications.title'),
       subtitle: t('settings_screen.permission_items.notifications.subtitle'),
+      ativa: !permissionDenied,
+      textoAtiva: t('permissions_guard.notifications_on'),
+      textoDesativada: t('permissions_guard.notifications_off'),
     },
   ];
 
@@ -207,7 +231,11 @@ const Settings = () => {
           {permissions.map((p, i) => (
             <View key={p.key}>
               {i > 0 && <View style={{ height: 1, backgroundColor: Colors.line, marginLeft: 64 }} />}
-              <View className="flex-row items-center px-4 py-4">
+              <TouchableOpacity
+                className="flex-row items-center px-4 py-4"
+                activeOpacity={0.7}
+                onPress={abrirDefinicoesDoSistema}
+              >
                 <View className="w-8 items-center mr-4">
                   <Feather name={p.icon} size={20} color={Colors.secondary} />
                 </View>
@@ -219,7 +247,18 @@ const Settings = () => {
                     {p.subtitle}
                   </CustomText>
                 </View>
-              </View>
+                {p.ativa !== null && (
+                  <CustomText
+                    color={p.ativa ? 'support_primary' : 'danger'}
+                    size="small"
+                    boldness="semiBold"
+                    classes="ml-2"
+                  >
+                    {p.ativa ? p.textoAtiva : p.textoDesativada}
+                  </CustomText>
+                )}
+                <Feather name="chevron-right" size={18} color={Colors.gray_medium} style={{ marginLeft: 6 }} />
+              </TouchableOpacity>
             </View>
           ))}
         </Card>
