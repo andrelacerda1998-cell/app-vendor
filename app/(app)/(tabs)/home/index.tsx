@@ -5,7 +5,7 @@ import { Colors } from '@/constants/Colors';
 import {AntDesign, Entypo, Feather, Ionicons} from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { View, ScrollView, Animated, TouchableOpacity, Platform, RefreshControl } from 'react-native';
+import { View, ScrollView, Animated, TouchableOpacity, Platform, RefreshControl, AppState } from 'react-native';
 import { FlatList, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CustomText } from '@/components/CustomText';
@@ -58,7 +58,7 @@ const Home = () => {
   const toggleAnimation = useRef(new Animated.Value(vendorStatus === 'Online' ? 1 : 0)).current;
   const [disableStatusVendor, setDisableStatusVendor] = useState(false);
   const [geoLoading, setGeoLoading] = useState(false);
-  const { startTracking, stopTracking, isTracking, locationPermission, permissionsChecked, requestPermissions } = useLocation();
+  const { startTracking, refreshTracking, stopTracking, isTracking, locationPermission, permissionsChecked, requestPermissions } = useLocation();
 
   // Agenda o aviso "está na hora de sair" (30 min antes de cada serviço).
   useDepartureReminders();
@@ -120,12 +120,15 @@ const Home = () => {
     getVendorStatus();
   }, [vendorData]);
 
+  // Precisa de mandar a posição: Online, ou a caminho de um serviço aceite.
+  const precisaDeLocalizacao = vendorStatus === 'Online' || openService?.status === ServiceStatus.ACCEPTED;
+  const precisaDeLocalizacaoRef = useRef(precisaDeLocalizacao);
+  precisaDeLocalizacaoRef.current = precisaDeLocalizacao;
+
   useEffect(() => {
-    if (
-        (vendorStatus === 'Online' ||
-        (openService && openService?.status === ServiceStatus.ACCEPTED)) &&
-      !isTracking
-    ) {
+    // Sem o `!isTracking` que aqui estava: a tarefa pode estar registada e
+    // morta (ver refreshTracking). Reinicia-se sempre que o estado muda.
+    if (precisaDeLocalizacao) {
       handleTrackingStatus();
     }
     if (
@@ -135,10 +138,24 @@ const Home = () => {
     ) {
       stopTracking();
     }
-  }, [vendorStatus, openService]);
+    // `openService?.status` e não `openService`: o objeto muda a cada
+    // atualização do serviço, e reiniciar o GPS a cada uma era desperdício.
+  }, [vendorStatus, openService?.status]);
+
+  // Ao voltar ao primeiro plano: o técnico pode ter estado horas com a app
+  // fechada e o envio parado. Abrir a app tem de bastar para voltar a ser
+  // visível para "Pedir agora" — é o que o aviso do servidor lhe pede.
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (estado) => {
+      if (estado === 'active' && precisaDeLocalizacaoRef.current) {
+        handleTrackingStatus();
+      }
+    });
+    return () => subscription.remove();
+  }, []);
 
   const handleTrackingStatus = async () => {
-    const { ok } = await startTracking()
+    const { ok } = await refreshTracking()
 
     if (!ok) {
       // startTracking already surfaced the appropriate dialog: a persistent, actionable
