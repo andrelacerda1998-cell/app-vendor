@@ -65,7 +65,10 @@ const TodayCard = () => {
         <SectionHeader title={t('home_today.title')} />
         <TouchableOpacity activeOpacity={0.85} onPress={goToAgenda}>
           <Card className="flex-row items-center">
-            <View className="mr-3.5">
+            {/* Coluna de 56 px como a dos azulejos dos outros cartões: sem
+                isto o texto deste cartão começava 8 px à esquerda do dos
+                vizinhos, e a Home tinha duas margens esquerdas. */}
+            <View className="w-14 items-center mr-3">
               <AgendaFree color={Colors.muted} accent={Colors.success} size={38} />
             </View>
             <View className="flex-1">

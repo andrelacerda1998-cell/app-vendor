@@ -111,13 +111,16 @@ export default function AppLayout() {
             // Navigate to first pending schedule if exists and no open/pending service
             if (schedules && schedules.length > 0 && !openService && !pendingService) {
                 const firstSchedule = schedules[0];
-                router.navigate({
-                    pathname: '/(app)/(bottom-sheets)/(services)/schedule-proposal/[scheduleId]',
-                    params: {
-                        scheduleId: String(firstSchedule?.id),
-                        serviceId: firstSchedule?.service_id ? String(firstSchedule.service_id) : undefined,
-                    },
-                });
+                // Ver acima: um ecrã só. O antigo fica como recurso para o caso
+                // de o agendamento não trazer o serviço associado.
+                if (firstSchedule?.service_id) {
+                    router.navigate(`/(app)/(modals)/incoming-request/${firstSchedule.service_id}`);
+                } else {
+                    router.navigate({
+                        pathname: '/(app)/(bottom-sheets)/(services)/schedule-proposal/[scheduleId]',
+                        params: { scheduleId: String(firstSchedule?.id) },
+                    });
+                }
             }
         })().catch(retryOnFailure);
         if (
@@ -282,13 +285,18 @@ export default function AppLayout() {
 
                         fetchPendingScheduledService(String(scheduleId));
                         getPendingServices(); // Update the pending services list
-                        router.navigate({
-                            pathname: "/(app)/(bottom-sheets)/(services)/schedule-proposal/[scheduleId]",
-                            params: {
-                                scheduleId: String(scheduleId),
-                                serviceId: socketServiceId ? String(socketServiceId) : undefined,
-                            },
-                        });
+                        /* Mesmo ecrã do push e da lista. Só cai no antigo
+                           `schedule-proposal` se o evento não trouxer o id do
+                           serviço -- sem ele o `incoming-request` não tem o que
+                           mostrar. */
+                        if (socketServiceId) {
+                            router.navigate(`/(app)/(modals)/incoming-request/${socketServiceId}`);
+                        } else {
+                            router.navigate({
+                                pathname: "/(app)/(bottom-sheets)/(services)/schedule-proposal/[scheduleId]",
+                                params: { scheduleId: String(scheduleId) },
+                            });
+                        }
                     })
                     channel.listen('.ServiceScheduledEvent', (data: any) => {
 

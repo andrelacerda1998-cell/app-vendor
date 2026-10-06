@@ -471,6 +471,13 @@ export default {
         "accept": "Accept",
         "slide_to_accept": "Slide to accept"
       },
+      "rate": {
+          "subtitle": "Rate your experience with this customer",
+          "submit": "Send",
+          "comment_label": "NOTES",
+          "comment_placeholder": "Anything to add? (optional)",
+          "skip": "Not now"
+      },
       "finish": {
         "title": "Service completed",
         "subtitle": "The client still has to confirm. Once they do, the amount goes into your earnings.",
@@ -1035,6 +1042,7 @@ export default {
   },
   "service_extras": {
     "title": "SERVICE EXTRAS",
+    "add_verb": "Add",
     "extra_time": "Extra time",
     "parts": "Parts/materials",
     "add_time_title": "Add extra time",
@@ -1329,6 +1337,9 @@ export default {
     "unavailable_hint": "Long press to mark the day as unavailable",
     "unavailable_legend": "Long press a day to mark it as unavailable",
     "overdue_hint": "The time has passed. Finish the service or contact support.",
+    "possible_title_one": "Waiting on {{count}} customer",
+    "possible_title_other": "Waiting on {{count}} customers",
+    "possible_hint": "It only takes up your agenda if the customer picks you.",
     "free_day_title": "Free day",
     "free_day": "You have no services scheduled for this day."
   },
@@ -1779,18 +1790,31 @@ export default {
     "requests_error_subtitle": "Check your internet connection and try again. There may be requests waiting for you.",
     "requests_empty_title": "No requests waiting",
     "requests_empty_subtitle": "New requests in your area show up here for you to accept or decline. Keep notifications on so you don't miss them.",
+    "estimated_duration": "Estimated duration",
     "to_accept": "to accept",
     "you_receive": "You get",
     "close": "Close",
     "incoming_request_title": "New request received",
-    "incoming_request_window_immediate": "You have 60 seconds to accept.",
-    "incoming_request_window_scheduled": "You have 20 minutes to accept.",
+    "queue_see_all_hint": "See them all before you decide",
+    "queue_see_all": "See all requests",
+    "queue_count_one": "{{count}} more request waiting",
+    "queue_count_other": "{{count}} more requests waiting",
+    "incoming_request_window_immediate": "You have {{seconds}} seconds to accept.",
+    "incoming_request_window_scheduled": "You have {{minutes}} minutes to accept.",
     "customer_notes": "Client notes"
   },
     // Ongoing service sticky notification (useOngoingServiceNotification).
     // Professional-selection invitations. The copy exists mainly to make one
     // thing clear: accepting is applying, not winning the job.
     "matching": {
+      "awaiting": {
+          "title_one": "Waiting on {{count}} customer",
+          "title_other": "Waiting on {{count}} customers",
+          "subtitle": "We'll let you know as soon as they decide. Until then, your agenda stays free.",
+          "status_one": "Waiting on the customer's decision",
+          "customer_deadline": "{{time}} for the customer to choose and pay",
+          "customer_deadline_over": "The customer's window has closed",
+      },
       "invitation": {
         "home_card_one": "{{count}} service request",
         "home_card_other": "{{count}} service requests",

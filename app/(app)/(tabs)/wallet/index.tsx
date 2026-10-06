@@ -26,6 +26,9 @@ import CheckMark from '@/assets/icons/check-mark';
 import { formatDistanceKm } from '@/utils/requestTiming';
 import { ServiceStatus } from '@/types/services';
 import useUnavailableDays from '@/hooks/useUnavailableDays';
+import useMatchingAwaiting from '@/hooks/useMatchingAwaiting';
+import PrazoDoCliente from '@/components/services/PrazoDoCliente';
+import { formatQuandoAgendado } from '@/utils/serviceDetails';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const WEEKDAY_LETTERS = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
@@ -72,6 +75,7 @@ const Agenda = () => {
   const isOnline = useIsOnline();
   const [refreshing, setRefreshing] = useState(false);
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
+  const { awaiting } = useMatchingAwaiting();
   // Indisponibilidade pontual: toque longo num dia da fita marca/desmarca.
   const unavailable = useUnavailableDays();
   const { api } = useApi();
@@ -244,6 +248,28 @@ const Agenda = () => {
 
 
   const visibleKeys = (selectedDay ? [selectedDay] : Object.keys(groups)).sort();
+
+  /**
+   * POSSÍVEIS: candidaturas aceites à espera de o cliente decidir.
+   *
+   * A agenda dizia "livre" no dia de um serviço a que ele já se tinha
+   * candidatado. Não é mentira -- a agenda está mesmo livre, ele só ocupa se
+   * for escolhido -- mas é meia verdade, e com ela pode marcar outra coisa por
+   * cima e ficar com dois trabalhos à mesma hora se o cliente o escolher.
+   *
+   * Ficam numa secção PRÓPRIA e com outro aspeto (tracejado, sem valor em
+   * destaque): confundi-los com trabalho confirmado seria trocar um problema
+   * por outro pior, o de ele contar com dinheiro que ainda não é dele.
+   */
+  const possiveisDoDia = useMemo(() => {
+    const comDia = (awaiting ?? []).filter((c) => c.schedule?.scheduled_day);
+    if (!selectedDay) return comDia;
+
+    return comDia.filter((c) => {
+      const dia = parseDay(c.schedule?.scheduled_day ?? undefined);
+      return dia ? keyOf(dia) === selectedDay : false;
+    });
+  }, [awaiting, selectedDay]);
 
   /**
    * Com um dia escolhido na fita, "Em atraso" segue o filtro: ver a agenda de
@@ -451,6 +477,66 @@ const Agenda = () => {
 
         {/* Ordem importa: a carregar e o erro vêm ANTES do vazio, senão uma
             falha de rede lê-se como "não tens nada marcado". */}
+        {/* POSSÍVEIS — antes do confirmado.
+            Vem em primeiro porque é a única coisa nesta página que ainda pode
+            mudar: o resto já é dele. Tracejado e sem valor em destaque para
+            não se confundir com trabalho garantido. */}
+        {possiveisDoDia.length > 0 && (
+          <View className="mb-6">
+            <View className="flex-row items-center mb-2">
+              <CustomText size="medium" color="secondary" boldness="bold" numberOfLines={1}>
+                {t('agenda.possible_title', {
+                  count: possiveisDoDia.length,
+                  defaultValue_one: 'À espera da decisão de {{count}} cliente',
+                  defaultValue_other: 'À espera da decisão de {{count}} clientes',
+                })}
+              </CustomText>
+            </View>
+
+            {possiveisDoDia.map((c) => (
+              <View
+                key={c.candidate_id}
+                className="rounded-2xl p-4 mb-2"
+                style={{
+                  backgroundColor: Colors.card,
+                  borderWidth: 1,
+                  borderStyle: 'dashed',
+                  borderColor: Colors.line,
+                }}
+              >
+                {/* Tudo em BRANCO e um tamanho acima.
+                    O cinzento do `muted` já é a cor do texto secundário em
+                    toda a app -- num cartão que o tracejado e o título "Possível"
+                    já marcam como não-confirmado, pintar as linhas de cinzento
+                    era dizer a mesma coisa uma terceira vez, à custa da
+                    legibilidade. A distinção fica no contorno, não no contraste
+                    do texto. */}
+                {/* O serviço em ÂMBAR: é o que ele procura quando corre os olhos
+                    pela lista, e num cartão todo branco não havia primeira
+                    linha -- as quatro tinham o mesmo peso de cor. */}
+                <CustomText size="large" color="brand" boldness="bold" numberOfLines={2}>
+                  {c.service_type?.name ?? t('matching.invitation.fallback_title')}
+                </CustomText>
+                <CustomText size="medium" color="secondary" classes="mt-1" numberOfLines={1}>
+                  {formatQuandoAgendado(
+                    c.schedule?.scheduled_day,
+                    c.schedule?.scheduled_time_start,
+                  )}
+                </CustomText>
+                <CustomText size="small" color="secondary" classes="mt-2 opacity-90" numberOfLines={2}>
+                  {t('agenda.possible_hint', {
+                    defaultValue: 'Só ocupa a agenda se o cliente te escolher.',
+                  })}
+                </CustomText>
+                {/* Quanto tempo o cliente ainda tem para escolher E pagar.
+                    "À espera" sem fim à vista é o que faz alguém deixar de
+                    responder a pedidos. */}
+                <PrazoDoCliente deadline={c.customer_deadline} destacado />
+              </View>
+            ))}
+          </View>
+        )}
+
         {scheduledServicesLoading && (scheduledServicesData?.length ?? 0) === 0 ? (
           <SkeletonList rows={3} />
         ) : scheduledServicesFailed && (scheduledServicesData?.length ?? 0) === 0 ? (
@@ -460,7 +546,7 @@ const Agenda = () => {
             subtitle={isOnline ? t('agenda.error_subtitle') : t('general.offline_subtitle')}
             onRetry={retry}
           />
-        ) : visibleKeys.filter((k) => groups[k]?.length).length === 0 ? (
+        ) : visibleKeys.filter((k) => groups[k]?.length).length === 0 && possiveisDoDia.length === 0 ? (
           <EmptyState
             icon="calendar"
             title={selectedDay ? t('agenda.free_day_title') : t('agenda.empty_title')}

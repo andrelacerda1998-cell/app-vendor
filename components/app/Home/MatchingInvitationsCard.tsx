@@ -91,7 +91,7 @@ const MatchingInvitationsCard = () => {
         : Colors.brand;
 
   return (
-    <View className="px-5 mt-3">
+    <View className="px-5">
       <TouchableOpacity
         activeOpacity={0.9}
         // Com UM convite vai direto ao ecra dele: obrigar a passar por uma
@@ -113,10 +113,10 @@ const MatchingInvitationsCard = () => {
       >
         <View className="flex-row items-center px-4 py-4">
           <View
-            className="w-12 h-12 rounded-2xl items-center justify-center"
+            className="w-14 h-14 rounded-2xl items-center justify-center"
             style={{ backgroundColor: Colors.brand_soft }}
           >
-            <Feather name="users" size={20} color={Colors.brand} />
+            <Feather name="users" size={26} color={Colors.brand} />
           </View>
 
           <View className="flex-1 ml-3">
@@ -132,7 +132,7 @@ const MatchingInvitationsCard = () => {
             {!!label && (
               <View className="flex-row items-baseline mt-0.5">
                 <CustomText
-                  size="subtitle"
+                  size="large"
                   boldness="bolder"
                   color="secondary"
                   style={{ color: accent, fontVariant: ['tabular-nums'] }}

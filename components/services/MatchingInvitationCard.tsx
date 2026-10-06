@@ -4,6 +4,7 @@ import { Feather } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { CustomText } from '@/components/CustomText';
 import { Colors } from '@/constants/Colors';
+import { formatQuandoAgendado } from '@/utils/serviceDetails';
 import { renderMoney } from '@/utils/money';
 import { MatchingInvitation } from '@/types/matching';
 import useExpiryCountdown from '@/hooks/useExpiryCountdown';
@@ -64,24 +65,13 @@ const MatchingInvitationCard = ({
   const earn = renderMoney(invitation.amount_for_vendor ?? null);
 
   /** Quando é o serviço. É a primeira pergunta dele, por isso é a primeira linha. */
-  const when = useMemo(() => {
-    // scheduled_day é uma date (YYYY-MM-DD) e scheduled_time_start uma time
-    // (HH:MM:SS). A data tem de vir do DIA — usar só a hora dava um Date
-    // inválido ("10:00:00" não é uma data) e o agendado aparecia como "Para
-    // agora". Combina-se dia + hora quando ambos existem.
-    const day = invitation.schedule?.scheduled_day;
-    const time = invitation.schedule?.scheduled_time_start;
-    if (!day) return null;
-
-    const d = new Date(`${day}T${time ?? '00:00:00'}`);
-    if (isNaN(d.getTime())) return null;
-
-    const label = d.toLocaleDateString('pt-PT', { weekday: 'long', day: '2-digit', month: 'long' });
-
-    return time
-      ? `${label} · ${d.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}`
-      : label;
-  }, [invitation.schedule]);
+  const when = useMemo(
+    () => formatQuandoAgendado(
+      invitation.schedule?.scheduled_day,
+      invitation.schedule?.scheduled_time_start,
+    ),
+    [invitation.schedule],
+  );
 
   // Num personalizado a duracao vem do backoffice, nao do tipo.
   const durationMinutes = invitation.duration_minutes ?? invitation.service_type?.time ?? null;

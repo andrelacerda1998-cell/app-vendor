@@ -5,7 +5,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Modal, TextInput, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView, Platform, Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { MaterialIcons, Feather } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { CustomText } from '@/components/CustomText';
 import CustomTouchableOpacity from '@/components/CustomTouchableOpacity';
@@ -361,22 +361,35 @@ export const ServiceExtrasActions = ({
       <TouchableOpacity
         onPress={onAddTime}
         disabled={disabled}
-        className="flex-1 items-center rounded-xl py-3 border"
+        className="flex-1 items-center justify-center rounded-xl py-4 px-2 border"
         style={{ backgroundColor: 'rgba(250,187,91,0.18)', borderColor: 'rgba(250,187,91,0.5)' }}
       >
-        <MaterialIcons name="more-time" size={22} color={Colors.brand} />
-        <CustomText size="small" color="brand" boldness="bold" classes="mt-1">
+        {/* DUAS LINHAS DECIDIDAS, não uma frase a quebrar sozinha.
+            "Adicionar peças/materiais" numa linha só não cabia num botão de
+            meia largura e partia-se onde calhava ("Adicionar peças/" +
+            "materiais"), deixando os dois botões com alturas diferentes.
+
+            Separando o verbo do assunto, a quebra é sempre no mesmo sítio e os
+            dois botões ficam iguais. E ganha-se hierarquia de borla: o
+            "Adicionar" é igual nos dois e passa para segundo plano; o que os
+            distingue fica maior e a negrito. */}
+        <CustomText size="small" color="brand" classes="text-center opacity-70" numberOfLines={1}>
+          {t('service_extras.add_verb')}
+        </CustomText>
+        <CustomText size="medium" color="brand" boldness="bold" classes="text-center" numberOfLines={1}>
           {t('service_extras.extra_time')}
         </CustomText>
       </TouchableOpacity>
       <TouchableOpacity
         onPress={onAddPart}
         disabled={disabled}
-        className="flex-1 items-center rounded-xl py-3 border"
+        className="flex-1 items-center justify-center rounded-xl py-4 px-2 border"
         style={{ backgroundColor: 'rgba(250,187,91,0.18)', borderColor: 'rgba(250,187,91,0.5)' }}
       >
-        <MaterialIcons name="construction" size={22} color={Colors.brand} />
-        <CustomText size="small" color="brand" boldness="bold" classes="mt-1">
+        <CustomText size="small" color="brand" classes="text-center opacity-70" numberOfLines={1}>
+          {t('service_extras.add_verb')}
+        </CustomText>
+        <CustomText size="medium" color="brand" boldness="bold" classes="text-center" numberOfLines={1}>
           {t('service_extras.parts')}
         </CustomText>
       </TouchableOpacity>

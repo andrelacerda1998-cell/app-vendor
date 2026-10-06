@@ -81,6 +81,16 @@ export const useRequestActions = () => {
         await api.post(API_ROUTES.VENDOR_ACCEPT_SERVICE_BY_ID(String(serviceId)));
         track(AnalyticsEvent.REQUEST_ACCEPTED, { service_id: Number(serviceId), scheduled: false });
         setPendingServices((prev) => (prev ?? []).filter(s => s.service_id !== acceptedServiceId));
+        /**
+         * Reler a lista: aceitar um pedido IMEDIATO liberta os outros pedidos
+         * imediatos deste profissional, do lado do servidor -- senão ele
+         * comprometia-se a estar em dois sítios à mesma hora.
+         *
+         * Tirar só o aceite da lista local não chega: os outros ficavam no ecrã
+         * com o contador a correr, convidando-o a aceitar um trabalho que o
+         * servidor já devolveu a outro. A resposta tem de vir de lá.
+         */
+        getPendingServices();
       }
       showAccepted();
       return true;

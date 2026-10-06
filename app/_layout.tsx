@@ -29,7 +29,7 @@ import {
 import {useCallback, useEffect, useState, useRef} from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import * as SystemUI from 'expo-system-ui';
-import { Linking, Platform, SafeAreaView, Text, View, Image, Animated } from 'react-native';
+import { Linking, Platform, SafeAreaView, StyleSheet, Text, View, Image, Animated, Easing } from 'react-native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {ClickOutsideProvider} from 'react-native-click-outside';
 import {StatusBar} from 'expo-status-bar';
@@ -83,6 +83,15 @@ function RootLayout() {
     const navigationTheme = buildNavigationTheme(isDark);
 
     const translateX = useRef(new Animated.Value(0)).current;
+    /**
+     * Entrada do bloco do logótipo: aparece e assenta, em vez de estar
+     * simplesmente lá.
+     *
+     * O mapa ao fundo já se move, mas o quadrado âmbar era um carimbo colado
+     * por cima — a app parecia congelada no primeiro meio segundo, que é
+     * precisamente quando a pessoa está a decidir se ela abriu ou não.
+     */
+    const entrada = useRef(new Animated.Value(0)).current;
 
     const [showAnimatedSplash, setShowAnimatedSplash] = useState(true);
     const splashHidden = useRef(false);
@@ -138,6 +147,13 @@ function RootLayout() {
 
     useEffect(() => {
     if (!showAnimatedSplash) return;
+
+    Animated.timing(entrada, {
+        toValue: 1,
+        duration: 650,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+    }).start();
 
     const animation = Animated.loop(
         Animated.sequence([
@@ -270,37 +286,76 @@ function RootLayout() {
             />
 
         
+            {/* Véu escuro por cima do mapa.
+                O mapa é o cenário, não o assunto: sem isto compete com o
+                logótipo pelo contraste, e as ruas que passam por trás do
+                quadrado âmbar sujam-lhe as arestas. */}
             <View
                 style={{
-                position: 'absolute',
-                width: 260,
-                height: 260,
-                backgroundColor: Colors.support_primary,
-                borderRadius: 12,
+                    ...StyleSheet.absoluteFillObject,
+                    backgroundColor: 'rgba(0,0,0,0.45)',
                 }}
             />
 
-        
-            <Image
-                source={require('../assets/images/piquet-animated-logo.gif')}
-                style={{ width: 220, height: 220 }}
-                resizeMode="contain"
-            />
+            <Animated.View
+                style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    opacity: entrada,
+                    transform: [{
+                        // Entra ligeiramente maior e assenta. O contrário
+                        // (crescer de pequeno) lê-se como um botão a ser
+                        // premido, não como uma marca a aparecer.
+                        scale: entrada.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [1.08, 1],
+                        }),
+                    }],
+                }}
+            >
+                <View
+                    style={{
+                        position: 'absolute',
+                        width: 260,
+                        height: 260,
+                        backgroundColor: Colors.support_primary,
+                        // 28 e não 12: é o raio de um ícone de app, e este
+                        // quadrado é exactamente isso -- a marca, não um cartão.
+                        borderRadius: 28,
+                        // Brilho da própria cor, para pousar sobre o mapa em
+                        // vez de parecer colado.
+                        shadowColor: Colors.support_primary,
+                        shadowOpacity: 0.45,
+                        shadowRadius: 40,
+                        shadowOffset: { width: 0, height: 0 },
+                        elevation: 20,
+                    }}
+                />
+
+                <Image
+                    source={require('../assets/images/piquet-animated-logo.gif')}
+                    style={{ width: 220, height: 220 }}
+                    resizeMode="contain"
+                />
+            </Animated.View>
 
             
-            <Text
+            <Animated.Text
                 style={{
                 position: 'absolute',
                 bottom: 30,
                 color: Colors.brand,
-                fontSize: 14,
+                fontSize: 13,
                 fontWeight: '600',
-                letterSpacing: 1,
+                letterSpacing: 1.5,
                 fontFamily: 'Poppins_600SemiBold',
+                // Entra com o resto, e mais apagado: é uma assinatura, não um
+                // título. A letterspacing maior compensa o tamanho.
+                opacity: entrada.interpolate({ inputRange: [0, 1], outputRange: [0, 0.75] }),
                 }}
             >
                 Made in Portugal
-            </Text>
+            </Animated.Text>
             </View>
         );
     }
