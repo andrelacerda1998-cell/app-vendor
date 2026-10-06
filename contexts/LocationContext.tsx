@@ -27,6 +27,7 @@ interface LocationContextType {
     lastLocation: Location.LocationObject | null,
     requestPermissions: () => Promise<boolean>,
     startTracking: () => Promise<StartTrackingResult>,
+    refreshTracking: () => Promise<StartTrackingResult>,
     stopTracking: () => Promise<boolean>,
     getCurrentLocation: () => Promise<Location.LocationObject | null>,
 }
@@ -253,6 +254,41 @@ export const LocationProvider: React.FC<{ children: ReactNode }> = ({ children }
         }
     };
 
+    /**
+     * Reinicia o envio da localização e manda já uma posição.
+     *
+     * O `startTracking` confia na tarefa registada no sistema: se ela lá
+     * estiver, assume que está a enviar. Depois de o Android matar a app para
+     * poupar bateria (ou de o técnico a fechar), a tarefa continua registada
+     * mas já não manda nada — e o técnico fica Online e invisível para
+     * "Pedir agora", que só conta quem mandou posição na última hora. Foi o
+     * que se viu em produção a 01/10/2026: 36 Online, 1 com posição recente.
+     *
+     * Por isso aqui pára-se e volta a ligar-se, sempre, e manda-se uma posição
+     * logo (sem esperar pelos 7,5 s da primeira atualização). Chama-se ao
+     * abrir a app e sempre que ela volta ao primeiro plano.
+     */
+    const refreshTracking = async (): Promise<StartTrackingResult> => {
+        try {
+            const tasks = await TaskManager.getRegisteredTasksAsync();
+            if (tasks.some(task => task.taskName === LOCATION_TASK_NAME)) {
+                await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME);
+            }
+        } catch (_error) {
+            // Parar uma tarefa morta pode falhar; ligar a seguir resolve.
+        }
+
+        const result = await startTracking();
+
+        if (result.ok) {
+            // Depois do startTracking, que é quem pede as permissões: assim o
+            // técnico nunca vê dois pedidos seguidos.
+            getCurrentLocation().catch(() => null);
+        }
+
+        return result;
+    };
+
     const stopTracking = async (): Promise<boolean> => {
         try {
             await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME);
@@ -304,6 +340,7 @@ export const LocationProvider: React.FC<{ children: ReactNode }> = ({ children }
                 lastLocation,
                 requestPermissions,
                 startTracking,
+                refreshTracking,
                 stopTracking,
                 getCurrentLocation,
             }}
