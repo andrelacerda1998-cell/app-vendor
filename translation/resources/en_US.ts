@@ -971,8 +971,8 @@ export default {
       "placeholder": "Hourly rate",
       "required": "Enter your hourly rate",
       "invalid": "Invalid hourly rate",
-      "min_value": "The hourly rate must be at least 1",
-      "max_value": "The hourly rate can't be higher than 999.999",
+      "min_value": "The hourly rate must be at least €{{min}}",
+      "max_value": "The hourly rate can't be higher than €{{max}}",
       "must_be_number": "The hourly rate must be a number"
     },
     "phone_verification_required": "Your phone still needs verifying",

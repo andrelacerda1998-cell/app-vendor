@@ -21,17 +21,8 @@ import { useSession } from '@/contexts/SessionContext';
 import RateSlider from '@/components/ui/RateSlider';
 import CheckMark from '@/assets/icons/check-mark';
 import XIcon from '@/assets/icons/x';
+import { VALOR_HORA_MINIMO as RATE_MIN, VALOR_HORA_MAXIMO as RATE_MAX, VALOR_HORA_MERCADO_MIN as MARKET_MIN, VALOR_HORA_MERCADO_MAX as MARKET_MAX } from '@/constants/ValorHora';
 
-const RATE_MIN = 8;
-const RATE_MAX = 50;
-// "A maioria dos técnicos cobra MIN–MAX/h": medido em produção a 06/10/2026.
-// Valor/hora de 28 técnicos ativos (calculado a partir dos preços da procura
-// agendada; os 3 que estavam abaixo do mínimo de 8 € ficaram de fora):
-// mediana 18 €, e 18 dos 28 (64%) cobram entre 12 € e 22 €. Os 14 e 22 que
-// aqui estavam não vinham de medição nenhuma. Voltar a medir quando a base
-// de técnicos mudar — a frase só é verdade enquanto o intervalo o for.
-const MARKET_MIN = 12;
-const MARKET_MAX = 22;
 
 
 const HourlyRate = () => {
