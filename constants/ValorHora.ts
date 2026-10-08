@@ -22,6 +22,25 @@ export const VALOR_HORA_MAXIMO = 50;
 export const VALOR_HORA_MERCADO_MIN = 12;
 export const VALOR_HORA_MERCADO_MAX = 22;
 
+/**
+ * O valor/hora como vem do servidor, em número (ou null se não houver).
+ *
+ * O backend formata-o com `number_format(..., 2, '.', ',')`: ponto decimal e
+ * VÍRGULA nos milhares. Até 999 € dá "18.00" e o `Number()` lê bem; a partir
+ * de 1000 € dá "2,000.00" e o `Number()` devolve NaN — o Perfil mostrava
+ * "NaN €" (técnico de teste a 2000 €/h, 08/10/2026). Tira-se a vírgula dos
+ * milhares antes de converter.
+ */
+export const lerValorHora = (valor: unknown): number | null => {
+  if (valor === null || valor === undefined || valor === '') return null;
+  if (typeof valor === 'number') return Number.isFinite(valor) ? valor : null;
+  const n = Number(String(valor).replace(/,/g, ''));
+  return Number.isFinite(n) ? n : null;
+};
+
+/** "18,00 €" — para mostrar. */
+export const formatarValorHora = (valor: number): string => `${valor.toFixed(2).replace('.', ',')} €`;
+
 /** Mensagem de erro, ou null se o valor é aceitável. */
 export const validarValorHora = (valor: unknown): 'required' | 'not_number' | 'too_low' | 'too_high' | null => {
   if (valor === null || valor === undefined || valor === '') return 'required';
