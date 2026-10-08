@@ -1,4 +1,4 @@
-import { validarValorHora, mensagemDoValorHora } from '@/constants/ValorHora';
+import { validarValorHora, mensagemDoValorHora, lerValorHora } from '@/constants/ValorHora';
 import BackHeader from '@/components/app/BackHeader';
 import {CustomText} from "@/components/CustomText";
 import CustomTextInput from "@/components/CustomTextInput";
@@ -41,7 +41,7 @@ const EditPayment = () => {
         mode: 'onChange',
         defaultValues: {
             iban: IBAN.printFormat(vendorData?.iban || ""),
-            price_rate: vendorData?.price_rate || 0,
+            price_rate: lerValorHora(vendorData?.price_rate) ?? 0,
             company_name: vendorData?.company_name || "",
             // nif: vendorData?.nif || "",
         },

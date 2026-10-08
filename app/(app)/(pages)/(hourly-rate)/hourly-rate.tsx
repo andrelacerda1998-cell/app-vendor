@@ -21,7 +21,7 @@ import { useSession } from '@/contexts/SessionContext';
 import RateSlider from '@/components/ui/RateSlider';
 import CheckMark from '@/assets/icons/check-mark';
 import XIcon from '@/assets/icons/x';
-import { VALOR_HORA_MINIMO as RATE_MIN, VALOR_HORA_MAXIMO as RATE_MAX, VALOR_HORA_MERCADO_MIN as MARKET_MIN, VALOR_HORA_MERCADO_MAX as MARKET_MAX } from '@/constants/ValorHora';
+import { VALOR_HORA_MINIMO as RATE_MIN, VALOR_HORA_MAXIMO as RATE_MAX, VALOR_HORA_MERCADO_MIN as MARKET_MIN, VALOR_HORA_MERCADO_MAX as MARKET_MAX, lerValorHora } from '@/constants/ValorHora';
 
 
 
@@ -31,7 +31,7 @@ const HourlyRate = () => {
   const { openDialog } = useDialog();
   const { vendorData } = useSession();
 
-  const initialRate = Math.round(Number(vendorData?.price_rate) || 15);
+  const initialRate = Math.round(lerValorHora(vendorData?.price_rate) || 15);
   const [rate, setRate] = useState<number>(Math.max(RATE_MIN, Math.min(RATE_MAX, initialRate)));
   const [saving, setSaving] = useState(false);
 

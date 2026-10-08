@@ -12,6 +12,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Feather, Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
 import { API_ROUTES } from '@/constants/ApiRoutes';
+import { lerValorHora, formatarValorHora } from '@/constants/ValorHora';
 import GearIcon from "@/assets/icons/gear-icon";
 import CreditCardIcon from "@/assets/icons/credit-card";
 import LogoutIcon from "@/assets/icons/logout";
@@ -64,7 +65,7 @@ const Profile = () => {
     ? myOperationAreas.reduce((n, a) => n + (a?.services_types_subscribed?.length || 0), 0)
     : null;
   const activeDays = weekdays?.length ? weekdays.filter((d: any) => d.enabled).length : null;
-  const priceRate = vendorData?.price_rate != null ? Number(vendorData.price_rate) : null;
+  const priceRate = lerValorHora(vendorData?.price_rate);
 
   // A minha atividade
   const activitySections: Section[] = [
@@ -74,7 +75,7 @@ const Profile = () => {
     },
     {
       label: t('profile.activity.price_rate'), tab: 'Price Rate', icon: <CreditCardIcon size={22} color={Colors.secondary} />,
-      value: priceRate != null ? `${priceRate.toFixed(2).replace('.', ',')} €` : undefined,
+      value: priceRate != null ? formatarValorHora(priceRate) : undefined,
     },
     {
       label: t('profile.activity.availability'), tab: 'Availability', icon: <Feather name="calendar" size={20} color={Colors.secondary} />,
