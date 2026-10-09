@@ -1,3 +1,4 @@
+import { TEXTO_MAXIMO, useEscala } from '@/utils/escala';
 import { Colors } from '@/constants/Colors';
 import React, { forwardRef } from 'react'
 import { TextInput } from 'react-native';
@@ -50,6 +51,9 @@ const CustomTextInput = forwardRef<TextInput, CustomTextInputProps>(({
 
   ...props
 }, ref) => {
+  // A mesma escala do CustomText: letra ajustada à largura do ecrã e teto na
+  // ampliação do sistema (ver utils/escala).
+  const { s: escalar } = useEscala();
   const backgroundColor = () => {
     return "transparent";
   };
@@ -149,7 +153,7 @@ const CustomTextInput = forwardRef<TextInput, CustomTextInputProps>(({
 
   return (
     <View className="justify-center">
-      <TextInput
+      <TextInput maxFontSizeMultiplier={TEXTO_MAXIMO}
         ref={ref}
         // activeOpacity={0.8}
         style={[
@@ -162,7 +166,7 @@ const CustomTextInput = forwardRef<TextInput, CustomTextInputProps>(({
             paddingRight: paddingRight(),
             flexDirection: 'row',
             opacity: disabled ? 0.6 : 1,
-            fontSize: getFontSize(),
+            fontSize: escalar(getFontSize()),
             color: Colors[textColor as CustomTextColor],
             fontFamily: getTextBoldness(),
             borderColor: Colors.line,

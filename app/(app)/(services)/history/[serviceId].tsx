@@ -33,7 +33,7 @@ const JobDetail = ({ label, value }: {label: string, value: string}) => (
 const Status = () => {
   const { t } = useTranslation();
   const { historyServices } = useService();
-  const { serviceId } = useLocalSearchParams();
+  const { serviceId, service: serviceParam } = useLocalSearchParams<{ serviceId: string; service?: string }>();
   const [service, setService] = useState<ServiceInterface | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -43,6 +43,14 @@ const Status = () => {
       const newService = historyServices.find((service: ServiceInterface) => Number(service.id) === Number(serviceId));
       if (newService) {
         setService(newService);
+      } else if (serviceParam) {
+        // Fora da 1.ª página do histórico em memória: usa o que o ecrã do
+        // Histórico mandou ao abrir (o mesmo endpoint, a mesma forma).
+        try {
+          setService(JSON.parse(serviceParam));
+        } catch {
+          // parâmetro estragado: fica sem dados e mostra "—"
+        }
       }
     }
     setIsLoading(false);
@@ -60,6 +68,8 @@ const Status = () => {
 
   const renderDate = (date: string) => {
     const parsedDate = new Date(date);
+    // Sem data (serviço por carregar) mostrava "Invalid Date".
+    if (!date || isNaN(parsedDate.getTime())) return '—';
     const dateOptions: Intl.DateTimeFormatOptions = {
       month: 'long',
       day: '2-digit',
@@ -233,7 +243,7 @@ const Status = () => {
           <View>
             <JobDetail
               label={t('services.service.history.labels.kilometers')}
-              value={`${service?.distance || ""} ${t('services.service.history.labels.km')}`}
+              value={service?.distance ? `${service.distance} ${t('services.service.history.labels.km')}` : '—'}
             />
             <JobDetail
               label={t('services.service.history.labels.received_value')}

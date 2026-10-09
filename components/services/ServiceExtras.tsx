@@ -2,6 +2,7 @@
  * TEMPO EXTRA e PEÇAS/MATERIAIS — pedidos feitos durante o serviço.
  * Só entram no valor a receber depois de o cliente aprovar.
  */
+import { TEXTO_MAXIMO } from '@/utils/escala';
 import React, { useEffect, useState } from 'react';
 import { View, Modal, TextInput, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView, Platform, Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -307,7 +308,7 @@ const ServiceExtras = ({
         <CustomText size="small" color="secondary" boldness="bold" classes="mb-2">
           {t('service_extras.part_label')}
         </CustomText>
-        <TextInput
+        <TextInput maxFontSizeMultiplier={TEXTO_MAXIMO}
           value={desc}
           onChangeText={setDesc}
           placeholder={t('service_extras.part_placeholder')}
@@ -319,7 +320,7 @@ const ServiceExtras = ({
         <CustomText size="small" color="secondary" boldness="bold" classes="mb-2">
           {t('service_extras.value_label')}
         </CustomText>
-        <TextInput
+        <TextInput maxFontSizeMultiplier={TEXTO_MAXIMO}
           value={price}
           onChangeText={setPrice}
           keyboardType="decimal-pad"

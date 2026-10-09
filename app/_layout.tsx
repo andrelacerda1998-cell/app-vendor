@@ -1,3 +1,4 @@
+import { TEXTO_MAXIMO } from '@/utils/escala';
 import React from 'react';
 // O NativeWind v4 carrega os estilos a partir deste ficheiro; tem de ser
 // importado uma vez, na raiz. Sem ele nenhum `className` pinta nada.
@@ -288,7 +289,7 @@ function RootLayout() {
             />
 
             
-            <Text
+            <Text maxFontSizeMultiplier={TEXTO_MAXIMO}
                 style={{
                 position: 'absolute',
                 bottom: 30,

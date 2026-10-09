@@ -10,6 +10,7 @@
  * Contestar NÃO reverte nada: abre um pedido ao suporte, e quem decide é uma
  * pessoa. É a mesma regra com que a falta foi declarada.
  */
+import { TEXTO_MAXIMO } from '@/utils/escala';
 import React, { useEffect, useState } from 'react';
 import { View, ScrollView, RefreshControl, Modal, Pressable, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -232,7 +233,7 @@ const NoShows = () => {
               {t('no_shows.dispute.subtitle')}
             </CustomText>
 
-            <TextInput
+            <TextInput maxFontSizeMultiplier={TEXTO_MAXIMO}
               value={message}
               onChangeText={setMessage}
               placeholder={t('no_shows.dispute.placeholder')}

@@ -29,7 +29,7 @@ const TONE = Colors.muted;
 const ShortcutCard = ({ icon, label, onPress }: Shortcut) => (
   <TouchableOpacity activeOpacity={0.85} onPress={onPress} className="flex-1">
     {/* 56pt de altura: acima do minimo tocavel (44) e metade do que era. */}
-    <Card padded={false} className="flex-row items-center px-3" style={{ height: 56 }}>
+    <Card padded={false} className="flex-row items-center px-3" style={{ minHeight: 56 }}>
       <IconTile size={32} tint={`${TONE}1F`}>
         <MaterialIcons name={icon} size={18} color={TONE} />
       </IconTile>
@@ -38,7 +38,12 @@ const ShortcutCard = ({ icon, label, onPress }: Shortcut) => (
         color="secondary"
         boldness="semiBold"
         classes="ml-2.5 flex-1"
-        numberOfLines={1}
+        // Num ecrã estreito "Os meus serviços" ficava "Os meus servi…". Com
+        // espaços passa a duas linhas; uma palavra só encolhe numa linha —
+        // com duas, o Android partia-a a meio ("Disponibilidad-e").
+        numberOfLines={/\s/.test(label.trim()) ? 2 : 1}
+        adjustsFontSizeToFit={!/\s/.test(label.trim())}
+        minimumFontScale={0.75}
       >
         {label}
       </CustomText>
