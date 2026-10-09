@@ -1108,8 +1108,10 @@ export default {
       "cancelled": "Cancelled",
       "lost": "Declined"
     },
-    "earned_summary": "You earned from {{count}} services",
-    "lost_summary": "You declined or let {{count}} requests expire",
+    "earned_summary_one": "You earned from {{count}} service",
+    "earned_summary_other": "You earned from {{count}} services",
+    "lost_summary_one": "You declined or let {{count}} request expire",
+    "lost_summary_other": "You declined or let {{count}} requests expire",
     "lost_hint": "This money was never yours — it's what you could have earned had you accepted in time.",
     "empty": {
       "all_title": "No history",

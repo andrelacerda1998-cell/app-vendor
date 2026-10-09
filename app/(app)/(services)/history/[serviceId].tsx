@@ -16,6 +16,7 @@ import i18n from "@/translation";
 import { useService } from "@/contexts/ServiceContext";
 import * as WebBrowser from 'expo-web-browser';
 import { renderMoney } from "@/utils/money";
+import { formatDistanceKm } from "@/utils/requestTiming";
 
 const JobDetail = ({ label, value }: {label: string, value: string}) => (
   <View className="flex-row justify-between mt-4">
@@ -76,7 +77,8 @@ const Status = () => {
       year: 'numeric',
       hour: 'numeric',
       minute: '2-digit',
-      hour12: true
+      // 24 horas em português ("às 14:31"); era sempre 12 h ("às 2:31 PM").
+      hour12: i18n.language !== 'pt_PT',
     };
 
     const locale = i18n.language === 'pt_PT' ? 'pt-PT' : 'en-US';
@@ -243,7 +245,8 @@ const Status = () => {
           <View>
             <JobDetail
               label={t('services.service.history.labels.kilometers')}
-              value={service?.distance ? `${service.distance} ${t('services.service.history.labels.km')}` : '—'}
+              // Como no resto da app ("2 km"); aqui saía o texto cru do servidor ("2.00 Km").
+              value={formatDistanceKm(Number(service?.distance)) ?? '—'}
             />
             <JobDetail
               label={t('services.service.history.labels.received_value')}
