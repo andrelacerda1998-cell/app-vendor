@@ -12,7 +12,7 @@
  * seguir (o que falta continua no aviso da Home).
  */
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, Platform, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, KeyboardAvoidingView, Platform, TouchableOpacity, ScrollView } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { OtpInput } from 'react-native-otp-entry';
 import { useTranslation } from 'react-i18next';
@@ -244,7 +244,14 @@ const ContactsStep = ({
 
   return (
     <View className="flex-1 p-5">
-      <View className="flex-1">
+      {/* Com scroll: num iPhone SE o cartão do email não cabia e ficava por
+          baixo do aviso e do botão "Continuar". */}
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{ paddingBottom: 12 }}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
         <CustomText size="title" color="secondary" boldness="bold" numberOfLines={2}>
           {t('complete_profile.contacts.title')}
         </CustomText>
@@ -418,7 +425,7 @@ const ContactsStep = ({
             )}
           </ContactCard>
         </View>
-      </View>
+      </ScrollView>
 
       {/* Porque pedimos: uma linha discreta que ocupa o vazio antes do botão
           com algo útil, em vez de espaço morto. Tranquiliza quem hesita em dar
