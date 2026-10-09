@@ -38,6 +38,7 @@ import { useNotificationPermission } from "@/contexts/NotificationsContext";
 import { useSchedule } from "@/contexts/ScheduleContext";
 import { useVendorStats } from "@/hooks/useVendorStats";
 import { pedeAtNoPerfil } from "@/utils/atPayout";
+import { estadoAoFalharLocalizacao } from "@/utils/estadoSemLocalizacao";
 
 const Home = () => {
   const insets = useSafeAreaInsets();
@@ -124,6 +125,12 @@ const Home = () => {
   const precisaDeLocalizacao = vendorStatus === 'Online' || openService?.status === ServiceStatus.ACCEPTED;
   const precisaDeLocalizacaoRef = useRef(precisaDeLocalizacao);
   precisaDeLocalizacaoRef.current = precisaDeLocalizacao;
+  // O estado e a função de agora, e não os do primeiro render: o listener do
+  // AppState é montado uma vez, e com o que guardava o estado ainda vinha por
+  // carregar (`undefined`).
+  const vendorStatusRef = useRef(vendorStatus);
+  vendorStatusRef.current = vendorStatus;
+  const handleTrackingStatusRef = useRef<() => void>(() => {});
 
   useEffect(() => {
     // Sem o `!isTracking` que aqui estava: a tarefa pode estar registada e
@@ -148,7 +155,7 @@ const Home = () => {
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (estado) => {
       if (estado === 'active' && precisaDeLocalizacaoRef.current) {
-        handleTrackingStatus();
+        handleTrackingStatusRef.current();
       }
     });
     return () => subscription.remove();
@@ -160,10 +167,37 @@ const Home = () => {
     if (!ok) {
       // startTracking already surfaced the appropriate dialog: a persistent, actionable
       // permission prompt (Agora não / Abrir Definições) or the tracking-error alert.
-      handleUpdateVendorStatus(true);
+      await ficarOfflineSemLocalizacao();
       return;
     }
   }
+  handleTrackingStatusRef.current = handleTrackingStatus;
+
+  /**
+   * Sem localização, quem está Online passa a Offline — e só isso.
+   *
+   * Aqui chamava-se o `handleUpdateVendorStatus`, que ALTERNA o estado: um
+   * técnico Offline a caminho de um serviço aceite fazia um pedido "Online"
+   * sem tocar em nada, o servidor recusava (com um serviço aberto não pode
+   * aceitar outros) e ele via "Não foi possível mudar o teu estado" em vez do
+   * aviso da localização. Online com um serviço em curso dava o mesmo erro,
+   * porque o servidor não deixa sair a meio. Ver utils/estadoSemLocalizacao.
+   *
+   * Sem diálogo, nem no sucesso nem no erro: o startTracking já pôs no ecrã o
+   * da permissão, e o DialogContext só tem um lugar. É a mesma regra do
+   * GuardaDasPermissoes.
+   */
+  const ficarOfflineSemLocalizacao = async () => {
+    const destino = estadoAoFalharLocalizacao(vendorStatusRef.current);
+    if (!destino) return;
+    try {
+      const deviceId = await getDeviceId();
+      await api.put(API_ROUTES.VENDOR_UPDATE_STATUS, { status: destino, device_id: deviceId });
+      setVendorStatus(destino);
+    } catch {
+      // Serviço em curso (o servidor recusa sair a meio) ou sem rede: fica como está.
+    }
+  };
 
   const renderBalance = useCallback(() => {
     const balance = Number(wallet?.balanceFloat);
