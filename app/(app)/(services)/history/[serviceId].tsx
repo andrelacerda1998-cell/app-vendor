@@ -16,6 +16,7 @@ import i18n from "@/translation";
 import { useService } from "@/contexts/ServiceContext";
 import * as WebBrowser from 'expo-web-browser';
 import { renderMoney } from "@/utils/money";
+import { formatDistanceKm } from "@/utils/requestTiming";
 
 const JobDetail = ({ label, value }: {label: string, value: string}) => (
   <View className="flex-row justify-between mt-4">
@@ -33,7 +34,7 @@ const JobDetail = ({ label, value }: {label: string, value: string}) => (
 const Status = () => {
   const { t } = useTranslation();
   const { historyServices } = useService();
-  const { serviceId } = useLocalSearchParams();
+  const { serviceId, service: serviceParam } = useLocalSearchParams<{ serviceId: string; service?: string }>();
   const [service, setService] = useState<ServiceInterface | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -43,6 +44,14 @@ const Status = () => {
       const newService = historyServices.find((service: ServiceInterface) => Number(service.id) === Number(serviceId));
       if (newService) {
         setService(newService);
+      } else if (serviceParam) {
+        // Fora da 1.ª página do histórico em memória: usa o que o ecrã do
+        // Histórico mandou ao abrir (o mesmo endpoint, a mesma forma).
+        try {
+          setService(JSON.parse(serviceParam));
+        } catch {
+          // parâmetro estragado: fica sem dados e mostra "—"
+        }
       }
     }
     setIsLoading(false);
@@ -60,13 +69,16 @@ const Status = () => {
 
   const renderDate = (date: string) => {
     const parsedDate = new Date(date);
+    // Sem data (serviço por carregar) mostrava "Invalid Date".
+    if (!date || isNaN(parsedDate.getTime())) return '—';
     const dateOptions: Intl.DateTimeFormatOptions = {
       month: 'long',
       day: '2-digit',
       year: 'numeric',
       hour: 'numeric',
       minute: '2-digit',
-      hour12: true
+      // 24 horas em português ("às 14:31"); era sempre 12 h ("às 2:31 PM").
+      hour12: i18n.language !== 'pt_PT',
     };
 
     const locale = i18n.language === 'pt_PT' ? 'pt-PT' : 'en-US';
@@ -233,7 +245,8 @@ const Status = () => {
           <View>
             <JobDetail
               label={t('services.service.history.labels.kilometers')}
-              value={`${service?.distance || ""} ${t('services.service.history.labels.km')}`}
+              // Como no resto da app ("2 km"); aqui saía o texto cru do servidor ("2.00 Km").
+              value={formatDistanceKm(Number(service?.distance)) ?? '—'}
             />
             <JobDetail
               label={t('services.service.history.labels.received_value')}

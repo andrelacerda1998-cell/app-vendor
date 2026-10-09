@@ -110,7 +110,9 @@ const ServiceCard = ({
       </IconTile>
 
       <View className="flex-1 ml-3">
-        <CustomText color="secondary" boldness="bold" size="medium" numberOfLines={1}>
+        {/* Duas linhas: no iPhone SE lia-se "Desentupimento de…" e o técnico tem
+            60 segundos para decidir se aceita. */}
+        <CustomText color="secondary" boldness="bold" size="medium" numberOfLines={2}>
           {item.service_type?.name}
         </CustomText>
         {/* Morada: o dado mais importante para decidir — 2 linhas, não 1. */}

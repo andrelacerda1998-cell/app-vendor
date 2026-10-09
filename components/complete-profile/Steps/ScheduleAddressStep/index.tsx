@@ -159,7 +159,9 @@ const ScheduleAddressStep = ({
         <CustomText size="title" color="secondary" boldness="bold" numberOfLines={2}>
           {t('complete_profile.schedule_address.title')}
         </CustomText>
-        <CustomText color="muted" numberOfLines={3} classes="mt-2">
+        {/* 5 linhas: com 3, no iPhone SE a explicação acabava em "deslocaç…". O
+            ecrã já tem scroll. */}
+        <CustomText color="muted" numberOfLines={5} classes="mt-2">
           {t('complete_profile.schedule_address.subtitle')}
         </CustomText>
 

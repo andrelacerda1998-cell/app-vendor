@@ -209,7 +209,8 @@ const Settings = () => {
           <View key={key}>
             {i > 0 && <View style={{ height: 1, backgroundColor: Colors.line, marginLeft: 16 }} />}
             <View className="flex-row items-center px-4" style={{ minHeight: 58 }}>
-              <CustomText color="secondary" size="medium" boldness="medium" classes="flex-1 pr-4" numberOfLines={1}>
+              {/* Duas linhas: com a letra grande lia-se "Lembretes de agenda…". */}
+              <CustomText color="secondary" size="medium" boldness="medium" classes="flex-1 pr-4" numberOfLines={2}>
                 {t(`settings_screen.items.${key}`)}
               </CustomText>
               <Switch
@@ -218,6 +219,9 @@ const Settings = () => {
                 disabled={saving === key}
                 trackColor={{ false: Colors.card_high, true: Colors.brand }}
                 thumbColor={Colors.secondary}
+                // No iOS o Switch traz alignSelf 'flex-start' e ficava encostado
+                // ao topo da linha, acima do texto.
+                style={{ alignSelf: 'center' }}
               />
             </View>
           </View>
@@ -243,7 +247,7 @@ const Settings = () => {
                   <CustomText color="secondary" size="medium" boldness="medium" numberOfLines={1}>
                     {p.title}
                   </CustomText>
-                  <CustomText color="muted" size="small" classes="mt-0.5" numberOfLines={2}>
+                  <CustomText color="muted" size="small" classes="mt-0.5" numberOfLines={3}>
                     {p.subtitle}
                   </CustomText>
                 </View>

@@ -18,6 +18,7 @@ import Timer from "@/components/Timer";
 import CheckMark from "@/assets/icons/check-mark";
 import XIcon from "@/assets/icons/x";
 import { useAlertSound } from "@/hooks/useAlertSound";
+import { formatLongDate } from "@/utils/date";
 
 const ACCEPT_WINDOW_SECONDS = 20 * 60;
 
@@ -81,7 +82,10 @@ const ScheduleProposalBottomSheet = () => {
     const start = pendingSchedule?.scheduled_time?.start?.slice(0, 5);
     const end = pendingSchedule?.scheduled_time?.end?.slice(0, 5);
     const range = start && end ? `${start} - ${end}` : start || end || "";
-    return [pendingSchedule?.scheduled_day, range].filter(Boolean).join(" ");
+    // O dia por extenso, como no resto da app ("sábado, 10 de out."); vinha em
+    // formato de base de dados ("2026-10-10 10:30 - 12:00").
+    const dia = formatLongDate(pendingSchedule?.scheduled_day) || pendingSchedule?.scheduled_day;
+    return [dia, range].filter(Boolean).join(" · ");
   }, [pendingSchedule?.scheduled_day, pendingSchedule?.scheduled_time?.start, pendingSchedule?.scheduled_time?.end]);
 
   const serviceName =

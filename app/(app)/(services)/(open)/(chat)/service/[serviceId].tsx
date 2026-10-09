@@ -1,3 +1,4 @@
+import { TEXTO_MAXIMO } from '@/utils/escala';
 import {Colors} from '@/constants/Colors';
 import {Ionicons} from '@expo/vector-icons';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -476,7 +477,7 @@ const Service = () => {
                     <View className="my-6 flex-row items-center">
                         <KeyboardAwareScrollView bottomOffset={40}>
                             <View className="flex-1">
-                                <TextInput
+                                <TextInput maxFontSizeMultiplier={TEXTO_MAXIMO}
                                     className="pl-5 pr-16 py-5 rounded-full" style={{ backgroundColor: Colors.card, color: Colors.secondary }}
                                     placeholder={t('chat.input_placeholder')}
                                     placeholderTextColor={Colors.gray_medium}

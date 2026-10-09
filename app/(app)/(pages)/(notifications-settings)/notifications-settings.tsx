@@ -79,6 +79,9 @@ const NotificationSettings = () => {
                 disabled={saving === key}
                 trackColor={{ false: Colors.card_high, true: Colors.brand }}
                 thumbColor={Colors.secondary}
+                // No iOS o Switch traz alignSelf 'flex-start' e ficava encostado
+                // ao topo da linha, acima do texto.
+                style={{ alignSelf: 'center' }}
               />
             </View>
           ))}

@@ -192,7 +192,9 @@ const DocumentsProfileStep = ({ onNext }: { onNext: () => void }) => {
                   size={22}
                   color={doc.uploaded ? Colors.success : Colors.muted}
                 />
-                <View className="flex-1 ml-3">
+                {/* mr-3: no iPhone SE a descrição ("Emitido há menos de 3 meses.")
+                    encostava ao botão "Carregar". */}
+                <View className="flex-1 ml-3 mr-3">
                   <CustomText color="secondary" boldness="bold" size="medium" numberOfLines={2}>
                     {doc.name}
                   </CustomText>
