@@ -121,7 +121,14 @@ interface ServiceContextProps {
    */
   marcarServicoComoConhecido: (id?: number | string | null) => void;
   getPendingService: () => Promise<void>;
-  getPendingServices: () => void;
+  /** Recarrega os pedidos pendentes. A promessa resolve quando acaba e nunca rejeita. */
+  getPendingServices: () => Promise<void>;
+  /**
+   * O ecrã cheio de pedido a chegar (incoming-request) avisa quando abre
+   * (true) e quando fecha (false). Enquanto houver algum aberto, o arranque
+   * não abre a proposta antiga por cima dele (ver getPendingService).
+   */
+  marcarEcraDePedido: (aberto: boolean) => void;
   /**
    * Estado da última ida buscar os pedidos pendentes. É o ecrã de receita: uma
    * falha de rede não pode aparecer como "não tens pedidos". Continua a NÃO
@@ -211,6 +218,16 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
     if (id != null) servicosConhecidosRef.current.add(String(id));
   }, []);
 
+  // Quantos ecrãs cheios de pedido estão abertos (a notificação faz `push`,
+  // por isso pode haver dois empilhados). Num ref e não em estado: quem o lê é
+  // o setTimeout do getPendingService, que corre com o estado de quando a app
+  // voltou ao primeiro plano, antes de o ecrã abrir.
+  const ecrasDePedidoAbertosRef = useRef(0);
+
+  const marcarEcraDePedido = useCallback((aberto: boolean) => {
+    ecrasDePedidoAbertosRef.current = Math.max(0, ecrasDePedidoAbertosRef.current + (aberto ? 1 : -1));
+  }, []);
+
   // Outra sessão (sair e entrar, ou outra conta): recomeça do zero.
   useEffect(() => {
     servicosConhecidosRef.current = new Set();
@@ -297,6 +314,10 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
     if (!pendingService && service) {
       const scheduleId = service.schedule_id ?? service.schedule?.id;
       setTimeout(() => {
+        // Um toque na notificação de pedido traz a app ao primeiro plano (o que
+        // corre este arranque) e abre logo o ecrã cheio do pedido. Abrir aqui a
+        // proposta deixava dois ecrãs para o mesmo pedido, um por cima do outro.
+        if (ecrasDePedidoAbertosRef.current > 0) return;
         if (scheduleId) {
           router.navigate({
             pathname: '/(app)/(bottom-sheets)/(services)/schedule-proposal/[scheduleId]',
@@ -451,6 +472,7 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
         setHistoryServices,
         getOpenService,
         marcarServicoComoConhecido,
+        marcarEcraDePedido,
         getPendingService,
         getPendingServices,
         pendingServicesLoading,
