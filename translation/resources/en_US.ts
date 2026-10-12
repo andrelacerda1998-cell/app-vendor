@@ -460,6 +460,10 @@ export default {
           "subtitle": "You declined this request. You'll keep getting new requests in your area."
         }
       },
+      "confirmed": {
+        "title": "Service confirmed!",
+        "subtitle": "The customer confirmed and paid. Head to the location when you're ready."
+      },
       "proposal": {
         "title": "New request for you",
         "time_accounting": "Working time",

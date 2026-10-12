@@ -18,7 +18,7 @@ import CheckMark from "@/assets/icons/check-mark";
 export const useRequestActions = () => {
   const { t } = useTranslation();
   const { api } = useApi();
-  const { setPendingServices, getPendingServices } = useService();
+  const { setPendingServices, getPendingServices, marcarServicoComoConhecido } = useService();
   const { setPendingScheduleServices, fetchScheduledServices } = useSchedule();
   const { openDialog } = useDialog();
 
@@ -79,6 +79,9 @@ export const useRequestActions = () => {
       } else {
         const acceptedServiceId = Number(serviceId);
         await api.post(API_ROUTES.VENDOR_ACCEPT_SERVICE_BY_ID(String(serviceId)));
+        // Foi ele que aceitou: quando este serviço aparecer como o serviço
+        // aberto, não é "o cliente escolheu-te e pagou".
+        marcarServicoComoConhecido(acceptedServiceId);
         track(AnalyticsEvent.REQUEST_ACCEPTED, { service_id: Number(serviceId), scheduled: false });
         setPendingServices((prev) => (prev ?? []).filter(s => s.service_id !== acceptedServiceId));
       }
@@ -90,7 +93,7 @@ export const useRequestActions = () => {
     } finally {
       setSubmitting(false);
     }
-  }, [api, fetchScheduledServices, setPendingServices, setPendingScheduleServices, showAccepted, showError]);
+  }, [api, fetchScheduledServices, setPendingServices, setPendingScheduleServices, showAccepted, showError, marcarServicoComoConhecido]);
 
   return { accept, refuse, submitting };
 };

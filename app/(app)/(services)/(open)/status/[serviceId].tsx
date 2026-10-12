@@ -115,7 +115,7 @@ const Status = () => {
   const { serviceId } = useLocalSearchParams<{ serviceId: string }>();
   const { api } = useApi();
   const { vendorData } = useSession();
-  const { openService, setOpenService, unreadMessages, clearUnreadMessages } = useService();
+  const { openService, setOpenService, unreadMessages, clearUnreadMessages, marcarServicoComoConhecido } = useService();
   const { openDialog } = useDialog();
   const [loadingFinishService, setLoadingFinishService] = useState(false);
   const [busyCta, setBusyCta] = useState(false);
@@ -341,6 +341,8 @@ const Status = () => {
         const accepted = await api.post(API_ROUTES.VENDOR_SCHEDULE_GO_TO_LOCATION(Number(svc?.id)));
         if (accepted?.data?.data?.service) {
           setRouteService(accepted.data.data.service);
+          // Foi ele que o pôs a andar: não se anuncia como "serviço confirmado".
+          marcarServicoComoConhecido(accepted.data.data.service.id);
           setOpenService(accepted.data.data.service);
         }
       }

@@ -460,6 +460,10 @@ export default {
                     "subtitle": "Recusaste este pedido. Continuas a receber novos pedidos na tua zona."
                 }
             },
+            "confirmed": {
+                "title": "Serviço confirmado!",
+                "subtitle": "O cliente confirmou e pagou. Segue para o local quando estiveres pronto."
+            },
             "proposal": {
                 "title": "Novo pedido para ti",
                 "time_accounting": "Tempo de trabalho",
