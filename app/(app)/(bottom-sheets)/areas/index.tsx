@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { FlatList, View } from 'react-native';
 import { useApi } from '@/contexts/ApiContext';
 import { API_ROUTES } from '@/constants/ApiRoutes';
+import { lerValorHora } from '@/constants/ValorHora';
 import { useService } from "@/contexts/ServiceContext";
 import { useSession } from "@/contexts/SessionContext";
 import CustomTouchableOpacity from "@/components/CustomTouchableOpacity";
@@ -103,7 +104,7 @@ const AreasBottomSheet = () => {
                   onServiceTypePress={toggleServiceType}
                   servicesTypes={item.services_types}
                   selectedServicesTypes={selectedServicesTypes}
-                  hourRate={vendorData?.price_rate != null ? Number(vendorData.price_rate) : null}
+                  hourRate={lerValorHora(vendorData?.price_rate)}
                 />
               )
             }}
