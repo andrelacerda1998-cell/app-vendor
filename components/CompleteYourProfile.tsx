@@ -164,17 +164,14 @@ const CompleteYourProfile = () => {
             so a segunda pinta o cartao. */}
         {(retido || zoneRequests > 0) && (
           <View
-            className={`flex-row items-center px-4 py-2.5 ${retido ? 'justify-center' : ''}`}
+            className="flex-row items-center justify-center px-4 py-2.5"
             style={{ borderTopWidth: 1, borderTopColor: `rgba(${tom},0.34)` }}
           >
-            {/* A linha do dinheiro vai CENTRADA; a da procura na zona fica
-                encostada a esquerda.
-
-                Nao e inconsistencia: a do dinheiro sao quatro palavras e cabe
-                sempre numa linha, e centrada le-se como um selo. A da zona
-                cresce com o numero ("houve 12 pedidos na tua zona") e passa a
-                duas linhas -- centrar texto que embrulha da um bloco com as
-                pontas irregulares, que e pior do que alinhado.
+            {/* As duas linhas vão CENTRADAS, a do dinheiro e a da procura na
+                zona (a da zona estava encostada à esquerda; centrada a pedido
+                do André, 12/10/2026). Se a da zona passar a duas linhas
+                ("houve 12 pedidos…" num ecrã estreito), as linhas centram-se
+                também, para o bloco não ficar torto.
 
                 `flexShrink` em vez de `flex-1`: com `flex-1` o texto ocupava o
                 espaco todo depois do icone e o "centro" ficava a direita do
@@ -185,9 +182,9 @@ const CompleteYourProfile = () => {
               size="small"
               color="secondary"
               boldness="semiBold"
-              classes={retido ? 'ml-2' : 'ml-2 flex-1'}
+              classes="ml-2"
               numberOfLines={retido ? 1 : 2}
-              style={retido ? { flexShrink: 1 } : undefined}
+              style={{ flexShrink: 1, textAlign: 'center' }}
             >
               {/* Só "retido", sem contagem. Havia um prazo de 5 dias a seguir
                   ao qual o técnico perdia o dinheiro; a perda saiu (decisão do
