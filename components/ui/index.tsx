@@ -9,6 +9,7 @@ import { Feather } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { CustomText } from '@/components/CustomText';
 import { Colors } from '@/constants/Colors';
+import { useEscala } from '@/utils/escala';
 
 /** Sombra subtil comum aos cartões — dá profundidade sem "sujar" o fundo. */
 export const cardShadow = {
@@ -169,7 +170,14 @@ export const EmptyState = ({
       {title}
     </CustomText>
     {!!subtitle && (
-      <CustomText color="muted" size="small" classes="text-center mt-1" numberOfLines={3}>
+      <CustomText
+        color="muted"
+        size="small"
+        classes="text-center mt-1"
+        // 5 linhas: com a letra grande, 3 cortavam a explicação a meio
+        // ("Mantém as notificaçõ…").
+        numberOfLines={5}
+      >
         {subtitle}
       </CustomText>
     )}
@@ -326,7 +334,13 @@ export type ListRowItem = {
   onPress?: () => void;
 };
 
-export const ListCard = ({ items }: { items: ListRowItem[] }) => (
+export const ListCard = ({ items }: { items: ListRowItem[] }) => {
+  // Com a letra do sistema grande, o valor passa para baixo do rótulo: lado a
+  // lado, "Denominação fiscal" partia a meio ("Denom-inação") num Android de
+  // 360 dp a 130%.
+  const { textoSistema } = useEscala();
+  const empilhado = textoSistema > 1.15;
+  return (
   <Card padded={false}>
     {items.map((item, i) => (
       <View key={item.key ?? i}>
@@ -338,28 +352,42 @@ export const ListCard = ({ items }: { items: ListRowItem[] }) => (
           onPress={item.onPress}
           disabled={!item.onPress}
           className="flex-row items-center px-4"
-          style={{ minHeight: 58 }}
+          style={{ minHeight: 58, paddingVertical: empilhado ? 10 : 0 }}
         >
           {!!item.icon && <View className="w-8 items-center mr-4">{item.icon}</View>}
           {/* Duas linhas: os rótulos costumam caber numa, mas conteúdo dinâmico
-              (uma morada, por exemplo) cortava a meio. */}
-          <CustomText color="secondary" size="medium" boldness="medium" classes="flex-1" numberOfLines={2}>
-            {item.label}
-          </CustomText>
-          {!!item.value && (
+              (uma morada, por exemplo) cortava a meio.
+              O rótulo fica sempre com pelo menos 40% da linha e é o valor que
+              encolhe: num iPhone SE, "Adiciona a tua denominação fiscal"
+              ocupava a largura toda e o rótulo partia em "Denomina-ção". */}
+          <View className={empilhado ? 'flex-1' : 'flex-1 flex-row items-center'}>
             <CustomText
-              size="small"
-              color={item.valueColor ?? 'muted'}
-              boldness={item.valueColor && item.valueColor !== 'muted' ? 'bold' : 'regular'}
-              classes="mr-2"
-              numberOfLines={1}
+              color="secondary"
+              size="medium"
+              boldness="medium"
+              classes={empilhado ? '' : 'flex-1'}
+              style={empilhado ? undefined : { minWidth: '40%' }}
+              numberOfLines={2}
             >
-              {item.value}
+              {item.label}
             </CustomText>
-          )}
+            {!!item.value && (
+              <CustomText
+                size="small"
+                color={item.valueColor ?? 'muted'}
+                boldness={item.valueColor && item.valueColor !== 'muted' ? 'bold' : 'regular'}
+                classes={empilhado ? 'mt-0.5 mr-2' : 'ml-3 mr-2'}
+                style={empilhado ? undefined : { flexShrink: 1, textAlign: 'right' }}
+                numberOfLines={empilhado ? 3 : 2}
+              >
+                {item.value}
+              </CustomText>
+            )}
+          </View>
           {!!item.onPress && <Feather name="chevron-right" size={18} color={Colors.muted} />}
         </TouchableOpacity>
       </View>
     ))}
   </Card>
-);
+  );
+};

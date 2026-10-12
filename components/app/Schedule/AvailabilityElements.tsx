@@ -1,3 +1,4 @@
+import { TEXTO_MAXIMO } from '@/utils/escala';
 import {
   StyleSheet,
   Switch,
@@ -73,7 +74,15 @@ const AvailabilityElements = () => {
             {i > 0 && <View style={styles.separator} />}
             <View style={styles.weekRow}>
               {/* Nome do dia primeiro: é por ele que se procura na lista. */}
-              <Text style={[styles.weekLabel, !d.enabled && styles.weekLabelDisabled]} numberOfLines={1}>
+              <Text
+                maxFontSizeMultiplier={TEXTO_MAXIMO}
+                style={[styles.weekLabel, !d.enabled && styles.weekLabelDisabled]}
+                numberOfLines={1}
+                // Encolhe em vez de cortar: com a letra grande lia-se "Quarta-f…".
+                // 60%: "Segunda-feira" a 130% num ecrã de 360 dp precisa de ~65%.
+                adjustsFontSizeToFit
+                minimumFontScale={0.6}
+              >
                 {d.label}
               </Text>
 
@@ -83,10 +92,10 @@ const AvailabilityElements = () => {
                   onPress={() => setWeekdayEditor(d)}
                   activeOpacity={0.8}
                 >
-                  <Text style={styles.timePillText}>{`${d.start} – ${d.end}`}</Text>
+                  <Text maxFontSizeMultiplier={TEXTO_MAXIMO} style={styles.timePillText}>{`${d.start} – ${d.end}`}</Text>
                 </TouchableOpacity>
               ) : (
-                <Text style={styles.closedText}>{t('schedules.day_off')}</Text>
+                <Text maxFontSizeMultiplier={TEXTO_MAXIMO} style={styles.closedText}>{t('schedules.day_off')}</Text>
               )}
 
               <Switch
@@ -169,6 +178,8 @@ const createStyles = () => StyleSheet.create({
   },
   switch: {
     marginLeft: 12,
+    // No iOS o Switch traz alignSelf 'flex-start' e ficava acima do texto.
+    alignSelf: 'center',
   },
 })
 

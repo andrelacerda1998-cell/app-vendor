@@ -10,6 +10,7 @@
  * E a raiz de (auth), por isso e tambem onde caem o fim de sessao, a sessao
  * expirada e o fim da recuperacao de palavra-passe.
  */
+import { TEXTO_MAXIMO } from '@/utils/escala';
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { View, TextInput, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -133,7 +134,7 @@ const SignIn = () => {
             }}
             render={({ field }) => (
               <Field icon="mail" error={errors.email?.message}>
-                <TextInput
+                <TextInput maxFontSizeMultiplier={TEXTO_MAXIMO}
                   value={field.value}
                   onChangeText={field.onChange}
                   onBlur={field.onBlur}
@@ -158,7 +159,7 @@ const SignIn = () => {
             rules={{ required: t('general.password_required') }}
             render={({ field }) => (
               <Field icon="lock" error={errors.password?.message}>
-                <TextInput
+                <TextInput maxFontSizeMultiplier={TEXTO_MAXIMO}
                   value={field.value}
                   onChangeText={(value: string) => field.onChange(value.replace(/\s/g, ''))}
                   onBlur={field.onBlur}

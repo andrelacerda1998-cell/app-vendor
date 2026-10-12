@@ -186,7 +186,13 @@ const CitySurveyStep = ({ onNext, submitLabel }: { onNext: () => void; submitLab
                         size="small"
                         color={selected ? 'support_primary' : 'secondary'}
                         boldness="semiBold"
-                        numberOfLines={1}
+                        // "Vila Nova de Famalicão" ficava "Vila Nova de Fam…" num ecrã
+                        // estreito: com espaços passa a duas linhas. Uma palavra só
+                        // ("Entroncamento") encolhe numa linha — com duas, o Android
+                        // partia-a a meio.
+                        numberOfLines={/\s/.test(String(city.name ?? '').trim()) ? 2 : 1}
+                        adjustsFontSizeToFit={!/\s/.test(String(city.name ?? '').trim())}
+                        minimumFontScale={0.75}
                     >
                         {city.name}
                     </CustomText>

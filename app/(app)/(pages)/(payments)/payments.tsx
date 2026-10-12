@@ -1,5 +1,8 @@
 import React from "react";
-import { SafeAreaView, TouchableOpacity } from "react-native";
+import { TouchableOpacity } from "react-native";
+// O SafeAreaView do react-native só funciona no iOS: no Android o cabeçalho
+// ficava por baixo da barra de estado (a seta de voltar em cima do relógio).
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {useRouter} from "expo-router";
 import Payment from "@/components/app/Profile/Payment";
 import BackHeader from "@/components/app/BackHeader";

@@ -1108,8 +1108,10 @@ export default {
             "cancelled": "Cancelados",
             "lost": "Recusados"
         },
-        "earned_summary": "Ganhaste com {{count}} serviços",
-        "lost_summary": "Recusaste ou deixaste expirar {{count}} pedidos",
+        "earned_summary_one": "Ganhaste com {{count}} serviço",
+        "earned_summary_other": "Ganhaste com {{count}} serviços",
+        "lost_summary_one": "Recusaste ou deixaste expirar {{count}} pedido",
+        "lost_summary_other": "Recusaste ou deixaste expirar {{count}} pedidos",
         "lost_hint": "Estes valores nunca foram teus — são o que poderias ter ganho se tivesses aceite a tempo.",
         "empty": {
             "all_title": "Sem histórico",

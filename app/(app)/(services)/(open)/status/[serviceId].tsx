@@ -28,6 +28,7 @@ import { formatEstimatedDuration } from "@/utils/serviceDetails";
 import { useNavChooser } from "@/hooks/useNavChooser";
 import ServiceRouteMap from "@/components/services/ServiceRouteMap";
 import { track, AnalyticsEvent } from "@/utils/analytics";
+import { useEscala } from "@/utils/escala";
 
 interface Details{
   includes: string[];
@@ -400,6 +401,10 @@ const Status = () => {
   const duracaoReal = svc?.duration_minutes ?? svc?.service_type?.time;
   const durationLabel = formatEstimatedDuration(duracaoReal);
   const category = svc?.service_type?.operation_area?.name;
+  // Com a letra do sistema grande, o valor passa para baixo do nome: lado a
+  // lado, o nome partia a meio ("Desentu-piment…") num Android de 360 dp.
+  const { textoSistema } = useEscala();
+  const valorPorBaixo = textoSistema > 1.15;
 
   // Dia + hora do serviço. A hora vem do agendamento (`schedule`), porque
   // `scheduled_at` traz só o dia — usá-lo sozinho dava sempre "00:00".
@@ -532,8 +537,8 @@ const Status = () => {
             equilibra o cabeçalho, que antes tinha tudo encostado à esquerda, e
             junta num só bloco o resumo do serviço — o quê, quando e quanto. */}
         <Card>
-          <View className="flex-row items-start">
-            <View className="flex-1 pr-3">
+          <View className={valorPorBaixo ? '' : 'flex-row items-start'}>
+            <View className={valorPorBaixo ? '' : 'flex-1 pr-3'}>
               <CustomText color="secondary" boldness="bolder" size="medium" numberOfLines={2}>
                 {svc?.service_type?.name ?? svc?.custom?.description}
               </CustomText>
@@ -542,7 +547,12 @@ const Status = () => {
               )}
             </View>
             {earn ? (
-              <View className="items-end">
+              // No máximo 45% da largura: "Valor para ti, sem descontos" numa
+              // linha só empurrava o nome do serviço para uma coluna estreita.
+              <View
+                className={valorPorBaixo ? 'items-start mt-3' : 'items-end'}
+                style={valorPorBaixo ? undefined : { maxWidth: '45%' }}
+              >
                 <CustomText color="muted" size="extraSmall">
                   {t('services.service.status.value_to_receive')}
                 </CustomText>
@@ -554,7 +564,12 @@ const Status = () => {
                     da marca faz supor uma comissao retirada — e essa duvida
                     acaba em suporte. Tres palavras chegam; a regra completa
                     esta nos Ganhos e no Valor/hora. */}
-                <CustomText color="muted" size="extraSmall" classes="mt-0.5">
+                <CustomText
+                  color="muted"
+                  size="extraSmall"
+                  classes="mt-0.5"
+                  style={{ textAlign: valorPorBaixo ? 'left' : 'right' }}
+                >
                   {t('services.service.status.value_is_yours')}
                 </CustomText>
               </View>

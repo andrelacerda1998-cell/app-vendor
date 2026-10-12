@@ -1,3 +1,4 @@
+import { TEXTO_MAXIMO } from '@/utils/escala';
 import React, { useEffect, useMemo, useState } from "react";
 import { Modal, SafeAreaView, View, Text, TouchableOpacity, Pressable } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -59,36 +60,36 @@ const Availability = ({ visible, onClose, onSave, initialStart = "08:00", initia
         <View style={styles.bottomSheet}>
           <View style={styles.indicator} />
           <View style={styles.header}>
-            <Text style={styles.title}>{t("schedules.availability_range.title")}</Text>
-            <Text style={styles.subtitle}>{t("schedules.availability_range.subtitle")}</Text>
+            <Text maxFontSizeMultiplier={TEXTO_MAXIMO} style={styles.title}>{t("schedules.availability_range.title")}</Text>
+            <Text maxFontSizeMultiplier={TEXTO_MAXIMO} style={styles.subtitle}>{t("schedules.availability_range.subtitle")}</Text>
           </View>
           <View style={styles.rowHeader}>
-            <Text style={styles.smallLabel}>{t("schedules.availability_range.from")}</Text>
-            <Text style={styles.smallLabel}>{t("schedules.availability_range.to")}</Text>
+            <Text maxFontSizeMultiplier={TEXTO_MAXIMO} style={styles.smallLabel}>{t("schedules.availability_range.from")}</Text>
+            <Text maxFontSizeMultiplier={TEXTO_MAXIMO} style={styles.smallLabel}>{t("schedules.availability_range.to")}</Text>
           </View>
           <View style={styles.inlineRow}>
             <TouchableOpacity style={styles.timeInput} onPress={() => setPickerFor("start")}>
-              <Text style={styles.timeText}>{formatHM(start)}</Text>
+              <Text maxFontSizeMultiplier={TEXTO_MAXIMO} style={styles.timeText}>{formatHM(start)}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.timeInput} onPress={() => setPickerFor("end")}>
-              <Text style={styles.timeText}>{formatHM(end)}</Text>
+              <Text maxFontSizeMultiplier={TEXTO_MAXIMO} style={styles.timeText}>{formatHM(end)}</Text>
             </TouchableOpacity>
           </View>
 
           {!isValid && (
-            <Text style={styles.errorText}>{t("schedules.availability_range.invalid")}</Text>
+            <Text maxFontSizeMultiplier={TEXTO_MAXIMO} style={styles.errorText}>{t("schedules.availability_range.invalid")}</Text>
           )}
 
           <View style={styles.footer}>
             <TouchableOpacity style={styles.secondaryBtn} onPress={onClose}>
-              <Text style={styles.secondaryText}>{t("schedules.availability_range.cancel")}</Text>
+              <Text maxFontSizeMultiplier={TEXTO_MAXIMO} style={styles.secondaryText}>{t("schedules.availability_range.cancel")}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.primaryBtn, !isValid && styles.primaryBtnDisabled]}
               onPress={() => isValid && onSave({ start: formatHM(start), end: formatHM(end) })}
               disabled={!isValid}
             >
-              <Text style={[styles.primaryText, !isValid && styles.primaryTextDisabled]}>
+              <Text maxFontSizeMultiplier={TEXTO_MAXIMO} style={[styles.primaryText, !isValid && styles.primaryTextDisabled]}>
                 {t("schedules.availability_range.save")}
               </Text>
             </TouchableOpacity>

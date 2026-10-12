@@ -192,7 +192,13 @@ const History = () => {
                 <TouchableOpacity
                   key={s.id}
                   activeOpacity={0.85}
-                  onPress={() => router.push(`/(app)/(services)/history/${s.id}`)}
+                  // O serviço vai junto: o detalhe só conhecia a 1.ª página do
+                  // histórico carregada no arranque, e um serviço mais antigo,
+                  // cancelado ou perdido abria vazio, com "Invalid Date".
+                  onPress={() => router.push({
+                    pathname: '/(app)/(services)/history/[serviceId]',
+                    params: { serviceId: String(s.id), service: JSON.stringify(s) },
+                  })}
                 >
                   <Card className="flex-row items-center">
                     <IconTile size={40} tint={ui.tint}>
