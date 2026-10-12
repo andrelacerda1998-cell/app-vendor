@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback, useRef } from 'react';
 import { useApi } from "./ApiContext";
 import { API_ROUTES } from "@/constants/ApiRoutes";
 import {
@@ -366,16 +366,49 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
       });
   }
 
-  useEffect(()=> {
-    if(!openService){
-      //no open service, this sets the activeService to false, to use its value in the notifications
-      setActiveService(false);
+  // Guarda qual era o serviço aberto na renderização anterior e se o contexto
+  // já passou pelo arranque. Sem isto, o auto-abrir dispararia ao abrir a app
+  // com um serviço já em curso (puxava o técnico para fora de onde estava) e
+  // voltaria a disparar a cada atualização do mesmo serviço (ex.: "a caminho").
+  const prevOpenServiceIdRef = useRef<string | number | null>(null);
+  const openServiceBootedRef = useRef(false);
 
-    }else{
-      //there is an open service, this sets the activeService to true, to use its value in the notifications
-      setActiveService(true);
+  useEffect(()=> {
+    // Liga/desliga o activeService (usado nas notificações).
+    setActiveService(!!openService);
+
+    const prevId = prevOpenServiceIdRef.current;
+    const currId = openService?.id ?? null;
+
+    // Momento "serviço confirmado": o cliente escolheu este técnico e PAGOU, e
+    // só aí o serviço passa a ser o openService (Accepted). O técnico tinha
+    // apenas aceitado o convite e voltado à Home — nada o chamava quando o
+    // pagamento confirmava (sem APNs não há push). Levamo-lo ao ecrã de
+    // execução, onde tem "Estou a caminho" (abre Waze/Google/Apple Maps),
+    // "Cheguei" e "Concluir", e deixamos um realce de confirmação.
+    //
+    // Só num serviço NOVO aparecido durante a sessão: nunca no arranque
+    // (openServiceBootedRef), nem em updates do mesmo serviço (currId!==prevId
+    // cobre também a transição "a caminho", que mantém o mesmo id).
+    const isNovoServico =
+      openServiceBootedRef.current &&
+      currId != null &&
+      currId !== prevId;
+
+    if (isNovoServico) {
+      openDialog({
+        title: t('services.service.confirmed.title', { defaultValue: 'Serviço confirmado!' }),
+        subtitle: t('services.service.confirmed.subtitle', {
+          defaultValue: 'O cliente confirmou e pagou. Siga para o local quando estiver pronto.',
+        }),
+        closeAfterMSeconds: 2500,
+        closeOnClickOutside: true,
+      });
+      router.navigate(`/(app)/(services)/(open)/status/${currId}`);
     }
 
+    prevOpenServiceIdRef.current = currId;
+    openServiceBootedRef.current = true;
   }, [openService]);
 
   return (
