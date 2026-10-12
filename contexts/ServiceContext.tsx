@@ -9,6 +9,7 @@ import {
   ServiceStatus
 } from "@/types/services";
 import { useSession } from "./SessionContext";
+import { deveAnunciarServicoConfirmado } from "@/utils/servicoConfirmado";
 import { router } from "expo-router";
 import { useDialog } from "./DialogContext";
 import { useTranslation } from "react-i18next";
@@ -114,6 +115,11 @@ interface ServiceContextProps {
   historyServices: ServiceInterface[];
   setHistoryServices: React.Dispatch<React.SetStateAction<ServiceInterface[]>>;
   getOpenService: () => Promise<void>;
+  /**
+   * Marca um serviço como já conhecido nesta sessão: o técnico acabou de o
+   * aceitar ele próprio, por isso não é "o cliente escolheu-te e pagou".
+   */
+  marcarServicoComoConhecido: (id?: number | string | null) => void;
   getPendingService: () => Promise<void>;
   getPendingServices: () => void;
   /**
@@ -142,7 +148,7 @@ const ServiceContext = createContext<ServiceContextProps | undefined>(undefined)
 export const ServiceProvider = ({ children }: { children: ReactNode }) => {
   const { t } = useTranslation();
   const { api } = useApi();
-  const { fetchAndSaveUserData, getWalletInfo } = useSession();
+  const { fetchAndSaveUserData, getWalletInfo, session } = useSession();
   const { openDialog } = useDialog();
   const [operationAreas, setOperationAreas] = useState<OperationArea[] | null>(null);
   const [myOperationAreas, setMyOperationAreas] = useState<OperationArea[] | null>(null);
@@ -190,6 +196,27 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [api]);
 
+  // Serviços abertos que este técnico já conhecia nesta sessão (o que estava
+  // em curso ao abrir a app e os que ele próprio aceitou) e se a primeira carga
+  // já aconteceu. Ver utils/servicoConfirmado.
+  //
+  // Estavam num ref posto a true na primeira renderização — antes de a app ir
+  // buscar o serviço aberto. Com isso o aviso disparava sempre que a app abria
+  // com um serviço em curso, e também quando o técnico aceitava um pedido
+  // direto (o aviso de "aceite" era substituído e o ecrã saltava para o estado).
+  const servicosConhecidosRef = useRef<Set<string>>(new Set());
+  const primeiraCargaFeitaRef = useRef(false);
+
+  const marcarServicoComoConhecido = useCallback((id?: number | string | null) => {
+    if (id != null) servicosConhecidosRef.current.add(String(id));
+  }, []);
+
+  // Outra sessão (sair e entrar, ou outra conta): recomeça do zero.
+  useEffect(() => {
+    servicosConhecidosRef.current = new Set();
+    primeiraCargaFeitaRef.current = false;
+  }, [session]);
+
   const getOpenService = async () => {
     const response = await api.get(API_ROUTES.VENDOR_GET_OPEN_SERVICES);
     if (openService && !response.data.data.service) {
@@ -199,6 +226,12 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
       getWalletInfo();
     }
     const service = response.data.data.service || null;
+    // A primeira carga da sessão é o ponto de partida: um serviço que já estava
+    // em curso ao abrir a app não é novidade e não se anuncia como confirmado.
+    if (!primeiraCargaFeitaRef.current) {
+      marcarServicoComoConhecido(service?.id);
+      primeiraCargaFeitaRef.current = true;
+    }
     setOpenService(service); //uncomment later, this is real data
 
     if (service?.id && !hasOpenServiceDisplayData(service)) {
@@ -366,36 +399,30 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
       });
   }
 
-  // Guarda qual era o serviço aberto na renderização anterior e se o contexto
-  // já passou pelo arranque. Sem isto, o auto-abrir dispararia ao abrir a app
-  // com um serviço já em curso (puxava o técnico para fora de onde estava) e
-  // voltaria a disparar a cada atualização do mesmo serviço (ex.: "a caminho").
-  const prevOpenServiceIdRef = useRef<string | number | null>(null);
-  const openServiceBootedRef = useRef(false);
-
   useEffect(()=> {
     // Liga/desliga o activeService (usado nas notificações).
     setActiveService(!!openService);
 
-    const prevId = prevOpenServiceIdRef.current;
-    const currId = openService?.id ?? null;
-
     // Momento "serviço confirmado": o cliente escolheu este técnico e PAGOU, e
     // só aí o serviço passa a ser o openService (Accepted). O técnico tinha
-    // apenas aceitado o convite e voltado à Home — nada o chamava quando o
-    // pagamento confirmava (sem APNs não há push). Levamo-lo ao ecrã de
+    // apenas dito que tinha disponibilidade e voltado à Home — nada o chamava
+    // quando o pagamento confirmava (sem APNs não há push). Levamo-lo ao ecrã de
     // execução, onde tem "Estou a caminho" (abre Waze/Google/Apple Maps),
     // "Cheguei" e "Concluir", e deixamos um realce de confirmação.
     //
-    // Só num serviço NOVO aparecido durante a sessão: nunca no arranque
-    // (openServiceBootedRef), nem em updates do mesmo serviço (currId!==prevId
-    // cobre também a transição "a caminho", que mantém o mesmo id).
-    const isNovoServico =
-      openServiceBootedRef.current &&
-      currId != null &&
-      currId !== prevId;
+    // Quando avisar está em utils/servicoConfirmado: nunca pelo serviço que já
+    // estava em curso ao abrir a app, nem pelo que o técnico acabou de aceitar,
+    // nem duas vezes pelo mesmo.
+    const anunciar = deveAnunciarServicoConfirmado(
+      openService,
+      servicosConhecidosRef.current,
+      primeiraCargaFeitaRef.current,
+    );
+    if (openService?.id != null && primeiraCargaFeitaRef.current) {
+      marcarServicoComoConhecido(openService.id);
+    }
 
-    if (isNovoServico) {
+    if (anunciar && openService) {
       openDialog({
         title: t('services.service.confirmed.title', { defaultValue: 'Serviço confirmado!' }),
         subtitle: t('services.service.confirmed.subtitle', {
@@ -404,11 +431,8 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
         closeAfterMSeconds: 2500,
         closeOnClickOutside: true,
       });
-      router.navigate(`/(app)/(services)/(open)/status/${currId}`);
+      router.navigate(`/(app)/(services)/(open)/status/${openService.id}`);
     }
-
-    prevOpenServiceIdRef.current = currId;
-    openServiceBootedRef.current = true;
   }, [openService]);
 
   return (
@@ -426,6 +450,7 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
         historyServices,
         setHistoryServices,
         getOpenService,
+        marcarServicoComoConhecido,
         getPendingService,
         getPendingServices,
         pendingServicesLoading,

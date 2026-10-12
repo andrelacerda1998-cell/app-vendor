@@ -39,7 +39,7 @@ const ServiceProposalBottomSheet = () => {
   const serviceId = params.serviceId;
   const { api } = useApi();
   const { openDialog } = useDialog();
-  const { openService, setOpenService, pendingService, setPendingService, getPendingServices } = useService();
+  const { openService, setOpenService, pendingService, setPendingService, getPendingServices, marcarServicoComoConhecido } = useService();
   const [isLoading, setIsLoading] = useState(false);
   const [disableButton, setDisableButton] = useState(false);
   const { appStateStatus } = useAppStateStatus();
@@ -86,6 +86,8 @@ const ServiceProposalBottomSheet = () => {
           closeOnClickOutside: true,
         })
         if (data.data.service) {
+          // Foi ele que aceitou: não é "o cliente escolheu-te e pagou".
+          marcarServicoComoConhecido(data.data.service.id);
           setOpenService(data.data.service);
           setPendingService(null);
           getPendingServices();
