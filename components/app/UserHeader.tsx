@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Animated, Image, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Animated, Image, Platform, TouchableOpacity, TouchableWithoutFeedback, useWindowDimensions, View } from 'react-native';
 import { Colors } from '@/constants/Colors'
 import { Entypo, Feather, MaterialIcons, Octicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
@@ -37,6 +37,14 @@ const UserHeader = () => {
    */
   const online = useVendorOnlineStatus();
 
+  // O botão de estado deixava ~100 pt ao nome: "Olá, Tia…" no iPhone SE e
+  // "Olá, Tiago" minúsculo com "Termina / o teu pe…" num Android de 411 dp (no
+  // Android a mesma letra ocupa mais largura). Abaixo de 430 pt/dp passa para
+  // uma segunda linha, por baixo do nome; numa só linha ficam o Pro Max e os
+  // Androids grandes.
+  const { width: larguraDoEcra } = useWindowDimensions();
+  const estreito = larguraDoEcra < 430;
+
   useEffect(() => {
     if (vendorData?.user?.notifications !== undefined) {
       setNotifications(vendorData?.user?.notifications)
@@ -68,44 +76,8 @@ const UserHeader = () => {
   }
 
 
-  const handlePressNotification = () => {
-    router.push('/(app)/(modals)/notifications')
-  }
-
-  return (
-    <View>
-      <View className="flex-row items-center justify-between w-full">
-        {/* Avatar → Perfil */}
-        <TouchableWithoutFeedback onPress={() => router.navigate('/(app)/(tabs)/profile')}>
-          <View
-            className="h-11 w-11 rounded-full overflow-hidden items-center justify-center mr-3"
-            style={{ backgroundColor: Colors.support_primary }}
-          >
-            {vendorData?.user?.avatar?.src ? (
-              <Image source={{ uri: vendorData.user.avatar.src }} className="w-full h-full" />
-            ) : (
-              <CustomText size="medium" boldness="bolder" color="on_brand">
-                {(vendorData?.user?.first_name || vendorData?.username || '?').charAt(0).toUpperCase()}
-              </CustomText>
-            )}
-          </View>
-        </TouchableWithoutFeedback>
-
-        <View className="flex-1 pr-3" style={{ minWidth: 0 }}>
-          <CustomText size="large" color="secondary" boldness="bolder" numberOfLines={1}>
-            {t('user_header.hello', { name: vendorData?.user?.first_name ?? '' })}
-          </CustomText>
-          {/* Só mostra "termina a conta" quando é o caso. O "Pronto para
-              receber" saiu: o botão de estado ao lado já o diz, e repeti-lo só
-              roubava largura ao nome. */}
-          {!(vendorData?.at_user && vendorData?.company_address && vendorData?.iban &&
-             vendorData?.user?.phone_number_verified_at && vendorData?.user?.email_verified_at) && (
-            <CustomText size="small" color="muted" boldness="regular" numberOfLines={1} classes="mt-0.5">
-              {t('user_header.finish_account')}
-            </CustomText>
-          )}
-        </View>
-
+  const botaoDeEstado = (
+    <>
         {/* Estado online/offline.
             "Online"/"Offline" é jargão de apps que muitos profissionais não
             conhecem, e um pontinho colorido não chega para dizer que aquilo é um
@@ -116,9 +88,10 @@ const UserHeader = () => {
           onPress={online.toggle}
           disabled={online.disabled}
           activeOpacity={0.8}
-          className="flex-row items-center rounded-full pl-3 pr-1.5 py-1.5 mr-3"
+          className="flex-row items-center rounded-full pl-3 pr-1.5 py-1.5"
           style={{
             flexShrink: 0,
+            ...(estreito ? { alignSelf: 'flex-start', marginTop: 12, marginLeft: 56 } : { marginRight: 12 }),
             backgroundColor: online.blocked
               ? Colors.card
               : online.isOnline ? 'rgba(35,230,158,0.14)' : Colors.brand_soft,
@@ -166,6 +139,60 @@ const UserHeader = () => {
           </View>
           )}
         </TouchableOpacity>
+    </>
+  );
+
+  const handlePressNotification = () => {
+    router.push('/(app)/(modals)/notifications')
+  }
+
+  return (
+    <View>
+      <View className="flex-row items-center justify-between w-full">
+        {/* Avatar → Perfil */}
+        <TouchableWithoutFeedback onPress={() => router.navigate('/(app)/(tabs)/profile')}>
+          <View
+            className="h-11 w-11 rounded-full overflow-hidden items-center justify-center mr-3"
+            style={{ backgroundColor: Colors.support_primary }}
+          >
+            {vendorData?.user?.avatar?.src ? (
+              <Image source={{ uri: vendorData.user.avatar.src }} className="w-full h-full" />
+            ) : (
+              <CustomText size="medium" boldness="bolder" color="on_brand">
+                {(vendorData?.user?.first_name || vendorData?.username || '?').charAt(0).toUpperCase()}
+              </CustomText>
+            )}
+          </View>
+        </TouchableWithoutFeedback>
+
+        <View className="flex-1 pr-3" style={{ minWidth: 0 }}>
+          {/* Encolhe até 80% antes de cortar: no Pro Max, ao lado do botão de
+              estado, um nome de 7–8 letras ficava "Olá, Ricar…". */}
+          <CustomText
+            size="large"
+            color="secondary"
+            boldness="bolder"
+            numberOfLines={1}
+            // Só no iOS: no Android o ajuste encolhia demais e cortava o 👋.
+            adjustsFontSizeToFit={Platform.OS === 'ios'}
+            minimumFontScale={0.8}
+          >
+            {t('user_header.hello', { name: vendorData?.user?.first_name ?? '' })}
+          </CustomText>
+          {/* Só mostra "termina a conta" quando é o caso. O "Pronto para
+              receber" saiu: o botão de estado ao lado já o diz, e repeti-lo só
+              roubava largura ao nome. */}
+          {!(vendorData?.at_user && vendorData?.company_address && vendorData?.iban &&
+             vendorData?.user?.phone_number_verified_at && vendorData?.user?.email_verified_at) && (
+            // Duas linhas: ao lado do botão de estado, num iPhone 17 lia-se
+            // "Termina o teu p…".
+            <CustomText size="small" color="muted" boldness="regular" numberOfLines={2} classes="mt-0.5">
+              {t('user_header.finish_account')}
+            </CustomText>
+          )}
+        </View>
+
+        {!estreito && botaoDeEstado}
 
         <TouchOpacity
           onPress={handlePressNotification}
@@ -196,6 +223,7 @@ const UserHeader = () => {
           }
         </TouchOpacity>
       </View>
+      {estreito && botaoDeEstado}
     </View>
   )
 }

@@ -466,6 +466,10 @@ export default {
                     "subtitle": "Recusaste este pedido. Continuas a receber novos pedidos na tua zona."
                 }
             },
+            "confirmed": {
+                "title": "Serviço confirmado!",
+                "subtitle": "O cliente confirmou e pagou. Segue para o local quando estiveres pronto."
+            },
             "proposal": {
                 "title": "Novo pedido para ti",
                 "time_accounting": "Tempo de trabalho",
@@ -977,8 +981,8 @@ export default {
             "placeholder": "Valor/hora",
             "required": "Escreve o teu valor/hora",
             "invalid": "Valor/hora inválido",
-            "min_value": "O valor/hora tem de ser pelo menos 1",
-            "max_value": "O valor/hora não pode ser maior do que 999.999",
+            "min_value": "O valor/hora tem de ser pelo menos {{min}} €",
+            "max_value": "O valor/hora não pode ser maior do que {{max}} €",
             "must_be_number": "O valor/hora tem de ser um número"
         },
         "phone_verification_required": "Falta verificar o teu telefone",
@@ -1114,8 +1118,10 @@ export default {
             "cancelled": "Cancelados",
             "lost": "Recusados"
         },
-        "earned_summary": "Ganhaste com {{count}} serviços",
-        "lost_summary": "Recusaste ou deixaste expirar {{count}} pedidos",
+        "earned_summary_one": "Ganhaste com {{count}} serviço",
+        "earned_summary_other": "Ganhaste com {{count}} serviços",
+        "lost_summary_one": "Recusaste ou deixaste expirar {{count}} pedido",
+        "lost_summary_other": "Recusaste ou deixaste expirar {{count}} pedidos",
         "lost_hint": "Estes valores nunca foram teus — são o que poderias ter ganho se tivesses aceite a tempo.",
         "empty": {
             "all_title": "Sem histórico",
@@ -1816,13 +1822,13 @@ export default {
         "window": "para responder",
         "immediate": "Agora",
         "screen_title": "Tens um pedido",
-        "screen_subtitle": "O cliente escolhe entre os 3 primeiros a responder. Só ocupas a agenda se fores escolhido.",
+        "screen_subtitle": "O cliente vê os 3 melhores de quem aceitar (avaliação, preço e distância). Só ocupas a agenda se fores escolhido.",
         "when_label": "Quando",
         "duration_label": "Duração do serviço",
         "duration": "{{minutes}} min",
         "you_receive": "Vais receber",
-        "urgency_title": "O cliente só vê os 3 primeiros a aceitar.",
-        "explainer": "Aceita rápido para entrares na lista. Só ocupas a agenda se fores escolhido.",
+        "urgency_title": "O cliente vê os 3 melhores de quem aceitar.",
+        "explainer": "Responde antes de o tempo acabar para entrares na lista. Só ocupas a agenda se fores escolhido.",
         "accept": "Tenho disponibilidade",
         "decline": "Agora não",
         "accepted_title": "Ficaste na lista",

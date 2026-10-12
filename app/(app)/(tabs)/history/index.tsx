@@ -299,6 +299,9 @@ const Earnings = () => {
                     boldness={isCurrent ? 'bold' : 'regular'}
                     classes="mt-2 text-center"
                     numberOfLines={1}
+                    // Encolhe em vez de cortar: num ecrã estreito lia-se "Esta sema…".
+                    adjustsFontSizeToFit
+                    minimumFontScale={0.75}
                   >
                     {isCurrent ? t('earnings.this_week_short') : shortDate(w.week_start)}
                   </CustomText>
@@ -339,10 +342,11 @@ const Earnings = () => {
             <Ionicons name="calendar-clear" size={24} color={Colors.success} />
             <View className="flex-1 ml-3">
               <CustomText size="small" color="muted">{t('earnings.next_payment')}</CustomText>
-              <CustomText size="medium" color="secondary" boldness="bolder" classes="mt-0.5" numberOfLines={1}>
+              {/* Duas linhas: com a letra grande lia-se "segunda-feira, 12/…". */}
+              <CustomText size="medium" color="secondary" boldness="bolder" classes="mt-0.5" numberOfLines={2}>
                 {t('earnings.next_payment_on', { date: longDate(stats?.next_payment_date) })}
               </CustomText>
-              <CustomText size="small" color="muted" classes="mt-0.5" numberOfLines={1}>
+              <CustomText size="small" color="muted" classes="mt-0.5" numberOfLines={2}>
                 {iban
                   ? t('earnings.to_iban', { iban })
                   : t('earnings.next_payment_hint')}

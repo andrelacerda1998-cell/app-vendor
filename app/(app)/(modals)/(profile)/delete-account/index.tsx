@@ -118,7 +118,9 @@ const DeleteAccount = () => {
           </View>
 
           <View>
-            <CustomText color="gray_strong" boldness="semiBold" numberOfLines={1}>
+            {/* Branco como os rótulos de "Editar perfil": o gray_strong (#525252)
+                mal se via no fundo escuro e o campo parecia desativado. */}
+            <CustomText color="secondary" boldness="semiBold" numberOfLines={1}>
               {t('general.password')}
             </CustomText>
 

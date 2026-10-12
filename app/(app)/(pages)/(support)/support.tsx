@@ -1,3 +1,4 @@
+import { TEXTO_MAXIMO } from '@/utils/escala';
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 /**
  * SUPORTE — o técnico cria tickets que a Piquet responde no backoffice.
@@ -131,7 +132,7 @@ const Support = () => {
             {t('support.new_ticket_hint')}
           </CustomText>
 
-          <TextInput
+          <TextInput maxFontSizeMultiplier={TEXTO_MAXIMO}
             value={subject}
             onChangeText={setSubject}
             placeholder={t('support.subject_placeholder')}
@@ -140,7 +141,7 @@ const Support = () => {
             className="rounded-xl border px-4 mt-4"
             style={{ borderColor: Colors.line, color: Colors.secondary, height: 48, fontFamily: 'Poppins_500Medium' }}
           />
-          <TextInput
+          <TextInput maxFontSizeMultiplier={TEXTO_MAXIMO}
             value={message}
             onChangeText={setMessage}
             placeholder={t('support.message_placeholder')}

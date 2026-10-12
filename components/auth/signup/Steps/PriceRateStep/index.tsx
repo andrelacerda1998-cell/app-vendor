@@ -2,6 +2,7 @@ import { SignUpData } from '@/app/(auth)/signup';
 import { CustomText } from '@/components/CustomText';
 import { Colors } from '@/constants/Colors';
 import { formatEuro } from '@/utils/services';
+import { VALOR_HORA_MINIMO as RATE_MIN, VALOR_HORA_MAXIMO as RATE_MAX, VALOR_HORA_MERCADO_MIN as MARKET_MIN, VALOR_HORA_MERCADO_MAX as MARKET_MAX, validarValorHora, mensagemDoValorHora } from '@/constants/ValorHora';
 import RateSlider from '@/components/ui/RateSlider';
 import { Feather } from '@expo/vector-icons';
 import React from 'react';
@@ -10,10 +11,6 @@ import { useTranslation } from "react-i18next";
 import { View } from 'react-native';
 import { ScrollView } from 'react-native';
 
-const RATE_MIN = 8;
-const RATE_MAX = 50;
-const MARKET_MIN = 14;
-const MARKET_MAX = 22;
 
 
 const PriceRateStep = ({
@@ -38,13 +35,7 @@ const PriceRateStep = ({
         control={control}
         name="price_rate"
         rules={{
-          validate: (value) => {
-            if (!value) return t('general.price_rate.required');
-            else if (isNaN(value)) return t('general.price_rate.must_be_number');
-            else if (value < 1) return t('general.price_rate.min_value');
-            else if (value > 999999) return t('general.price_rate.max_value');
-            return true;
-          }
+          validate: (value) => mensagemDoValorHora(validarValorHora(value), t)
         }}
         render={({ field }) => {
           const rate = Math.round(Number(field.value) || RATE_MIN + 7);

@@ -5,7 +5,7 @@ import { Colors } from '@/constants/Colors';
 import {AntDesign, Entypo, Feather, Ionicons} from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { View, ScrollView, Animated, TouchableOpacity, Platform, RefreshControl } from 'react-native';
+import { View, ScrollView, Animated, TouchableOpacity, Platform, RefreshControl, AppState } from 'react-native';
 import { FlatList, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CustomText } from '@/components/CustomText';
@@ -40,6 +40,7 @@ import { useVendorStats } from "@/hooks/useVendorStats";
 import { pedeAtNoPerfil } from "@/utils/atPayout";
 import ReliabilityPauseBanner from '@/components/ReliabilityPauseBanner';
 import { pausaAte } from '@/utils/fiabilidade';
+import { estadoAoFalharLocalizacao } from "@/utils/estadoSemLocalizacao";
 
 const Home = () => {
   const insets = useSafeAreaInsets();
@@ -60,7 +61,7 @@ const Home = () => {
   const toggleAnimation = useRef(new Animated.Value(vendorStatus === 'Online' ? 1 : 0)).current;
   const [disableStatusVendor, setDisableStatusVendor] = useState(false);
   const [geoLoading, setGeoLoading] = useState(false);
-  const { startTracking, stopTracking, isTracking, locationPermission, permissionsChecked, requestPermissions } = useLocation();
+  const { startTracking, refreshTracking, stopTracking, isTracking, locationPermission, permissionsChecked, requestPermissions } = useLocation();
 
   // Agenda o aviso "está na hora de sair" (30 min antes de cada serviço).
   useDepartureReminders();
@@ -122,12 +123,21 @@ const Home = () => {
     getVendorStatus();
   }, [vendorData]);
 
+  // Precisa de mandar a posição: Online, ou a caminho de um serviço aceite.
+  const precisaDeLocalizacao = vendorStatus === 'Online' || openService?.status === ServiceStatus.ACCEPTED;
+  const precisaDeLocalizacaoRef = useRef(precisaDeLocalizacao);
+  precisaDeLocalizacaoRef.current = precisaDeLocalizacao;
+  // O estado e a função de agora, e não os do primeiro render: o listener do
+  // AppState é montado uma vez, e com o que guardava o estado ainda vinha por
+  // carregar (`undefined`).
+  const vendorStatusRef = useRef(vendorStatus);
+  vendorStatusRef.current = vendorStatus;
+  const handleTrackingStatusRef = useRef<() => void>(() => {});
+
   useEffect(() => {
-    if (
-        (vendorStatus === 'Online' ||
-        (openService && openService?.status === ServiceStatus.ACCEPTED)) &&
-      !isTracking
-    ) {
+    // Sem o `!isTracking` que aqui estava: a tarefa pode estar registada e
+    // morta (ver refreshTracking). Reinicia-se sempre que o estado muda.
+    if (precisaDeLocalizacao) {
       handleTrackingStatus();
     }
     if (
@@ -137,18 +147,59 @@ const Home = () => {
     ) {
       stopTracking();
     }
-  }, [vendorStatus, openService]);
+    // `openService?.status` e não `openService`: o objeto muda a cada
+    // atualização do serviço, e reiniciar o GPS a cada uma era desperdício.
+  }, [vendorStatus, openService?.status]);
+
+  // Ao voltar ao primeiro plano: o técnico pode ter estado horas com a app
+  // fechada e o envio parado. Abrir a app tem de bastar para voltar a ser
+  // visível para "Pedir agora" — é o que o aviso do servidor lhe pede.
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (estado) => {
+      if (estado === 'active' && precisaDeLocalizacaoRef.current) {
+        handleTrackingStatusRef.current();
+      }
+    });
+    return () => subscription.remove();
+  }, []);
 
   const handleTrackingStatus = async () => {
-    const { ok } = await startTracking()
+    const { ok } = await refreshTracking()
 
     if (!ok) {
       // startTracking already surfaced the appropriate dialog: a persistent, actionable
       // permission prompt (Agora não / Abrir Definições) or the tracking-error alert.
-      handleUpdateVendorStatus(true);
+      await ficarOfflineSemLocalizacao();
       return;
     }
   }
+  handleTrackingStatusRef.current = handleTrackingStatus;
+
+  /**
+   * Sem localização, quem está Online passa a Offline — e só isso.
+   *
+   * Aqui chamava-se o `handleUpdateVendorStatus`, que ALTERNA o estado: um
+   * técnico Offline a caminho de um serviço aceite fazia um pedido "Online"
+   * sem tocar em nada, o servidor recusava (com um serviço aberto não pode
+   * aceitar outros) e ele via "Não foi possível mudar o teu estado" em vez do
+   * aviso da localização. Online com um serviço em curso dava o mesmo erro,
+   * porque o servidor não deixa sair a meio. Ver utils/estadoSemLocalizacao.
+   *
+   * Sem diálogo, nem no sucesso nem no erro: o startTracking já pôs no ecrã o
+   * da permissão, e o DialogContext só tem um lugar. É a mesma regra do
+   * GuardaDasPermissoes.
+   */
+  const ficarOfflineSemLocalizacao = async () => {
+    const destino = estadoAoFalharLocalizacao(vendorStatusRef.current);
+    if (!destino) return;
+    try {
+      const deviceId = await getDeviceId();
+      await api.put(API_ROUTES.VENDOR_UPDATE_STATUS, { status: destino, device_id: deviceId });
+      setVendorStatus(destino);
+    } catch {
+      // Serviço em curso (o servidor recusa sair a meio) ou sem rede: fica como está.
+    }
+  };
 
   const renderBalance = useCallback(() => {
     const balance = Number(wallet?.balanceFloat);

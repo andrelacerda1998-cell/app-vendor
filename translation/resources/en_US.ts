@@ -466,6 +466,10 @@ export default {
           "subtitle": "You declined this request. You'll keep getting new requests in your area."
         }
       },
+      "confirmed": {
+        "title": "Service confirmed!",
+        "subtitle": "The customer confirmed and paid. Head to the location when you're ready."
+      },
       "proposal": {
         "title": "New request for you",
         "time_accounting": "Working time",
@@ -977,8 +981,8 @@ export default {
       "placeholder": "Hourly rate",
       "required": "Enter your hourly rate",
       "invalid": "Invalid hourly rate",
-      "min_value": "The hourly rate must be at least 1",
-      "max_value": "The hourly rate can't be higher than 999.999",
+      "min_value": "The hourly rate must be at least €{{min}}",
+      "max_value": "The hourly rate can't be higher than €{{max}}",
       "must_be_number": "The hourly rate must be a number"
     },
     "phone_verification_required": "Your phone still needs verifying",
@@ -1114,8 +1118,10 @@ export default {
       "cancelled": "Cancelled",
       "lost": "Declined"
     },
-    "earned_summary": "You earned from {{count}} services",
-    "lost_summary": "You declined or let {{count}} requests expire",
+    "earned_summary_one": "You earned from {{count}} service",
+    "earned_summary_other": "You earned from {{count}} services",
+    "lost_summary_one": "You declined or let {{count}} request expire",
+    "lost_summary_other": "You declined or let {{count}} requests expire",
     "lost_hint": "This money was never yours — it's what you could have earned had you accepted in time.",
     "empty": {
       "all_title": "No history",
@@ -1815,13 +1821,13 @@ export default {
         "window": "to reply",
         "immediate": "Now",
     "screen_title": "You have a request",
-    "screen_subtitle": "The customer picks from the first 3 to reply. Your calendar is only taken if you're chosen.",
+    "screen_subtitle": "The customer sees the best 3 of those who accept (rating, price and distance). Your calendar is only taken if you're chosen.",
         "when_label": "When",
         "duration_label": "Service duration",
         "duration": "{{minutes}} min",
         "you_receive": "You'll get",
-        "urgency_title": "The client only sees the first 3 who accept.",
-        "explainer": "Accept fast to make the list. Your calendar is only booked if you are chosen.",
+        "urgency_title": "The customer sees the best 3 of those who accept.",
+        "explainer": "Reply before the time runs out to make the list. Your calendar is only booked if you are chosen.",
         "accept": "I'm available",
         "decline": "Not now",
         "accepted_title": "You're on the list",

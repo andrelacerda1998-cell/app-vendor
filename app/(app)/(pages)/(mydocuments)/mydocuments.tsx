@@ -3,6 +3,7 @@
  * credenciais do subutilizador AT.
  * Espelha o ecrã Flutter piquet_pro/lib/screens/account/documents_screen.dart
  */
+import { TEXTO_MAXIMO } from '@/utils/escala';
 import React, { useCallback, useState } from 'react';
 import { View, ScrollView, RefreshControl, TextInput, Linking, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -399,7 +400,7 @@ const MyDocuments = () => {
               <CustomText color="muted" size="extraSmall" classes="mb-1.5">
                 {t('documents_help.at.user_label')}
               </CustomText>
-              <TextInput
+              <TextInput maxFontSizeMultiplier={TEXTO_MAXIMO}
                 value={atUser}
                 onChangeText={setAtUser}
                 placeholder={t('documents_help.at.user_placeholder')}
@@ -413,7 +414,7 @@ const MyDocuments = () => {
               <CustomText color="muted" size="extraSmall" classes="mt-3 mb-1.5">
                 {t('documents_help.at.password_label')}
               </CustomText>
-              <TextInput
+              <TextInput maxFontSizeMultiplier={TEXTO_MAXIMO}
                 value={atPassword}
                 onChangeText={setAtPassword}
                 secureTextEntry

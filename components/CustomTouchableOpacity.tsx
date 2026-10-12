@@ -164,7 +164,19 @@ const CustomTouchableOpacity = forwardRef<any, CustomTouchableOpacityProps>(({
       {...props}
     >
       {Icon && <View className="mr-2"><Icon /></View>}
-      <CustomText size={textSize} color={textColor} boldness={textBoldness} numberOfLines={textNumberOfLines} classes={textClasses}>
+      {/* Numa linha, o texto encolhe até 60% antes de cortar: em botões a meia
+          largura num ecrã estreito lia-se "Estado do servi…", e com a letra do
+          sistema a 130% o Android mostrava só "Estado do". Só encolhe o que
+          precisa; a 130% fica perto do tamanho normal. */}
+      <CustomText
+        size={textSize}
+        color={textColor}
+        boldness={textBoldness}
+        numberOfLines={textNumberOfLines}
+        adjustsFontSizeToFit={textNumberOfLines === 1}
+        minimumFontScale={0.6}
+        classes={textClasses}
+      >
         {text}
       </CustomText>
       {children && children}

@@ -4,6 +4,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { ListCard } from '@/components/ui';
 import { VendorDataInterface } from "@/types/session";
 import IBAN from "iban";
+import { lerValorHora, formatarValorHora } from '@/constants/ValorHora';
 
 interface PaymentProps {
     vendorData: VendorDataInterface | null
@@ -12,6 +13,7 @@ interface PaymentProps {
 const Payment = ({ vendorData }: PaymentProps) => {
   const { t } = useTranslation();
 
+  const valorHora = lerValorHora(vendorData?.price_rate);
   const items = [
     {
       key: 'iban',
@@ -21,7 +23,7 @@ const Payment = ({ vendorData }: PaymentProps) => {
     {
       key: 'price_rate',
       label: t('profile.payments.price_rate'),
-      value: vendorData?.price_rate ? `${vendorData?.price_rate}€` : t('profile.payments.empty_price_rate'),
+      value: valorHora ? formatarValorHora(valorHora) : t('profile.payments.empty_price_rate'),
     },
     {
       key: 'company_name',

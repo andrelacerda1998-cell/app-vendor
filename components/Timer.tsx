@@ -1,7 +1,7 @@
 import { Colors } from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useRef, useState } from 'react'
-import { View } from "react-native";
+import { View, useWindowDimensions } from "react-native";
 import Animated, { useAnimatedProps, useSharedValue, withTiming } from "react-native-reanimated";
 import Svg, { Circle } from "react-native-svg"
 import { CustomText } from "./CustomText";
@@ -27,6 +27,12 @@ const Timer = ({
 }) => {
   const { t } = useTranslation();
   const { pendingService } = useService();
+  // Num ecrã baixo (iPhone SE: 667 pt) a caixa de 200 pt à volta do círculo
+  // empurrava o Aceitar/Recusar da proposta para fora do ecrã — num pedido de
+  // 60 segundos. O círculo fica do mesmo tamanho; corta-se só a margem vazia
+  // (ele ocupa ~137 pt dos 200).
+  const { height: alturaDoEcra } = useWindowDimensions();
+  const compacto = alturaDoEcra < 750;
   const progress = useSharedValue(0);
   const { appStateStatus } = useAppStateStatus();
 
@@ -118,7 +124,11 @@ const Timer = ({
   return (
     <View className="flex-1 justify-center">
       <View className="justify-center items-center">
-        <Svg width={200} height={200} viewBox="0 0 200 200">
+        <Svg
+          width={compacto ? 150 : 200}
+          height={compacto ? 150 : 200}
+          viewBox={compacto ? "25 25 150 150" : "0 0 200 200"}
+        >
           {/* Background Circle */}
           <Circle
             cx="100"

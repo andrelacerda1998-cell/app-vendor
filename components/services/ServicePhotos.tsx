@@ -339,7 +339,16 @@ const ServicePhotos = ({
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center flex-1 pr-3">
           <Feather name="camera" size={16} color={Colors.muted} />
-          <CustomText size="medium" color="secondary" boldness="bolder" classes="ml-2" numberOfLines={1}>
+          {/* flexShrink: com a letra grande o título passava por cima de
+              "Recomendado" ("Fotos do trabalhoRecomendado"). */}
+          <CustomText
+            size="medium"
+            color="secondary"
+            boldness="bolder"
+            classes="ml-2"
+            style={{ flexShrink: 1 }}
+            numberOfLines={2}
+          >
             {t('service_photos.title')}
           </CustomText>
         </View>

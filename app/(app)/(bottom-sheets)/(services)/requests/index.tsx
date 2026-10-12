@@ -1,4 +1,7 @@
-import { FlatList, RefreshControl, SafeAreaView, View, Vibration, TouchableOpacity } from "react-native";
+import { FlatList, RefreshControl, View, Vibration, TouchableOpacity } from "react-native";
+// O SafeAreaView do react-native só funciona no iOS: no Android o cabeçalho
+// ficava por baixo da barra de estado (a seta de voltar em cima do relógio).
+import { SafeAreaView } from 'react-native-safe-area-context';
 import TouchOpacity from "@/components/TouchOpacity";
 import {router} from "expo-router";
 import ArrowIcon from "@/assets/icons/arrow";

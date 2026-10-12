@@ -4,10 +4,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { Colors } from "@/constants/Colors";
 import { CustomText } from "@/components/CustomText";
+import { useEscala } from "@/utils/escala";
 
 export default function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const styles = makeStyles();
   const insets = useSafeAreaInsets();
+  // Num ecrã pequeno a barra encolhe com o resto (ver utils/escala).
+  const { s } = useEscala();
   const { t } = useTranslation();
   const routesWithAbsolutePosition = ['home/index', 'wallet/index'];
   const routesWithRoundedTop = ['home/index', 'wallet/index', 'history/index'];
@@ -29,7 +32,7 @@ export default function TabBar({ state, descriptors, navigation }: BottomTabBarP
       style={[
         styles.container,
         {
-          height: 72 + bottomInset,
+          height: s(72) + bottomInset,
           paddingBottom: bottomInset,
         },
         isRoundedTop() && styles.roundedTop,
@@ -79,7 +82,7 @@ export default function TabBar({ state, descriptors, navigation }: BottomTabBarP
                 — via `brand`, que escurece no tema claro, e não via
                 `support_primary`, que é o mesmo amarelo nos dois e sobre
                 branco quase desaparecia. */}
-            {icon ? icon({ color: isFocused ? Colors.brand : Colors.secondary, focused: isFocused, size: 24 }) : null}
+            {icon ? icon({ color: isFocused ? Colors.brand : Colors.secondary, focused: isFocused, size: s(24) }) : null}
             <CustomText
               size="extraSmall"
               color={isFocused ? "brand" : "secondary"}

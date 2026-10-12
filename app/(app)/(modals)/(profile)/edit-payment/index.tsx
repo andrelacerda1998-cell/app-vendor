@@ -1,3 +1,4 @@
+import { validarValorHora, mensagemDoValorHora, lerValorHora } from '@/constants/ValorHora';
 import BackHeader from '@/components/app/BackHeader';
 import {CustomText} from "@/components/CustomText";
 import CustomTextInput from "@/components/CustomTextInput";
@@ -40,7 +41,7 @@ const EditPayment = () => {
         mode: 'onChange',
         defaultValues: {
             iban: IBAN.printFormat(vendorData?.iban || ""),
-            price_rate: vendorData?.price_rate || 0,
+            price_rate: lerValorHora(vendorData?.price_rate) ?? 0,
             company_name: vendorData?.company_name || "",
             // nif: vendorData?.nif || "",
         },
@@ -205,18 +206,7 @@ const EditPayment = () => {
                             control={control}
                             name="price_rate"
                             rules={{
-                                validate: (value) => {
-                                if (!value) {
-                                    return t('general.price_rate.required');
-                                } else if (isNaN(value)) {
-                                    return t('general.price_rate.must_be_number');
-                                } else if (value < 1) {
-                                    return t('general.price_rate.min_value');
-                                } else if (value > 999999) {
-                                    return t('general.price_rate.max_value');
-                                }
-                                return true;
-                                }
+                                validate: (value) => mensagemDoValorHora(validarValorHora(value), t)
                             }}
                             render={({ field }) => {
                                 let numericValue = 0;
