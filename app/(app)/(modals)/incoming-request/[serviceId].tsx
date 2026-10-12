@@ -21,6 +21,7 @@ import {
   requestWindowMs,
 } from "@/utils/requestTiming";
 import { useAlertSound } from "@/hooks/useAlertSound";
+import useCloseWhenRequestGone from "@/hooks/useCloseWhenRequestGone";
 
 /**
  * Ecrã full-screen de pedido a chegar (paridade com
@@ -40,10 +41,9 @@ import { useAlertSound } from "@/hooks/useAlertSound";
  * cliente) vem toda do <ServiceCard/> usado abaixo — é a mesma peça que a lista
  * de pedidos usa, por isso os dois ecrãs mostram exatamente o mesmo.
  */
-const IncomingRequestScreen = () => {
+const IncomingRequestScreen = ({ serviceId }: { serviceId: string }) => {
   const { t } = useTranslation();
-  const { serviceId } = useLocalSearchParams<{ serviceId: string }>();
-  const { pendingServices, pendingServicesLoading, getPendingServices } = useService();
+  const { pendingServices, pendingServicesLoading, getPendingServices, marcarEcraDePedido } = useService();
   const { accept, refuse, submitting } = useRequestActions();
 
   const item = useMemo(
@@ -76,23 +76,23 @@ const IncomingRequestScreen = () => {
     return () => Vibration.cancel();
   }, [playAlert]);
 
-  // Aberto por push com a app fria, a lista de pedidos ainda não carregou —
-  // fechar logo por `!item` matava o ecrã antes de haver dados. Pede a lista
-  // e só desiste quando ela chegou mesmo e o pedido não está lá.
-  const requestedRef = useRef(false);
-  useEffect(() => {
-    if (item || requestedRef.current) return;
-    requestedRef.current = true;
-    getPendingServices();
-  }, [item, getPendingServices]);
+  // Aberto por push, a lista de pedidos em memória pode ainda não ter este
+  // pedido (app fria: ainda não carregou; app em segundo plano: é da última
+  // visita). Pede uma lista nova e só desiste quando ela chegou e o pedido não
+  // está lá — ver useCloseWhenRequestGone.
+  useCloseWhenRequestGone({
+    found: !!item,
+    loading: pendingServicesLoading,
+    refresh: getPendingServices,
+    close,
+  });
 
-  // Fecha sozinho quando a lista JÁ carregou e o pedido não está lá
-  // (aceite/recusado noutro sítio, ou expirado antes de a app abrir).
-  // `pendingServicesLoading` começa a true, por isso nunca fecha antes de
-  // a primeira resposta chegar.
+  // Enquanto este ecrã está aberto, o arranque da app (ao voltar ao primeiro
+  // plano) não abre a proposta antiga por cima dele — ver getPendingService.
   useEffect(() => {
-    if (!item && !pendingServicesLoading) close();
-  }, [item, pendingServicesLoading, close]);
+    marcarEcraDePedido(true);
+    return () => marcarEcraDePedido(false);
+  }, [marcarEcraDePedido]);
 
   // Relógio de 1s + vibração nos últimos 10 segundos.
   useEffect(() => {
@@ -222,4 +222,16 @@ const IncomingRequestScreen = () => {
   );
 };
 
-export default IncomingRequestScreen;
+/**
+ * Um ecrã novo por pedido. A rota é reaproveitada quando se navega para ela com
+ * outro `serviceId` e este ecrã já à frente — o socket usa `navigate`, e um
+ * segundo pedido pode chegar com o primeiro ainda aberto. Sem a `key`, o pedido
+ * novo herdava o estado do anterior: não tocava o alerta e podia fechar-se logo
+ * por o anterior já ter sido visto.
+ */
+const IncomingRequestRoute = () => {
+  const { serviceId } = useLocalSearchParams<{ serviceId: string }>();
+  return <IncomingRequestScreen key={String(serviceId)} serviceId={String(serviceId)} />;
+};
+
+export default IncomingRequestRoute;
