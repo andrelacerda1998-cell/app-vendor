@@ -1,7 +1,7 @@
 {
   "name": "piquet-vendor",
   "main": "expo-router/entry",
-  "version": "1.1.0",
+  "version": "1.0.18",
   "scripts": {
     "postinstall": "patch-package",
     "start": "expo start --dev-client",
