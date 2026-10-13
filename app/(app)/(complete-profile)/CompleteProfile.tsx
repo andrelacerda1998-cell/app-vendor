@@ -16,6 +16,7 @@ import ScheduleAddressStep from "@/components/complete-profile/Steps/ScheduleAdd
 import CitySurveyStep from "@/components/complete-profile/Steps/CitySurveyStep";
 import DocumentsProfileStep from "@/components/complete-profile/Steps/DocumentsProfileStep";
 import { VendorDataInterface } from "@/types/session";
+import { faltaFaturacaoNoPerfil } from "@/utils/atPayout";
 import { useAppStateStatus } from "@/contexts/AppStateStatusContext";
 
 export type SignUpData = {
@@ -113,9 +114,15 @@ const CompleteProfile = () => {
     const handleGoBack = () => {
         if (
             (!vendorData?.at_user && vendorData?.at_required === true) ||
-            !vendorData?.company_address ||
+            // O IBAN e a morada de faturacao so prendem aqui quando ja sao
+            // exigidos (a partir do 3.o servico) ou quando ha dinheiro retido.
+            faltaFaturacaoNoPerfil(
+                vendorData?.iban,
+                vendorData?.company_address,
+                vendorData?.at_required,
+                vendorData?.payout_blocked,
+            ) ||
             !vendorData?.schedule_address ||
-            !vendorData?.iban ||
             vendorData?.user?.phone_number_verified_at === null ||
             vendorData?.user?.email_verified_at === null
         ) {
@@ -166,8 +173,17 @@ const CompleteProfile = () => {
             // cidades ja guardadas no servidor. O tecnico preenchia, voltava,
             // via o passo outra vez e concluia que nao tinha gravado.
             setStep(VerifySteps.citySurvey);
-        } else if ((!data?.iban || !data?.company_address) && !adiados.includes(VerifySteps.iban)) {
+        } else if (
+            faltaFaturacaoNoPerfil(data?.iban, data?.company_address, data?.at_required, data?.payout_blocked) &&
+            !adiados.includes(VerifySteps.iban)
+        ) {
             // 3) Pagamento + morada de faturação.
+            //
+            // SÓ quando o servidor diz que já são exigidos (a partir do quarto
+            // serviço, como a AT) ou quando há dinheiro retido à espera deles.
+            // Desde 13/10 o técnico trabalha os três primeiros serviços só com
+            // os documentos: pedir-lhe o IBAN antes disso era um portão à
+            // entrada a quem ainda não ganhou nada.
             setStep(VerifySteps.iban);
         } else if (!data?.schedule_address && !adiados.includes(VerifySteps.scheduleAddress)) {
             // 4) Morada de agendamento. A seguir a de faturacao de proposito:

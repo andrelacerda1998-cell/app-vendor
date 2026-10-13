@@ -37,7 +37,7 @@ import { useDepartureReminders } from "@/hooks/useDepartureReminders";
 import { useNotificationPermission } from "@/contexts/NotificationsContext";
 import { useSchedule } from "@/contexts/ScheduleContext";
 import { useVendorStats } from "@/hooks/useVendorStats";
-import { pedeAtNoPerfil } from "@/utils/atPayout";
+import { faltaFaturacaoNoPerfil, pedeAtNoPerfil } from "@/utils/atPayout";
 import ReliabilityPauseBanner from '@/components/ReliabilityPauseBanner';
 import { pausaAte } from '@/utils/fiabilidade';
 import { estadoAoFalharLocalizacao } from "@/utils/estadoSemLocalizacao";
@@ -407,10 +407,17 @@ const Home = () => {
           //
           // A assimetria dos dois testes de AT desta função (um `=== true`, o
           // outro `!== false`) está explicada em `utils/atPayout.ts`.
+          //
+          // O IBAN e a morada de faturação seguem a AT desde 13/10: só contam
+          // quando já são exigidos ou quando há dinheiro retido à espera deles.
           if (
             pedeAtNoPerfil(vendorData?.at_user, vendorData?.at_required) ||
-            !vendorData?.company_address ||
-            !vendorData?.iban ||
+            faltaFaturacaoNoPerfil(
+              vendorData?.iban,
+              vendorData?.company_address,
+              vendorData?.at_required,
+              vendorData?.payout_blocked,
+            ) ||
             (vendorData?.missing_documents?.length ?? 0) > 0 ||
             vendorData?.user?.phone_number_verified_at === null ||
             vendorData?.user?.email_verified_at === null
