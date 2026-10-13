@@ -8,7 +8,7 @@ import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next"
 import { cardShadow } from "@/components/ui"
 import { useSession } from "@/contexts/SessionContext"
-import { dinheiroRetido, jaExecutouServicos, pedeAtNoPerfil } from "@/utils/atPayout"
+import { dinheiroRetido, jaExecutouServicos, pedeAtNoPerfil, pedeFaturacaoNoPerfil } from "@/utils/atPayout"
 
 /**
  * Aviso de perfil incompleto — bloqueia a receção de pedidos, por isso tem de
@@ -40,8 +40,11 @@ const CompleteYourProfile = () => {
   // servico concluido). Antes disso somava um passo que o tecnico nao tem de
   // dar, e a contagem mentia: "faltam 2" quando so falta 1.
   if (pedeAtNoPerfil(vendorData?.at_user, vendorData?.at_required)) missing.push(t('complete_profile.missing.at_user'));
-  if (!vendorData?.company_address) missing.push(t('complete_profile.missing.company_address'));
-  if (!vendorData?.iban) missing.push(t('complete_profile.missing.iban'));
+  // O IBAN e a morada de faturacao seguem a AT desde 13/10: so contam quando ja
+  // sao exigidos, ou quando ha dinheiro retido a espera deles.
+  const pedeFaturacao = pedeFaturacaoNoPerfil(vendorData?.at_required, vendorData?.payout_blocked);
+  if (pedeFaturacao && !vendorData?.company_address) missing.push(t('complete_profile.missing.company_address'));
+  if (pedeFaturacao && !vendorData?.iban) missing.push(t('complete_profile.missing.iban'));
 
   /**
    * Contagem em vez da lista toda. Enumerar tudo separado por " · " nao cabia
@@ -59,14 +62,29 @@ const CompleteYourProfile = () => {
    */
   const jaTrabalhou = jaExecutouServicos(vendorData?.at_required, vendorData?.services_until_at_required);
 
-  const subtitle = missing.length > 0
-    ? t(
-        jaTrabalhou
-          ? (missing.length === 1 ? 'complete_profile.missing_again_one' : 'complete_profile.missing_again_many')
-          : (missing.length === 1 ? 'complete_profile.missing_one' : 'complete_profile.missing_many'),
+  /**
+   * Antes do 3.o servico, o IBAN e a morada so aparecem aqui porque ha dinheiro
+   * retido a espera deles: nao travam o trabalho, so o pagamento. Se e so isso
+   * que falta, o texto fala do dinheiro -- "para voltares a receber pedidos"
+   * seria falso a quem os continua a receber.
+   */
+  const soFaltaParaReceber =
+    missing.length > 0 &&
+    vendorData?.at_required === false &&
+    (vendorData?.missing_documents?.length ?? 0) === 0 &&
+    !!vendorData?.user?.phone_number_verified_at &&
+    !!vendorData?.user?.email_verified_at;
+
+  const subtitle = missing.length === 0
+    ? t('complete_profile.subtitle')
+    : t(
+        soFaltaParaReceber
+          ? (missing.length === 1 ? 'complete_profile.missing_to_get_paid_one' : 'complete_profile.missing_to_get_paid_many')
+          : jaTrabalhou
+            ? (missing.length === 1 ? 'complete_profile.missing_again_one' : 'complete_profile.missing_again_many')
+            : (missing.length === 1 ? 'complete_profile.missing_one' : 'complete_profile.missing_many'),
         { count: missing.length },
-      )
-    : t('complete_profile.subtitle');
+      );
 
   /**
    * Procura recente na zona do técnico (últimos 7 dias), vinda do backend.

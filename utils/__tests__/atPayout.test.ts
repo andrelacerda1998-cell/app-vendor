@@ -1,10 +1,49 @@
 import {
   dinheiroRetido,
+  faltaFaturacaoNoPerfil,
   jaExecutouServicos,
   pedeAtNoPerfil,
+  pedeFaturacaoNoPerfil,
   razaoDoDinheiroRetido,
   retencaoDependeDoTecnico,
 } from '../atPayout';
+
+describe('pedeFaturacaoNoPerfil', () => {
+  // A razão da mudança de 13/10: um técnico novo trabalha só com os documentos.
+  it('não pede o IBAN nem a morada a quem ainda não precisa deles', () => {
+    expect(pedeFaturacaoNoPerfil(false, false)).toBe(false);
+    expect(pedeFaturacaoNoPerfil(false, undefined)).toBe(false);
+  });
+
+  it('pede depois do terceiro serviço', () => {
+    expect(pedeFaturacaoNoPerfil(true, false)).toBe(true);
+  });
+
+  // Antes do terceiro não trava o trabalho, mas trava o pagamento: tem de saber.
+  it('pede antes do terceiro a quem já tem dinheiro retido', () => {
+    expect(pedeFaturacaoNoPerfil(false, true)).toBe(true);
+  });
+
+  // Servidor antigo: exige os dois desde o início, como sempre exigiu.
+  it('pede quando o servidor não manda o campo', () => {
+    expect(pedeFaturacaoNoPerfil(undefined, undefined)).toBe(true);
+  });
+});
+
+describe('faltaFaturacaoNoPerfil', () => {
+  it('não conta nada em falta a um técnico novo sem IBAN nem morada', () => {
+    expect(faltaFaturacaoNoPerfil(null, null, false, false)).toBe(false);
+  });
+
+  it('conta em falta quando já se pede e falta um dos dois', () => {
+    expect(faltaFaturacaoNoPerfil(null, 'Rua de Exemplo 1', true, false)).toBe(true);
+    expect(faltaFaturacaoNoPerfil('PT50000000000000000000000', null, true, false)).toBe(true);
+  });
+
+  it('não conta nada com os dois dados', () => {
+    expect(faltaFaturacaoNoPerfil('PT50000000000000000000000', 'Rua de Exemplo 1', true, true)).toBe(false);
+  });
+});
 
 describe('dinheiroRetido', () => {
   it('avisa quando o servidor afirma que está retido', () => {

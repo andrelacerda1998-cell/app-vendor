@@ -18,6 +18,7 @@ import CustomTouchableOpacity from '@/components/CustomTouchableOpacity';
 import { Card } from '@/components/ui';
 import { Colors } from '@/constants/Colors';
 import { useSession } from '@/contexts/SessionContext';
+import { faltaFaturacaoNoPerfil, pedeAtNoPerfil } from '@/utils/atPayout';
 
 const OnboardingSuccess = () => {
   const { t } = useTranslation();
@@ -26,14 +27,23 @@ const OnboardingSuccess = () => {
   // Com a reordenação, qualquer passo pode ficar por fazer (tudo é saltável).
   // O fecho tem de ser honesto: "concluído" só quando está mesmo tudo; senão
   // "estás quase", para não dizer que acabou com coisas em falta.
+  //
+  // A AT, o IBAN e a morada de faturação só contam quando já são exigidos (a
+  // partir do 3.º serviço) — a mesma regra do "completa o teu perfil". Antes
+  // contavam sempre, e um técnico novo com tudo o que precisa para trabalhar
+  // ouvia "estás quase".
   const missingDocs = vendorData?.missing_documents?.length ?? 0;
   const pending =
     missingDocs > 0 ||
     !vendorData?.user?.phone_number_verified_at ||
     !vendorData?.user?.email_verified_at ||
-    !vendorData?.at_user ||
-    !vendorData?.company_address ||
-    !vendorData?.iban;
+    pedeAtNoPerfil(vendorData?.at_user, vendorData?.at_required) ||
+    faltaFaturacaoNoPerfil(
+      vendorData?.iban,
+      vendorData?.company_address,
+      vendorData?.at_required,
+      vendorData?.payout_blocked,
+    );
 
   return (
     <SafeAreaView className="flex-1" style={{ backgroundColor: Colors.bg }}>

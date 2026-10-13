@@ -12,6 +12,7 @@ import { CustomText } from '../CustomText'
 import NotificationIcon from "@/assets/icons/notification"
 import { useTranslation } from "react-i18next"
 import useVendorOnlineStatus from "@/hooks/useVendorOnlineStatus"
+import { faltaFaturacaoNoPerfil, pedeAtNoPerfil } from "@/utils/atPayout"
 
 const UserHeader = () => {
   const { t } = useTranslation();
@@ -182,8 +183,19 @@ const UserHeader = () => {
           {/* Só mostra "termina a conta" quando é o caso. O "Pronto para
               receber" saiu: o botão de estado ao lado já o diz, e repeti-lo só
               roubava largura ao nome. */}
-          {!(vendorData?.at_user && vendorData?.company_address && vendorData?.iban &&
-             vendorData?.user?.phone_number_verified_at && vendorData?.user?.email_verified_at) && (
+          {/* A AT, o IBAN e a morada de faturação só contam quando já são
+              exigidos (a partir do 3.º serviço) — a regra do "completa o teu
+              perfil". Contavam sempre, e quem já podia trabalhar lia "termina
+              a conta". */}
+          {(pedeAtNoPerfil(vendorData?.at_user, vendorData?.at_required) ||
+            faltaFaturacaoNoPerfil(
+              vendorData?.iban,
+              vendorData?.company_address,
+              vendorData?.at_required,
+              vendorData?.payout_blocked,
+            ) ||
+            !vendorData?.user?.phone_number_verified_at ||
+            !vendorData?.user?.email_verified_at) && (
             // Duas linhas: ao lado do botão de estado, num iPhone 17 lia-se
             // "Termina o teu p…".
             <CustomText size="small" color="muted" boldness="regular" numberOfLines={2} classes="mt-0.5">
