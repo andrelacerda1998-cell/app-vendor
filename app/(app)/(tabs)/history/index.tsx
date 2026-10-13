@@ -18,7 +18,7 @@ import { renderMoney } from '@/utils/money';
 import { Card, HeroCard, IconTile, EmptyState, ErrorState, SkeletonBlock, SkeletonList } from '@/components/ui';
 import { useIsOnline } from '@/hooks/useIsOnline';
 import { formatShortDate as shortDate, formatLongDate as longDate } from '@/utils/date';
-import { dinheiroRetido } from '@/utils/atPayout';
+import { dinheiroRetido, razaoDoDinheiroRetido, retencaoDependeDoTecnico, type RazaoDaRetencao } from '@/utils/atPayout';
 
 interface WeekRow { week_start: string; week_end: string; earnings: number; services: number }
 interface CompletedRow { id: number; service_type: string | null; amount_for_vendor: number; completed_at: string | null }
@@ -32,7 +32,9 @@ interface Stats {
   pending_payment_count?: number;
   /** Dinheiro na carteira que nao sai enquanto nao se puder faturar. */
   payout_blocked?: boolean;
-  payout_blocker?: PayoutBlocker;
+  payout_blocker?: RazaoDaRetencao | null;
+  /** Porque é que há dinheiro à espera, mesmo que só parte (ver `razaoDoDinheiroRetido`). */
+  payout_hold_reason?: RazaoDaRetencao | null;
   payout_on_hold_amount?: number;
   last_weeks: WeekRow[];
   last_4_weeks_earnings: number;
@@ -42,15 +44,16 @@ interface Stats {
 
 
 /**
- * As tres razoes pelas quais o dinheiro nao sai, e para onde se vai resolver cada
- * uma. O codigo vem do servidor (`Vendor::payoutBlocker()`), a frase e daqui.
+ * As razoes pelas quais o dinheiro nao sai que dependem do tecnico, e para onde
+ * se vai resolver cada uma. O codigo vem do servidor (`Vendor::payoutHoldReason()`),
+ * a frase e daqui. A quarta, `invoice_pending`, nao tem destino: e do lado da
+ * Piquet (ver `retencaoDependeDoTecnico`).
  *
  * Isto existia so para a AT, e mandava toda a gente ao ecra do subutilizador. A
  * quem faltasse a morada fiscal, o cartao dizia "falta o subutilizador da
  * Autoridade Tributaria" -- uma frase errada sobre o dinheiro dele, a apontar
  * para um ecra onde nao havia nada a fazer.
  */
-type PayoutBlocker = 'iban_missing' | 'fiscal_address_missing' | 'at_user_missing' | null;
 
 const DESTINO_DA_RETENCAO: Record<string, string> = {
   iban_missing: '/(app)/(modals)/(profile)/edit-payment',
@@ -107,6 +110,9 @@ const Earnings = () => {
   const weeks = [...(stats?.last_weeks ?? [])].reverse();
   const maxWeek = Math.max(1, ...weeks.map((w) => w.earnings));
   const iban = maskIban(vendorData?.iban);
+  // Há dinheiro à espera, e porquê (`null` = nada a dizer). Ver o cartão.
+  const razaoRetido = razaoDoDinheiroRetido(stats);
+  const retidoPorEle = retencaoDependeDoTecnico(razaoRetido);
 
   return (
     <SafeAreaView className={`flex-1`} style={{ backgroundColor: Colors.bg }}>
@@ -192,10 +198,11 @@ const Earnings = () => {
           </View>
         </HeroCard>
 
-        {/* RETIDO POR FALTA DA AT.
+        {/* DINHEIRO RETIDO.
             O dinheiro é dele e está no saldo — o trabalho foi feito e o cliente
-            foi cobrado. O que falta é o subutilizador da AT: sem ele não se
-            emite fatura, e sem fatura não se transfere.
+            foi cobrado. O que falta é o que deixa emitir a fatura: o IBAN, a
+            morada de faturação ou o subutilizador da AT. Sem fatura não se
+            transfere.
 
             Acima do "Por receber" de propósito: as duas esperas parecem iguais
             e não são. Aquela passa sozinha com o tempo; esta só passa se ele
@@ -203,45 +210,56 @@ const Earnings = () => {
             essa ação dentro do cartão — um aviso que diz o que falta sem dizer
             onde se resolve é só uma má notícia.
 
-            Só aparece a partir do 3.º serviço concluído: é o servidor que
-            decide isso (`payout_blocked`), não a app — ver `dinheiroRetido`
-            para o porquê de não ser um `!`. A razão em concreto também vem de
-            lá; o fallback para a AT existe só para servidores que ainda não
-            mandem o código. */}
-        {dinheiroRetido(stats?.payout_blocked) && (
+            Desde 13/10/2026 pode ser só PARTE do saldo (a que espera por uma
+            fatura; o resto paga-se), e há uma razão que não é dele:
+            `invoice_pending`, a fatura do lado da Piquet. Essa não leva a
+            nenhum ecrã e não vem a vermelho — não há nada que lhe falte. É o
+            servidor que decide se há o que mostrar e porquê; ver
+            `razaoDoDinheiroRetido`. */}
+        {razaoRetido && (
           <TouchableOpacity
             activeOpacity={0.85}
+            disabled={!retidoPorEle}
             onPress={() => router.push(
-              (DESTINO_DA_RETENCAO[stats?.payout_blocker ?? ''] ?? DESTINO_DA_RETENCAO.at_user_missing) as never
+              (DESTINO_DA_RETENCAO[razaoRetido] ?? DESTINO_DA_RETENCAO.at_user_missing) as never
             )}
-            accessibilityRole="button"
+            accessibilityRole={retidoPorEle ? 'button' : 'text'}
           >
             <Card
               className="mt-3"
-              style={{ borderWidth: 1, borderColor: 'rgba(218,64,64,0.45)' }}
+              style={{
+                borderWidth: 1,
+                borderColor: retidoPorEle ? 'rgba(218,64,64,0.45)' : 'rgba(233,162,59,0.45)',
+              }}
             >
               <View className="flex-row items-center">
-                <IconTile size={44} tint="rgba(218,64,64,0.16)">
-                  <Feather name="lock" size={19} color={Colors.danger} />
+                <IconTile size={44} tint={retidoPorEle ? 'rgba(218,64,64,0.16)' : 'rgba(233,162,59,0.16)'}>
+                  <Feather
+                    name={retidoPorEle ? 'lock' : 'clock'}
+                    size={19}
+                    color={retidoPorEle ? Colors.danger : Colors.warning}
+                  />
                 </IconTile>
                 <CustomText color="secondary" boldness="semiBold" size="medium" classes="flex-1 ml-3">
-                  {t(`earnings.on_hold.${stats?.payout_blocker ?? 'at_user_missing'}.title`)}
+                  {t(`earnings.on_hold.${razaoRetido}.title`)}
                 </CustomText>
               </View>
 
               <CustomText color="muted" size="extraSmall" classes="mt-2">
-                {t(`earnings.on_hold.${stats?.payout_blocker ?? 'at_user_missing'}.subtitle`)}
+                {t(`earnings.on_hold.${razaoRetido}.subtitle`)}
               </CustomText>
 
-              <View
-                className="flex-row items-center mt-3 pt-3"
-                style={{ borderTopWidth: 1, borderTopColor: Colors.line }}
-              >
-                <CustomText color="brand" boldness="bold" size="small" classes="flex-1">
-                  {t(`earnings.on_hold.${stats?.payout_blocker ?? 'at_user_missing'}.action`)}
-                </CustomText>
-                <Feather name="chevron-right" size={18} color={Colors.brand} />
-              </View>
+              {retidoPorEle && (
+                <View
+                  className="flex-row items-center mt-3 pt-3"
+                  style={{ borderTopWidth: 1, borderTopColor: Colors.line }}
+                >
+                  <CustomText color="brand" boldness="bold" size="small" classes="flex-1">
+                    {t(`earnings.on_hold.${razaoRetido}.action`)}
+                  </CustomText>
+                  <Feather name="chevron-right" size={18} color={Colors.brand} />
+                </View>
+              )}
             </Card>
           </TouchableOpacity>
         )}

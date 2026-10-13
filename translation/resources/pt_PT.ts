@@ -1402,6 +1402,10 @@ export default {
                 "title": "Retido até dares o teu IBAN",
                 "subtitle": "O trabalho está feito e o dinheiro é teu. Só não temos para onde o transferir.",
                 "action": "Dar o meu IBAN"
+            },
+            "invoice_pending": {
+                "title": "À espera da fatura",
+                "subtitle": "O trabalho está feito e os teus dados estão completos. A Piquet está a emitir a fatura deste dinheiro e, assim que sair, é pago com os teus outros ganhos."
             }
         },
         "next_payment_blocked": "Assim que resolveres o que falta",

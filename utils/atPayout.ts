@@ -19,6 +19,44 @@
 export const dinheiroRetido = (payoutBlocked?: boolean): boolean =>
   payoutBlocked === true;
 
+/** Porque é que o dinheiro fica à espera. `invoice_pending` existe desde 13/10/2026. */
+export type RazaoDaRetencao =
+  | 'iban_missing'
+  | 'fiscal_address_missing'
+  | 'at_user_missing'
+  | 'invoice_pending';
+
+/**
+ * Porque é que há dinheiro dele à espera — `null` quando não há nada a dizer.
+ *
+ * Desde 13/10/2026 só se paga um serviço depois de a fatura dele sair, e pode
+ * ficar à espera só PARTE do saldo (o resto paga-se). Aí `payout_blocked` é
+ * false — o pagamento não está travado — e quem diz porquê é o
+ * `payout_hold_reason` (servidor: `Vendor::payoutHoldReason`).
+ *
+ * Num servidor que ainda não manda esse campo fica tudo como estava: só com
+ * `payout_blocked === true`, e a AT quando o servidor não diz a razão.
+ */
+export const razaoDoDinheiroRetido = (
+  stats?: {
+    payout_blocked?: boolean;
+    payout_blocker?: RazaoDaRetencao | null;
+    payout_hold_reason?: RazaoDaRetencao | null;
+  } | null,
+): RazaoDaRetencao | null => {
+  if (stats?.payout_hold_reason) return stats.payout_hold_reason;
+  if (dinheiroRetido(stats?.payout_blocked)) return stats?.payout_blocker ?? 'at_user_missing';
+  return null;
+};
+
+/**
+ * O técnico pode fazer alguma coisa? Tudo menos `invoice_pending`: aí os dados
+ * dele estão completos e a fatura está do lado da Piquet — mandá-lo para um
+ * ecrã de perfil era pô-lo à procura de uma coisa que não lhe falta.
+ */
+export const retencaoDependeDoTecnico = (razao: RazaoDaRetencao | null): boolean =>
+  razao !== null && razao !== 'invoice_pending';
+
 /**
  * O "completa o teu perfil" deve contar a AT como coisa em falta?
  *

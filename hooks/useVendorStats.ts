@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useApi } from '@/contexts/ApiContext';
 import { API_ROUTES } from '@/constants/ApiRoutes';
+import type { RazaoDaRetencao } from '@/utils/atPayout';
 
 export interface VendorStats {
   this_week_earnings: number;
@@ -20,7 +21,9 @@ export interface VendorStats {
    * Em cêntimos, como tudo o que este endpoint devolve.
    */
   payout_blocked?: boolean;
-  payout_blocker?: 'iban_missing' | 'fiscal_address_missing' | 'at_user_missing' | null;
+  payout_blocker?: RazaoDaRetencao | null;
+  /** Porque é que há dinheiro à espera, mesmo que só parte (ver `razaoDoDinheiroRetido`). */
+  payout_hold_reason?: RazaoDaRetencao | null;
   /** Fim do prazo para dar a AT, em ISO 8601. Ver `types/session`. */
   payout_on_hold_amount?: number;
 }
