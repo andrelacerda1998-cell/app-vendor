@@ -1402,6 +1402,10 @@ export default {
         "title": "On hold until you give your IBAN",
         "subtitle": "The work is done and the money is yours. We just have nowhere to send it.",
         "action": "Give my IBAN"
+      },
+      "invoice_pending": {
+        "title": "Waiting for the invoice",
+        "subtitle": "The work is done and your details are complete. Piquet is issuing the invoice for this money, and once it is out it is paid with your other earnings."
       }
     },
     "next_payment_blocked": "As soon as you sort out what is missing",

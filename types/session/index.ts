@@ -1,3 +1,5 @@
+import type { RazaoDaRetencao } from '@/utils/atPayout';
+
 export interface VendorDataInterface {
   can_accept_service: boolean;
   documents: any[];
@@ -54,8 +56,11 @@ export interface VendorDataInterface {
    * comparar com `=== true`.
    */
   payout_blocked?: boolean;
-  /** Qual dos três: `iban_missing` | `fiscal_address_missing` | `at_user_missing`. */
-  payout_blocker?: 'iban_missing' | 'fiscal_address_missing' | 'at_user_missing' | null;
+  /**
+   * `iban_missing` | `fiscal_address_missing` | `at_user_missing`, e desde
+   * 13/10/2026 `invoice_pending` (o saldo todo espera por faturas da Piquet).
+   */
+  payout_blocker?: RazaoDaRetencao | null;
   /**
    * Quando acaba o prazo para dar a AT antes de o dinheiro se perder (ISO 8601).
    *
