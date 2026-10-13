@@ -1,17 +1,17 @@
 /**
  * Aceitação expressa dos Termos.
  *
- * Existe por uma razão legal, não de produto: os Termos passam a prever que o
- * dinheiro retido por falta do subutilizador da AT se perde ao fim de 5 dias.
- * Uma cláusula que retira dinheiro ganho só vincula quem a aceitou — e provar
- * isso exige que ela tenha sido MOSTRADA, não enterrada num "li e aceito".
+ * Nasceu para a v1.1, cuja cláusula 7.4 fazia perder o dinheiro retido por falta
+ * do subutilizador da AT ao fim de 5 dias: uma cláusula que retira dinheiro
+ * ganho só vincula quem a viu, e por isso o texto dela estava aqui, à vista.
  *
- * Daí o texto da cláusula estar aqui, à vista, e não só o link. O link continua
- * a existir para o documento completo.
+ * Na v1.2 (13/10/2026) a perda saiu. O ecrã continua a mostrar a mudança
+ * principal, a da cláusula 7 — o dinheiro retido nunca se perde, e o pagamento
+ * espera pela fatura — e regista a aceitação da versão em vigor. O link
+ * continua a existir para o documento completo.
  *
  * Não tem botão de fechar: o passo é obrigatório. Quem não aceitar continua a
- * trabalhar e a receber — a retenção não depende disto — mas o prazo da perda
- * nunca lhe arranca, porque o servidor não o conta a quem não aceitou.
+ * trabalhar e a receber — a retenção não depende disto.
  */
 import React, { useState } from 'react';
 import { View, ScrollView, TouchableOpacity, Linking } from 'react-native';
@@ -83,13 +83,13 @@ const AcceptTerms = () => {
           {t('legal.accept.subtitle')}
         </CustomText>
 
-        {/* A CLÁUSULA À VISTA.
-            É a que retira dinheiro, e é a única que se mostra aqui. Mostrar o
-            documento todo num ecrã destes garante que ninguém o lê — e o que se
-            precisa de provar é que ESTA foi vista. */}
-        <Card className="mt-5" style={{ borderWidth: 1, borderColor: 'rgba(255,90,95,0.45)' }}>
+        {/* A MUDANÇA À VISTA.
+            Só a da cláusula 7, a do dinheiro: mostrar o documento todo num ecrã
+            destes garante que ninguém o lê. Na v1.2 é uma boa notícia (a perda
+            saiu), por isso não vem a vermelho. */}
+        <Card className="mt-5" style={{ borderWidth: 1, borderColor: 'rgba(35,230,158,0.35)' }}>
           <View className="flex-row items-center">
-            <Feather name="alert-triangle" size={16} color={Colors.danger} />
+            <Feather name="check-circle" size={16} color={Colors.success} />
             <CustomText color="secondary" size="small" boldness="bold" classes="ml-2 flex-1">
               {t('legal.accept.clause_heading')}
             </CustomText>

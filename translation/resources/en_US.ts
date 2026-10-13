@@ -1350,12 +1350,12 @@ export default {
   },
   "legal": {
     "accept": {
-      "title": "A change to the Terms",
-      "subtitle": "We have updated the Provider Terms. There is a new clause about your money, and we want you to read it before accepting.",
-      "clause_heading": "5-day deadline for Tax Authority access",
-      "clause_body": "From your third completed job, the money you earn is held until you give the Tax Authority sub-user — without it we cannot issue the invoice. You have 5 days to give it, counted from the job's completion. We warn you at 3 days, 1 day and on the last day. If the deadline passes without it, you lose the held amount. Promotional credit is not affected, and you can dispute it with support within 30 days.",
+      "title": "We have updated the Terms",
+      "subtitle": "We have updated the Provider Terms. The main change is about your money, and we want you to read it before accepting.",
+      "clause_heading": "Held money is never lost",
+      "clause_body": "We only transfer the amount for a job once its invoice has been issued. If your IBAN, tax address or Tax Authority sub-user is missing, the money is held — but the hold has no deadline and you never lose the amount: it is transferred in the first payment after you sort out what is missing. Your IBAN, tax address and Tax Authority access are only required to receive requests from your third completed job onwards.",
       "read_full": "Read the full Terms",
-      "checkbox": "I have read and accept the Provider Terms, including the clause above about losing the held amount.",
+      "checkbox": "I have read and accept the Provider Terms.",
       "confirm": "Accept",
       "saving": "Saving…",
       "version": "Version {{version}}"
