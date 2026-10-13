@@ -1549,6 +1549,8 @@ export default {
     "missing_again_one": "1 step left before you can receive requests again.",
     "missing_again_many": "{{count}} steps left before you can receive requests again.",
     "missing_many": "{{count}} steps left before you can receive requests.",
+    "missing_to_get_paid_one": "1 step left to get your money.",
+    "missing_to_get_paid_many": "{{count}} steps left to get your money.",
     "missing": {
         "documents": "documents",
         "phone": "confirm your phone",

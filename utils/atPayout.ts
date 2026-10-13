@@ -1,5 +1,6 @@
 /**
- * As duas perguntas sobre a AT que a app faz mais do que uma vez.
+ * As perguntas sobre a AT e os outros dados de faturação (IBAN, morada) que a
+ * app faz mais do que uma vez.
  *
  * Vivem aqui, e não em linha nos ecrãs, por causa de uma assimetria que parece
  * um erro de escrita e não é: uma compara com `=== true` e a outra com
@@ -30,6 +31,33 @@ export const dinheiroRetido = (payoutBlocked?: boolean): boolean =>
  */
 export const pedeAtNoPerfil = (atUser?: string | null, atRequired?: boolean): boolean =>
   !atUser && atRequired !== false;
+
+/**
+ * O IBAN e a morada de faturação já se pedem?
+ *
+ * Desde 13/10/2026 têm a fronteira da AT (servidor: `Vendor::faturacaoEmDia`):
+ * só são obrigatórios a partir do 3.º serviço concluído, e o mesmo
+ * `at_required` responde pelos três. Antes disso pedem-se só a quem já tem
+ * dinheiro à espera deles — sem IBAN e sem morada fiscal a Piquet não lhe pode
+ * transferir nada, e calar isso era deixá-lo sem saber porque não recebe.
+ *
+ * Mesma assimetria das outras duas: `atRequired !== false`, porque um servidor
+ * antigo exige os dois desde o primeiro dia e o erro seguro é pedir;
+ * `payoutBlocked === true`, porque só se fala de dinheiro retido quando o
+ * servidor o afirma.
+ *
+ * Responde a "pede-se?", não a "falta?": quem chama ainda verifica o campo.
+ */
+export const pedeFaturacaoNoPerfil = (atRequired?: boolean, payoutBlocked?: boolean): boolean =>
+  atRequired !== false || payoutBlocked === true;
+
+/** Falta o IBAN ou a morada de faturação, e já se pedem. */
+export const faltaFaturacaoNoPerfil = (
+  iban?: string | null,
+  companyAddress?: string | null,
+  atRequired?: boolean,
+  payoutBlocked?: boolean,
+): boolean => (!iban || !companyAddress) && pedeFaturacaoNoPerfil(atRequired, payoutBlocked);
 
 /**
  * Este técnico já executou algum serviço?

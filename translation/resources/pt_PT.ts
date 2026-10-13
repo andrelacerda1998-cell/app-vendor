@@ -1549,6 +1549,8 @@ export default {
         "missing_again_one": "Falta 1 passo para voltares a receber pedidos.",
         "missing_again_many": "Faltam {{count}} passos para voltares a receber pedidos.",
         "missing_many": "Faltam {{count}} passos para começares a receber pedidos.",
+        "missing_to_get_paid_one": "Falta 1 passo para receberes o teu dinheiro.",
+        "missing_to_get_paid_many": "Faltam {{count}} passos para receberes o teu dinheiro.",
         "missing": {
             "documents": "documentos",
             "phone": "confirmar o telemóvel",
