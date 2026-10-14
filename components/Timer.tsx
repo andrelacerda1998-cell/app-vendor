@@ -9,10 +9,13 @@ import BackgroundTimer from 'react-native-background-timer';
 import { useService } from "@/contexts/ServiceContext";
 import { useTranslation } from "react-i18next";
 import { useAppStateStatus } from "@/contexts/AppStateStatusContext";
+import { IMMEDIATE_WINDOW_MS } from "@/utils/requestTiming";
 
 const CIRCLE_LENGTH = 400; // Circumference of the circle
 const R = CIRCLE_LENGTH / (2 * Math.PI); // Radius of the circle
-const TIME_TO_WAIT_FOR_VENDOR = 60; // Time in seconds
+// Em segundos. O mesmo prazo do servidor para um pedido imediato (eram 60:
+// a proposta fechava com o pedido ainda aberto mais dois minutos).
+const TIME_TO_WAIT_FOR_VENDOR = IMMEDIATE_WINDOW_MS / 1000;
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
@@ -29,7 +32,7 @@ const Timer = ({
   const { pendingService } = useService();
   // Num ecrã baixo (iPhone SE: 667 pt) a caixa de 200 pt à volta do círculo
   // empurrava o Aceitar/Recusar da proposta para fora do ecrã — num pedido de
-  // 60 segundos. O círculo fica do mesmo tamanho; corta-se só a margem vazia
+  // 3 minutos. O círculo fica do mesmo tamanho; corta-se só a margem vazia
   // (ele ocupa ~137 pt dos 200).
   const { height: alturaDoEcra } = useWindowDimensions();
   const compacto = alturaDoEcra < 750;

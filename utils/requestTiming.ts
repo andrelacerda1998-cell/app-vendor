@@ -1,10 +1,20 @@
 import { ServiceRequestedInterface } from "@/types/services";
 
 /**
- * Janelas de resposta a pedidos — paridade com a app Flutter (piquet_pro):
- * pedido IMEDIATO tem 60 segundos, pedido AGENDADO tem 20 minutos.
+ * Janelas de resposta a pedidos, iguais às do servidor
+ * (config/services/request.php): pedido IMEDIATO tem 3 minutos
+ * (`time_to_accept`, 180 s), pedido AGENDADO tem 20 minutos
+ * (`time_accept_scheduled`, 1200 s).
+ *
+ * A app contava 60 s no imediato: o ecrã do técnico fechava ao fim de um
+ * minuto com o pedido ainda aberto mais dois no servidor.
+ *
+ * O servidor conta a partir do pagamento; aqui conta-se a partir de
+ * `created_at`, que é antes. A contagem acaba igual ou mais cedo, nunca
+ * depois: a app não mostra aberto um pedido que já fechou. O prazo exato
+ * precisa de o servidor mandar `expires_at` nesta lista.
  */
-export const IMMEDIATE_WINDOW_MS = 60 * 1000;
+export const IMMEDIATE_WINDOW_MS = 180 * 1000;
 export const SCHEDULED_WINDOW_MS = 20 * 60 * 1000;
 
 /** Segundos finais em que damos feedback háptico (vibração). */

@@ -4,7 +4,25 @@ import {
   formatEstimatedDuration,
   formatFullAddress,
   formatStreetLine,
+  serviceDurationMinutes,
 } from '@/utils/serviceDetails';
+
+describe('serviceDurationMinutes', () => {
+  /** Três horas pedidas num tipo de uma hora: o cartão dizia "~1h". */
+  it('usa a duração real, com as unidades pedidas', () => {
+    expect(serviceDurationMinutes({ duration_minutes: 180, service_type: { time: 60 } })).toBe(180);
+  });
+
+  it('cai no tempo do tipo em respostas antigas', () => {
+    expect(serviceDurationMinutes({ service_type: { time: 60 } })).toBe(60);
+    expect(serviceDurationMinutes({ duration_minutes: null, service_type: { time: 45 } })).toBe(45);
+  });
+
+  it('sem nenhum dos dois devolve null (o cartão omite)', () => {
+    expect(serviceDurationMinutes({})).toBeNull();
+    expect(serviceDurationMinutes(null)).toBeNull();
+  });
+});
 
 describe('formatStreetLine', () => {
   it('mostra a rua com número', () => {

@@ -76,7 +76,19 @@ export const formatAddressExtra = (details?: ServiceAddressDetails | null): stri
   clean(details?.additional_info);
 
 /**
- * Duração estimada a partir de `service_type.time` (minutos):
+ * Minutos que o trabalho vai durar. `duration_minutes` já vem com as unidades
+ * que o cliente pediu; `service_type.time` é o tempo de UMA unidade e fica só
+ * para respostas antigas. Um pedido de três horas aparecia como "~1h".
+ */
+export const serviceDurationMinutes = (
+  item?: {
+    duration_minutes?: number | null;
+    service_type?: { time?: number | null } | null;
+  } | null,
+): number | null => item?.duration_minutes ?? item?.service_type?.time ?? null;
+
+/**
+ * Duração estimada em minutos, formatada:
  * 45 → "~45 min", 90 → "~1h30", 120 → "~2h".
  */
 export const formatEstimatedDuration = (minutes?: number | string | null): string | null => {
