@@ -160,6 +160,8 @@ export const ScheduleProvider: React.FC<{ children: ReactNode }> = ({ children }
               name: schedule.service_type.name,
               time: schedule.service_type.time ?? null,
             },
+            // Duração real (com as unidades pedidas): ver ServiceContext.
+            duration_minutes: schedule.duration_minutes ?? null,
             address_details: schedule.address_details ?? null,
             // Distância vendor→serviço (km). Vinha do backend e era descartada
             // aqui — sem ela o técnico aceita e planeia o dia sem saber se
@@ -404,6 +406,7 @@ export const ScheduleProvider: React.FC<{ children: ReactNode }> = ({ children }
           name: data.service_type.name,
           time: data.service_type.time ?? null,
         },
+        duration_minutes: data.duration_minutes ?? null,
         address_details: data.address_details ?? null,
         customer_notes: data.customer_notes ?? null,
         customer_photos: data.customer_photos ?? null,

@@ -1234,7 +1234,7 @@ export default {
         },
         "missed_request": {
           "q": "Why did I miss a request?",
-          "a": "Immediate requests expire after 60 seconds and scheduled ones after 20 minutes without a reply."
+          "a": "Immediate requests expire after 3 minutes and scheduled ones after 20 minutes without a reply."
         }
       }
     },
@@ -1805,7 +1805,7 @@ export default {
     "you_receive": "You get",
     "close": "Close",
     "incoming_request_title": "New request received",
-    "incoming_request_window_immediate": "You have 60 seconds to accept.",
+    "incoming_request_window_immediate": "You have 3 minutes to accept.",
     "incoming_request_window_scheduled": "You have 20 minutes to accept.",
     "customer_notes": "Client notes"
   },

@@ -39,9 +39,10 @@ describe('isImmediateRequest', () => {
 });
 
 describe('requestWindowMs', () => {
-  it('dá 60 s ao pedido imediato', () => {
-    expect(requestWindowMs({ is_immediate: true } as any)).toBe(60 * 1000);
-    expect(IMMEDIATE_WINDOW_MS).toBe(60_000);
+  /** O mesmo que o servidor (services.request.time_to_accept): eram 60 s. */
+  it('dá 3 min ao pedido imediato', () => {
+    expect(requestWindowMs({ is_immediate: true } as any)).toBe(180 * 1000);
+    expect(IMMEDIATE_WINDOW_MS).toBe(180_000);
   });
 
   it('dá 20 min ao pedido agendado', () => {

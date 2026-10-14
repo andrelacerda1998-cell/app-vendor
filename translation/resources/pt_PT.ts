@@ -1234,7 +1234,7 @@ export default {
                 },
                 "missed_request": {
                     "q": "Porque perdi um pedido?",
-                    "a": "Pedidos imediatos expiram em 60 segundos e agendados em 20 minutos sem resposta."
+                    "a": "Pedidos imediatos expiram em 3 minutos e agendados em 20 minutos sem resposta."
                 }
             }
         },
@@ -1805,7 +1805,7 @@ export default {
       "you_receive": "Recebes",
       "close": "Fechar",
       "incoming_request_title": "Novo pedido recebido",
-      "incoming_request_window_immediate": "Tens 60 segundos para aceitar.",
+      "incoming_request_window_immediate": "Tens 3 minutos para aceitar.",
       "incoming_request_window_scheduled": "Tens 20 minutos para aceitar.",
       "customer_notes": "Observações do cliente"
     },

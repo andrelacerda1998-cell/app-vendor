@@ -191,7 +191,7 @@ export default function AppLayout() {
                         setPendingService(data?.serviceDetails);
                         getPendingServices();
 
-                        // Ecrã cheio de pedido a chegar: contagem certa (60 s para imediatos,
+                        // Ecrã cheio de pedido a chegar: contagem certa (3 min para imediatos,
                         // 20 min para agendados), vibração e deslizar-para-aceitar. Substitui o
                         // antigo `proposal`, que tinha dois botões com o mesmo peso e um
                         // temporizador fixo de 60 s mesmo para serviços agendados.

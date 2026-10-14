@@ -13,12 +13,13 @@ import {
   formatCustomerNotes,
   formatEstimatedDuration,
   formatFullAddress,
+  serviceDurationMinutes,
 } from "@/utils/serviceDetails";
 
 /**
  * Cartão de PEDIDO recebido (linguagem build-12).
  * Só usa campos que o backend devolve em ServiceRequestedInterface:
- * service_type.{name,time}, address_details, customer_notes, customer.address,
+ * service_type.{name,time}, duration_minutes, address_details, customer_notes, customer.address,
  * schedule.*, amount_for_vendor, distance.
  *
  * A decisão do profissional é "quando" + "quanto", por isso essas duas peças
@@ -98,7 +99,7 @@ const ServiceCard = ({
   // não devolver `address_details`, cai para a morada curta que já existia.
   const addressLabel = formatFullAddress(item.address_details, item.customer?.address);
   const addressExtra = formatAddressExtra(item.address_details);
-  const durationLabel = formatEstimatedDuration(item.service_type?.time);
+  const durationLabel = formatEstimatedDuration(serviceDurationMinutes(item));
   const customerNotes = formatCustomerNotes(item);
 
   return (
@@ -111,7 +112,7 @@ const ServiceCard = ({
 
       <View className="flex-1 ml-3">
         {/* Duas linhas: no iPhone SE lia-se "Desentupimento de…" e o técnico tem
-            60 segundos para decidir se aceita. */}
+            poucos minutos para decidir se aceita. */}
         <CustomText color="secondary" boldness="bold" size="medium" numberOfLines={2}>
           {item.service_type?.name}
         </CustomText>
@@ -136,7 +137,7 @@ const ServiceCard = ({
                 </CustomText>
               </View>
             )}
-            {/* Duração estimada (service_type.time, em minutos). */}
+            {/* Duração do trabalho, já com as unidades pedidas. */}
             {!!durationLabel && (
               <View className="flex-row items-center">
                 <Feather name="clock" size={12} color={Colors.muted} />

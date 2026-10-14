@@ -362,6 +362,10 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
             // Duração estimada em minutos; ausente em payloads antigos.
             time: service.service_type.time ?? null,
           },
+          // Duração real, com as unidades pedidas. Vinha no payload e era
+          // descartada aqui: o cartão mostrava o tempo de uma só unidade.
+          duration_minutes: service.duration_minutes ?? null,
+          server_time: service.server_time ?? undefined,
           // Morada completa + observações do cliente: o que o profissional
           // precisa para decidir. Ausentes => null (o cartão omite).
           address_details: service.address_details ?? null,

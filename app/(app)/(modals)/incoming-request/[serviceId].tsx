@@ -156,7 +156,7 @@ const IncomingRequestScreen = ({ serviceId }: { serviceId: string }) => {
           </CustomText>
           <CustomText color="muted" size="small" classes="mt-1 text-center">
             {immediate
-              ? t('schedules.incoming_request_window_immediate', { defaultValue: 'Tens 60 segundos para aceitar.' })
+              ? t('schedules.incoming_request_window_immediate', { defaultValue: 'Tens 3 minutos para aceitar.' })
               : t('schedules.incoming_request_window_scheduled', { defaultValue: 'Tens 20 minutos para aceitar.' })}
           </CustomText>
 

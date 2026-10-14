@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, ScrollView, TouchableOpacity, Vibration, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -8,7 +8,45 @@ import { CustomText } from '@/components/CustomText';
 import { Colors } from '@/constants/Colors';
 import MatchingInvitationCard from '@/components/services/MatchingInvitationCard';
 import MatchingInvitationDeadlineBar from '@/components/services/MatchingInvitationDeadlineBar';
+import MatchingAcceptedContent from '@/components/services/MatchingAcceptedContent';
+import CustomTouchableOpacity from '@/components/CustomTouchableOpacity';
 import useMatchingInvitations from '@/hooks/useMatchingInvitations';
+
+type Resposta = { ok: true } | { ok: false; message: string | null };
+
+/**
+ * O pedido fechou antes de a resposta chegar. Diz porquê com a mensagem do
+ * servidor, que distingue "a janela fechou" de "outro foi mais rápido".
+ */
+const Tarde = ({ mensagem, onClose }: { mensagem: string | null; onClose: () => void }) => {
+  const { t } = useTranslation();
+
+  return (
+    <View className="w-full p-8 items-center">
+      <View
+        className="items-center justify-center rounded-full mb-5"
+        style={{ width: 76, height: 76, backgroundColor: Colors.card_high }}
+      >
+        <Feather name="clock" size={34} color={Colors.muted} />
+      </View>
+      <CustomText size="title" color="secondary" boldness="bolder" classes="text-center">
+        {t('matching.invitation.too_late_title')}
+      </CustomText>
+      <CustomText size="small" color="muted" classes="text-center mt-2" style={{ lineHeight: 20 }}>
+        {mensagem ?? t('matching.invitation.too_late_subtitle')}
+      </CustomText>
+      <CustomTouchableOpacity
+        size="large"
+        type="support_primary"
+        textColor="primary"
+        textBoldness="bolder"
+        text={t('common.close', { defaultValue: 'Fechar' })}
+        onPress={onClose}
+        classes="mt-6 w-full"
+      />
+    </View>
+  );
+};
 
 /**
  * Convite de selecao, em ecra proprio por cima de tudo.
@@ -31,12 +69,23 @@ import useMatchingInvitations from '@/hooks/useMatchingInvitations';
  * ecra continua a valer; esconder-lhe quanto tempo tem, nao. Sao coisas
  * diferentes: uma e nao o obrigar a decidir ali, a outra e nao lhe dizer que ha
  * um prazo.
+ *
+ * DEPOIS DE ACEITAR, o ecra mostra o que aconteceu: "ficaste na lista" ou "o
+ * pedido ja fechou". Antes fechava-se sem dizer nada: o convite sai da lista
+ * mal e aceite (ou recusado pelo servidor), e o efeito que fecha o ecra quando
+ * o convite desaparece apanhava-o primeiro. O tecnico ficava sem saber se a
+ * resposta tinha contado. Mostra-se aqui, no proprio ecra, e nao num dialogo:
+ * um dialogo aberto enquanto o modal fecha fica orfao (ver DialogContext).
  */
 const MatchingInvitationScreen = () => {
   const { t } = useTranslation();
   const { candidateId } = useLocalSearchParams<{ candidateId: string }>();
   const { invitations, accept, decline, submitting, loading } = useMatchingInvitations();
   const closingRef = useRef(false);
+  const [resposta, setResposta] = useState<Resposta | null>(null);
+  // Um segundo toque antes de o botao ficar desativado recebia do hook um
+  // "nao" imediato (ja ha um pedido a correr) e mostrava "ja fechou".
+  const aceitarRef = useRef(false);
 
   const invitation = useMemo(
     () => invitations.find((i) => String(i.candidate_id) === String(candidateId)),
@@ -64,9 +113,24 @@ const MatchingInvitationScreen = () => {
   // O convite desapareceu da lista (respondido noutro sitio, fechado pelo
   // servidor, ou expirado): nao ha nada a mostrar. Fecha-se em vez de deixar
   // um ecra vazio a ocupar tudo.
+  //
+  // Com a resposta no ecra, nao: o convite saiu da lista POR CAUSA dela.
   useEffect(() => {
+    if (resposta) return;
     if (!loading && !invitation) close();
-  }, [loading, invitation, close]);
+  }, [loading, invitation, close, resposta]);
+
+  if (resposta) {
+    return (
+      <SafeAreaView className="flex-1" style={{ backgroundColor: Colors.bg }}>
+        <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
+          {resposta.ok
+            ? <MatchingAcceptedContent onClose={close} />
+            : <Tarde mensagem={resposta.message} onClose={close} />}
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
 
   if (!invitation) return null;
 
@@ -101,7 +165,11 @@ const MatchingInvitationScreen = () => {
           invitation={invitation}
           hideCountdown
           busy={submitting === invitation.candidate_id}
-          onAccept={async () => { await accept(invitation.candidate_id); close(); }}
+          onAccept={async () => {
+            if (aceitarRef.current) return;
+            aceitarRef.current = true;
+            setResposta(await accept(invitation.candidate_id));
+          }}
           onDecline={async () => { await decline(invitation.candidate_id); close(); }}
         />
       </ScrollView>

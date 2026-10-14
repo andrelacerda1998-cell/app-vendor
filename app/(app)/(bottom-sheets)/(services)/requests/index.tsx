@@ -182,7 +182,7 @@ const Requests = () => {
 
     services.forEach(item => {
       if (!item.service_id) return;
-      // Imediato -> 60s; agendado -> 20min (paridade com a app Flutter).
+      // Imediato -> 3 min; agendado -> 20 min (os prazos do servidor).
       const expiresAt = requestExpiresAt(item);
       if (!expiresAt) return;
       newMap[String(item.service_id)] = expiresAt;

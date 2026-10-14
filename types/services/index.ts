@@ -154,6 +154,12 @@ export interface ServiceRequestedInterface {
     /** O que NÃO está combinado — é aqui que nascem as discussões à porta. */
     excludes?: string[] | null;
   };
+  /**
+   * Duração real do trabalho em minutos, já com as unidades pedidas
+   * (ServiceRequestedData::duration_minutes). `service_type.time` é o tempo
+   * de UMA unidade. Null quando o servidor não sabe.
+   */
+  duration_minutes?: number | null;
   service_id: number;
   //added to handle the countdown counters
   created_at?: number;

@@ -38,7 +38,9 @@ export function useOngoingServiceNotification() {
   const customer = svc?.customer?.name ?? '';
   const serviceName = svc?.service_type?.name ?? '';
   const startedAt = svc?.arrived_at ?? null;
-  const estimated = Number(svc?.service_type?.time);
+  // A duração real (com as unidades pedidas); o tempo do tipo é de UMA unidade
+  // e dava "Termina às 10:00" num trabalho que acabava às 12:00.
+  const estimated = Number(svc?.duration_minutes ?? svc?.service_type?.time);
 
   // Hora de fim prevista — o facto que não envelhece.
   //
