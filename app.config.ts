@@ -120,6 +120,7 @@ export default ({config}: ConfigContext):ExpoConfig => {
         },
         plugins: [
             "./plugins/withXcode26BuildFixes",
+            "./plugins/withAndroidLintFix",
             "expo-updates",
             "expo-localization",
             "expo-router",
