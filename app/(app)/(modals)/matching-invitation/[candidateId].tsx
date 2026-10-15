@@ -115,8 +115,14 @@ const MatchingInvitationScreen = () => {
   // um ecra vazio a ocupar tudo.
   //
   // Com a resposta no ecra, nao: o convite saiu da lista POR CAUSA dela.
+  //
+  // E com a resposta A CAMINHO tambem nao. O `accept` recarrega a lista antes
+  // de devolver, e a app corre na arquitetura antiga do React Native, onde um
+  // setState fora de um evento desenha logo: o convite desaparecia, este
+  // efeito fechava o ecra, e so depois chegava a resposta. O "Ficaste na
+  // lista" nunca aparecia (visto no simulador a 15/10/2026).
   useEffect(() => {
-    if (resposta) return;
+    if (resposta || aceitarRef.current) return;
     if (!loading && !invitation) close();
   }, [loading, invitation, close, resposta]);
 
@@ -132,6 +138,8 @@ const MatchingInvitationScreen = () => {
     );
   }
 
+  // A resposta esta a caminho e o convite ja saiu da lista: fica o ecra
+  // vazio uma fracao de segundo, em vez de fechar.
   if (!invitation) return null;
 
   return (
