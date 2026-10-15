@@ -6,11 +6,12 @@ import { useSession } from '@/contexts/SessionContext';
 import useEcho from '@/hooks/echo';
 import { API_ROUTES } from '@/constants/ApiRoutes';
 import { MatchingInvitation } from '@/types/matching';
+import { horaDoPrazo } from '@/utils/requestTiming';
 
 /**
  * Convites de seleção abertos, com atualização ao vivo.
  *
- * Os três eventos do backend existem para o mesmo fim: **nunca silêncio**. Um
+ * Os quatro eventos do backend existem para o mesmo fim: **nunca silêncio**. Um
  * profissional que diz que sim e fica sem resposta aprende a não responder mais.
  * Por isso o convite desaparece da lista assim que o pedido fecha ou ele perde,
  * em vez de ficar lá a apodrecer até ele tocar e levar um erro.
@@ -102,10 +103,10 @@ export function useMatchingInvitations() {
      * por isso o hook estar montado em três sítios ao mesmo tempo (Home, lista e
      * modal) não dá três avisos iguais.
      */
-    const aviso = (title: string, subtitle: string) => openDialog({
+    const aviso = (title: string, subtitle: string, ms = 4000) => openDialog({
       title,
       subtitle,
-      closeAfterMSeconds: 4000,
+      closeAfterMSeconds: ms,
       closeOnClickOutside: true,
     });
 
@@ -125,14 +126,38 @@ export function useMatchingInvitations() {
       );
     };
 
+    /**
+     * O cliente escolheu-o e ainda não pagou. É a decisão que o "ficaste na
+     * lista" promete avisar, e era a única que não chegava: os perdedores
+     * sabiam logo, o escolhido só quando o pagamento entrava (push "o trabalho
+     * é teu") ou o prazo acabava. Num imediato, nesses minutos, nem recebia
+     * outros convites imediatos, sem saber porquê.
+     *
+     * Não promete o trabalho: só é dele quando o cliente pagar. A hora vem do
+     * servidor (`pay_by`), que é quem a aplica. Mais tempo no ecrã do que os
+     * outros avisos, porque traz uma hora para ler.
+     */
+    const onSelected = (data: any) => {
+      const hora = horaDoPrazo(data?.pay_by);
+      aviso(
+        t('matching.outcome.selected_title'),
+        hora
+          ? t('matching.outcome.selected_subtitle', { time: hora })
+          : t('matching.outcome.selected_subtitle_no_time'),
+        6000,
+      );
+    };
+
     channel.listen('.MatchingInvitationEvent', onInvite);
     channel.listen('.MatchingRequestClosedEvent', onClosed);
     channel.listen('.MatchingCandidateLostEvent', onLost);
+    channel.listen('.MatchingCandidateSelectedEvent', onSelected);
 
     return () => {
       channel.stopListening('.MatchingInvitationEvent', onInvite);
       channel.stopListening('.MatchingRequestClosedEvent', onClosed);
       channel.stopListening('.MatchingCandidateLostEvent', onLost);
+      channel.stopListening('.MatchingCandidateSelectedEvent', onSelected);
     };
   }, [echo, vendorData, fetch, remove, openDialog, t]);
 

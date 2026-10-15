@@ -6,9 +6,9 @@
  * que ninguém escreveu, o i18next não rebenta — devolve o caminho em cru
  * ("matching.outcome.lost_title") e é isso que o técnico lê no diálogo.
  *
- * Este ficheiro prende, por caminho exacto, as quatro que o hook usa quando o
- * cliente escolhe outro profissional ou não paga a tempo. São o único aviso que
- * ele recebe nesses dois casos: sem push, e com o cartão já fora da lista.
+ * Este ficheiro prende, por caminho exacto, as que o hook usa quando o cliente
+ * escolhe outro profissional, não paga a tempo, ou o escolhe e ainda não pagou.
+ * São o único aviso ao vivo que ele recebe nesses casos: nenhum leva push.
  */
 import ptPT from '@/translation/resources/pt_PT';
 import enUS from '@/translation/resources/en_US';
@@ -18,6 +18,9 @@ const CAMINHOS = [
   'matching.outcome.lost_subtitle',
   'matching.outcome.closed_title',
   'matching.outcome.closed_subtitle',
+  'matching.outcome.selected_title',
+  'matching.outcome.selected_subtitle',
+  'matching.outcome.selected_subtitle_no_time',
 ] as const;
 
 const em = (arvore: Record<string, any>, caminho: string): unknown =>
@@ -48,6 +51,18 @@ describe('mensagem de desfecho do convite', () => {
         .not.toBe(em(arvore as Record<string, any>, 'matching.outcome.closed_title'));
       expect(em(arvore as Record<string, any>, 'matching.outcome.lost_subtitle'))
         .not.toBe(em(arvore as Record<string, any>, 'matching.outcome.closed_subtitle'));
+    }
+  });
+
+  /**
+   * O aviso de escolhido diz até que horas o cliente tem para pagar. Sem o
+   * `{{time}}` o i18next não rebenta: devolve a frase com o buraco, ou sem a
+   * hora, e o técnico fica sem saber o prazo.
+   */
+  it('o aviso de escolhido leva a hora do prazo', () => {
+    for (const arvore of [ptPT, enUS]) {
+      expect(em(arvore as Record<string, any>, 'matching.outcome.selected_subtitle')).toContain('{{time}}');
+      expect(em(arvore as Record<string, any>, 'matching.outcome.selected_subtitle_no_time')).not.toContain('{{');
     }
   });
 });
