@@ -3,6 +3,7 @@ import {
   SCHEDULED_WINDOW_MS,
   createdAtMs,
   formatDistanceKm,
+  horaDoPrazo,
   isImmediateRequest,
   remainingFrom,
   remainingProgress,
@@ -147,5 +148,22 @@ describe('formatDistanceKm', () => {
     expect(formatDistanceKm(0)).toBeNull();
     expect(formatDistanceKm(-3)).toBeNull();
     expect(formatDistanceKm(Number.NaN)).toBeNull();
+  });
+});
+
+describe('horaDoPrazo', () => {
+  it('sem prazo, ou ilegível, não inventa uma hora', () => {
+    expect(horaDoPrazo(undefined)).toBeNull();
+    expect(horaDoPrazo(null)).toBeNull();
+    expect(horaDoPrazo('')).toBeNull();
+    expect(horaDoPrazo('amanhã')).toBeNull();
+  });
+
+  it('diz a hora local do instante do servidor, em hh:mm', () => {
+    const iso = '2026-10-15T10:05:00+00:00';
+    const hora = horaDoPrazo(iso);
+
+    expect(hora).toMatch(/^\d{2}:\d{2}$/);
+    expect(hora).toBe(new Date(iso).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' }));
   });
 });

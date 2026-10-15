@@ -48,6 +48,19 @@ export const requestExpiresAt = (item?: Partial<ServiceRequestedInterface> | nul
   return created + requestWindowMs(item);
 };
 
+/**
+ * Hora local ("14:32") de um instante ISO vindo do servidor, ou null se não
+ * der para ler. Para prazos ditos como hora ("até às 14:32") num aviso que se
+ * fecha sozinho: uma contagem parada num diálogo estaria errada segundos
+ * depois, a hora não.
+ */
+export const horaDoPrazo = (iso?: string | null): string | null => {
+  if (!iso) return null;
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return null;
+  return d.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+};
+
 export type RemainingTime = { minutes: number; seconds: number };
 
 /** Devolve null quando já expirou, undefined quando não há dados para contar. */

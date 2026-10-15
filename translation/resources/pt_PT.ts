@@ -1855,7 +1855,10 @@ export default {
         "lost_title": "O cliente escolheu outro profissional",
         "lost_subtitle": "Este pedido foi para outra pessoa. A tua agenda continua livre.",
         "closed_title": "O pedido foi cancelado",
-        "closed_subtitle": "O cliente não concluiu o pagamento a tempo. A tua agenda continua livre."
+        "closed_subtitle": "O cliente não concluiu o pagamento a tempo. A tua agenda continua livre.",
+        "selected_title": "O cliente escolheu-te",
+        "selected_subtitle": "Falta o pagamento: o cliente tem até às {{time}}. Quando pagar, avisamos-te e o trabalho é teu.",
+        "selected_subtitle_no_time": "Falta o pagamento. Quando o cliente pagar, avisamos-te e o trabalho é teu."
       }
     },
     "ongoing_service": {

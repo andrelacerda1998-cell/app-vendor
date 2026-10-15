@@ -1854,7 +1854,10 @@ export default {
         "lost_title": "The customer chose someone else",
         "lost_subtitle": "This request went to another professional. Your calendar is still free.",
         "closed_title": "The request was cancelled",
-        "closed_subtitle": "The customer didn't complete the payment in time. Your calendar is still free."
+        "closed_subtitle": "The customer didn't complete the payment in time. Your calendar is still free.",
+        "selected_title": "The customer chose you",
+        "selected_subtitle": "Only the payment is missing: the customer has until {{time}}. When they pay, we'll let you know and the job is yours.",
+        "selected_subtitle_no_time": "Only the payment is missing. When the customer pays, we'll let you know and the job is yours."
       }
     },
     "ongoing_service": {
