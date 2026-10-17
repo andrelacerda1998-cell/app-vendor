@@ -155,7 +155,11 @@ export default ({config}: ConfigContext):ExpoConfig => {
             eas: {
                 // O id antigo (20ae14b2-…) era da org órfã `piquet`. O projeto novo
                 // é criado por `eas init` na org nova (workflow) e o id vem por env.
-                "projectId": process.env.EAS_PROJECT_ID || undefined
+                // Fallback hardcoded (= id do updates.url): o app.config é avaliado no
+                // servidor de build do EAS, onde EAS_PROJECT_ID não existe, logo sem
+                // fallback o projectId saía `undefined` e o getExpoPushTokenAsync
+                // nunca gerava token (push não registava → devices=0).
+                "projectId": process.env.EAS_PROJECT_ID || "43fc0c02-837d-432e-a9df-1d30c44d976f"
             }
         },
     }
