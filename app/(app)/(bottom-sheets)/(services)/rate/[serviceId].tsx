@@ -36,7 +36,10 @@ const RateServiceBottomSheet = () => {
   const [loadingSubmit, setLoadingSubmit] = useState(false);
 
   useEffect(() => {
-    if (service && service.rating_by_vendor !== null) {
+    // `rating_by_vendor` pode vir `null` (BD) ou `undefined` (o payload do
+    // openService/socket nem sempre traz o campo). Só pré-preenchemos quando há
+    // mesmo uma nota válida (1–5); caso contrário o ecrã fica editável.
+    if (service && service.rating_by_vendor != null && Number(service.rating_by_vendor) > 0) {
       setRate(Number(service.rating_by_vendor));
     }
   }, [])
@@ -50,7 +53,10 @@ const RateServiceBottomSheet = () => {
 
   // `service` é um `let` reatribuído no try/catch, por isso o TypeScript perde o
   // estreitamento dentro de callbacks — fixamos o valor aqui, depois do guarda.
-  const alreadyRated = service.rating_by_vendor !== null;
+  // Usa `!= null` (apanha null E undefined) e exige nota válida (1–5): sem isto,
+  // um serviço por avaliar cujo payload não traz o campo (undefined) era tratado
+  // como "já avaliado" → estrelas bloqueadas e botão de enviar escondido.
+  const alreadyRated = service.rating_by_vendor != null && Number(service.rating_by_vendor) > 0;
 
   const handleRate = (value: number) => {
     setRate(value);
@@ -172,7 +178,7 @@ const RateServiceBottomSheet = () => {
           </View>
         </View>
       </View>
-      {service.rating_by_vendor === null && (
+      {!alreadyRated && (
         <View className="p-5">
           <CustomTouchableOpacity
             size="large"

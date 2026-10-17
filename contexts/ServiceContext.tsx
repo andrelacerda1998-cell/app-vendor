@@ -273,7 +273,10 @@ export const ServiceProvider = ({ children }: { children: ReactNode }) => {
             pathname: '/(app)/(bottom-sheets)/(services)/rate/[serviceId]',
             params: {
               serviceId: openService.id,
-              service: JSON.stringify(openService),
+              // Passa o serviço acabado de refrescar (completo, com
+              // rating_by_vendor: null), não o openService em cache que pode nem
+              // trazer o campo — senão o sheet tratava-o como "já avaliado".
+              service: JSON.stringify(service),
             },
           })
         } else if (service.status === ServiceStatus.REFUSED) {

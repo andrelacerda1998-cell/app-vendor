@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { View, TouchableOpacity } from 'react-native'
 import { Feather } from '@expo/vector-icons'
 import { router, useFocusEffect } from 'expo-router'
@@ -25,6 +25,16 @@ import useExpiryCountdown from '@/hooks/useExpiryCountdown'
 const MatchingInvitationsCard = () => {
   const { t } = useTranslation();
   const { invitations, refresh } = useMatchingInvitations();
+
+  // Relógio que tica ao segundo. Sem isto, o filtro `vivos` só recalculava
+  // quando a lista `invitations` mudava: o contador chegava a "0s" mas o cartão
+  // ficava na Home até um refresh (mudar de aba e voltar). Com o tique, um
+  // convite que expira cai de `vivos` no segundo seguinte e o cartão some.
+  const [nowTick, setNowTick] = useState(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNowTick(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
 
   // A Home tem a sua própria instância do hook; aceitar/recusar no ecrã de
   // pedidos não a atualiza. Sem isto, o cartão ficava preso na contagem antiga
@@ -53,12 +63,12 @@ const MatchingInvitationsCard = () => {
     const desvio = referencia
       ? new Date(referencia).getTime() - Date.now()
       : 0;
-    const agora = Date.now() + (Number.isFinite(desvio) ? desvio : 0);
+    const agora = nowTick + (Number.isFinite(desvio) ? desvio : 0);
 
     return invitations
       .filter((i) => !!i.expires_at && new Date(i.expires_at as string).getTime() > agora)
       .sort((a, b) => String(a.expires_at).localeCompare(String(b.expires_at)));
-  }, [invitations]);
+  }, [invitations, nowTick]);
 
   const soonest = vivos[0] ?? null;
 
