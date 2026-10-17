@@ -4,10 +4,10 @@ import { CustomText } from "@/components/CustomText";
 import { useApi } from '@/contexts/ApiContext';
 import { useDialog } from "@/contexts/DialogContext";
 import { useSession } from '@/contexts/SessionContext';
-import { router } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import { router, useFocusEffect } from 'expo-router';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from "react-i18next";
-import { View, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Image, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather, Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
@@ -44,21 +44,49 @@ const maskIban = (iban?: string | null) => {
 const Profile = () => {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const { signOut, vendorData } = useSession();
+  const { signOut, vendorData, fetchAndSaveUserData } = useSession();
   const { api } = useApi();
   const { openDialog } = useDialog();
   const { weekdays, getScheduleSettings } = useSchedule();
   const { myOperationAreas } = useService();
   const [stats, setStats] = useState<{ rating: number | null; total_services: number; acceptance_rate: number | null } | null>(null);
 
-  useEffect(() => {
-    let mounted = true;
-    api.get(API_ROUTES.VENDOR_GET_STATS)
-      .then((r: any) => { if (mounted) setStats(r?.data?.data ?? null); })
-      .catch(() => {});
-    getScheduleSettings();
-    return () => { mounted = false; };
-  }, []);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const loadStats = useCallback(async () => {
+    try {
+      const r: any = await api.get(API_ROUTES.VENDOR_GET_STATS);
+      setStats(r?.data?.data ?? null);
+    } catch {
+      // mantém os valores anteriores em vez de os apagar num erro de rede
+    }
+  }, [api]);
+
+  // Refresca ao ENTRAR na aba (ex.: logo a seguir a acabar um serviço). Antes
+  // era um useEffect([]) só no mount: os números (rating/serviços/aceitação)
+  // ficavam presos ao valor inicial e só mudavam ao reabrir a app. Deps só com
+  // `loadStats` (estável em [api]) para o foco não re-disparar em loop; as
+  // funções de contexto são chamadas lá dentro.
+  useFocusEffect(
+    useCallback(() => {
+      loadStats();
+      fetchAndSaveUserData();
+      getScheduleSettings();
+    }, [loadStats]),
+  );
+
+  // Pull-to-refresh explícito — antes não existia, puxar para baixo não fazia
+  // nada (o utilizador tinha de trocar de aba e voltar).
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await loadStats();
+      fetchAndSaveUserData();
+      getScheduleSettings();
+    } finally {
+      setRefreshing(false);
+    }
+  }, [loadStats]);
 
   // Valores mostrados à direita de cada linha (só quando os dados existem).
   const activeServices = myOperationAreas
@@ -220,7 +248,13 @@ const Profile = () => {
         otherClasses="px-5 py-4"
       />
 
-      <ScrollView className="flex-1 px-5" contentContainerStyle={{ paddingBottom: tabBarContentPadding(insets.bottom) }}>
+      <ScrollView
+        className="flex-1 px-5"
+        contentContainerStyle={{ paddingBottom: tabBarContentPadding(insets.bottom) }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.secondary} />
+        }
+      >
         {/* Cabeçalho de perfil */}
         <View className="flex-row items-center">
           <View

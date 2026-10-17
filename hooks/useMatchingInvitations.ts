@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { AppState } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useApi } from '@/contexts/ApiContext';
 import { useDialog } from '@/contexts/DialogContext';
@@ -66,6 +67,23 @@ export function useMatchingInvitations() {
   }, [api]);
 
   useEffect(() => { fetch(); }, [fetch]);
+
+  // Rede de segurança além do websocket. O canal em tempo real (Reverb) pode não
+  // chegar ao device — ws sem TLS, rede móvel, app em segundo plano — e aí um
+  // convite novo só aparecia quando o técnico mudava de aba e voltava (fetch no
+  // foco). Perder um pedido é o pior que pode acontecer, por isso: revê a lista a
+  // cada poucos segundos enquanto está montado, e sempre que a app volta a
+  // primeiro plano. O push (APNs) avisa fora da app; isto cobre a app aberta.
+  useEffect(() => {
+    const id = setInterval(() => { fetch(); }, 10000);
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') fetch();
+    });
+    return () => {
+      clearInterval(id);
+      sub.remove();
+    };
+  }, [fetch]);
 
   useEffect(() => {
     let cancelled = false;
